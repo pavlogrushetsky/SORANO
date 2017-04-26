@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SORANO.CORE
+namespace SORANO.CORE.StockEntities
 {
     /// <summary>
     /// Delivery of goods

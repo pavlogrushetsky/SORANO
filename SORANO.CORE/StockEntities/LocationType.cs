@@ -1,25 +1,25 @@
 ﻿using System.Collections.Generic;
 
-namespace SORANO.CORE
+namespace SORANO.CORE.StockEntities
 {
     /// <summary>
-    /// Supplier of goods
+    /// Type of a location
     /// </summary>
-    public class Supplier : StockEntity
+    public class LocationType : StockEntity
     {
         /// <summary>
-        /// Name of the supplier
+        /// Name of the type
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Description of the supplier
+        /// Description of the type
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// Deliveries supplied by supplier
+        /// Locations of this type
         /// </summary>
-        public virtual ICollection<Delivery> Deliveries { get; set; } = new HashSet<Delivery>();
+        public virtual ICollection<Location> Locations { get; set; } = new HashSet<Location>();
     }
 }

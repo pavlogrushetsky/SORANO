@@ -1,4 +1,4 @@
-﻿namespace SORANO.CORE
+﻿namespace SORANO.CORE.StockEntities
 {
     /// <summary>
     /// Recommendation entity which can be attached to any antity

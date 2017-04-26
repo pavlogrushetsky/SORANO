@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using SORANO.CORE.IdentityEntities;
+using SORANO.CORE.StockEntities;
 
 namespace SORANO.CORE
 {
@@ -44,8 +46,28 @@ namespace SORANO.CORE
         public int? DeletedBy { get; set; }
 
         /// <summary>
+        /// User created the entity
+        /// </summary>
+        public virtual User CreatedByUser { get; set; }
+
+        /// <summary>
+        /// User modified the entity
+        /// </summary>
+        public virtual User ModifiedByUser { get; set; }
+
+        /// <summary>
+        /// User deleted the entity
+        /// </summary>
+        public virtual User DeletedByUser { get; set; }
+
+        /// <summary>
         /// Recommendations attached to the entity
         /// </summary>
         public virtual ICollection<Recommendation> Recommendations { get; set; } = new HashSet<Recommendation>();
+
+        /// <summary>
+        /// Attachments of the entity
+        /// </summary>
+        public virtual ICollection<Attachment> Attachments { get; set; } = new HashSet<Attachment>();
     }
 }
