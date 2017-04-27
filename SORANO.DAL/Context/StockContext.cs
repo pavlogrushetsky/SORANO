@@ -91,6 +91,8 @@ namespace SORANO.DAL.Context
         protected override void OnModelCreating(DbModelBuilder builder)
         {
             // Adding configuration for stock entities
+            builder.Configurations.Add(new UserConfiguration());
+            builder.Configurations.Add(new RoleConfiguration());
             builder.Configurations.Add(new ArticleConfiguration());
             builder.Configurations.Add(new ArticleTypeConfiguration());
             builder.Configurations.Add(new AttachmentConfiguration());

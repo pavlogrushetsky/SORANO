@@ -58,9 +58,11 @@
     <Compile Include="Context\Configurations\LocationConfiguration.cs" />
     <Compile Include="Context\Configurations\LocationTypeConfiguration.cs" />
     <Compile Include="Context\Configurations\RecommendationConfiguration.cs" />
+    <Compile Include="Context\Configurations\RoleConfiguration.cs" />
     <Compile Include="Context\Configurations\StockEntityConfiguration.cs" />
     <Compile Include="Context\Configurations\StorageConfiguration.cs" />
     <Compile Include="Context\Configurations\SupplierConfiguration.cs" />
+    <Compile Include="Context\Configurations\UserConfiguration.cs" />
     <Compile Include="Context\StockContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Abstract\IArticleRepository.cs" />
