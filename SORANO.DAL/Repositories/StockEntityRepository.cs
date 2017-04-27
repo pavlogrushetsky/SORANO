@@ -31,7 +31,7 @@ namespace SORANO.DAL.Repositories
         /// Get all stock entities
         /// </summary>
         /// <returns>Stock entities</returns>
-        public IEnumerable<T> GetAll()
+        public virtual IEnumerable<T> GetAll()
         {
             return _context.Set<T>().AsEnumerable();
         }
@@ -41,14 +41,10 @@ namespace SORANO.DAL.Repositories
         /// </summary>
         /// <param name="properties">Properties to include in selection</param>
         /// <returns>Stock entities</returns>
-        public IEnumerable<T> GetAll(params Expression<Func<T, object>>[] properties)
+        public virtual IEnumerable<T> GetAll(params Expression<Func<T, object>>[] properties)
         {
             IQueryable<T> query = _context.Set<T>();
-
-            foreach (var property in properties)
-            {
-                query = query.Include(property);
-            }
+            query = properties.Aggregate(query, (current, property) => current.Include(property));
 
             return query.AsEnumerable();
         }
@@ -58,7 +54,7 @@ namespace SORANO.DAL.Repositories
         /// </summary>
         /// <param name="id">Unique identifier of an entity</param>
         /// <returns>Stock entity</returns>
-        public T Get(int id)
+        public virtual T Get(int id)
         {
             return _context.Set<T>().FirstOrDefault(x => x.ID == id);
         }
@@ -68,7 +64,7 @@ namespace SORANO.DAL.Repositories
         /// </summary>
         /// <param name="predicate">Predicate</param>
         /// <returns>Stock entity</returns>
-        public T Get(Expression<Func<T, bool>> predicate)
+        public virtual T Get(Expression<Func<T, bool>> predicate)
         {
             return _context.Set<T>().FirstOrDefault(predicate);
         }
@@ -79,14 +75,10 @@ namespace SORANO.DAL.Repositories
         /// <param name="predicate">Predicate</param>
         /// <param name="properties">Properties to include in selection</param>
         /// <returns>Stock Entity</returns>
-        public T Get(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] properties)
+        public virtual T Get(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] properties)
         {
             IQueryable<T> query = _context.Set<T>();
-
-            foreach (var property in properties)
-            {
-                query = query.Include(property);
-            }
+            query = properties.Aggregate(query, (current, property) => current.Include(property));
 
             return query.Where(predicate).FirstOrDefault();
         }
@@ -96,7 +88,7 @@ namespace SORANO.DAL.Repositories
         /// </summary>
         /// <param name="predicate">Predicate</param>
         /// <returns>Stock entities</returns>
-        public IEnumerable<T> FindBy(Expression<Func<T, bool>> predicate)
+        public virtual IEnumerable<T> FindBy(Expression<Func<T, bool>> predicate)
         {
             return _context.Set<T>().Where(predicate);
         }
@@ -105,7 +97,7 @@ namespace SORANO.DAL.Repositories
         /// Get count of stock entities of specified type
         /// </summary>
         /// <returns>Count of entities</returns>
-        public int Count()
+        public virtual int Count()
         {
             return _context.Set<T>().Count();
         }
@@ -114,9 +106,8 @@ namespace SORANO.DAL.Repositories
         /// Add stock entity
         /// </summary>
         /// <param name="entity">Stock entity to be added</param>
-        public void Add(T entity)
+        public virtual void Add(T entity)
         {
-            var entry = _context.Entry(entity);
             _context.Set<T>().Add(entity);
         }
 
@@ -124,7 +115,7 @@ namespace SORANO.DAL.Repositories
         /// Update stock entity
         /// </summary>
         /// <param name="entity">Stock entity to be updated</param>
-        public void Update(T entity)
+        public virtual void Update(T entity)
         {
             var entry = _context.Entry(entity);
             entry.State = EntityState.Modified;
@@ -134,7 +125,7 @@ namespace SORANO.DAL.Repositories
         /// Delete stock entity
         /// </summary>
         /// <param name="entity">Stock entity to be deleted</param>
-        public void Delete(T entity)
+        public virtual void Delete(T entity)
         {
             var entry = _context.Entry(entity);
             entry.State = EntityState.Deleted;
@@ -144,7 +135,7 @@ namespace SORANO.DAL.Repositories
         /// Delete stock entities
         /// </summary>
         /// <param name="predicate">Predicate for entities to be deleted</param>
-        public void Delete(Expression<Func<T, bool>> predicate)
+        public virtual void Delete(Expression<Func<T, bool>> predicate)
         {
             IEnumerable<T> entities = _context.Set<T>().Where(predicate);
 
@@ -157,7 +148,7 @@ namespace SORANO.DAL.Repositories
         /// <summary>
         /// Commit changes
         /// </summary>
-        public void Commit()
+        public virtual void Commit()
         {
             _context.SaveChanges();
         }

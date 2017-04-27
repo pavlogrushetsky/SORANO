@@ -65,7 +65,22 @@
     <Compile Include="Repositories\Abstract\IStorageRepository.cs" />
     <Compile Include="Repositories\Abstract\ISupplierRepository.cs" />
     <Compile Include="Repositories\Abstract\IUserRepository.cs" />
+    <Compile Include="Repositories\ArticleRepository.cs" />
+    <Compile Include="Repositories\ArticleTypeRepository.cs" />
+    <Compile Include="Repositories\AttachmentRepository.cs" />
+    <Compile Include="Repositories\AttachmentTypeRepository.cs" />
+    <Compile Include="Repositories\ClientRepository.cs" />
+    <Compile Include="Repositories\DeliveryItemRepository.cs" />
+    <Compile Include="Repositories\DeliveryRepository.cs" />
+    <Compile Include="Repositories\GoodsRepository.cs" />
+    <Compile Include="Repositories\LocationRepository.cs" />
+    <Compile Include="Repositories\LocationTypeRepository.cs" />
+    <Compile Include="Repositories\RecommendationRepository.cs" />
+    <Compile Include="Repositories\RoleRepository.cs" />
     <Compile Include="Repositories\StockEntityRepository.cs" />
+    <Compile Include="Repositories\StorageRepository.cs" />
+    <Compile Include="Repositories\SupplierRepository.cs" />
+    <Compile Include="Repositories\UserRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SORANO.CORE\SORANO.CORE.csproj">
