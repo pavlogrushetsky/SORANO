@@ -47,6 +47,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Context\Configurations\ArticleConfiguration.cs" />
+    <Compile Include="Context\Configurations\ArticleTypeConfiguration.cs" />
+    <Compile Include="Context\Configurations\AttachmentConfiguration.cs" />
+    <Compile Include="Context\Configurations\AttachmentTypeConfiguration.cs" />
+    <Compile Include="Context\Configurations\ClientConfiguration.cs" />
+    <Compile Include="Context\Configurations\DeliveryConfiguration.cs" />
+    <Compile Include="Context\Configurations\DeliveryItemConfiguration.cs" />
+    <Compile Include="Context\Configurations\GoodsConfiguration.cs" />
+    <Compile Include="Context\Configurations\LocationConfiguration.cs" />
+    <Compile Include="Context\Configurations\LocationTypeConfiguration.cs" />
+    <Compile Include="Context\Configurations\RecommendationConfiguration.cs" />
+    <Compile Include="Context\Configurations\StockEntityConfiguration.cs" />
+    <Compile Include="Context\Configurations\StorageConfiguration.cs" />
+    <Compile Include="Context\Configurations\SupplierConfiguration.cs" />
     <Compile Include="Context\StockContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Abstract\IArticleRepository.cs" />
@@ -92,8 +106,6 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Context\Configurations\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
