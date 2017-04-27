@@ -34,7 +34,13 @@ namespace SORANO.DAL.Context.Configurations
                 .HasForeignKey(r => r.ParentEntityID);
 
             HasMany(e => e.Attachments)
-                .WithMany(a => a.ParentEntities as ICollection<T>);
+                .WithMany(a => a.ParentEntities as ICollection<T>)
+                .Map(ea =>
+                {
+                    ea.MapLeftKey("AttachmentID");
+                    ea.MapRightKey("EntityID");
+                    ea.ToTable("EntitiesAttachments");
+                });
 
             ToTable("StockEntities");
         }

@@ -31,5 +31,10 @@ namespace SORANO.CORE.StockEntities
         /// Storage items of this location
         /// </summary>
         public virtual ICollection<Storage> Storages { get; set; } = new HashSet<Storage>();
+
+        /// <summary>
+        /// Sold goods of this location
+        /// </summary>
+        public virtual ICollection<Goods> SoldGoods { get; set; } = new HashSet<Goods>();
     }
 }

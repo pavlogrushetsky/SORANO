@@ -35,7 +35,13 @@ namespace SORANO.DAL.Context.Configurations
                 .HasForeignKey(g => g.SoldBy);
 
             HasMany(u => u.Roles)
-                .WithMany(r => r.Users);
+                .WithMany(r => r.Users)
+                .Map(ur =>
+                {
+                    ur.MapLeftKey("UserID");
+                    ur.MapRightKey("RoleID");
+                    ToTable("UsersRoles");
+                });
 
             ToTable("Users");
         }

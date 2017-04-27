@@ -12,7 +12,15 @@ namespace SORANO.DAL.Context.Configurations
         /// </summary>
         public RecommendationConfiguration()
         {
-                    
+            Property(r => r.Value)
+                .IsOptional()
+                .HasPrecision(byte.MaxValue, 2);
+
+            Property(r => r.Comment)
+                .IsRequired()
+                .HasMaxLength(500);
+
+            ToTable("Recommendations");
         }
     }
 }

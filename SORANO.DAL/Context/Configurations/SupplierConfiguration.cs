@@ -12,7 +12,19 @@ namespace SORANO.DAL.Context.Configurations
         /// </summary>
         public SupplierConfiguration()
         {
-            
+            Property(s => s.Name)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            Property(s => s.Description)
+                .IsOptional()
+                .HasMaxLength(500);
+
+            HasMany(s => s.Deliveries)
+                .WithRequired(d => d.Supplier)
+                .HasForeignKey(d => d.SupplierID);
+
+            ToTable("Suppliers");
         }
     }
 }

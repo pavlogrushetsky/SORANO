@@ -12,7 +12,23 @@ namespace SORANO.DAL.Context.Configurations
         /// </summary>
         public ArticleTypeConfiguration()
         {
-            
+            HasMany(a => a.Articles)
+                .WithRequired(a => a.Type)
+                .HasForeignKey(a => a.TypeID);
+
+            HasMany(a => a.ChildTypes)
+                .WithOptional(a => a.ParentType)
+                .HasForeignKey(a => a.ParentTypeId);
+
+            Property(a => a.Name)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            Property(a => a.Description)
+                .IsOptional()
+                .HasMaxLength(1000);
+
+            ToTable("ArticleTypes");
         }
     }
 }

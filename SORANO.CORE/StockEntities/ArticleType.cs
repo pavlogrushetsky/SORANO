@@ -28,6 +28,11 @@ namespace SORANO.CORE.StockEntities
         public virtual ArticleType ParentType { get; set; }
 
         /// <summary>
+        /// Child article types
+        /// </summary>
+        public virtual ICollection<ArticleType> ChildTypes { get; set; } = new HashSet<ArticleType>();
+
+        /// <summary>
         /// Articles of the type
         /// </summary>
         public virtual ICollection<Article> Articles { get; set; } = new HashSet<Article>();

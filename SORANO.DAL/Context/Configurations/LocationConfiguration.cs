@@ -12,7 +12,19 @@ namespace SORANO.DAL.Context.Configurations
         /// </summary>
         public LocationConfiguration()
         {
-            
+            HasMany(l => l.SoldGoods)
+                .WithOptional(g => g.SaleLocation)
+                .HasForeignKey(g => g.SaleLocationID);
+
+            Property(l => l.Name)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            Property(l => l.Comment)
+                .IsOptional()
+                .HasMaxLength(500);
+
+            ToTable("Locations");
         }
     }
 }

@@ -12,7 +12,11 @@ namespace SORANO.DAL.Context.Configurations
         /// </summary>
         public RoleConfiguration()
         {
-            
+            Property(r => r.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            ToTable("Roles");
         }
     }
 }

@@ -12,7 +12,31 @@ namespace SORANO.DAL.Context.Configurations
         /// </summary>
         public ArticleConfiguration()
         {
-            
+            HasMany(a => a.DeliveryItems)
+                .WithRequired(d => d.Article)
+                .HasForeignKey(d => d.ArticleID);
+
+            Property(a => a.Name)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            Property(a => a.Description)
+                .IsOptional()
+                .HasMaxLength(1000);
+
+            Property(a => a.Producer)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            Property(a => a.Code)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            Property(a => a.Barcode)
+                .IsOptional()
+                .HasMaxLength(50);
+
+            ToTable("Articles");
         }
     }
 }

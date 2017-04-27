@@ -12,7 +12,30 @@ namespace SORANO.DAL.Context.Configurations
         /// </summary>
         public DeliveryItemConfiguration()
         {
-            
+            HasMany(d => d.Goods)
+                .WithRequired(g => g.DeliveryItem)
+                .HasForeignKey(g => g.DeliveryItemID);
+
+            Property(d => d.Quantity)
+                .IsRequired();
+
+            Property(d => d.UnitPrice)
+                .IsRequired()
+                .HasPrecision(byte.MaxValue, 2);
+
+            Property(d => d.DiscountedPrice)
+                .IsRequired()
+                .HasPrecision(byte.MaxValue, 2);
+
+            Property(d => d.Discount)
+                .IsRequired()
+                .HasPrecision(byte.MaxValue, 2);
+
+            Property(d => d.GrossPrice)
+                .IsRequired()
+                .HasPrecision(byte.MaxValue, 2);
+
+            ToTable("DeliveryItems");
         }
     }
 }
