@@ -40,7 +40,7 @@ namespace SORANO.DAL.Context.Configurations
                 {
                     ur.MapLeftKey("UserID");
                     ur.MapRightKey("RoleID");
-                    ToTable("UsersRoles");
+                    ur.ToTable("UsersRoles");
                 });
 
             ToTable("Users");
