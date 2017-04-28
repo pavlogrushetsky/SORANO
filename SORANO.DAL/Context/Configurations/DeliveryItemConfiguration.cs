@@ -21,19 +21,19 @@ namespace SORANO.DAL.Context.Configurations
 
             Property(d => d.UnitPrice)
                 .IsRequired()
-                .HasPrecision(byte.MaxValue, 2);
+                .HasPrecision(38, 2);
 
             Property(d => d.DiscountedPrice)
                 .IsRequired()
-                .HasPrecision(byte.MaxValue, 2);
+                .HasPrecision(38, 2);
 
             Property(d => d.Discount)
                 .IsRequired()
-                .HasPrecision(byte.MaxValue, 2);
+                .HasPrecision(38, 2);
 
             Property(d => d.GrossPrice)
                 .IsRequired()
-                .HasPrecision(byte.MaxValue, 2);
+                .HasPrecision(38, 2);
 
             ToTable("DeliveryItems");
         }

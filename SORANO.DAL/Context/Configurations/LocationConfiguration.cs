@@ -24,6 +24,10 @@ namespace SORANO.DAL.Context.Configurations
                 .IsOptional()
                 .HasMaxLength(500);
 
+            HasMany(l => l.Storages)
+                .WithRequired(s => s.Location)
+                .HasForeignKey(s => s.LocationID);
+
             ToTable("Locations");
         }
     }

@@ -18,11 +18,15 @@ namespace SORANO.DAL.Context.Configurations
 
             Property(g => g.SalePrice)
                 .IsOptional()
-                .HasPrecision(byte.MaxValue, 2);
+                .HasPrecision(38, 2);
 
             Property(g => g.SaleDate)
                 .IsOptional()
                 .HasColumnType("datetime2");
+
+            HasMany(g => g.Storages)
+                .WithRequired(s => s.Goods)
+                .HasForeignKey(s => s.GoodsID);
 
             ToTable("Goods");
         }

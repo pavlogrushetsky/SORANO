@@ -2,6 +2,7 @@
 using SORANO.CORE;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Context.Configurations;
+using SORANO.DAL.Migrations;
 
 namespace SORANO.DAL.Context
 {
@@ -16,6 +17,15 @@ namespace SORANO.DAL.Context
         /// <param name="connectionString">Connection string</param>
         public StockContext(string connectionString) : base(connectionString)
         {
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<StockContext, Configuration>(connectionString));
+        }
+
+        /// <summary>
+        /// Data context with default connection string
+        /// </summary>
+        public StockContext() : base("SORANO")
+        {
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<StockContext, Configuration>("SORANO"));
         }
 
         /// <summary>
@@ -91,6 +101,7 @@ namespace SORANO.DAL.Context
         protected override void OnModelCreating(DbModelBuilder builder)
         {
             // Adding configuration for stock entities
+            builder.Configurations.Add(new StockEntityConfiguration());
             builder.Configurations.Add(new UserConfiguration());
             builder.Configurations.Add(new RoleConfiguration());
             builder.Configurations.Add(new ArticleConfiguration());

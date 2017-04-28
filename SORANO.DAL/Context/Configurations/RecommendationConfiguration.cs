@@ -14,7 +14,7 @@ namespace SORANO.DAL.Context.Configurations
         {
             Property(r => r.Value)
                 .IsOptional()
-                .HasPrecision(byte.MaxValue, 2);
+                .HasPrecision(38, 2);
 
             Property(r => r.Comment)
                 .IsRequired()

@@ -12,7 +12,21 @@ namespace SORANO.DAL.Context.Configurations
         /// </summary>
         public StorageConfiguration()
         {
-            
+            Property(s => s.ToDate)
+                .IsOptional()
+                .HasColumnType("datetime2");
+
+            HasKey(s => s.GoodsID);
+
+            HasKey(s => s.LocationID);
+
+            HasKey(s => s.FromDate);
+
+            Property(s => s.FromDate)
+                .IsRequired()
+                .HasColumnType("datetime2");
+
+            ToTable("Storages");
         }
     }
 }

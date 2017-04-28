@@ -5,13 +5,13 @@ using SORANO.CORE;
 namespace SORANO.DAL.Context.Configurations
 {
     /// <summary>
-    /// Stock entity configuration
+    /// Stock entity abstract configuration
     /// </summary>
     /// <typeparam name="T">Stock entity type</typeparam>
     internal abstract class StockEntityConfiguration<T> : EntityTypeConfiguration<T> where T : StockEntity
     {
         /// <summary>
-        /// Stock entity configuration
+        /// Stock entity abstract configuration
         /// </summary>
         protected StockEntityConfiguration()
         {
@@ -28,13 +28,25 @@ namespace SORANO.DAL.Context.Configurations
             Property(e => e.DeletedDate)
                 .IsOptional()
                 .HasColumnType("datetime2");
+        }
+    }
 
+    /// <summary>
+    /// Stock entity configuration
+    /// </summary>
+    internal class StockEntityConfiguration : StockEntityConfiguration<StockEntity>
+    {
+        /// <summary>
+        /// Stock entity configuration
+        /// </summary>
+        public StockEntityConfiguration()
+        {
             HasMany(e => e.Recommendations)
-                .WithRequired(r => r.ParentEntity as T)
+                .WithRequired(r => r.ParentEntity)
                 .HasForeignKey(r => r.ParentEntityID);
 
             HasMany(e => e.Attachments)
-                .WithMany(a => a.ParentEntities as ICollection<T>)
+                .WithMany(a => a.ParentEntities)
                 .Map(ea =>
                 {
                     ea.MapLeftKey("AttachmentID");

@@ -29,23 +29,23 @@ namespace SORANO.DAL.Context.Configurations
 
             Property(d => d.DollarRate)
                 .IsOptional()
-                .HasPrecision(byte.MaxValue, 2);
+                .HasPrecision(38, 2);
 
             Property(d => d.EuroRate)
                 .IsOptional()
-                .HasPrecision(byte.MaxValue, 2);
+                .HasPrecision(38, 2);
 
             Property(d => d.TotalDiscount)
                 .IsRequired()
-                .HasPrecision(byte.MaxValue, 2);
+                .HasPrecision(38, 2);
 
             Property(d => d.TotalDiscountedPrice)
                 .IsRequired()
-                .HasPrecision(byte.MaxValue, 2);
+                .HasPrecision(38, 2);
 
             Property(d => d.TotalGrossPrice)
                 .IsRequired()
-                .HasPrecision(byte.MaxValue, 2);
+                .HasPrecision(38, 2);
 
             HasMany(d => d.Items)
                 .WithRequired(i => i.Delivery)
