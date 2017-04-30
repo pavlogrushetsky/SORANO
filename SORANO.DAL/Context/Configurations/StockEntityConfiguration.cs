@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
+﻿using System.Data.Entity.ModelConfiguration;
 using SORANO.CORE;
 
 namespace SORANO.DAL.Context.Configurations

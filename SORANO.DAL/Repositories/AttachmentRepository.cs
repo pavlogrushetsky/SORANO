@@ -1,12 +1,13 @@
 ﻿using SORANO.CORE.StockEntities;
 using SORANO.DAL.Context;
+using SORANO.DAL.Repositories.Abstract;
 
 namespace SORANO.DAL.Repositories
 {
     /// <summary>
     /// Generic repository for attachments
     /// </summary>
-    public class AttachmentRepository : StockEntityRepository<Attachment>
+    public class AttachmentRepository : StockEntityRepository<Attachment>, IAttachmentRepository
     {
         /// <summary>
         /// Generic repository for attachments

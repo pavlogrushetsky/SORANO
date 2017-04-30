@@ -40,7 +40,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\CryptoHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Abstract\IAccountService.cs" />
+    <Compile Include="Services\AccountService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SORANO.CORE\SORANO.CORE.csproj">
+      <Project>{50ff04fe-1e18-45b5-a386-c17aaf626ac4}</Project>
+      <Name>SORANO.CORE</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SORANO.DAL\SORANO.DAL.csproj">
+      <Project>{092919de-e34a-44ff-bfcc-e9b260351b53}</Project>
+      <Name>SORANO.DAL</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,12 +1,13 @@
 ﻿using SORANO.CORE.StockEntities;
 using SORANO.DAL.Context;
+using SORANO.DAL.Repositories.Abstract;
 
 namespace SORANO.DAL.Repositories
 {
     /// <summary>
     /// Generic repository for recommendations
     /// </summary>
-    public class RecommendationRepository : StockEntityRepository<Recommendation>
+    public class RecommendationRepository : StockEntityRepository<Recommendation>, IRecommendationRepository
     {
         /// <summary>
         /// Generic repository for recommendations

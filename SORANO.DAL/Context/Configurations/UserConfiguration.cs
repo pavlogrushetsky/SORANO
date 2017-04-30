@@ -19,11 +19,11 @@ namespace SORANO.DAL.Context.Configurations
             Property(u => u.IsBlocked).IsRequired();
 
             HasMany(u => u.CreatedEntities)
-                .WithRequired(e => e.CreatedByUser)
+                .WithOptional(e => e.CreatedByUser)
                 .HasForeignKey(e => e.CreatedBy);
 
             HasMany(u => u.ModifiedEntities)
-                .WithRequired(e => e.ModifiedByUser)
+                .WithOptional(e => e.ModifiedByUser)
                 .HasForeignKey(e => e.ModifiedBy);
 
             HasMany(u => u.DeletedEntities)

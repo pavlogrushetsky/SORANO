@@ -23,7 +23,7 @@ namespace SORANO.CORE
         /// <summary>
         /// Unique identifier of a user created the entity
         /// </summary>
-        public int CreatedBy { get; set; }
+        public int? CreatedBy { get; set; }
 
         /// <summary>
         /// Date and time of the entity last modification
@@ -33,7 +33,7 @@ namespace SORANO.CORE
         /// <summary>
         /// Unique identifier of a user modified the entity
         /// </summary>
-        public int ModifiedBy { get; set; }
+        public int? ModifiedBy { get; set; }
 
         /// <summary>
         /// Date and time of the entity deletion

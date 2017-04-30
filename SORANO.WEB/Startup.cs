@@ -1,9 +1,15 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Data.SqlClient;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using SORANO.BLL.Services;
+using SORANO.BLL.Services.Abstract;
 using SORANO.DAL.Context;
+using SORANO.DAL.Repositories;
+using SORANO.DAL.Repositories.Abstract;
 
 namespace SORANO.WEB
 {
@@ -25,6 +31,9 @@ namespace SORANO.WEB
         {
             services.AddMvc();
             services.AddScoped(_ => new StockContext(Configuration.GetConnectionString("SORANO")));
+            services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IAccountService, AccountService>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -35,6 +44,14 @@ namespace SORANO.WEB
             }
 
             app.UseStaticFiles();
+
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationScheme = "Cookies",
+                LoginPath = new PathString("/Account/Login"),
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true
+            });
 
             app.UseMvc(routes => 
             {

@@ -1,12 +1,13 @@
 ﻿using SORANO.CORE.StockEntities;
 using SORANO.DAL.Context;
+using SORANO.DAL.Repositories.Abstract;
 
 namespace SORANO.DAL.Repositories
 {
     /// <summary>
     /// Generic repository for deliveries
     /// </summary>
-    public class DeliveryRepository : StockEntityRepository<Delivery>
+    public class DeliveryRepository : StockEntityRepository<Delivery>, IDeliveryRepository
     {
         /// <summary>
         /// Generic repository for deliveries

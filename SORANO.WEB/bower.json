@@ -6,6 +6,7 @@
     "bootstrap-theme-bootswatch-flatly": "1.0.2",
     "jquery": "2.2.0",
     "jquery-validation": "1.14.0",
-    "jquery-validation-unobtrusive": "3.2.6"
+    "jquery-validation-unobtrusive": "3.2.6",
+    "font-awesome": "4.7.0" 
   }
 }
