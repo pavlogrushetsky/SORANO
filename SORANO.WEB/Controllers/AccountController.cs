@@ -30,9 +30,9 @@ namespace SORANO.WEB.Controllers
             {
                 return View(model);
             }
-            var user = await _accountService.GetValidUser(model.Email, model.Password);
+            var isValid = await _accountService.IsUserValid(model.Email, model.Password);
 
-            if (user != null)
+            if (isValid)
             {
                 await Authenticate(model.Email);
 
