@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.AccountEntities;
@@ -36,7 +37,7 @@ namespace SORANO.WEB.Controllers
 
             if (user != null)
             {
-                await Authenticate(user);
+                await Authenticate(user, model.RememberMe);
 
                 return RedirectToAction("Index", "Home");
             }
@@ -46,7 +47,7 @@ namespace SORANO.WEB.Controllers
             return View(model);
         }
 
-        private async Task Authenticate(User user)
+        private async Task Authenticate(User user, bool rememberMe)
         {
             // Add clame for user name
             var claims = new List<Claim>
@@ -59,7 +60,7 @@ namespace SORANO.WEB.Controllers
 
             var id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
 
-            await HttpContext.Authentication.SignInAsync("Cookies", new ClaimsPrincipal(id));
+            await HttpContext.Authentication.SignInAsync("Cookies", new ClaimsPrincipal(id), new AuthenticationProperties { IsPersistent = rememberMe });
         }
 
         public async Task<IActionResult> Logout()
