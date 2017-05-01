@@ -7,7 +7,7 @@ namespace SORANO.DAL.Repositories
     /// <summary>
     /// Generic repository for attachments
     /// </summary>
-    public class AttachmentRepository : StockEntityRepository<Attachment>, IAttachmentRepository
+    public class AttachmentRepository : EntityRepository<Attachment>, IAttachmentRepository
     {
         /// <summary>
         /// Generic repository for attachments

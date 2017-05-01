@@ -1,5 +1,6 @@
 ﻿using System.Data.Entity.ModelConfiguration;
 using SORANO.CORE;
+using SORANO.CORE.StockEntities;
 
 namespace SORANO.DAL.Context.Configurations
 {
@@ -51,7 +52,7 @@ namespace SORANO.DAL.Context.Configurations
                     ea.MapLeftKey("AttachmentID");
                     ea.MapRightKey("EntityID");
                     ea.ToTable("EntitiesAttachments");
-                });
+                });           
 
             ToTable("StockEntities");
         }

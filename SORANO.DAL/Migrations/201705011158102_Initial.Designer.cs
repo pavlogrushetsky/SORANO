@@ -13,7 +13,7 @@ namespace SORANO.DAL.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201704301815052_Initial"; }
+            get { return "201705011158102_Initial"; }
         }
         
         string IMigrationMetadata.Source

@@ -1,11 +1,11 @@
-﻿using SORANO.CORE.IdentityEntities;
+﻿using SORANO.CORE.AccountEntities;
 
 namespace SORANO.DAL.Repositories.Abstract
 {
     /// <summary>
     /// Generic abstract repository for users
     /// </summary>
-    public interface IUserRepository : IStockEntityRepository<User>
+    public interface IUserRepository : IEntityRepository<User>
     {
     }
 }

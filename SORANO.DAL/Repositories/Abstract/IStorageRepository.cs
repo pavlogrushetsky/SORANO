@@ -5,7 +5,7 @@ namespace SORANO.DAL.Repositories.Abstract
     /// <summary>
     /// Generic abstract repository for storages
     /// </summary>
-    public interface IStorageRepository : IStockEntityRepository<Storage>
+    public interface IStorageRepository : IEntityRepository<Storage>
     {
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Data.Common;
 using System.Data.Entity;
 using SORANO.CORE;
-using SORANO.CORE.IdentityEntities;
+using SORANO.CORE.AccountEntities;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Context.Configurations;
 using SORANO.DAL.Migrations;

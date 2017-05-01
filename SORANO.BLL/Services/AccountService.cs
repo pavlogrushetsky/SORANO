@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using SORANO.BLL.Helpers;
 using SORANO.BLL.Services.Abstract;
-using SORANO.CORE.IdentityEntities;
+using SORANO.CORE.AccountEntities;
 using SORANO.DAL.Repositories.Abstract;
 
 namespace SORANO.BLL.Services

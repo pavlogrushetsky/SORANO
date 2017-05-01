@@ -7,7 +7,7 @@ namespace SORANO.DAL.Repositories
     /// <summary>
     /// Generic repository for goods
     /// </summary>
-    public class GoodsRepository : StockEntityRepository<Goods>, IGoodsRepository
+    public class GoodsRepository : EntityRepository<Goods>, IGoodsRepository
     {
         /// <summary>
         /// Generic repository for goods

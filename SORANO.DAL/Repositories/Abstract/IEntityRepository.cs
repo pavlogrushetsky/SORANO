@@ -10,7 +10,7 @@ namespace SORANO.DAL.Repositories.Abstract
     /// Generic abstract repository for the stock entities
     /// </summary>
     /// <typeparam name="T">Stock entity type</typeparam>
-    public interface IStockEntityRepository<T> where T : StockEntity, new()
+    public interface IEntityRepository<T> where T : Entity, new()
     {
         /// <summary>
         /// Get all stock entities

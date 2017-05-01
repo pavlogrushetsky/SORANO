@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using SORANO.CORE.IdentityEntities;
+using SORANO.CORE.AccountEntities;
 
 namespace SORANO.BLL.Services.Abstract
 {

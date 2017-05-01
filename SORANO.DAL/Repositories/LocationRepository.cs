@@ -7,7 +7,7 @@ namespace SORANO.DAL.Repositories
     /// <summary>
     /// Generic repository for locations
     /// </summary>
-    public class LocationRepository : StockEntityRepository<Location>, ILocationRepository
+    public class LocationRepository : EntityRepository<Location>, ILocationRepository
     {
         /// <summary>
         /// Generic repository for locations

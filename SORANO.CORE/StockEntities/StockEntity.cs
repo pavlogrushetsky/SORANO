@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using SORANO.CORE.IdentityEntities;
-using SORANO.CORE.StockEntities;
+using SORANO.CORE.AccountEntities;
 
-namespace SORANO.CORE
+namespace SORANO.CORE.StockEntities
 {
     /// <summary>
-    /// Base abstract class for all the entities of the domain model
+    /// Base abstract class for stock entities
     /// </summary>
-    public abstract class StockEntity
+    public abstract class StockEntity : Entity
     {
-        /// <summary>
-        /// Unique identifier of the entity
-        /// </summary>
-        public int ID { get; set; }
-
         /// <summary>
         /// Date and time of the entity creation
         /// </summary>
@@ -23,7 +17,7 @@ namespace SORANO.CORE
         /// <summary>
         /// Unique identifier of a user created the entity
         /// </summary>
-        public int? CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
 
         /// <summary>
         /// Date and time of the entity last modification
@@ -33,7 +27,7 @@ namespace SORANO.CORE
         /// <summary>
         /// Unique identifier of a user modified the entity
         /// </summary>
-        public int? ModifiedBy { get; set; }
+        public int ModifiedBy { get; set; }
 
         /// <summary>
         /// Date and time of the entity deletion

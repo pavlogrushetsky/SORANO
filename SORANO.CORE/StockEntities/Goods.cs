@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using SORANO.CORE.IdentityEntities;
+using SORANO.CORE.AccountEntities;
 
 namespace SORANO.CORE.StockEntities
 {

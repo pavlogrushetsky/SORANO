@@ -1,4 +1,4 @@
-﻿using SORANO.CORE.IdentityEntities;
+﻿using SORANO.CORE.AccountEntities;
 using SORANO.DAL.Context;
 using SORANO.DAL.Repositories.Abstract;
 
@@ -7,7 +7,7 @@ namespace SORANO.DAL.Repositories
     /// <summary>
     /// Generic repository for users
     /// </summary>
-    public class UserRepository : StockEntityRepository<User>, IUserRepository
+    public class UserRepository : EntityRepository<User>, IUserRepository
     {
         /// <summary>
         /// Generic repository for users

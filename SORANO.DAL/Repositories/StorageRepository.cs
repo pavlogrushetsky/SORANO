@@ -7,7 +7,7 @@ namespace SORANO.DAL.Repositories
     /// <summary>
     /// Generic repository for storages
     /// </summary>
-    public class StorageRepository : StockEntityRepository<Storage>, IStorageRepository
+    public class StorageRepository : EntityRepository<Storage>, IStorageRepository
     {
         /// <summary>
         /// Generic repository for storages

@@ -5,7 +5,7 @@ namespace SORANO.DAL.Repositories.Abstract
     /// <summary>
     /// Generic abstract repository for recommendations
     /// </summary>
-    public interface IRecommendationRepository : IStockEntityRepository<Recommendation>
+    public interface IRecommendationRepository : IEntityRepository<Recommendation>
     {
     }
 }

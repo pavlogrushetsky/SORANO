@@ -5,7 +5,7 @@ namespace SORANO.DAL.Repositories.Abstract
     /// <summary>
     /// Generic abstract repository for articles
     /// </summary>
-    public interface IArticleRepository : IStockEntityRepository<Article>
+    public interface IArticleRepository : IEntityRepository<Article>
     {
     }
 }

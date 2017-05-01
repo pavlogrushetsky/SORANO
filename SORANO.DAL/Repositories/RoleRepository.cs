@@ -1,4 +1,4 @@
-﻿using SORANO.CORE.IdentityEntities;
+﻿using SORANO.CORE.AccountEntities;
 using SORANO.DAL.Context;
 using SORANO.DAL.Repositories.Abstract;
 
@@ -7,7 +7,7 @@ namespace SORANO.DAL.Repositories
     /// <summary>
     /// Generic repository for roles
     /// </summary>
-    public class RoleRepository : StockEntityRepository<Role>, IRoleRepository
+    public class RoleRepository : EntityRepository<Role>, IRoleRepository
     {
         /// <summary>
         /// Generic repository for roles

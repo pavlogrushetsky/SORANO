@@ -5,7 +5,7 @@ namespace SORANO.DAL.Repositories.Abstract
     /// <summary>
     /// Generic abstract repository for locations
     /// </summary>
-    public interface ILocationRepository : IStockEntityRepository<Location>
+    public interface ILocationRepository : IEntityRepository<Location>
     {
     }
 }

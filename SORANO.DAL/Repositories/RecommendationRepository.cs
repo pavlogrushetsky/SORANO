@@ -7,7 +7,7 @@ namespace SORANO.DAL.Repositories
     /// <summary>
     /// Generic repository for recommendations
     /// </summary>
-    public class RecommendationRepository : StockEntityRepository<Recommendation>, IRecommendationRepository
+    public class RecommendationRepository : EntityRepository<Recommendation>, IRecommendationRepository
     {
         /// <summary>
         /// Generic repository for recommendations

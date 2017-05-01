@@ -5,7 +5,7 @@ namespace SORANO.DAL.Repositories.Abstract
     /// <summary>
     /// Generic abstract repository for delivery items
     /// </summary>
-    public interface IDeliveryItemRepository : IStockEntityRepository<DeliveryItem>
+    public interface IDeliveryItemRepository : IEntityRepository<DeliveryItem>
     {
     }
 }

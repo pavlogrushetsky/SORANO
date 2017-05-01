@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using SORANO.CORE.StockEntities;
 
-namespace SORANO.CORE.IdentityEntities
+namespace SORANO.CORE.AccountEntities
 {
     /// <summary>
     /// User
     /// </summary>
-    public class User : StockEntity
+    public class User : Entity
     {
         /// <summary>
         /// Name of the user

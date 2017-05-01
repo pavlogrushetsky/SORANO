@@ -14,7 +14,7 @@ namespace SORANO.DAL.Repositories
     /// Generic repository for the stock entities
     /// </summary>
     /// <typeparam name="T">Stock entity type</typeparam>
-    public class StockEntityRepository<T> : IStockEntityRepository<T> where T : StockEntity, new()
+    public class EntityRepository<T> : IEntityRepository<T> where T : Entity, new()
     {
         // Data context
         private readonly StockContext _context;
@@ -23,7 +23,7 @@ namespace SORANO.DAL.Repositories
         /// Generic repository for the stock entities
         /// </summary>
         /// <param name="context">Data context</param>
-        public StockEntityRepository(StockContext context)
+        public EntityRepository(StockContext context)
         {
             _context = context;
         }

@@ -1,6 +1,5 @@
-using System;
 using System.Linq;
-using SORANO.CORE.IdentityEntities;
+using SORANO.CORE.AccountEntities;
 
 namespace SORANO.DAL.Migrations
 {
@@ -23,9 +22,7 @@ namespace SORANO.DAL.Migrations
                     Name = "Павел Грушецкий",
                     Email = "pavlo.grushetsky@gmail.com",
                     Password = "sQnzu7wkTrgkQZF+0G1hi5AI3Qmzvv0bXgc5THBqi7mAsdd4Xll27ASbRt9fEyavWi6m0QP9B8lThf+rDKy8hg==",
-                    IsBlocked = false,
-                    CreatedDate = DateTime.Now,
-                    ModifiedDate = DateTime.Now
+                    IsBlocked = false
                 });
             }
 

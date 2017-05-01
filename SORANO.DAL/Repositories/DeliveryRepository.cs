@@ -7,7 +7,7 @@ namespace SORANO.DAL.Repositories
     /// <summary>
     /// Generic repository for deliveries
     /// </summary>
-    public class DeliveryRepository : StockEntityRepository<Delivery>, IDeliveryRepository
+    public class DeliveryRepository : EntityRepository<Delivery>, IDeliveryRepository
     {
         /// <summary>
         /// Generic repository for deliveries

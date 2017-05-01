@@ -1,11 +1,12 @@
-﻿using SORANO.CORE.IdentityEntities;
+﻿using System.Data.Entity.ModelConfiguration;
+using SORANO.CORE.AccountEntities;
 
 namespace SORANO.DAL.Context.Configurations
 {
     /// <summary>
     /// Role configuration
     /// </summary>
-    internal class RoleConfiguration : StockEntityConfiguration<Role>
+    internal class RoleConfiguration : EntityTypeConfiguration<Role>
     {
         /// <summary>
         /// Role configuration
@@ -13,6 +14,10 @@ namespace SORANO.DAL.Context.Configurations
         public RoleConfiguration()
         {
             Property(r => r.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            Property(r => r.Description)
                 .IsRequired()
                 .HasMaxLength(100);
 

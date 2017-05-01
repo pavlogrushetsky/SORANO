@@ -7,7 +7,7 @@ namespace SORANO.DAL.Repositories
     /// <summary>
     /// Generic repository for suppliers
     /// </summary>
-    public class SupplierRepository : StockEntityRepository<Supplier>, ISupplierRepository
+    public class SupplierRepository : EntityRepository<Supplier>, ISupplierRepository
     {
         /// <summary>
         /// Generic repository for suppliers

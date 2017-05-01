@@ -64,9 +64,9 @@
     <Compile Include="Context\Configurations\SupplierConfiguration.cs" />
     <Compile Include="Context\Configurations\UserConfiguration.cs" />
     <Compile Include="Context\StockContext.cs" />
-    <Compile Include="Migrations\201704301815052_Initial.cs" />
-    <Compile Include="Migrations\201704301815052_Initial.Designer.cs">
-      <DependentUpon>201704301815052_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\201705011158102_Initial.cs" />
+    <Compile Include="Migrations\201705011158102_Initial.Designer.cs">
+      <DependentUpon>201705011158102_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -82,7 +82,7 @@
     <Compile Include="Repositories\Abstract\ILocationTypeRepository.cs" />
     <Compile Include="Repositories\Abstract\IRecommendationRepository.cs" />
     <Compile Include="Repositories\Abstract\IRoleRepository.cs" />
-    <Compile Include="Repositories\Abstract\IStockEntityRepository.cs" />
+    <Compile Include="Repositories\Abstract\IEntityRepository.cs" />
     <Compile Include="Repositories\Abstract\IStorageRepository.cs" />
     <Compile Include="Repositories\Abstract\ISupplierRepository.cs" />
     <Compile Include="Repositories\Abstract\IUserRepository.cs" />
@@ -98,7 +98,7 @@
     <Compile Include="Repositories\LocationTypeRepository.cs" />
     <Compile Include="Repositories\RecommendationRepository.cs" />
     <Compile Include="Repositories\RoleRepository.cs" />
-    <Compile Include="Repositories\StockEntityRepository.cs" />
+    <Compile Include="Repositories\EntityRepository.cs" />
     <Compile Include="Repositories\StorageRepository.cs" />
     <Compile Include="Repositories\SupplierRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
@@ -114,8 +114,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201704301815052_Initial.resx">
-      <DependentUpon>201704301815052_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201705011158102_Initial.resx">
+      <DependentUpon>201705011158102_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

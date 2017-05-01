@@ -7,7 +7,7 @@ namespace SORANO.DAL.Repositories
     /// <summary>
     /// Generic repository for articles
     /// </summary>
-    public class ArticleRepository : StockEntityRepository<Article>, IArticleRepository
+    public class ArticleRepository : EntityRepository<Article>, IArticleRepository
     {
         /// <summary>
         /// Generic repository for articles

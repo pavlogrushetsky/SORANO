@@ -7,7 +7,7 @@ namespace SORANO.DAL.Repositories
     /// <summary>
     /// Generic repository for clients
     /// </summary>
-    public class ClientRepository : StockEntityRepository<Client>, IClientRepository
+    public class ClientRepository : EntityRepository<Client>, IClientRepository
     {
         /// <summary>
         /// Generic repository for clients

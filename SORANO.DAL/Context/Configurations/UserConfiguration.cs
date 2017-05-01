@@ -1,11 +1,12 @@
-﻿using SORANO.CORE.IdentityEntities;
+﻿using System.Data.Entity.ModelConfiguration;
+using SORANO.CORE.AccountEntities;
 
 namespace SORANO.DAL.Context.Configurations
 {
     /// <summary>
     /// User configuration
     /// </summary>
-    internal class UserConfiguration : StockEntityConfiguration<User>
+    internal class UserConfiguration : EntityTypeConfiguration<User>
     {
         /// <summary>
         /// User configuration
@@ -19,12 +20,14 @@ namespace SORANO.DAL.Context.Configurations
             Property(u => u.IsBlocked).IsRequired();
 
             HasMany(u => u.CreatedEntities)
-                .WithOptional(e => e.CreatedByUser)
-                .HasForeignKey(e => e.CreatedBy);
+                .WithRequired(e => e.CreatedByUser)
+                .HasForeignKey(e => e.CreatedBy)
+                .WillCascadeOnDelete(false);
 
             HasMany(u => u.ModifiedEntities)
-                .WithOptional(e => e.ModifiedByUser)
-                .HasForeignKey(e => e.ModifiedBy);
+                .WithRequired(e => e.ModifiedByUser)
+                .HasForeignKey(e => e.ModifiedBy)
+                .WillCascadeOnDelete(false);
 
             HasMany(u => u.DeletedEntities)
                 .WithOptional(e => e.DeletedByUser)
