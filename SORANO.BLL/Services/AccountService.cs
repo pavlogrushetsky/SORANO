@@ -20,13 +20,11 @@ namespace SORANO.BLL.Services
             return await _userRepository.GetAsync(u => u.Email.Equals(email));
         }
 
-        public async Task<bool> IsUserValid(string email, string password)
+        public async Task<User> GetUser(string email, string password)
         {
             var hash = CryptoHelper.Hash(password);
 
-            var user = await _userRepository.GetAsync(u => u.Email.Equals(email) && u.Password.Equals(hash));
-
-            return user != null;
+            return await _userRepository.GetAsync(u => u.Email.Equals(email) && u.Password.Equals(hash), u => u.Roles);
         }
     }
 }

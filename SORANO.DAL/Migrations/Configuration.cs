@@ -15,14 +15,38 @@ namespace SORANO.DAL.Migrations
 
         protected override void Seed(Context.StockContext context)
         {
-            if (!context.Users.Any())
+            if (!context.Users.Any() && !context.Roles.Any())
             {
-                context.Users.Add(new User
+                var developer = context.Users.Add(new User
                 {
                     Name = "Павел Грушецкий",
                     Email = "pavlo.grushetsky@gmail.com",
                     Password = "sQnzu7wkTrgkQZF+0G1hi5AI3Qmzvv0bXgc5THBqi7mAsdd4Xll27ASbRt9fEyavWi6m0QP9B8lThf+rDKy8hg==",
                     IsBlocked = false
+                });
+
+                developer.Roles.Add(new Role
+                {
+                    Name = "developer",
+                    Description = "Разработчик"
+                });
+
+                developer.Roles.Add(new Role
+                {
+                    Name = "administrator",
+                    Description = "Администратор"
+                });
+
+                developer.Roles.Add(new Role
+                {
+                    Name = "manager",
+                    Description = "Менеджер"
+                });
+
+                developer.Roles.Add(new Role
+                {
+                    Name = "user",
+                    Description = "Пользователь"
                 });
             }
 

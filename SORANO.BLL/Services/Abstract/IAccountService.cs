@@ -5,7 +5,7 @@ namespace SORANO.BLL.Services.Abstract
 {
     public interface IAccountService
     {
-        Task<bool> IsUserValid(string email, string password);
+        Task<User> GetUser(string email, string password);
 
         Task<User> FindUserByEmail(string email);
     }

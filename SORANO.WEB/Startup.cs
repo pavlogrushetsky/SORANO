@@ -1,5 +1,4 @@
-﻿using System.Data.SqlClient;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,6 +48,7 @@ namespace SORANO.WEB
             {
                 AuthenticationScheme = "Cookies",
                 LoginPath = new PathString("/Account/Login"),
+                AccessDeniedPath = new PathString("/Account/Login"),
                 AutomaticAuthenticate = true,
                 AutomaticChallenge = true
             });

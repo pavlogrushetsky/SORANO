@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
+using SORANO.CORE.AccountEntities;
 using SORANO.WEB.Models;
 
 namespace SORANO.WEB.Controllers
@@ -30,11 +32,11 @@ namespace SORANO.WEB.Controllers
             {
                 return View(model);
             }
-            var isValid = await _accountService.IsUserValid(model.Email, model.Password);
+            var user = await _accountService.GetUser(model.Email, model.Password);
 
-            if (isValid)
+            if (user != null)
             {
-                await Authenticate(model.Email);
+                await Authenticate(user);
 
                 return RedirectToAction("Index", "Home");
             }
@@ -44,12 +46,16 @@ namespace SORANO.WEB.Controllers
             return View(model);
         }
 
-        private async Task Authenticate(string name)
+        private async Task Authenticate(User user)
         {
+            // Add clame for user name
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, name)
+                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email)
             };
+
+            // For each user role add new claim
+            claims.AddRange(user.Roles.Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role.Name)));
 
             var id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
 
