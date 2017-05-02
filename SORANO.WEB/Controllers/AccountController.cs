@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
@@ -10,6 +11,7 @@ using SORANO.WEB.Models;
 
 namespace SORANO.WEB.Controllers
 {
+    [Authorize]
     public class AccountController : Controller
     {
         private readonly IAccountService _accountService;
@@ -20,12 +22,14 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Login()
         {
             return View();
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginModel model)
         {

@@ -29,7 +29,7 @@ namespace SORANO.BLL.Services
         {
             var hash = CryptoHelper.Hash(password);
 
-            return await _userRepository.GetAsync(u => u.Email.Equals(email) && u.Password.Equals(hash), u => u.Roles);
+            return await _userRepository.GetAsync(u => !u.IsBlocked && u.Email.Equals(email) && u.Password.Equals(hash), u => u.Roles);
         }
 
         public async Task ChangePasswordAsync(string email, string newPassword)

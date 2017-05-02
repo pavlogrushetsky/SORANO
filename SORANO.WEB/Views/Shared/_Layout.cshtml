@@ -43,7 +43,7 @@
                     @if (User.IsInRole("administrator") || User.IsInRole("developer"))
                     {
                         <li>
-                            <a href="#"><i class="fa fa-users" aria-hidden="true"></i>&nbsp;Управление пользователями</a>
+                            <a asp-controller="User" asp-action="List"><i class="fa fa-users" aria-hidden="true"></i>&nbsp;Управление пользователями</a>
                         </li>
                     }
                     @await Component.InvokeAsync("Account")
