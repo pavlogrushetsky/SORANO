@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width"/>
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/lib/bootstrap-theme-bootswatch-flatly/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+</head>
+<body>
+    <div class="container">
+        @RenderBody()
+    </div>
+    <script asp-src-include="lib/jquery/dist/*.min.js"></script>
+    <script asp-src-include="lib/bootstrap/dist/js/*.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("input.input-validation-error").closest(".form-group").addClass("has-error");
+        });
+    </script>
+    @RenderSection("Scripts", false)
+</body>
+</html>

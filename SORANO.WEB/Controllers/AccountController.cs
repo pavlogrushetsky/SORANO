@@ -33,7 +33,7 @@ namespace SORANO.WEB.Controllers
             {
                 return View(model);
             }
-            var user = await _accountService.GetUser(model.Email, model.Password);
+            var user = await _accountService.GetUserAsync(model.Email, model.Password);
 
             if (user != null)
             {
@@ -42,7 +42,8 @@ namespace SORANO.WEB.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            ModelState.AddModelError("", "Некорректные логин и/или пароль");
+            ModelState.AddModelError(nameof(model.Email), "Некорректные логин и/или пароль");
+            ModelState.AddModelError(nameof(model.Password), string.Empty);
 
             return View(model);
         }
@@ -63,11 +64,50 @@ namespace SORANO.WEB.Controllers
             await HttpContext.Authentication.SignInAsync("Cookies", new ClaimsPrincipal(id), new AuthenticationProperties { IsPersistent = rememberMe });
         }
 
+        [HttpGet]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.Authentication.SignOutAsync("Cookies");
 
             return RedirectToAction("Login", "Account");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ChangePassword(int id)
+        {
+            var user = await _accountService.FindUserByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(new ChangePasswordModel
+            {
+                Name = user.Name,
+                Email = user.Email
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _accountService.GetUserAsync(model.Email, model.OldPassword);
+
+            if (user != null)
+            {
+                await _accountService.ChangePasswordAsync(model.Email, model.NewPassword);
+
+                return RedirectToAction("Login");
+            }
+
+            ModelState.AddModelError(nameof(model.OldPassword), "Пароль указан неверно");
+
+            return View(model);
+        }       
     }
 }
