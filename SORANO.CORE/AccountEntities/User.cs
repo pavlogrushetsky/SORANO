@@ -9,14 +9,14 @@ namespace SORANO.CORE.AccountEntities
     public class User : Entity
     {
         /// <summary>
-        /// Name of the user
+        /// Description of the user
         /// </summary>
-        public string Name { get; set; }
+        public string Description { get; set; }
 
         /// <summary>
-        /// Email address of the user
+        /// Login of the user
         /// </summary>
-        public string Email { get; set; }
+        public string Login { get; set; }
 
         /// <summary>
         /// Password of the user

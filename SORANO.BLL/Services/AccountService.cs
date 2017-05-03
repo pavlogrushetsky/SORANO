@@ -15,9 +15,9 @@ namespace SORANO.BLL.Services
             _userRepository = userRepository;
         }
 
-        public async Task<User> FindUserByEmailAsync(string email)
+        public async Task<User> FindUserByLoginAsync(string login)
         {
-            return await _userRepository.GetAsync(u => u.Email.Equals(email));
+            return await _userRepository.GetAsync(u => u.Login.Equals(login));
         }
 
         public async Task<User> FindUserByIdAsync(int id)
@@ -25,16 +25,16 @@ namespace SORANO.BLL.Services
             return await _userRepository.GetAsync(u => u.ID == id);
         }
 
-        public async Task<User> GetUserAsync(string email, string password)
+        public async Task<User> GetUserAsync(string login, string password)
         {
             var hash = CryptoHelper.Hash(password);
 
-            return await _userRepository.GetAsync(u => !u.IsBlocked && u.Email.Equals(email) && u.Password.Equals(hash), u => u.Roles);
+            return await _userRepository.GetAsync(u => !u.IsBlocked && u.Login.Equals(login) && u.Password.Equals(hash), u => u.Roles);
         }
 
-        public async Task ChangePasswordAsync(string email, string newPassword)
+        public async Task ChangePasswordAsync(string login, string newPassword)
         {
-            var user = await _userRepository.GetAsync(u => u.Email.Equals(email));
+            var user = await _userRepository.GetAsync(u => u.Login.Equals(login));
 
             user.Password = CryptoHelper.Hash(newPassword);
 

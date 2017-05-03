@@ -29,8 +29,8 @@ namespace SORANO.WEB.Controllers
                 models.Add(new UserModel
                 {
                     ID = u.ID,
-                    Name = u.Name,
-                    Email = u.Email,
+                    Description = u.Description,
+                    Login = u.Login,
                     IsBlocked = u.IsBlocked,
                     Roles = u.Roles.Select(r => r.Description).ToList()
                 });

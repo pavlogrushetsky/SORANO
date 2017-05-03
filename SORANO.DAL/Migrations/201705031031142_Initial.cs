@@ -32,12 +32,13 @@ namespace SORANO.DAL.Migrations
                 c => new
                     {
                         ID = c.Int(nullable: false, identity: true),
-                        Name = c.String(nullable: false, maxLength: 100),
-                        Email = c.String(),
-                        Password = c.String(),
+                        Description = c.String(maxLength: 200),
+                        Login = c.String(nullable: false, maxLength: 100),
+                        Password = c.String(nullable: false, maxLength: 100),
                         IsBlocked = c.Boolean(nullable: false),
                     })
-                .PrimaryKey(t => t.ID);
+                .PrimaryKey(t => t.ID)
+                .Index(t => t.Login, unique: true, name: "IX_User");
             
             CreateTable(
                 "dbo.Roles",
@@ -357,6 +358,7 @@ namespace SORANO.DAL.Migrations
             DropIndex("dbo.UsersRoles", new[] { "UserID" });
             DropIndex("dbo.EntitiesAttachments", new[] { "EntityID" });
             DropIndex("dbo.EntitiesAttachments", new[] { "AttachmentID" });
+            DropIndex("dbo.Users", "IX_User");
             DropIndex("dbo.StockEntities", new[] { "DeletedBy" });
             DropIndex("dbo.StockEntities", new[] { "ModifiedBy" });
             DropIndex("dbo.StockEntities", new[] { "CreatedBy" });

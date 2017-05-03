@@ -5,12 +5,12 @@ namespace SORANO.BLL.Services.Abstract
 {
     public interface IAccountService
     {
-        Task<User> GetUserAsync(string email, string password);
+        Task<User> GetUserAsync(string login, string password);
 
-        Task<User> FindUserByEmailAsync(string email);
+        Task<User> FindUserByLoginAsync(string login);
 
         Task<User> FindUserByIdAsync(int id);
 
-        Task ChangePasswordAsync(string email, string newPassword);
+        Task ChangePasswordAsync(string login, string newPassword);
     }
 }

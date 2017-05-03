@@ -9,15 +9,13 @@ namespace SORANO.WEB.Models
         [BindNever]
         public int ID { get; set; }
 
-        [Required(ErrorMessage = "Необходимо указать имя пользователя")]
-        [MaxLength(100, ErrorMessage = "Длина имени пользователя не должна превышать 100 символов")]
-        [MinLength(5, ErrorMessage = "Длина имени пользователя должна содержать не менее 5 символов")]
-        public string Name { get; set; }
+        [MaxLength(100, ErrorMessage = "Длина описания пользователя не должна превышать 200 символов")]
+        public string Description { get; set; }
 
-        [Required(ErrorMessage = "Необходимо указать Email пользователя")]
-        [MaxLength(200, ErrorMessage = "Длина Email не должна превышать 200 символов")]
-        [MinLength(5, ErrorMessage = "Длина Email должна содержать не менее 5 символов")]
-        public string Email { get; set; }
+        [Required(ErrorMessage = "Необходимо указать логин пользователя")]
+        [MaxLength(200, ErrorMessage = "Длина логина не должна превышать 200 символов")]
+        [MinLength(5, ErrorMessage = "Длина логина должна содержать не менее 5 символов")]
+        public string Login { get; set; }
 
         [Required(ErrorMessage = "Необходимо указать пароль пользователя")]
         public string Password { get; set; }

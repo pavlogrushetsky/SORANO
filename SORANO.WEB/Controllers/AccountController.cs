@@ -39,7 +39,7 @@ namespace SORANO.WEB.Controllers
             {
                 return View(model);
             }
-            var user = await _accountService.GetUserAsync(model.Email, model.Password);
+            var user = await _accountService.GetUserAsync(model.Login, model.Password);
 
             if (user != null)
             {
@@ -50,7 +50,7 @@ namespace SORANO.WEB.Controllers
                     : (IActionResult)Redirect(model.ReturnUrl);
             }
 
-            ModelState.AddModelError(nameof(model.Email), "Некорректные логин и/или пароль");
+            ModelState.AddModelError(nameof(model.Login), "Некорректные логин и/или пароль");
             ModelState.AddModelError(nameof(model.Password), string.Empty);
 
             return View(model);
@@ -61,7 +61,7 @@ namespace SORANO.WEB.Controllers
             // Add clame for user name
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email)
+                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login)
             };
 
             // For each user role add new claim
@@ -91,8 +91,8 @@ namespace SORANO.WEB.Controllers
 
             return View(new ChangePasswordModel
             {
-                Name = user.Name,
-                Email = user.Email,
+                Description = user.Description,
+                Login = user.Login,
                 ReturnUrl = returnUrl
             });
         }
@@ -105,11 +105,11 @@ namespace SORANO.WEB.Controllers
                 return View(model);
             }
 
-            var user = await _accountService.GetUserAsync(model.Email, model.OldPassword);
+            var user = await _accountService.GetUserAsync(model.Login, model.OldPassword);
 
             if (user != null)
             {
-                await _accountService.ChangePasswordAsync(model.Email, model.NewPassword);
+                await _accountService.ChangePasswordAsync(model.Login, model.NewPassword);
 
                 return RedirectToAction("Login", new { model.ReturnUrl });
             }

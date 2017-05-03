@@ -1,5 +1,7 @@
 ﻿using System.Data.Entity.ModelConfiguration;
 using SORANO.CORE.AccountEntities;
+using System.Data.Entity.Infrastructure.Annotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SORANO.DAL.Context.Configurations
 {
@@ -13,9 +15,21 @@ namespace SORANO.DAL.Context.Configurations
         /// </summary>
         public UserConfiguration()
         {
-            Property(u => u.Name)
+            Property(u => u.Password)
                 .IsRequired()
                 .HasMaxLength(100);
+
+            Property(u => u.Login)
+                .IsRequired()
+                .HasMaxLength(100)
+                .HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute("IX_User")
+                {
+                    IsUnique = true
+                }));
+
+            Property(u => u.Description)
+                .IsOptional()
+                .HasMaxLength(200);
 
             Property(u => u.IsBlocked).IsRequired();
 

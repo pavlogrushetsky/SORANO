@@ -19,17 +19,17 @@ namespace SORANO.WEB.Components
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var email = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
+            var login = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
 
-            var user = await _accountService.FindUserByEmailAsync(email);
+            var user = await _accountService.FindUserByLoginAsync(login);
 
             return new ViewViewComponentResult
             {
                 ViewData = new ViewDataDictionary<AccountModel>(ViewData, new AccountModel
                 {
                     ID = user.ID,
-                    Name = user.Name,
-                    Email = user.Email
+                    Description = user.Description,
+                    Login = user.Login
                 })
             };
         }
