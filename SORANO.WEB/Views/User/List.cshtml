@@ -2,4 +2,12 @@
 
 @{
     ViewBag.Title = "SORANO - Пользователи";
+    ViewBag.Header = "Управление пользователями";
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li class="active">@ViewBag.Header</li>
+    </ul>
 }

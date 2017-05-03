@@ -1,3 +1,10 @@
 ﻿@{
     ViewBag.Title = "SORANO - Главная";
+    ViewBag.Header = "Главная";
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li class="active">@ViewBag.Header</li>
+    </ul>
 }
