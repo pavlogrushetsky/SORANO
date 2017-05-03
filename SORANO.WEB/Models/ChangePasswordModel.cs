@@ -21,6 +21,8 @@ namespace SORANO.WEB.Models
         [DataType(DataType.Password)]
         public string RepeatPassword { get; set; }
 
+        public string ReturnUrl { get; set; }
+
         public IEnumerable<ValidationResult> Validate(ValidationContext context)
         {
             var errors = new List<ValidationResult>();

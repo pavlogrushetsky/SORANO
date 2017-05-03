@@ -23,8 +23,10 @@ namespace SORANO.WEB.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Login()
+        public IActionResult Login(string returnUrl = null)
         {
+            ViewBag.ReturnUrl = returnUrl;
+
             return View();
         }
 
@@ -43,7 +45,9 @@ namespace SORANO.WEB.Controllers
             {
                 await Authenticate(user, model.RememberMe);
 
-                return RedirectToAction("Index", "Home");
+                return string.IsNullOrEmpty(model.ReturnUrl) || model.ReturnUrl.Equals("/")
+                    ? RedirectToAction("Index", "Home")
+                    : (IActionResult)Redirect(model.ReturnUrl);
             }
 
             ModelState.AddModelError(nameof(model.Email), "Некорректные логин и/или пароль");
@@ -77,7 +81,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ChangePassword(int id)
+        public async Task<IActionResult> ChangePassword(int id, string returnUrl = null)
         {
             var user = await _accountService.FindUserByIdAsync(id);
             if (user == null)
@@ -88,7 +92,8 @@ namespace SORANO.WEB.Controllers
             return View(new ChangePasswordModel
             {
                 Name = user.Name,
-                Email = user.Email
+                Email = user.Email,
+                ReturnUrl = returnUrl
             });
         }
 
@@ -106,7 +111,7 @@ namespace SORANO.WEB.Controllers
             {
                 await _accountService.ChangePasswordAsync(model.Email, model.NewPassword);
 
-                return RedirectToAction("Login");
+                return RedirectToAction("Login", new { model.ReturnUrl });
             }
 
             ModelState.AddModelError(nameof(model.OldPassword), "Пароль указан неверно");

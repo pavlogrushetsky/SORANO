@@ -17,6 +17,7 @@
                         asp-antiforgery="true"
                         method="post">
                     <div asp-validation-summary="All" class="text-danger"></div>
+                    <input type="hidden" asp-for="ReturnUrl" value="@ViewBag.ReturnUrl"/>
                         <div class="form-group">
                             <label class="control-label" asp-for="Email">Логин:</label>
                             <div class="input-group">
