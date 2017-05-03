@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap-theme-bootswatch-flatly/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    @RenderSection("Styles", false)
 </head>
 <body>
     <nav class="navbar navbar-default navbar-fixed-top">
@@ -44,7 +45,7 @@
                     @if (User.IsInRole("administrator") || User.IsInRole("developer"))
                     {
                         <li>
-                            <a asp-controller="User" asp-action="List"><i class="fa fa-users" aria-hidden="true"></i>&nbsp;Управление пользователями</a>
+                            <a asp-controller="User" asp-action="List"><i class="fa fa-users" aria-hidden="true"></i>&nbsp;Пользователи</a>
                         </li>
                     }
                     @await Component.InvokeAsync("Account")
