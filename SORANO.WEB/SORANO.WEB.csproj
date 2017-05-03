@@ -6,6 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\lib\bootstrap-theme-bootswatch-flatly\**" />
+    <Content Remove="wwwroot\lib\bootstrap-theme-bootswatch-flatly\**" />
+    <EmbeddedResource Remove="wwwroot\lib\bootstrap-theme-bootswatch-flatly\**" />
+    <None Remove="wwwroot\lib\bootstrap-theme-bootswatch-flatly\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="wwwroot\css\site.css" />
   </ItemGroup>
   <ItemGroup>

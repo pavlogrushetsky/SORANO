@@ -1,8 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewComponents;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Models;
 
@@ -23,15 +21,12 @@ namespace SORANO.WEB.Components
 
             var user = await _accountService.FindUserByLoginAsync(login);
 
-            return new ViewViewComponentResult
+            return View(new AccountModel
             {
-                ViewData = new ViewDataDictionary<AccountModel>(ViewData, new AccountModel
-                {
-                    ID = user.ID,
-                    Description = user.Description,
-                    Login = user.Login
-                })
-            };
+                ID = user.ID,
+                Description = user.Description,
+                Login = user.Login
+            });
         }
     }
 }

@@ -3,13 +3,14 @@
   "private": true,
   "dependencies": {
     "bootstrap": "3.3.7",
-    "bootstrap-theme-bootswatch-flatly": "1.0.2",
+    "bootswatch-dist": "3.3.6-flatly",
     "jquery": "2.2.0",
     "jquery-validation": "1.14.0",
     "jquery-validation-unobtrusive": "3.2.6",
     "font-awesome": "4.7.0",
-    "datatables": "1.10.15",
-    "datatables-plugins": "1.10.15",
-    "datatables-responsive": "2.1.1"
+    "datatables.net": "1.10.15",
+    "datatables.net-bs": "2.1.1",
+    "datatables.net-responsive": "2.1.1",
+    "datatables.net-responsive-bs": "2.1.1"
   }
 }

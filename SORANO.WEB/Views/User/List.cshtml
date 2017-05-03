@@ -6,8 +6,8 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/lib/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css" />
-    <link rel="stylesheet" href="~/lib/datatables-responsive/css/responsive.bootstrap.scss" />
+    <link rel="stylesheet" href="~/lib/datatables.net-bs/css/dataTables.bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" />
 }
 
 @section Breadcrumb {
@@ -25,17 +25,35 @@
             </div>
             <div class="panel-body">
                 <table id="users-datatable" class="table table-striped table-bordered table-hover">
-                    
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Логин</th>
+                            <th>Описание</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>@user.ID</td>
+                                <td>@user.Login</td>
+                                <td>@user.Description</td>
+                            </tr>
+                        }
+                    </tbody>
                 </table>
+
             </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    <script src="~/lib/datatables/media/js/jquery.dataTables.min.js"></script>
-    <script src="~/lib/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.min.js"></script>
-    <script src="~/lib/datatables-responsive/js/dataTables.responsive.js"></script>
+    <script src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/lib/datatables.net-responsive-bs/js/responsive.bootstrap.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             $("#users-datatable").DataTable({
