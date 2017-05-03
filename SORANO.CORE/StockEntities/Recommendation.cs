@@ -13,7 +13,7 @@
         /// <summary>
         /// Recommended value
         /// </summary>
-        public decimal Value { get; set; }
+        public decimal? Value { get; set; }
 
         /// <summary>
         /// Recommendation comment

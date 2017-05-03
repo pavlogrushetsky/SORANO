@@ -22,7 +22,7 @@ namespace SORANO.DAL.Context.Configurations
 
             Property(a => a.Name)
                 .IsRequired()
-                .HasMaxLength(200);
+                .HasMaxLength(500);
 
             Property(a => a.Description)
                 .IsOptional()

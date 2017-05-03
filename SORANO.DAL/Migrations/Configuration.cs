@@ -39,6 +39,12 @@ namespace SORANO.DAL.Migrations
 
                 developer.Roles.Add(new Role
                 {
+                    Name = "editor",
+                    Description = "Редактор"
+                });
+
+                developer.Roles.Add(new Role
+                {
                     Name = "manager",
                     Description = "Менеджер"
                 });

@@ -20,11 +20,6 @@ namespace SORANO.CORE.StockEntities
         public int? ClientID { get; set; }
 
         /// <summary>
-        /// Marker
-        /// </summary>
-        public string Marker { get; set; }
-
-        /// <summary>
         /// Sale prise of the goods item
         /// </summary>
         public decimal? SalePrice { get; set; }

@@ -18,7 +18,7 @@ namespace SORANO.DAL.Context.Configurations
 
             Property(r => r.Comment)
                 .IsRequired()
-                .HasMaxLength(500);
+                .HasMaxLength(1000);
 
             ToTable("Recommendations");
         }

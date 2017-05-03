@@ -1,4 +1,6 @@
-﻿using SORANO.CORE.StockEntities;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.Infrastructure.Annotations;
+using SORANO.CORE.StockEntities;
 
 namespace SORANO.DAL.Context.Configurations
 {
@@ -18,23 +20,27 @@ namespace SORANO.DAL.Context.Configurations
 
             Property(a => a.Name)
                 .IsRequired()
-                .HasMaxLength(200);
+                .HasMaxLength(500);
 
             Property(a => a.Description)
                 .IsOptional()
                 .HasMaxLength(1000);
 
             Property(a => a.Producer)
-                .IsRequired()
+                .IsOptional()
                 .HasMaxLength(200);
 
             Property(a => a.Code)
-                .IsRequired()
+                .IsOptional()
                 .HasMaxLength(50);
 
             Property(a => a.Barcode)
                 .IsOptional()
-                .HasMaxLength(50);
+                .HasMaxLength(50)
+                .HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute("IX_Article_Barcode")
+                {
+                    IsUnique = true
+                }));
 
             ToTable("Articles");
         }

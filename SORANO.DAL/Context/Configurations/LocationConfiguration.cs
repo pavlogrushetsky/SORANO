@@ -22,7 +22,7 @@ namespace SORANO.DAL.Context.Configurations
 
             Property(l => l.Comment)
                 .IsOptional()
-                .HasMaxLength(500);
+                .HasMaxLength(1000);
 
             HasMany(l => l.Storages)
                 .WithRequired(s => s.Location)

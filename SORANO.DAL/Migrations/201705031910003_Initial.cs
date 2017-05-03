@@ -32,13 +32,13 @@ namespace SORANO.DAL.Migrations
                 c => new
                     {
                         ID = c.Int(nullable: false, identity: true),
-                        Description = c.String(maxLength: 200),
+                        Description = c.String(maxLength: 1000),
                         Login = c.String(nullable: false, maxLength: 100),
-                        Password = c.String(nullable: false, maxLength: 100),
+                        Password = c.String(nullable: false, maxLength: 512),
                         IsBlocked = c.Boolean(nullable: false),
                     })
                 .PrimaryKey(t => t.ID)
-                .Index(t => t.Login, unique: true, name: "IX_User");
+                .Index(t => t.Login, unique: true, name: "IX_User_Login");
             
             CreateTable(
                 "dbo.Roles",
@@ -46,7 +46,7 @@ namespace SORANO.DAL.Migrations
                     {
                         ID = c.Int(nullable: false, identity: true),
                         Name = c.String(nullable: false, maxLength: 100),
-                        Description = c.String(nullable: false, maxLength: 100),
+                        Description = c.String(nullable: false, maxLength: 1000),
                     })
                 .PrimaryKey(t => t.ID);
             
@@ -82,17 +82,18 @@ namespace SORANO.DAL.Migrations
                     {
                         ID = c.Int(nullable: false),
                         TypeID = c.Int(nullable: false),
-                        Name = c.String(nullable: false, maxLength: 200),
+                        Name = c.String(nullable: false, maxLength: 500),
                         Description = c.String(maxLength: 1000),
-                        Producer = c.String(nullable: false, maxLength: 200),
-                        Code = c.String(nullable: false, maxLength: 50),
+                        Producer = c.String(maxLength: 200),
+                        Code = c.String(maxLength: 50),
                         Barcode = c.String(maxLength: 50),
                     })
                 .PrimaryKey(t => t.ID)
                 .ForeignKey("dbo.StockEntities", t => t.ID)
                 .ForeignKey("dbo.ArticleTypes", t => t.TypeID)
                 .Index(t => t.ID)
-                .Index(t => t.TypeID);
+                .Index(t => t.TypeID)
+                .Index(t => t.Barcode, unique: true, name: "IX_Article_Barcode");
             
             CreateTable(
                 "dbo.ArticleTypes",
@@ -100,7 +101,7 @@ namespace SORANO.DAL.Migrations
                     {
                         ID = c.Int(nullable: false),
                         ParentTypeId = c.Int(),
-                        Name = c.String(nullable: false, maxLength: 200),
+                        Name = c.String(nullable: false, maxLength: 500),
                         Description = c.String(maxLength: 1000),
                     })
                 .PrimaryKey(t => t.ID)
@@ -115,27 +116,29 @@ namespace SORANO.DAL.Migrations
                     {
                         ID = c.Int(nullable: false),
                         AttachmentTypeID = c.Int(nullable: false),
-                        FullPath = c.String(nullable: false, maxLength: 500),
-                        Name = c.String(nullable: false, maxLength: 200),
-                        Description = c.String(maxLength: 500),
+                        FullPath = c.String(nullable: false, maxLength: 1000),
+                        Name = c.String(nullable: false, maxLength: 255),
+                        Description = c.String(maxLength: 1000),
                     })
                 .PrimaryKey(t => t.ID)
                 .ForeignKey("dbo.StockEntities", t => t.ID)
                 .ForeignKey("dbo.AttachmentTypes", t => t.AttachmentTypeID)
                 .Index(t => t.ID)
-                .Index(t => t.AttachmentTypeID);
+                .Index(t => t.AttachmentTypeID)
+                .Index(t => t.FullPath, unique: true, name: "IX_Attachment_FullPath");
             
             CreateTable(
                 "dbo.AttachmentTypes",
                 c => new
                     {
                         ID = c.Int(nullable: false),
-                        Name = c.String(nullable: false, maxLength: 100),
-                        Comment = c.String(maxLength: 200),
+                        Name = c.String(nullable: false, maxLength: 200),
+                        Comment = c.String(maxLength: 1000),
                     })
                 .PrimaryKey(t => t.ID)
                 .ForeignKey("dbo.StockEntities", t => t.ID)
-                .Index(t => t.ID);
+                .Index(t => t.ID)
+                .Index(t => t.Name, unique: true, name: "IX_AttachmentType_Name");
             
             CreateTable(
                 "dbo.Clients",
@@ -143,7 +146,7 @@ namespace SORANO.DAL.Migrations
                     {
                         ID = c.Int(nullable: false),
                         Name = c.String(nullable: false, maxLength: 200),
-                        Description = c.String(maxLength: 500),
+                        Description = c.String(maxLength: 1000),
                         PhoneNumber = c.String(maxLength: 50),
                         CardNumber = c.String(maxLength: 50),
                     })
@@ -157,7 +160,7 @@ namespace SORANO.DAL.Migrations
                     {
                         ID = c.Int(nullable: false),
                         SupplierID = c.Int(nullable: false),
-                        BillNumber = c.String(nullable: false, maxLength: 50),
+                        BillNumber = c.String(nullable: false, maxLength: 100),
                         DeliveryDate = c.DateTime(nullable: false, precision: 7, storeType: "datetime2"),
                         PaymentDate = c.DateTime(precision: 7, storeType: "datetime2"),
                         DollarRate = c.Decimal(precision: 38, scale: 2),
@@ -201,7 +204,6 @@ namespace SORANO.DAL.Migrations
                         ID = c.Int(nullable: false),
                         DeliveryItemID = c.Int(nullable: false),
                         ClientID = c.Int(),
-                        Marker = c.String(nullable: false, maxLength: 100),
                         SalePrice = c.Decimal(precision: 38, scale: 2),
                         SaleDate = c.DateTime(precision: 7, storeType: "datetime2"),
                         SoldBy = c.Int(),
@@ -226,7 +228,7 @@ namespace SORANO.DAL.Migrations
                         ID = c.Int(nullable: false),
                         TypeID = c.Int(nullable: false),
                         Name = c.String(nullable: false, maxLength: 200),
-                        Comment = c.String(maxLength: 500),
+                        Comment = c.String(maxLength: 1000),
                     })
                 .PrimaryKey(t => t.ID)
                 .ForeignKey("dbo.StockEntities", t => t.ID)
@@ -239,12 +241,13 @@ namespace SORANO.DAL.Migrations
                 c => new
                     {
                         ID = c.Int(nullable: false),
-                        Name = c.String(nullable: false, maxLength: 100),
-                        Description = c.String(maxLength: 200),
+                        Name = c.String(nullable: false, maxLength: 200),
+                        Description = c.String(maxLength: 1000),
                     })
                 .PrimaryKey(t => t.ID)
                 .ForeignKey("dbo.StockEntities", t => t.ID)
-                .Index(t => t.ID);
+                .Index(t => t.ID)
+                .Index(t => t.Name, unique: true, name: "IX_LocationType_Name");
             
             CreateTable(
                 "dbo.Recommendations",
@@ -253,7 +256,7 @@ namespace SORANO.DAL.Migrations
                         ID = c.Int(nullable: false),
                         ParentEntityID = c.Int(nullable: false),
                         Value = c.Decimal(precision: 38, scale: 2),
-                        Comment = c.String(nullable: false, maxLength: 500),
+                        Comment = c.String(nullable: false, maxLength: 1000),
                     })
                 .PrimaryKey(t => t.ID)
                 .ForeignKey("dbo.StockEntities", t => t.ID)
@@ -284,7 +287,7 @@ namespace SORANO.DAL.Migrations
                     {
                         ID = c.Int(nullable: false),
                         Name = c.String(nullable: false, maxLength: 200),
-                        Description = c.String(maxLength: 500),
+                        Description = c.String(maxLength: 1000),
                     })
                 .PrimaryKey(t => t.ID)
                 .ForeignKey("dbo.StockEntities", t => t.ID)
@@ -333,6 +336,7 @@ namespace SORANO.DAL.Migrations
             DropIndex("dbo.Storages", new[] { "ID" });
             DropIndex("dbo.Recommendations", new[] { "ParentEntityID" });
             DropIndex("dbo.Recommendations", new[] { "ID" });
+            DropIndex("dbo.LocationTypes", "IX_LocationType_Name");
             DropIndex("dbo.LocationTypes", new[] { "ID" });
             DropIndex("dbo.Locations", new[] { "TypeID" });
             DropIndex("dbo.Locations", new[] { "ID" });
@@ -347,18 +351,21 @@ namespace SORANO.DAL.Migrations
             DropIndex("dbo.Deliveries", new[] { "SupplierID" });
             DropIndex("dbo.Deliveries", new[] { "ID" });
             DropIndex("dbo.Clients", new[] { "ID" });
+            DropIndex("dbo.AttachmentTypes", "IX_AttachmentType_Name");
             DropIndex("dbo.AttachmentTypes", new[] { "ID" });
+            DropIndex("dbo.Attachments", "IX_Attachment_FullPath");
             DropIndex("dbo.Attachments", new[] { "AttachmentTypeID" });
             DropIndex("dbo.Attachments", new[] { "ID" });
             DropIndex("dbo.ArticleTypes", new[] { "ParentTypeId" });
             DropIndex("dbo.ArticleTypes", new[] { "ID" });
+            DropIndex("dbo.Articles", "IX_Article_Barcode");
             DropIndex("dbo.Articles", new[] { "TypeID" });
             DropIndex("dbo.Articles", new[] { "ID" });
             DropIndex("dbo.UsersRoles", new[] { "RoleID" });
             DropIndex("dbo.UsersRoles", new[] { "UserID" });
             DropIndex("dbo.EntitiesAttachments", new[] { "EntityID" });
             DropIndex("dbo.EntitiesAttachments", new[] { "AttachmentID" });
-            DropIndex("dbo.Users", "IX_User");
+            DropIndex("dbo.Users", "IX_User_Login");
             DropIndex("dbo.StockEntities", new[] { "DeletedBy" });
             DropIndex("dbo.StockEntities", new[] { "ModifiedBy" });
             DropIndex("dbo.StockEntities", new[] { "CreatedBy" });

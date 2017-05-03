@@ -19,7 +19,7 @@ namespace SORANO.DAL.Context.Configurations
 
             Property(r => r.Description)
                 .IsRequired()
-                .HasMaxLength(100);
+                .HasMaxLength(1000);
 
             ToTable("Roles");
         }

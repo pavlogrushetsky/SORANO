@@ -14,7 +14,7 @@ namespace SORANO.DAL.Context.Configurations
         {
             Property(d => d.BillNumber)
                 .IsRequired()
-                .HasMaxLength(50);
+                .HasMaxLength(100);
 
             Property(d => d.DeliveryDate)
                 .IsRequired()

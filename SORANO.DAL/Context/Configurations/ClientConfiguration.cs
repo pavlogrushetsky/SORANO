@@ -26,7 +26,7 @@ namespace SORANO.DAL.Context.Configurations
 
             Property(c => c.Description)
                 .IsOptional()
-                .HasMaxLength(500);
+                .HasMaxLength(1000);
 
             HasMany(c => c.Goods)
                 .WithOptional(g => g.Client)

@@ -17,19 +17,19 @@ namespace SORANO.DAL.Context.Configurations
         {
             Property(u => u.Password)
                 .IsRequired()
-                .HasMaxLength(100);
+                .HasMaxLength(512);
 
             Property(u => u.Login)
                 .IsRequired()
                 .HasMaxLength(100)
-                .HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute("IX_User")
+                .HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute("IX_User_Login")
                 {
                     IsUnique = true
                 }));
 
             Property(u => u.Description)
                 .IsOptional()
-                .HasMaxLength(200);
+                .HasMaxLength(1000);
 
             Property(u => u.IsBlocked).IsRequired();
 

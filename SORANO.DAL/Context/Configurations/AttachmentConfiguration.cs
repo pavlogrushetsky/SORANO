@@ -1,4 +1,6 @@
-﻿using SORANO.CORE.StockEntities;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.Infrastructure.Annotations;
+using SORANO.CORE.StockEntities;
 
 namespace SORANO.DAL.Context.Configurations
 {
@@ -14,15 +16,19 @@ namespace SORANO.DAL.Context.Configurations
         {
             Property(a => a.FullPath)
                 .IsRequired()
-                .HasMaxLength(500);
+                .HasMaxLength(1000)
+                .HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute("IX_Attachment_FullPath")
+                {
+                    IsUnique = true
+                }));
 
             Property(a => a.Name)
                 .IsRequired()
-                .HasMaxLength(200);
+                .HasMaxLength(255);
 
             Property(a => a.Description)
                 .IsOptional()
-                .HasMaxLength(500);
+                .HasMaxLength(1000);
 
             ToTable("Attachments");
         }

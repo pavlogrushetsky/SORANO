@@ -12,10 +12,6 @@ namespace SORANO.DAL.Context.Configurations
         /// </summary>
         public GoodsConfiguration()
         {
-            Property(g => g.Marker)
-                .IsRequired()
-                .HasMaxLength(100);
-
             Property(g => g.SalePrice)
                 .IsOptional()
                 .HasPrecision(38, 2);

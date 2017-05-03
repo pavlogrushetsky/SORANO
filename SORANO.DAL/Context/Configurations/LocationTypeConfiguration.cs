@@ -1,4 +1,6 @@
-﻿using SORANO.CORE.StockEntities;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.Infrastructure.Annotations;
+using SORANO.CORE.StockEntities;
 
 namespace SORANO.DAL.Context.Configurations
 {
@@ -18,11 +20,15 @@ namespace SORANO.DAL.Context.Configurations
 
             Property(l => l.Name)
                 .IsRequired()
-                .HasMaxLength(100);
+                .HasMaxLength(200)
+                .HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute("IX_LocationType_Name")
+                {
+                    IsUnique = true
+                }));
 
             Property(l => l.Description)
                 .IsOptional()
-                .HasMaxLength(200);
+                .HasMaxLength(1000);
 
             ToTable("LocationTypes");
         }

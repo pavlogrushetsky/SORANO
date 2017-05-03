@@ -8,7 +8,7 @@ using SORANO.WEB.Models;
 
 namespace SORANO.WEB.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "developer, administrator")]
     public class UserController : Controller
     {
         private readonly IUserService _userService;
