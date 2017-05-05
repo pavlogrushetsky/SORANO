@@ -2,8 +2,8 @@
 
 @{
     ViewBag.Title = "SORANO - Пользователи";
-    ViewBag.Header = "Пользователи";
-    ViewBag.Description = "Список всех пользователей";
+    ViewBag.Header = "Список";
+    ViewBag.Description = "всех пользователей в системе";
 }
 
 @section Styles {
@@ -14,7 +14,7 @@
 @section Breadcrumb {
     <ul class="breadcrumb">
         <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
-        <li class="active">@ViewBag.Header</li>
+        <li class="active">Пользователи</li>
     </ul>
 }
 
@@ -22,8 +22,8 @@
     <div class="col-lg-12">
         <div class="panel panel-primary">
             <div class="panel-heading">               
-                @ViewBag.Header                   
-                <button class="btn btn-default btn-xs pull-right">Создать пользователя</button>
+                Пользователи                   
+                <a class="btn btn-default btn-xs pull-right" asp-controller="User" asp-action="Create">Создать пользователя</a>
                 <div class="clearfix"></div>
             </div>
             <div class="panel-body">

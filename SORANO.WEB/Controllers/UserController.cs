@@ -38,5 +38,10 @@ namespace SORANO.WEB.Controllers
 
             return View(models);
         }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
     }
 }

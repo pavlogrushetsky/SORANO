@@ -1,0 +1,91 @@
+﻿@model UserModel
+
+@{ 
+    ViewBag.Title = "SORANO - Создание пользователя";
+    ViewBag.Header = "Создание";
+    ViewBag.Description = "нового пользователя в системе";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/select2/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="~/lib/select2-bootstrap-theme/dist/select2-bootstrap.min.css" />
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li><a asp-controller="User" asp-action="List">Пользователи</a></li>
+        <li class="active">Создание пользователя</li>
+    </ul>
+}
+
+<div class="row">
+    <div class="col-lg-5 col-md-6 col-sm-12">
+        <form asp-action="Create"
+              asp-controller="User"
+              method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <input type="hidden" asp-for="ID" />
+            <div class="form-group">
+                <label class="control-label" asp-for="Login">Логин:</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-user-circle-o"></i></span>
+                    <input class="form-control" type="text" asp-for="Login" placeholder="Логин" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="Description">Описание:</label>
+                <div class="input-group">
+                    <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-align-justify"></i></span>
+                    <textarea class="form-control" rows="3" asp-for="Description" placeholder="Описание"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" >Новый пароль:</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-key"></i></span>
+                    <input class="form-control" type="password" placeholder="Новый пароль" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" >Новый пароль:</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-key"></i></span>
+                    <input class="form-control" type="password"  placeholder="Повторите новый пароль" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Роли:</label>
+                <div class="input-group">
+                    <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-vcard"></i></span>
+                    <select id="selectRoles" class="form-control" multiple="multiple">
+                        @*@foreach(var role in Model.Roles)
+                        {
+                            <option>@role</option>
+                        }*@
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                    </select>                    
+                </div>
+            </div>
+            <div class="form-group">
+                <a class="btn btn-default" asp-controller="User" asp-action="List">Отмена</a>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div> 
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/select2/dist/js/select2.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#selectRoles').select2({
+                theme: "bootstrap",
+                placeholder: "Роли"
+            });
+        });
+    </script>
+}
