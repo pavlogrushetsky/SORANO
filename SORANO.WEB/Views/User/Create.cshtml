@@ -6,11 +6,6 @@
     ViewBag.Description = "нового пользователя в системе";
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/lib/select2/dist/css/select2.min.css" />
-    <link rel="stylesheet" href="~/lib/select2-bootstrap-theme/dist/select2-bootstrap.min.css" />
-}
-
 @section Breadcrumb {
     <ul class="breadcrumb">
         <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
@@ -58,7 +53,7 @@
                 <label class="control-label">Роли:</label>
                 <div class="input-group">
                     <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-vcard"></i></span>
-                    <select id="selectRoles" class="form-control" multiple="multiple">
+                    <select class="form-control" multiple="multiple">
                         @*@foreach(var role in Model.Roles)
                         {
                             <option>@role</option>
@@ -77,15 +72,3 @@
         </form>
     </div>
 </div>
-
-@section Scripts {
-    <script src="~/lib/select2/dist/js/select2.min.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('#selectRoles').select2({
-                theme: "bootstrap",
-                placeholder: "Роли"
-            });
-        });
-    </script>
-}
