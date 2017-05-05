@@ -32,8 +32,10 @@ namespace SORANO.WEB
             services.AddMvc();
             services.AddScoped(_ => new StockContext(Configuration.GetConnectionString("SORANO")));
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IRoleRepository, RoleRepository>();
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IRoleService, RoleService>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
