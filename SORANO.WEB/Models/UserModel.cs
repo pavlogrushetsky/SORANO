@@ -34,14 +34,18 @@ namespace SORANO.WEB.Models
             new SelectListItem { Value = "user", Text = "Пользователь" },
         };
 
+        public bool Validated { get; set; }
+
         public IEnumerable<ValidationResult> Validate(ValidationContext context)
         {
             var errors = new List<ValidationResult>();
 
-            if (Roles == null || Roles.Count() == 0)
+            if (Roles == null || !Roles.Any())
             {
-                errors.Add(new ValidationResult("Пользователю необходимо назначить роли", new List<string> { "Roles" }));
+                errors.Add(new ValidationResult("Пользователю необходимо назначить роли", new List<string> { nameof(Roles) }));
             }
+
+            Validated = true;
 
             return errors;
         }

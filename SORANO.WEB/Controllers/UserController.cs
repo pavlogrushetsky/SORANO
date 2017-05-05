@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -45,25 +46,42 @@ namespace SORANO.WEB.Controllers
 
         public IActionResult Create()
         {
-            var model = new UserModel();
-
-            model.AllRoles = new List<SelectListItem>
+            var model = new UserModel
             {
-                new SelectListItem { Value = "developer", Text = "Разработчик" },
-                new SelectListItem { Value = "administrator", Text = "Администратор" },
-                new SelectListItem { Value = "editor", Text = "Редактор" },
-                new SelectListItem { Value = "manager", Text = "Менеджер" },
-                new SelectListItem { Value = "user", Text = "Пользователь" },
+                AllRoles = new List<SelectListItem>
+                {
+                    new SelectListItem {Value = "developer", Text = "Разработчик"},
+                    new SelectListItem {Value = "administrator", Text = "Администратор"},
+                    new SelectListItem {Value = "editor", Text = "Редактор"},
+                    new SelectListItem {Value = "manager", Text = "Менеджер"},
+                    new SelectListItem {Value = "user", Text = "Пользователь"},
+                }
             };
+
 
             return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(UserModel model)
-        {
+        {            
             if (!ModelState.IsValid)
             {
+                if (model.Validated)
+                {
+                    return View(model);
+                }
+
+                var errors = model.Validate(new ValidationContext(model));
+
+                errors.ToList().ForEach(err =>
+                {
+                    err.MemberNames.ToList().ForEach(n =>
+                    {
+                        ModelState.AddModelError(n, err.ErrorMessage);
+                    });
+                });
+
                 return View(model);
             }
 
@@ -83,15 +101,13 @@ namespace SORANO.WEB.Controllers
 
             user = await _userService.CreateAsync(user);
 
-            if (user == null)
+            if (user != null)
             {
-                ModelState.AddModelError("Login", "Пользователь с таким логином уже существует в системе");
-                return View(model);
+                return RedirectToAction("List", "User");
             }
-            else
-            {
-                return RedirectToAction("List", "Users");
-            }          
+
+            ModelState.AddModelError("Login", "Пользователь с таким логином уже существует в системе");
+            return View(model);
         }
     }
 }

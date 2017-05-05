@@ -80,6 +80,7 @@
                                     {
                                         <button class="btn btn-xs btn-warning" title="Заблокировать пользователя"><i class="fa fa-lock" aria-hidden="true"></i></button>
                                     }
+                                    <button class="btn btn-xs btn-danger" title="Удалить пользователя"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                 </td>
                             </tr>
                         }
@@ -115,13 +116,12 @@
                 }
             });            
 
-            table.columns().every(function() {
-                var that = this;
-
-                $('input', 'tr:eq(0)').on('keyup change', function() {
-                    if (that.search() !== this.value) {
-                        that.search(this.value).draw();
-                    }
+            table.columns().eq( 0 ).each( function ( colIdx ) {
+                $( 'input', $('th')[colIdx] ).on( 'keyup change', function () {
+                    table
+                        .column( colIdx )
+                        .search( this.value )
+                        .draw();
                 });
             });
 

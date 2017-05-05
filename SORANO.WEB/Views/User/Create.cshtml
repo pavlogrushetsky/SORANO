@@ -46,8 +46,7 @@
                 <label class="control-label">Роли:</label>
                 <div class="input-group">
                     <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-vcard"></i></span>
-                    <select class="form-control" asp-for="Roles" asp-items="Model.AllRoles">
-                    </select>                    
+                    <select class="form-control" asp-for="Roles" asp-items="Model.AllRoles"></select>                    
                 </div>
             </div>
             <div class="form-group">
@@ -62,6 +61,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $("input.input-validation-error").closest(".form-group").addClass("has-error");
+            $("select.input-validation-error").closest(".form-group").addClass("has-error");
         });
     </script>
 }
