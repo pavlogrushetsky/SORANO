@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace SORANO.WEB.Infrastructure
+namespace SORANO.WEB.Infrastructure.Extensions
 {
     public static class UrlExtensions
     {

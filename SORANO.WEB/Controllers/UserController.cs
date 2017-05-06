@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -67,21 +66,6 @@ namespace SORANO.WEB.Controllers
         {            
             if (!ModelState.IsValid)
             {
-                if (model.Validated)
-                {
-                    return View(model);
-                }
-
-                var errors = model.Validate(new ValidationContext(model));
-
-                errors.ToList().ForEach(err =>
-                {
-                    err.MemberNames.ToList().ForEach(n =>
-                    {
-                        ModelState.AddModelError(n, err.ErrorMessage);
-                    });
-                });
-
                 return View(model);
             }
 

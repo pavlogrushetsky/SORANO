@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using SORANO.WEB.Infrastructure.ValidationAttributes;
 
 namespace SORANO.WEB.Models
 {
-    public class ChangePasswordModel : IValidatableObject
+    public class ChangePasswordModel
     {
         public string Description { get; set; }
 
@@ -19,20 +19,9 @@ namespace SORANO.WEB.Models
 
         [Required(ErrorMessage = "Необходимо повторно указать новый пароль")]
         [DataType(DataType.Password)]
+        [RequireEqual("NewPassword", ErrorMessage = "Необходимо, чтобы значения полей \"Новый пароль\" совпадали")]
         public string RepeatPassword { get; set; }
 
         public string ReturnUrl { get; set; }
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext context)
-        {
-            var errors = new List<ValidationResult>();
-
-            if (!NewPassword.Equals(RepeatPassword))
-            {
-                errors.Add(new ValidationResult("Необходимо повторно ввести новый пароль", new List<string>{ "RepeatPassword" }));
-            }
-
-            return errors;
-        }
     }
 }

@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
+using SORANO.WEB.Infrastructure.ValidationAttributes;
 
 namespace SORANO.WEB.Models
 {
-    public class UserModel : IValidatableObject
+    public class UserModel
     {
         public int ID { get; set; }
 
@@ -23,6 +23,7 @@ namespace SORANO.WEB.Models
 
         public bool IsBlocked { get; set; }
 
+        [RequireNonEmpty(ErrorMessage = "Пользователю необходимо назначить хотя бы одну роль")]
         public IEnumerable<string> Roles { get; set; }
 
         public List<SelectListItem> AllRoles { get; set; } = new List<SelectListItem>
@@ -33,21 +34,5 @@ namespace SORANO.WEB.Models
             new SelectListItem { Value = "manager", Text = "Менеджер" },
             new SelectListItem { Value = "user", Text = "Пользователь" },
         };
-
-        public bool Validated { get; set; }
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext context)
-        {
-            var errors = new List<ValidationResult>();
-
-            if (Roles == null || !Roles.Any())
-            {
-                errors.Add(new ValidationResult("Пользователю необходимо назначить роли", new List<string> { nameof(Roles) }));
-            }
-
-            Validated = true;
-
-            return errors;
-        }
     }
 }
