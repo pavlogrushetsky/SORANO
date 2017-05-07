@@ -24,7 +24,7 @@ namespace SORANO.WEB.Controllers
 
         public async Task<IActionResult> List()
         {
-            var users = await _userService.GetUsersAsync();
+            var users = await _userService.GetAllAsync();
 
             var models = new List<UserModel>();
 
@@ -62,6 +62,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UserModel model)
         {            
             if (!ModelState.IsValid)
@@ -92,6 +93,31 @@ namespace SORANO.WEB.Controllers
 
             ModelState.AddModelError("Login", "Пользователь с таким логином уже существует в системе");
             return View(model);
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var user = await _userService.GetAsync(id);
+
+            var model = new UserModel
+            {
+                ID = user.ID,
+                Description = user.Description,
+                Login = user.Login,
+                IsBlocked = user.IsBlocked,
+                Roles = user.Roles.Select(r => r.Description).ToList()
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(UserModel model)
+        {
+            await _userService.DeleteAsync(model.ID);
+
+            return RedirectToAction("List");
         }
     }
 }

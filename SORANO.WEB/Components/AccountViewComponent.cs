@@ -8,18 +8,18 @@ namespace SORANO.WEB.Components
 {
     public class AccountViewComponent : ViewComponent
     {
-        private readonly IAccountService _accountService;
+        private readonly IUserService _userService;
 
-        public AccountViewComponent(IAccountService accountService)
+        public AccountViewComponent(IUserService userService)
         {
-            _accountService = accountService;
+            _userService = userService;
         }
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var login = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
 
-            var user = await _accountService.FindUserByLoginAsync(login);
+            var user = await _userService.GetAsync(login);
 
             return View(new AccountModel
             {

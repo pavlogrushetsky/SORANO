@@ -14,11 +14,11 @@ namespace SORANO.WEB.Controllers
     [Authorize]
     public class AccountController : Controller
     {
-        private readonly IAccountService _accountService;
+        private readonly IUserService _userService;
 
-        public AccountController(IAccountService accountService)
+        public AccountController(IUserService userService)
         {
-            _accountService = accountService;
+            _userService = userService;
         }
 
         [HttpGet]
@@ -39,7 +39,7 @@ namespace SORANO.WEB.Controllers
             {
                 return View(model);
             }
-            var user = await _accountService.GetUserAsync(model.Login, model.Password);
+            var user = await _userService.GetAsync(model.Login, model.Password);
 
             if (user != null)
             {
@@ -83,7 +83,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> ChangePassword(int id, string returnUrl = null)
         {
-            var user = await _accountService.FindUserByIdAsync(id);
+            var user = await _userService.GetAsync(id);
             if (user == null)
             {
                 return NotFound();
@@ -105,11 +105,11 @@ namespace SORANO.WEB.Controllers
                 return View(model);
             }
 
-            var user = await _accountService.GetUserAsync(model.Login, model.OldPassword);
+            var user = await _userService.GetAsync(model.Login, model.OldPassword);
 
             if (user != null)
             {
-                await _accountService.ChangePasswordAsync(model.Login, model.NewPassword);
+                await _userService.ChangePasswordAsync(model.Login, model.NewPassword);
 
                 return RedirectToAction("Login", new { model.ReturnUrl });
             }

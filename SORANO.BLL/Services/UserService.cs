@@ -17,7 +17,7 @@ namespace SORANO.BLL.Services
             _userRepository = userRepository;
         }        
 
-        public async Task<List<User>> GetUsersAsync()
+        public async Task<List<User>> GetAllAsync()
         {
             var users = await _userRepository.GetAllAsync(u => u.Roles);
 
@@ -36,6 +36,39 @@ namespace SORANO.BLL.Services
             user.Password = CryptoHelper.Hash(user.Password);
 
             return await _userRepository.AddAsync(user);
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var existentUser = await _userRepository.GetAsync(u => u.ID == id);
+
+            await _userRepository.DeleteAsync(existentUser);
+        }
+
+        public async Task<User> GetAsync(string login)
+        {
+            return await _userRepository.GetAsync(u => u.Login.Equals(login));
+        }
+
+        public async Task<User> GetAsync(int id)
+        {
+            return await _userRepository.GetAsync(u => u.ID == id);
+        }
+
+        public async Task<User> GetAsync(string login, string password)
+        {
+            var hash = CryptoHelper.Hash(password);
+
+            return await _userRepository.GetAsync(u => !u.IsBlocked && u.Login.Equals(login) && u.Password.Equals(hash), u => u.Roles);
+        }
+
+        public async Task ChangePasswordAsync(string login, string newPassword)
+        {
+            var user = await _userRepository.GetAsync(u => u.Login.Equals(login));
+
+            user.Password = CryptoHelper.Hash(newPassword);
+
+            await _userRepository.UpdateAsync(user);
         }
     }
 }
