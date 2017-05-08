@@ -10,14 +10,18 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<User> GetAsync(string login);
 
+        Task<User> GetIncludeAllAsync(int id);
+
         Task<User> GetAsync(int id);
 
-        Task<List<User>> GetAllAsync();
+        Task<List<User>> GetAllIncludeAllAsync();
 
         Task<User> CreateAsync(User user);
 
         Task ChangePasswordAsync(string login, string newPassword);
 
         Task DeleteAsync(int id);
+
+        Task<User> UpdateAsync(User user);
     }
 }

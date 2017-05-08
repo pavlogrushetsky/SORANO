@@ -1,15 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc;
 using SORANO.WEB.Infrastructure.ValidationAttributes;
 
-namespace SORANO.WEB.Models
+namespace SORANO.WEB.Models.User
 {
-    public class UserModel
+    public class UserCreateModel
     {
-        public int ID { get; set; }
-
         [MaxLength(1000, ErrorMessage = "Длина описания пользователя не должна превышать 1000 символов")]
         public string Description { get; set; }
 
@@ -21,8 +18,6 @@ namespace SORANO.WEB.Models
         [Required(ErrorMessage = "Необходимо указать пароль пользователя")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
-
-        public bool IsBlocked { get; set; }
 
         [RequireNonEmpty(ErrorMessage = "Пользователю необходимо назначить хотя бы одну роль")]
         public IEnumerable<string> Roles { get; set; }

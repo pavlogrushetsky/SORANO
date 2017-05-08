@@ -1,4 +1,4 @@
-﻿@model UserModel
+﻿@model UserDeleteModel
 
 @{
     ViewBag.Title = "SORANO - Удаление пользователя";
@@ -14,27 +14,36 @@
     </ul>
 }
 
-<h3>Вы уверены, что хотите удалить следующего пользователя?</h3>
-<div>
-    <dl class="dl-horizontal">        
-        <dt>
-            @Html.DisplayNameFor(model => model.Login)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Login)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-    </dl>
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="ID" />
-        <div class="form-group">
-            <a class="btn btn-default" asp-controller="User" asp-action="List" >Отмена</a>
-            <button type="submit" class="btn btn-danger">Удалить</button>
-        </div>
-    </form>
+<div class="col-lg-6 col-sm-12">
+    <div class="row">
+        <h5 class="@(Model.CanBeDeleted ? "" : "text-danger")">
+            @(Model.CanBeDeleted
+                ? "Вы уверены, что хотите удалить следующего пользователя?"
+                : "Пользователь не может быть удалён, так как у него есть связанные с ним действия или он является текущим пользователем в системе.")
+        </h5>
+    </div>
+    <br/>
+    <div class="row">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Login)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Login)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Description)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Description)
+            </dd>
+        </dl>
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="ID" />
+            <div class="form-group">
+                <a class="btn btn-default" asp-controller="User" asp-action="List">Отмена</a>
+                <button type="submit" class="btn btn-danger @(Model.CanBeDeleted ? "" : "disabled")">Удалить</button>
+            </div>
+        </form>
+    </div>
 </div>

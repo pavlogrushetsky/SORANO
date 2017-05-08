@@ -1,4 +1,4 @@
-﻿@model List<UserModel>
+﻿@model List<UserListModel>
 
 @{
     ViewBag.Title = "SORANO - Пользователи";
@@ -60,27 +60,33 @@
                                 }
                             </td>
                             <td>
-                                @if (user.IsBlocked)
-                                {
-                                    <span class="label label-warning">Заблокирован</span>
-                                }
-                                else
-                                {
-                                    <span class="label label-success">Активен</span>
-                                }
+                                <span class="label label@(user.IsBlocked ? "-warning" : "-success")">
+                                    @(user.IsBlocked ? "Заблокирован" : "Активен")
+                                </span>
                             </td>
                             <td>
-                                <button class="btn btn-xs btn-default" title="Просмотреть информацию о пользователе"><i class="fa fa-info-circle" aria-hidden="true"></i></button>
-                                <button class="btn btn-xs btn-default" title="Редактировать свойства пользователя"><i class="fa fa-gear" aria-hidden="true"></i></button>
-                                @if (user.IsBlocked)
-                                {
-                                    <button class="btn btn-xs btn-warning" title="Разблокировать пользователя"><i class="fa fa-unlock" aria-hidden="true"></i></button>
-                                }
-                                else
-                                {
-                                    <button class="btn btn-xs btn-warning" title="Заблокировать пользователя"><i class="fa fa-lock" aria-hidden="true"></i></button>
-                                }
-                                <a class="btn btn-xs btn-danger" title="Удалить пользователя" asp-controller="User" asp-action="Delete" asp-route-id="@user.ID"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                                <a href="#" class="btn btn-xs btn-default" 
+                                        title="Просмотреть информацию о пользователе">
+                                    <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                </a>
+                                <a href="#" class="btn btn-xs btn-default" 
+                                        title="Редактировать свойства пользователя">
+                                    <i class="fa fa-gear" aria-hidden="true"></i>
+                                </a>
+                                <a asp-controller="User"
+                                   asp-action="Block"
+                                   asp-route-id="@user.ID"
+                                   class="btn btn-xs btn@(user.IsBlocked ? "-success" : "-warning") @((!user.IsBlocked && user.CanBeBlocked) || user.IsBlocked ? "" : "disabled")" 
+                                   title="@(user.IsBlocked ? "Разблокировать пользователя" : "Заблокировать пользователя")">
+                                    <i class="fa fa@(user.IsBlocked ? "-unlock" : "-lock")" aria-hidden="true"></i>
+                                </a>
+                                <a class="btn btn-xs btn-danger @(user.CanBeDeleted ? "" : "disabled")" 
+                                   title="Удалить пользователя" 
+                                   asp-controller="User" 
+                                   asp-action="Delete" 
+                                   asp-route-id="@user.ID">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                </a>
                             </td>
                         </tr>
                     }

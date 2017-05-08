@@ -1,0 +1,58 @@
+﻿@model UserBlockModel
+
+@{
+    ViewBag.Title = "SORANO - Блокирование пользователя";
+    ViewBag.Header = "Блокирование";
+    ViewBag.Description = "пользователя в системе";
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li><a asp-controller="User" asp-action="List">Пользователи</a></li>
+        <li class="active">Блокирование пользователя</li>
+    </ul>
+}
+
+<div class="col-lg-6 col-sm-12">
+    <div class="row">
+        @if (Model.IsBlocked)
+        {
+            <h5>
+                Вы уверены, что хотите разблокировать следующего пользователя?
+            </h5>
+        }
+        else
+        {
+            <h5 class="@(Model.CanBeBlocked ? "" : "text-danger")">
+                @(Model.CanBeBlocked
+                ? "Вы уверены, что хотите заблокировать следующего пользователя?"
+                : "Пользователь не может быть заблокирован, так как он является текущим пользователем в системе.")
+            </h5>
+        }
+    </div>
+    <br/>
+    <div class="row">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Login)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Login)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Description)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Description)
+            </dd>
+        </dl>
+        <form asp-action="Block">
+            <input type="hidden" asp-for="ID" />
+            <div class="form-group">
+                <a class="btn btn-default" asp-controller="User" asp-action="List">Отмена</a>
+                <button type="submit" class="btn btn@(Model.IsBlocked ? "-success" : "-warning") @((!Model.IsBlocked && Model.CanBeBlocked) || Model.IsBlocked ? "" : "disabled")">@(Model.IsBlocked ? "Разблокировать" : "Заблокировать")</button>
+            </div>
+        </form>
+    </div>
+</div>

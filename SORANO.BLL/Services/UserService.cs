@@ -5,6 +5,7 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.AccountEntities;
 using SORANO.DAL.Repositories.Abstract;
 using SORANO.BLL.Helpers;
+using System;
 
 namespace SORANO.BLL.Services
 {
@@ -17,9 +18,16 @@ namespace SORANO.BLL.Services
             _userRepository = userRepository;
         }        
 
-        public async Task<List<User>> GetAllAsync()
+        /// <summary>
+        /// Get all users including all related data
+        /// </summary>
+        /// <returns>List of users with all related data</returns>
+        public async Task<List<User>> GetAllIncludeAllAsync()
         {
-            var users = await _userRepository.GetAllAsync(u => u.Roles);
+            var users = await _userRepository.GetAllAsync(u => u.Roles, u => u.CreatedEntities,
+                u => u.DeletedEntities,
+                u => u.ModifiedEntities,
+                u => u.SoldGoods);
 
             return users.ToList();
         }
@@ -50,6 +58,15 @@ namespace SORANO.BLL.Services
             return await _userRepository.GetAsync(u => u.Login.Equals(login));
         }
 
+        public async Task<User> GetIncludeAllAsync(int id)
+        {
+            return await _userRepository.GetAsync(u => u.ID == id, u => u.Roles,
+                u => u.CreatedEntities,
+                u => u.DeletedEntities,
+                u => u.ModifiedEntities,
+                u => u.SoldGoods);
+        }
+
         public async Task<User> GetAsync(int id)
         {
             return await _userRepository.GetAsync(u => u.ID == id);
@@ -69,6 +86,11 @@ namespace SORANO.BLL.Services
             user.Password = CryptoHelper.Hash(newPassword);
 
             await _userRepository.UpdateAsync(user);
+        }
+
+        public async Task<User> UpdateAsync(User user)
+        {
+            return await _userRepository.UpdateAsync(user);
         }
     }
 }

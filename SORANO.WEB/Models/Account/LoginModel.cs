@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SORANO.WEB.Models
+namespace SORANO.WEB.Models.Account
 {
     public class LoginModel
     {

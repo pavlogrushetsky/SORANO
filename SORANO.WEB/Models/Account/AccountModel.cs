@@ -1,4 +1,4 @@
-﻿namespace SORANO.WEB.Models
+﻿namespace SORANO.WEB.Models.Account
 {
     public class AccountModel
     {

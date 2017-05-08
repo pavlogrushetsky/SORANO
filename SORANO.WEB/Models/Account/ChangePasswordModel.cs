@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using SORANO.WEB.Infrastructure.ValidationAttributes;
 
-namespace SORANO.WEB.Models
+namespace SORANO.WEB.Models.Account
 {
     public class ChangePasswordModel
     {

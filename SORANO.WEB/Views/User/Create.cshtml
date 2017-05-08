@@ -1,4 +1,4 @@
-﻿@model UserModel
+﻿@model UserCreateModel
 
 @{ 
     ViewBag.Title = "SORANO - Создание пользователя";
@@ -20,7 +20,6 @@
               asp-controller="User"
               method="post">
             <div asp-validation-summary="All" class="text-danger"></div>
-            <input type="hidden" asp-for="ID" />
             <div class="form-group">
                 <label class="control-label" asp-for="Login">Логин:</label>
                 <div class="input-group">

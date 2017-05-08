@@ -4,9 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
-using SORANO.WEB.Models;
 using SORANO.CORE.AccountEntities;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using SORANO.WEB.Models.User;
+using SORANO.WEB.Infrastructure.Extensions;
+using System.Security.Claims;
 
 namespace SORANO.WEB.Controllers
 {
@@ -22,30 +24,72 @@ namespace SORANO.WEB.Controllers
             _roleService = roleService;
         }
 
+        #region GET Actions
+
+        [HttpGet]
         public async Task<IActionResult> List()
         {
-            var users = await _userService.GetAllAsync();
+            var users = await _userService.GetAllIncludeAllAsync();
 
-            var models = new List<UserModel>();
+            var models = new List<UserListModel>();
 
-            users.ForEach(u =>
+            users.ForEach(u => 
             {
-                models.Add(new UserModel
-                {
-                    ID = u.ID,
-                    Description = u.Description,
-                    Login = u.Login,
-                    IsBlocked = u.IsBlocked,
-                    Roles = u.Roles.Select(r => r.Description).ToList()
-                });
+                var isCurrent = u.IsCurrent(HttpContext);
+                var hasActivities = u.HasActivities();
+                models.Add(u.ToListModel(isCurrent, hasActivities));
             });
 
             return View(models);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var user = await _userService.GetIncludeAllAsync(id);
+
+            return View(user.ToDeleteModel(user.IsCurrent(HttpContext), user.HasActivities()));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Block(int id)
+        {
+            var user = await _userService.GetAsync(id);
+
+            return View(user.ToBlockModel(user.IsCurrent(HttpContext)));
+        }
+
+        #endregion
+
+        #region POST Actions
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete([Bind("ID")]UserDeleteModel model)
+        {
+            await _userService.DeleteAsync(model.ID);
+
+            return RedirectToAction("List");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Block([Bind("ID")]UserDeleteModel model)
+        {
+            var user = await _userService.GetAsync(model.ID);
+
+            user.IsBlocked = !user.IsBlocked;
+
+            await _userService.UpdateAsync(user);
+
+            return RedirectToAction("List");
+        }
+
+        #endregion
+
         public IActionResult Create()
         {
-            var model = new UserModel
+            var model = new UserCreateModel
             {
                 AllRoles = new List<SelectListItem>
                 {
@@ -63,7 +107,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(UserModel model)
+        public async Task<IActionResult> Create(UserCreateModel model)
         {            
             if (!ModelState.IsValid)
             {
@@ -93,31 +137,6 @@ namespace SORANO.WEB.Controllers
 
             ModelState.AddModelError("Login", "Пользователь с таким логином уже существует в системе");
             return View(model);
-        }
-
-        public async Task<IActionResult> Delete(int id)
-        {
-            var user = await _userService.GetAsync(id);
-
-            var model = new UserModel
-            {
-                ID = user.ID,
-                Description = user.Description,
-                Login = user.Login,
-                IsBlocked = user.IsBlocked,
-                Roles = user.Roles.Select(r => r.Description).ToList()
-            };
-
-            return View(model);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(UserModel model)
-        {
-            await _userService.DeleteAsync(model.ID);
-
-            return RedirectToAction("List");
-        }
+        }        
     }
 }
