@@ -23,11 +23,12 @@ namespace SORANO.WEB.Infrastructure.ValidationAttributes
             var sourceProperty = objType.GetProperty(validationContext.MemberName);
             var targetProperties = objType.GetProperties();
 
-            var targetProperty = targetProperties.SingleOrDefault(p => p.Name.Equals(_targetProperty));           
+            var targetProperty = targetProperties.SingleOrDefault(p => p.Name.Equals(_targetProperty));
 
-            if (sourceProperty != null && (targetProperty == null 
-                                           || !(sourceProperty.PropertyType == targetProperty.PropertyType)
-                                           || sourceProperty.GetValue(obj) != targetProperty.GetValue(obj)))
+            var sourceValue = sourceProperty.GetValue(obj)?.ToString();
+            var targetValue = targetProperty.GetValue(obj)?.ToString();
+
+            if (sourceValue != targetValue)
             {
                 return new ValidationResult(ErrorMessageString);
             }

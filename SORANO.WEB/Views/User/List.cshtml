@@ -69,16 +69,19 @@
                                         title="Просмотреть информацию о пользователе">
                                     <i class="fa fa-info-circle" aria-hidden="true"></i>
                                 </a>
-                                <a href="#" class="btn btn-xs btn-default" 
-                                        title="Редактировать свойства пользователя">
-                                    <i class="fa fa-gear" aria-hidden="true"></i>
+                                <a asp-controller="User" 
+                                   asp-action="Update"
+                                   asp-route-id="@user.ID"
+                                   class="btn btn-xs btn-default" 
+                                   title="Редактировать свойства пользователя">
+                                    <i class="fa fa-pencil-square" aria-hidden="true"></i>
                                 </a>
                                 <a asp-controller="User"
                                    asp-action="Block"
                                    asp-route-id="@user.ID"
                                    class="btn btn-xs btn@(user.IsBlocked ? "-success" : "-warning") @((!user.IsBlocked && user.CanBeBlocked) || user.IsBlocked ? "" : "disabled")" 
                                    title="@(user.IsBlocked ? "Разблокировать пользователя" : "Заблокировать пользователя")">
-                                    <i class="fa fa@(user.IsBlocked ? "-unlock" : "-lock")" aria-hidden="true"></i>
+                                    <i class="fa fa@(user.IsBlocked ? "-unlock-alt" : "-lock")" aria-hidden="true"></i>
                                 </a>
                                 <a class="btn btn-xs btn-danger @(user.CanBeDeleted ? "" : "disabled")" 
                                    title="Удалить пользователя" 

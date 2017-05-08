@@ -59,6 +59,14 @@ namespace SORANO.WEB.Controllers
             return View(user.ToBlockModel(user.IsCurrent(HttpContext)));
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Update(int id)
+        {
+            var user = await _userService.GetIncludeRolesAsync(id);
+
+            return View(user.ToUpdateModel());
+        }
+
         #endregion
 
         #region POST Actions
@@ -79,6 +87,26 @@ namespace SORANO.WEB.Controllers
             var user = await _userService.GetAsync(model.ID);
 
             user.IsBlocked = !user.IsBlocked;
+
+            await _userService.UpdateAsync(user);
+
+            return RedirectToAction("List");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update([Bind("ID,Login,Description,NewPassword,RepeatPassword,Roles")]UserUpdateModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userService.GetAsync(model.ID);
+
+            var roles = await _roleService.GetAllAsync();
+
+            user.FromUpdateModel(model, roles.ToList());
 
             await _userService.UpdateAsync(user);
 

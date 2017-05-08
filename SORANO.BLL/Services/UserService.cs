@@ -32,6 +32,11 @@ namespace SORANO.BLL.Services
             return users.ToList();
         }
 
+        public async Task<User> GetIncludeRolesAsync(int id)
+        {
+            return await _userRepository.GetAsync(u => u.ID == id, u => u.Roles);
+        }
+
         public async Task<User> CreateAsync(User user)
         {
             var existentUser = await _userRepository.GetAsync(u => u.Login.Equals(user.Login));
@@ -90,6 +95,8 @@ namespace SORANO.BLL.Services
 
         public async Task<User> UpdateAsync(User user)
         {
+            user.Password = CryptoHelper.Hash(user.Password);
+
             return await _userRepository.UpdateAsync(user);
         }
     }

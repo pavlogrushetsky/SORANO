@@ -1,24 +1,25 @@
-﻿@model UserCreateModel
+﻿@model UserUpdateModel
 
 @{ 
-    ViewBag.Title = "SORANO - Создание пользователя";
-    ViewBag.Header = "Создание";
-    ViewBag.Description = "нового пользователя";
+    ViewBag.Title = "SORANO - Редактирование пользователя";
+    ViewBag.Header = "Редактирование";
+    ViewBag.Description = "свойств пользователя";
 }
 
 @section Breadcrumb {
     <ul class="breadcrumb">
         <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
         <li><a asp-controller="User" asp-action="List">Пользователи</a></li>
-        <li class="active">Создание пользователя</li>
+        <li class="active">Редактирование пользователя</li>
     </ul>
 }
 
 <div class="row">
     <div class="col-lg-5 col-md-6 col-sm-12">
-        <form asp-action="Create"
+        <form asp-action="Update"
               asp-controller="User"
               method="post">
+            <input type="hidden" asp-for="ID"/>
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <label class="control-label" asp-for="Login">Логин:</label>
@@ -35,10 +36,17 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label" asp-for="Password">Пароль:</label>
+                <label class="control-label" asp-for="NewPassword">Новый пароль:</label>
                 <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-key"></i></span>
-                    <input class="form-control" type="password" asp-for="Password" placeholder="Новый пароль" />
+                    <input class="form-control" type="password" asp-for="NewPassword" placeholder="Новый пароль" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="RepeatPassword">Новый пароль:</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-key"></i></span>
+                    <input class="form-control" type="password" asp-for="RepeatPassword" placeholder="Повторите новый пароль" />
                 </div>
             </div>
             <div class="form-group">

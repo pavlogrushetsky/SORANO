@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using SORANO.CORE.AccountEntities;
 using SORANO.WEB.Models.User;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 
@@ -27,6 +28,41 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 CanBeDeleted = !(isCurrent || hasActivities),
                 CanBeBlocked = !isCurrent
             };
+        }
+
+        public static UserUpdateModel ToUpdateModel(this User user)
+        {
+            return new UserUpdateModel
+            {
+                ID = user.ID,
+                Login = user.Login,
+                Description = user.Description,
+                Roles = user.Roles?.Select(r => r.Name).ToList()
+            };
+        }
+
+        public static void FromUpdateModel(this User user, UserUpdateModel model, List<Role> roles)
+        {
+            user.Login = model.Login;
+            user.Description = model.Description;
+            
+            if (!string.IsNullOrEmpty(model.NewPassword))
+            {
+                user.Password = model.NewPassword;
+            }
+
+            user.Roles
+                .Where(r => !model.Roles.Contains(r.Name))
+                .ToList()
+                .ForEach(r => user.Roles.Remove(r));
+
+            var existentRoles = user.Roles;
+
+            roles
+                .Where(r => model.Roles.Contains(r.Name))
+                .Except(existentRoles)
+                .ToList()
+                .ForEach(r => user.Roles.Add(r));
         }
 
         /// <summary>
