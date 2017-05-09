@@ -31,22 +31,30 @@ namespace SORANO.WEB.Infrastructure.Extensions
             };
         }
 
-        public static UserUpdateModel ToUpdateModel(this User user)
+        public static UserUpdateModel ToUpdateModel(this User user, bool canBeModified = true)
         {
             return new UserUpdateModel
             {
                 ID = user.ID,
                 Login = user.Login,
                 Description = user.Description,
-                Roles = user.Roles?.Select(r => r.Name).ToList()
+                Roles = user.Roles?.Select(r => r.Name).ToList(),
+                CanBeModified = canBeModified
             };
         }
 
-        public static void FromUpdateModel(this User user, UserUpdateModel model, List<Role> roles)
+        public static void FromUpdateModel(this User user, UserUpdateModel model, List<Role> roles, bool canBeModified = true)
         {
-            user.Login = model.Login;
-            user.Description = model.Description;
             
+            user.Description = model.Description;
+
+            if (!canBeModified)
+            {
+                return;
+            }
+
+            user.Login = model.Login;
+
             if (!string.IsNullOrEmpty(model.NewPassword))
             {
                 user.Password = model.NewPassword;
@@ -135,27 +143,30 @@ namespace SORANO.WEB.Infrastructure.Extensions
             };
 
             model.Activities = new List<UserActivityModel>();
-            model.Activities.AddRange(user.CreatedEntities?.Select(e => new UserActivityModel
-            {
-                ActivityType = "Создание",
-                EntityID = e.ID,
-                EntityType = e.GetType().Name,
-                Date = e.CreatedDate.ToString("dd.MM.yyyy")
-            }));
-            model.Activities.AddRange(user.ModifiedEntities?.Select(e => new UserActivityModel
-            {
-                ActivityType = "Редактирование",
-                EntityID = e.ID,
-                EntityType = e.GetType().Name,
-                Date = e.CreatedDate.ToString("dd.MM.yyyy")
-            }));
-            model.Activities.AddRange(user.ModifiedEntities?.Select(e => new UserActivityModel
-            {
-                ActivityType = "Удаление",
-                EntityID = e.ID,
-                EntityType = e.GetType().Name,
-                Date = e.CreatedDate.ToString("dd.MM.yyyy")
-            }));
+            if (user.CreatedEntities != null)
+                model.Activities.AddRange(user.CreatedEntities.Select(e => new UserActivityModel
+                {
+                    ActivityType = "Создание",
+                    EntityID = e.ID,
+                    EntityType = e.GetType().Name,
+                    Date = e.CreatedDate.ToString("dd.MM.yyyy")
+                }));
+            if (user.ModifiedEntities != null)
+                model.Activities.AddRange(user.ModifiedEntities?.Select(e => new UserActivityModel
+                {
+                    ActivityType = "Редактирование",
+                    EntityID = e.ID,
+                    EntityType = e.GetType().Name,
+                    Date = e.CreatedDate.ToString("dd.MM.yyyy")
+                }));
+            if (user.DeletedEntities != null)
+                model.Activities.AddRange(user.DeletedEntities?.Select(e => new UserActivityModel
+                {
+                    ActivityType = "Удаление",
+                    EntityID = e.ID,
+                    EntityType = e.GetType().Name,
+                    Date = e.CreatedDate.ToString("dd.MM.yyyy")
+                }));
 
             return model;
         }

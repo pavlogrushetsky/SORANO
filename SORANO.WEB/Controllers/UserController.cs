@@ -8,7 +8,6 @@ using SORANO.CORE.AccountEntities;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.WEB.Models.User;
 using SORANO.WEB.Infrastructure.Extensions;
-using System.Security.Claims;
 
 namespace SORANO.WEB.Controllers
 {
@@ -83,7 +82,7 @@ namespace SORANO.WEB.Controllers
         {
             var user = await _userService.GetIncludeRolesAsync(id);
 
-            return View(user.ToUpdateModel());
+            return View(user.ToUpdateModel(!user.IsCurrent(HttpContext)));
         }
 
         /// <summary>
@@ -153,7 +152,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update([Bind("ID,Login,Description,NewPassword,RepeatPassword,Roles")]UserUpdateModel model)
+        public async Task<IActionResult> Update([Bind("ID,Login,Description,NewPassword,RepeatPassword,Roles,CanBeModified")]UserUpdateModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -164,7 +163,7 @@ namespace SORANO.WEB.Controllers
 
             var roles = await _roleService.GetAllAsync();
 
-            user.FromUpdateModel(model, roles.ToList());
+            user.FromUpdateModel(model, roles.ToList(), model.CanBeModified);
 
             await _userService.UpdateAsync(user);
 

@@ -20,14 +20,23 @@
               asp-controller="User"
               method="post">
             <input type="hidden" asp-for="ID"/>
+            <input type="hidden" asp-for="CanBeModified"/>
             <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label class="control-label" asp-for="Login">Логин:</label>
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-user-circle-o"></i></span>
-                    <input class="form-control" type="text" asp-for="Login" placeholder="Логин" />
+            @if (Model.CanBeModified)
+            {
+                <div class="form-group">
+                    <label class="control-label" asp-for="Login">Логин:</label>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-user-circle-o"></i></span>
+                        <input class="form-control" type="text" asp-for="Login" placeholder="Логин"/>
+                    </div>
                 </div>
-            </div>
+            }
+            else
+            {
+                <input type="hidden" asp-for="Login" />
+                <input type="hidden" asp-for="Roles" />
+            }
             <div class="form-group">
                 <label class="control-label" asp-for="Description">Описание:</label>
                 <div class="input-group">
@@ -35,27 +44,30 @@
                     <textarea class="form-control" rows="3" asp-for="Description" placeholder="Описание"></textarea>
                 </div>
             </div>
-            <div class="form-group">
-                <label class="control-label" asp-for="NewPassword">Новый пароль:</label>
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-key"></i></span>
-                    <input class="form-control" type="password" asp-for="NewPassword" placeholder="Новый пароль" />
+            @if (Model.CanBeModified)
+            {
+                <div class="form-group">
+                    <label class="control-label" asp-for="NewPassword">Новый пароль:</label>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-key"></i></span>
+                        <input class="form-control" type="password" asp-for="NewPassword" placeholder="Новый пароль" />
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label" asp-for="RepeatPassword">Новый пароль:</label>
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-key"></i></span>
-                    <input class="form-control" type="password" asp-for="RepeatPassword" placeholder="Повторите новый пароль" />
+                <div class="form-group">
+                    <label class="control-label" asp-for="RepeatPassword">Новый пароль:</label>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-key"></i></span>
+                        <input class="form-control" type="password" asp-for="RepeatPassword" placeholder="Повторите новый пароль" />
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label">Роли:</label>
-                <div class="input-group">
-                    <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-vcard"></i></span>
-                    <select class="form-control" asp-for="Roles" asp-items="Model.AllRoles"></select>                    
+                <div class="form-group">
+                    <label class="control-label">Роли:</label>
+                    <div class="input-group">
+                        <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-vcard"></i></span>
+                        <select class="form-control" asp-for="Roles" asp-items="Model.AllRoles"></select>                    
+                    </div>
                 </div>
-            </div>
+            }            
             <div class="form-group">
                 <a class="btn btn-default" asp-controller="User" asp-action="List">Отмена</a>
                 <button type="submit" class="btn btn-primary">Сохранить</button>

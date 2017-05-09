@@ -35,5 +35,7 @@ namespace SORANO.WEB.Models.User
             new SelectListItem { Value = "manager", Text = "Менеджер" },
             new SelectListItem { Value = "user", Text = "Пользователь" },
         };
+
+        public bool CanBeModified { get; set; }
     }
 }
