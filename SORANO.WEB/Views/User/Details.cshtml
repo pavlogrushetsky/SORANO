@@ -67,7 +67,7 @@
                         <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
                         <span class="text-primary">
                             <i class="fa fa-fw fa-money" aria-hidden="true"></i>
-                            Продажи
+                            @Html.DisplayNameFor(m => m.Sales)
                             <span class="badge pull-right">@Model.Sales.Count</span>
                         </span>
                         </a>
@@ -111,7 +111,7 @@
                         <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
                             <span class="text-primary">
                                 <i class="fa fa-fw fa-hand-paper-o" aria-hidden="true"></i>
-                                Действия
+                                @Html.DisplayNameFor(m => m.Activities)
                                 <span class="badge pull-right">@Model.Activities.Count</span>
                             </span>
                         </a>
