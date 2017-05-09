@@ -12,10 +12,12 @@ namespace SORANO.BLL.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IDeliveryItemRepository _deliveryItemRepository;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IDeliveryItemRepository deliveryItemRepository)
         {
             _userRepository = userRepository;
+            _deliveryItemRepository = deliveryItemRepository;
         }        
 
         /// <summary>
@@ -65,11 +67,18 @@ namespace SORANO.BLL.Services
 
         public async Task<User> GetIncludeAllAsync(int id)
         {
-            return await _userRepository.GetAsync(u => u.ID == id, u => u.Roles,
+            var user = await _userRepository.GetAsync(u => u.ID == id, u => u.Roles,
                 u => u.CreatedEntities,
                 u => u.DeletedEntities,
                 u => u.ModifiedEntities,
                 u => u.SoldGoods);
+
+            user.SoldGoods.ToList().ForEach(g =>
+            {
+                g.DeliveryItem = _deliveryItemRepository.Get(d => d.ID == g.DeliveryItemID, d => d.Article);
+            });
+
+            return user;
         }
 
         public async Task<User> GetAsync(int id)

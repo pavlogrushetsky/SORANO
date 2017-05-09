@@ -3,7 +3,7 @@
 @{
     ViewBag.Title = "SORANO - Пользователи";
     ViewBag.Header = "Список";
-    ViewBag.Description = "всех пользователей в системе";
+    ViewBag.Description = "всех пользователей";
 }
 
 @section Styles {
@@ -21,8 +21,10 @@
 <div class="row">
     <div class="col-lg-12">
         <div class="panel panel-primary">
-            <div class="panel-heading">               
-                Пользователи                   
+            <div class="panel-heading">  
+                <i class="fa fa-fw fa-list" aria-hidden="true"></i>
+                Пользователи&nbsp;
+                <span class="badge">@Model.Count</span>                    
                 <a class="btn btn-default btn-xs pull-right" asp-controller="User" asp-action="Create">Создать пользователя</a>
                 <div class="clearfix"></div>
             </div>
@@ -51,7 +53,13 @@
                     {
                         <tr>
                             <td>@user.ID</td>
-                            <td><a href="#">@user.Login</a></td>
+                            <td>
+                                <a asp-controller="User"
+                                   asp-action="Details"
+                                   asp-route-id="@user.ID">
+                                    @user.Login
+                                </a>
+                            </td>
                             <td>@user.Description</td>
                             <td>
                                 @foreach (var role in user.Roles)
@@ -65,8 +73,11 @@
                                 </span>
                             </td>
                             <td>
-                                <a href="#" class="btn btn-xs btn-default" 
-                                        title="Просмотреть информацию о пользователе">
+                                <a asp-controller="User"
+                                   asp-action="Details"
+                                   asp-route-id="@user.ID"
+                                   class="btn btn-xs btn-default" 
+                                   title="Просмотреть информацию о пользователе">
                                     <i class="fa fa-info-circle" aria-hidden="true"></i>
                                 </a>
                                 <a asp-controller="User" 

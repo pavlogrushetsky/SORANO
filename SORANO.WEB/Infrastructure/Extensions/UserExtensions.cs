@@ -2,6 +2,7 @@
 using SORANO.CORE.AccountEntities;
 using SORANO.WEB.Models.User;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 
@@ -65,6 +66,18 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 .ForEach(r => user.Roles.Add(r));
         }
 
+        public static void FromCreateModel(this User user, UserCreateModel model, List<Role> roles)
+        {
+            user.Login = model.Login;
+            user.Description = model.Description;
+            user.Password = model.Password;
+
+            roles
+                .Where(r => model.Roles.Contains(r.Name))
+                .ToList()
+                .ForEach(r => user.Roles.Add(r));
+        }
+
         /// <summary>
         /// Convert user entity to user delete model
         /// </summary>
@@ -99,6 +112,52 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 CanBeBlocked = !IsCurrent,
                 IsBlocked = user.IsBlocked
             };
+        }
+
+        public static UserDetailsModel ToDetailsModel(this User user, bool isCurrent = false, bool hasActivities = false)
+        {
+            var model = new UserDetailsModel
+            {
+                ID = user.ID,
+                Login = user.Login,
+                Description = user.Description,
+                Roles = user.Roles?.Select(r => r.Description).ToList(),
+                IsBlocked = user.IsBlocked,
+                CanBeDeleted = !(isCurrent || hasActivities),
+                CanBeBlocked = !isCurrent,
+                Sales = user.SoldGoods?.Select(g => new UserSaleModel
+                {
+                    ArticleName = g.DeliveryItem.Article.Name,
+                    Location = g.SaleLocation.Name,
+                    Price = g.SalePrice?.ToString("C", new CultureInfo("uk-UA")),
+                    Date = g.SaleDate?.ToString("dd.MM.yyyy")
+                }).ToList()
+            };
+
+            model.Activities = new List<UserActivityModel>();
+            model.Activities.AddRange(user.CreatedEntities?.Select(e => new UserActivityModel
+            {
+                ActivityType = "Создание",
+                EntityID = e.ID,
+                EntityType = e.GetType().Name,
+                Date = e.CreatedDate.ToString("dd.MM.yyyy")
+            }));
+            model.Activities.AddRange(user.ModifiedEntities?.Select(e => new UserActivityModel
+            {
+                ActivityType = "Редактирование",
+                EntityID = e.ID,
+                EntityType = e.GetType().Name,
+                Date = e.CreatedDate.ToString("dd.MM.yyyy")
+            }));
+            model.Activities.AddRange(user.ModifiedEntities?.Select(e => new UserActivityModel
+            {
+                ActivityType = "Удаление",
+                EntityID = e.ID,
+                EntityType = e.GetType().Name,
+                Date = e.CreatedDate.ToString("dd.MM.yyyy")
+            }));
+
+            return model;
         }
 
         /// <summary>

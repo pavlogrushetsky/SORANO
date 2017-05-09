@@ -26,6 +26,10 @@ namespace SORANO.WEB.Controllers
 
         #region GET Actions
 
+        /// <summary>
+        /// Get all users
+        /// </summary>
+        /// <returns>List view</returns>
         [HttpGet]
         public async Task<IActionResult> List()
         {
@@ -43,6 +47,11 @@ namespace SORANO.WEB.Controllers
             return View(models);
         }
 
+        /// <summary>
+        /// Delete specified user
+        /// </summary>
+        /// <param name="id">User identifier</param>
+        /// <returns>Delete view</returns>
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
@@ -51,6 +60,11 @@ namespace SORANO.WEB.Controllers
             return View(user.ToDeleteModel(user.IsCurrent(HttpContext), user.HasActivities()));
         }
 
+        /// <summary>
+        /// Block specified user
+        /// </summary>
+        /// <param name="id">User identifier</param>
+        /// <returns>Block view</returns>
         [HttpGet]
         public async Task<IActionResult> Block(int id)
         {
@@ -59,12 +73,56 @@ namespace SORANO.WEB.Controllers
             return View(user.ToBlockModel(user.IsCurrent(HttpContext)));
         }
 
+        /// <summary>
+        /// Update specified user
+        /// </summary>
+        /// <param name="id">User identifier</param>
+        /// <returns>Update view</returns>
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
             var user = await _userService.GetIncludeRolesAsync(id);
 
             return View(user.ToUpdateModel());
+        }
+
+        /// <summary>
+        /// Create new user
+        /// </summary>
+        /// <returns>Create view</returns>
+        [HttpGet]
+        public IActionResult Create()
+        {
+            var model = new UserCreateModel
+            {
+                AllRoles = new List<SelectListItem>
+                {
+                    new SelectListItem {Value = "developer", Text = "Разработчик"},
+                    new SelectListItem {Value = "administrator", Text = "Администратор"},
+                    new SelectListItem {Value = "editor", Text = "Редактор"},
+                    new SelectListItem {Value = "manager", Text = "Менеджер"},
+                    new SelectListItem {Value = "user", Text = "Пользователь"},
+                }
+            };
+
+
+            return View(model);
+        }
+
+        /// <summary>
+        /// Get user details
+        /// </summary>
+        /// <param name="id">User identifier</param>
+        /// <returns>Details view</returns>
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            var user = await _userService.GetIncludeAllAsync(id);
+
+            var isCurrent = user.IsCurrent(HttpContext);
+            var hasActivities = user.HasActivities();
+
+            return View(user.ToDetailsModel(isCurrent, hasActivities));
         }
 
         #endregion
@@ -113,48 +171,19 @@ namespace SORANO.WEB.Controllers
             return RedirectToAction("List");
         }
 
-        #endregion
-
-        public IActionResult Create()
-        {
-            var model = new UserCreateModel
-            {
-                AllRoles = new List<SelectListItem>
-                {
-                    new SelectListItem {Value = "developer", Text = "Разработчик"},
-                    new SelectListItem {Value = "administrator", Text = "Администратор"},
-                    new SelectListItem {Value = "editor", Text = "Редактор"},
-                    new SelectListItem {Value = "manager", Text = "Менеджер"},
-                    new SelectListItem {Value = "user", Text = "Пользователь"},
-                }
-            };
-
-
-            return View(model);
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(UserCreateModel model)
-        {            
+        public async Task<IActionResult> Create([Bind("Login,Description,Password,Roles")]UserCreateModel model)
+        {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            var user = new User
-            {
-                Login = model.Login,
-                Description = model.Description,
-                Password = model.Password
-            };
-
             var roles = await _roleService.GetAllAsync();
 
-            model.Roles.ToList().ForEach(m =>
-            {
-                user.Roles.Add(roles.First(r => r.Name.Equals(m)));
-            });
+            var user = new User();
+            user.FromCreateModel(model, roles.ToList());            
 
             user = await _userService.CreateAsync(user);
 
@@ -165,6 +194,8 @@ namespace SORANO.WEB.Controllers
 
             ModelState.AddModelError("Login", "Пользователь с таким логином уже существует в системе");
             return View(model);
-        }        
+        }
+
+        #endregion                     
     }
 }
