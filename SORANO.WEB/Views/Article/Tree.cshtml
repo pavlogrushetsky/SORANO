@@ -1,0 +1,121 @@
+﻿@{
+    ViewBag.Title = "SORANO - Артикулы";
+    ViewBag.Header = "Артикулы";
+    ViewBag.Description = "и типы артикулов";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/bootstrap-treeview/dist/bootstrap-treeview.min.css" />
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li class="active">Артикулы</li>
+    </ul>
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <i class="fa fa-fw fa-sitemap" aria-hidden="true"></i>
+                Дерево артикулов
+                <span class="badge"></span>
+                <a class="btn btn-default btn-xs pull-right" href="#">Добавить новый тип артикулов</a>
+                <a class="btn btn-default btn-xs pull-right" style="margin-right: 10px;" href="#">Добавить новый артикул</a>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-6 col-sm-12">
+                        <input class="form-control input-sm" placeholder="Поиск артикулов и типов артикулов" type="text" id="article-search" />
+                        <br/>
+                        <div id="article-tree"></div>
+                    </div>
+                    <div class="col-lg-6 col-sm-12">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/bootstrap-treeview/dist/bootstrap-treeview.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#article-tree').treeview({
+                data: getArticleTree(),
+                collapseIcon: "glyphicon glyphicon-tag",
+                expandIcon: "glyphicon glyphicon-tags",
+                selectedBackColor: "#95a5a6",
+                showBorder: false,
+                enableLinks: true,
+                showTags: true
+            });
+        });
+
+        function getArticleTree() {
+            var data = [
+                {
+                    text: " Parent 1",
+                    tags: ['2'],
+                    nodes: [
+                        {
+                            text: "Child 1",
+                            tags: ['2'],
+                            nodes: [
+                                {
+                                    text: "Grandchild 1",
+                                    icon: "glyphicon glyphicon-barcode",
+                                    href: "#",
+                                    type: "article"
+                                },
+                                {
+                                    text: "Grandchild 2",
+                                    icon: "glyphicon glyphicon-barcode",
+                                    href: "#",
+                                    type: "article"
+                                }
+                            ]
+                        },
+                        {
+                            text: "Child 2",
+                            tags: ['3'],
+                            nodes: [
+                                {
+                                    text: "Grandchild 1",
+                                    icon: "glyphicon glyphicon-barcode",
+                                    href: "#",
+                                    type: "article"
+                                },
+                                {
+                                    text: "Grandchild 2",
+                                    icon: "glyphicon glyphicon-barcode",
+                                    href: "#",
+                                    type: "article"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    text: "Parent 2"
+                },
+                {
+                    text: "Parent 3"
+                },
+                {
+                    text: "Parent 4"
+                },
+                {
+                    text: "Parent 5"
+                }
+            ];
+
+            return data;
+        }
+    </script>
+}
