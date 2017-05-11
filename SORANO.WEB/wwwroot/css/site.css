@@ -10,3 +10,11 @@
     color: #f4eb42;
     background-color: #2c3e50;
 }
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+    color: #2c3e50;
+    background-color: #ffffff;
+    border: 1px solid #2c3e50;
+    border-bottom-color: transparent;
+    cursor: default;
+}

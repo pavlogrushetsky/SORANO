@@ -32,11 +32,17 @@ namespace SORANO.WEB
         {
             services.AddMvc();
             services.AddScoped(_ => new StockContext(Configuration.GetConnectionString("SORANO")));
+
+            // Add dependencies for repositories
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IRoleRepository, RoleRepository>();
             services.AddTransient<IDeliveryItemRepository, DeliveryItemRepository>();
+            services.AddTransient<IArticleRepository, ArticleRepository>();
+
+            // Add dependencies for services
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IRoleService, RoleService>();
+            services.AddTransient<IArticleService, ArticleService>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

@@ -1,0 +1,217 @@
+﻿@{
+    ViewBag.Title = "SORANO - Артикулы";
+    ViewBag.Header = "Артикулы";
+    ViewBag.Description = "и типы артикулов";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/bootstrap-treeview/dist/bootstrap-treeview.min.css"/>
+    <link rel="stylesheet" href="~/lib/datatables.net-bs/css/dataTables.bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" />
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li class="active">Артикулы</li>
+    </ul>
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a href="#article-tab-tree" data-toggle="tab" aria-expanded="False">
+                    <i class="fa fa-fw fa-sitemap" aria-hidden="true"></i>
+                    Дерево артикулов
+                </a>                
+            </li>
+            <li>
+                <a href="#article-tab-table" data-toggle="tab" aria-expanded="False">
+                    <i class="fa fa-fw fa-th" aria-hidden="true"></i>
+                    Таблица артикулов
+                </a>
+            </li>
+        </ul>
+        <div id="article-tab-content" class="tab-content">
+            <div class="tab-pane fade active in" id="article-tab-tree">
+                <div class="panel panel-primary" style="border-radius: 0;">
+                    <div class="panel-heading" style="border-top-left-radius: 0; border-top-right-radius: 0;">
+                        <a class="btn btn-default btn-xs pull-right" href="#">Добавить новый тип артикулов</a>
+                        <a class="btn btn-default btn-xs pull-right" style="margin-right: 10px;" href="#">Добавить новый артикул</a>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-6 col-sm-12">
+                                <input class="form-control input-sm" style="font-weight: bold;" placeholder="Поиск артикулов и типов артикулов" type="text" id="article-search" />
+                                <br />
+                                <div id="article-tree"></div>
+                            </div>
+                            <div class="col-lg-6 col-sm-12">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="article-tab-table">
+                <div class="panel panel-primary" style="border-radius: 0;">
+                    <div class="panel-heading" style="border-top-left-radius: 0; border-top-right-radius: 0;">
+                        <a class="btn btn-default btn-xs pull-right" href="#">Добавить новый тип артикулов</a>
+                        <a class="btn btn-default btn-xs pull-right" style="margin-right: 10px;" href="#">Добавить новый артикул</a>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="panel-body">
+                        <table id="article-datatable" class="table table-striped table-bordered table-hover table-responsive" style="width: 100%">
+                            <thead>
+                            <tr role="row" id="search-row">
+                                <th style="width: 5%" rowspan="1" colspan="1"></th>
+                                <th style="width: 13%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Код"/></th>
+                                <th style="width: 25%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Название" /></th>
+                                <th style="width: 25%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Тип" /></th>
+                                <th style="width: 20%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Производитель" /></th>
+                                <th style="width: 12%" rowspan="1" colspan="1"></th>
+                            </tr>
+                            <tr role="row">
+                                <th style="width: 5%">ID</th>
+                                <th style="width: 13%"><i class="fa fa-fw fa-barcode" aria-hidden="true"></i>&nbsp;Код</th>
+                                <th style="width: 25%"><i class="fa fa-fw fa-align-justify" aria-hidden="true"></i>&nbsp;Название</th>
+                                <th style="width: 25%"><i class="fa fa-fw fa-tag" aria-hidden="true"></i>&nbsp;Тип</th>
+                                <th style="width: 20%"><i class="fa fa-fw fa-suitcase" aria-hidden="true"></i>&nbsp;Производитель</th>
+                                <th style="width: 12%">Действия</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/bootstrap-treeview/dist/bootstrap-treeview.min.js"></script>
+    <script src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/lib/datatables.net-responsive-bs/js/responsive.bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#article-tree').treeview({
+                data: getArticleTree(),
+                collapseIcon: "glyphicon glyphicon-tag",
+                expandIcon: "glyphicon glyphicon-tags",
+                selectedBackColor: "#95a5a6",
+                showBorder: false,
+                enableLinks: true,
+                showTags: true
+            });
+
+            var table = $("#article-datatable").DataTable({
+                ajax: {
+                    url: '/Article/All',
+                    dataSrc: ''
+                },
+                "fnInitComplete": function() {
+                    $('.pagination').first().addClass('pagination-sm');
+                },
+                columns: [
+                    { data: 'id' },
+                    { data: 'code' },
+                    { data: 'name' },
+                    { data: 'type' },
+                    { data: 'producer' },
+                    {
+                        sortable: false,
+                        "render": function ( data, type, row, meta ) {
+                            return "<a href='/Article/Details/" + row.id + "' class='btn btn-xs btn-default' title='Просмотреть информацию об артикуле'><i class='fa fa-info-circle' aria-hidden='true'></i></a> \
+                                    <a href='/Article/Update/" + row.id + "' class='btn btn-xs btn-default' title='Редактировать свойства артикула'><i class='fa fa-pencil-square' aria-hidden='true'></i></a>";
+                        }
+                    }
+                ],
+                responsive: true,
+                "pagingType": "numbers",
+                "language": {
+                    "lengthMenu": "Отобразить _MENU_ артикулов на странице",
+                    "zeroRecords": "Артикулы отсутствуют",
+                    "info": "Отображение страницы _PAGE_ из _PAGES_",
+                    "infoEmpty": "Записи отсутствуют",
+                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                    "search": "Поиск"
+                }
+            });
+
+            table.columns().eq(0).each(function(colIdx) {
+                $('input', $('th')[colIdx]).on('keyup change',
+                    function() {
+                        table
+                            .column(colIdx)
+                            .search(this.value)
+                            .draw();
+                    });
+            });            
+        });
+
+        function getArticleTree() {
+            var data = [
+                {
+                    text: " Parent 1",
+                    tags: ['2'],
+                    nodes: [
+                        {
+                            text: "Child 1",
+                            tags: ['2'],
+                            nodes: [
+                                {
+                                    text: "Grandchild 1",
+                                    icon: "glyphicon glyphicon-barcode",
+                                    href: "#",
+                                    type: "article"
+                                },
+                                {
+                                    text: "Grandchild 2",
+                                    icon: "glyphicon glyphicon-barcode",
+                                    href: "#",
+                                    type: "article"
+                                }
+                            ]
+                        },
+                        {
+                            text: "Child 2",
+                            tags: ['3'],
+                            nodes: [
+                                {
+                                    text: "Grandchild 1",
+                                    icon: "glyphicon glyphicon-barcode",
+                                    href: "#",
+                                    type: "article"
+                                },
+                                {
+                                    text: "Grandchild 2",
+                                    icon: "glyphicon glyphicon-barcode",
+                                    href: "#",
+                                    type: "article"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    text: "Parent 2"
+                },
+                {
+                    text: "Parent 3"
+                },
+                {
+                    text: "Parent 4"
+                },
+                {
+                    text: "Parent 5"
+                }
+            ];
+
+            return data;
+        }
+    </script>
+}
