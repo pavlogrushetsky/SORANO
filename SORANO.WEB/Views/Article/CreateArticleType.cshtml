@@ -1,0 +1,70 @@
+﻿@model ArticleTypeCreateModel
+
+@{
+    ViewBag.Title = "SORANO - Создание типа артикулов";
+    ViewBag.Header = "Создание";
+    ViewBag.Description = "нового типа артикулов";
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li><a asp-controller="Article" asp-action="Index">Артикулы</a></li>
+        <li class="active">Создание типа артикулов</li>
+    </ul>
+}
+
+<div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-12">
+        <form asp-action="CreateArticleType"
+              asp-controller="Article"
+              method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label class="control-label" asp-for="Name">Название:</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+                    <input class="form-control" type="text" asp-for="Name" placeholder="Название"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="Description">Описание:</label>
+                <div class="input-group">
+                    <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-align-justify"></i></span>
+                    <textarea class="form-control" rows="3" asp-for="Description" placeholder="Описание"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Родительский тип:</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-tags"></i></span>
+                    @if (Model.AllTypes.Count > 0)
+                    {
+                        <select class="form-control" asp-for="ParentType" asp-items="Model.AllTypes"></select>
+                    }
+                    else
+                    {
+                        <select class="form-control" disabled=""></select>
+                    }
+                </div>
+                @if (Model.AllTypes.Count <= 0)
+                {
+                    <span class="help-block">Отсутствуют типы артикулов, которые могут быть установлены как родительские</span>
+                }
+            </div>
+            <div class="form-group">
+                <a class="btn btn-default" asp-controller="Article" asp-action="Index">Отмена</a>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("input.input-validation-error").closest(".form-group").addClass("has-error");
+            $("select.input-validation-error").closest(".form-group").addClass("has-error");
+        });
+    </script>
+}

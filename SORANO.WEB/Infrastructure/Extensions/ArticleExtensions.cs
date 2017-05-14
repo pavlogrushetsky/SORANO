@@ -12,10 +12,16 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 ID = article.ID,
                 Code = article.Code,
                 Name = article.Name,
-                Description = article.Description,
                 Producer = article.Producer,
                 Type = article.Type?.Name
             };
+        }
+
+        public static void FromCreateModel(this ArticleType articleType, ArticleTypeCreateModel model)
+        {
+            articleType.Name = model.Name;
+            articleType.Description = model.Description;
+            articleType.ParentTypeId = model.ParentType > 0 ? (int?)model.ParentType : null;
         }
     }
 }

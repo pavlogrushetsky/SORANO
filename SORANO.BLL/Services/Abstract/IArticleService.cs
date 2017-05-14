@@ -6,6 +6,6 @@ namespace SORANO.BLL.Services.Abstract
 {
     public interface IArticleService
     {
-        Task<IEnumerable<Article>> GetAllWithTypeAsync();
+        Task<IEnumerable<Article>> GetAllWithTypeAsync();        
     }
 }

@@ -38,11 +38,13 @@ namespace SORANO.WEB
             services.AddTransient<IRoleRepository, RoleRepository>();
             services.AddTransient<IDeliveryItemRepository, DeliveryItemRepository>();
             services.AddTransient<IArticleRepository, ArticleRepository>();
+            services.AddTransient<IArticleTypeRepository, ArticleTypeRepository>();
 
             // Add dependencies for services
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IRoleService, RoleService>();
             services.AddTransient<IArticleService, ArticleService>();
+            services.AddTransient<IArticleTypeService, ArticleTypeService>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -64,17 +66,17 @@ namespace SORANO.WEB
             });
 
             // Global exceptions handling
-            app.UseExceptionHandler(handler => handler.Run(async context =>
-            {
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            //app.UseExceptionHandler(handler => handler.Run(async context =>
+            //{
+            //    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            //    context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
 
-                var error = context.Features.Get<IExceptionHandlerFeature>();
-                if (error != null)
-                {
-                    await context.Response.WriteAsync(error.Error.Message).ConfigureAwait(false);
-                }
-            }));
+            //    var error = context.Features.Get<IExceptionHandlerFeature>();
+            //    if (error != null)
+            //    {
+            //        await context.Response.WriteAsync(error.Error.Message).ConfigureAwait(false);
+            //    }
+            //}));
 
             app.UseMvc(routes => 
             {
