@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.AccountEntities;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
 using SORANO.WEB.Models.User;
 using SORANO.WEB.Infrastructure.Extensions;
 
@@ -92,18 +93,31 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            var model = new UserCreateModel
-            {
-                AllRoles = new List<SelectListItem>
-                {
-                    new SelectListItem {Value = "developer", Text = "Разработчик"},
-                    new SelectListItem {Value = "administrator", Text = "Администратор"},
-                    new SelectListItem {Value = "editor", Text = "Редактор"},
-                    new SelectListItem {Value = "manager", Text = "Менеджер"},
-                    new SelectListItem {Value = "user", Text = "Пользователь"},
-                }
-            };
+            UserCreateModel model;
 
+            if (TempData.ContainsKey("UserCreateModel"))
+            {
+                model = JsonConvert.DeserializeObject<UserCreateModel>(TempData["UserCreateModel"].ToString());
+                if (model == null)
+                {
+                    return BadRequest();
+                }
+                TempData.Remove("UserCreateModel");
+            }
+            else
+            {
+                model = new UserCreateModel
+                {
+                    AllRoles = new List<SelectListItem>
+                    {
+                        new SelectListItem {Value = "developer", Text = "Разработчик"},
+                        new SelectListItem {Value = "administrator", Text = "Администратор"},
+                        new SelectListItem {Value = "editor", Text = "Редактор"},
+                        new SelectListItem {Value = "manager", Text = "Менеджер"},
+                        new SelectListItem {Value = "user", Text = "Пользователь"},
+                    }
+                };
+            }           
 
             return View(model);
         }
@@ -193,6 +207,22 @@ namespace SORANO.WEB.Controllers
 
             ModelState.AddModelError("Login", "Пользователь с таким логином уже существует в системе");
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult SelectRoles([Bind("Login,Description,Password,Roles")] UserCreateModel model)
+        {
+            if (TempData.ContainsKey("UserCreateModel"))
+            {
+                TempData["UserCreateModel"] = JsonConvert.SerializeObject(model);
+            }
+            else
+            {
+                TempData.Add("UserCreateModel", JsonConvert.SerializeObject(model));
+            }
+
+            return RedirectToAction("Select", "Role");
         }
 
         #endregion                     

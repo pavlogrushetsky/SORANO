@@ -11,6 +11,7 @@ using SORANO.DAL.Repositories;
 using SORANO.DAL.Repositories.Abstract;
 using System.Net;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace SORANO.WEB
 {
@@ -31,7 +32,9 @@ namespace SORANO.WEB
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddMemoryCache();
             services.AddScoped(_ => new StockContext(Configuration.GetConnectionString("SORANO")));
+            services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
 
             // Add dependencies for repositories
             services.AddTransient<IUserRepository, UserRepository>();

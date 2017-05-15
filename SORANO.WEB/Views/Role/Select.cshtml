@@ -1,0 +1,16 @@
+﻿@model RoleSelectModel
+
+@{
+    ViewBag.Title = "SORANO - Добавление ролей";
+    ViewBag.Header = "Добавление";
+    ViewBag.Description = "ролей для пользователя";
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li><a asp-controller="User" asp-action="List">Пользователи</a></li>
+        <li><a asp-controller="User" asp-action="Create" asp-route-model="@Model.User">Создание пользователя</a></li>
+        <li class="active">Добавление ролей</li>
+    </ul>
+}
