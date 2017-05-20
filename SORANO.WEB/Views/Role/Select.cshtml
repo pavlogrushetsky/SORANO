@@ -10,7 +10,73 @@
     <ul class="breadcrumb">
         <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
         <li><a asp-controller="User" asp-action="List">Пользователи</a></li>
-        <li><a asp-controller="User" asp-action="Create" asp-route-model="@Model.User">Создание пользователя</a></li>
+        <li><a asp-controller="User" asp-action="Create">Создание пользователя</a></li>
         <li class="active">Добавление ролей</li>
     </ul>
+}
+
+<div class="row">
+    <div class="col-lg-6">
+        <p class="text-info">
+            <i class="fa fa-fw fa-info" aria-hidden="true"></i>
+            Для назначения ролей пользователю выберите строки из таблицы
+        </p>
+        <form asp-controller="Role"
+              asp-action=""
+              method="post"
+              asp-antiforgery="true">
+            <input type="hidden" asp-for="User.Login"/>
+            <input type="hidden" asp-for="User.Description"/>
+            @for (var i = 0; i < Model.User.Roles.Count; i++)
+            {
+                @Html.HiddenFor(m => Model.User.Roles[i].ID)
+                @Html.HiddenFor(m => Model.User.Roles[i].Name)
+                @Html.HiddenFor(m => Model.User.Roles[i].Description)
+                @Html.HiddenFor(m => Model.User.Roles[i].IsSelected)
+            }
+            <div class="form-group">
+                <table class="table table-striped table-bordered table-hover table-responsive">
+                    <thead>
+                    <tr role="row">
+                        <th style="width: 25%"><i class="fa fa-fw fa-align-justify" aria-hidden="true"></i>&nbsp;Название</th>
+                        <th style="width: 75%"><i class="fa fa-fw fa-align-justify" aria-hidden="true"></i>&nbsp;Описание</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @for (var i = 0; i < Model.Roles.Count; i++)
+                    {
+                        <tr onclick="toggleSelection(@Model.Roles[i].ID);" 
+                            id="roleRow_@(Model.Roles[i].ID)" 
+                            class="@(Model.Roles[i].IsSelected ? "info" : "")">
+                            <td>@Model.Roles[i].Name</td>
+                            <td>@Model.Roles[i].Description</td>
+                        </tr>
+                        @Html.HiddenFor(m => Model.Roles[i].ID)
+                        @Html.HiddenFor(m => Model.Roles[i].Name)
+                        @Html.HiddenFor(m => Model.Roles[i].Description)
+                        @Html.HiddenFor(m => Model.Roles[i].IsSelected, new { id = "roleID_" + Model.Roles[i].ID })
+                    }
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-default" asp-action="Cancel">Отмена</button>
+                <button type="submit" class="btn btn-primary" asp-action="Select">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        //$('#rolesTable').on('click', '.roleRow', function(event) {
+        //    $(this).toggleClass('info');
+        //});
+
+        function toggleSelection(id) {
+            var input = $('#roleID_' + id), val = input.val();
+            input.val(val === "True" ? "False" : "True");
+            $('#roleRow_' + id).toggleClass('info');
+        }
+    </script>
 }

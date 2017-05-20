@@ -19,12 +19,16 @@
         <form asp-action=""
               asp-controller="User"
               method="post">
+            @for (var i = 0; i < Model.Roles.Count; i++)
+            {
+                @Html.HiddenFor(m => Model.Roles[i])
+            }
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <label class="control-label" asp-for="Login">Логин:</label>
                 <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-user-circle-o"></i></span>
-                    <input class="form-control" type="text" asp-for="Login" placeholder="Логин" />
+                    <input class="form-control" type="text" asp-for="Login" placeholder="Логин"/>
                 </div>
             </div>
             <div class="form-group">
@@ -38,21 +42,27 @@
                 <label class="control-label" asp-for="Password">Пароль:</label>
                 <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-key"></i></span>
-                    <input class="form-control" type="password" asp-for="Password" placeholder="Новый пароль" />
+                    <input class="form-control" type="password" asp-for="Password" placeholder="Новый пароль"/>
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label">Роли:</label>
                 <div class="input-group">
-                    <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-vcard"></i></span>
-                    <select class="form-control" asp-for="Roles" asp-items="Model.AllRoles"></select>                    
-                </div>
-                <button type="submit" class="btn btn-default" asp-action="SelectRoles">+</button>
+                    <div>
+                        @foreach (var role in Model.Roles)
+                        {
+                            <div><span class="label label-default">@role.Description</span></div>
+                        }
+                    </div>
+                    <span class="input-group-btn" style="vertical-align: top;">
+                        <button class="btn btn-default" type="submit" asp-action="SelectRoles" style="border-top-left-radius: 4px; border-bottom-left-radius: 4px;">Добавить роли</button>
+                    </span>
+                </div>            
             </div>
             <div class="form-group">
                 <a class="btn btn-default" asp-controller="User" asp-action="List">Отмена</a>
                 <button type="submit" asp-action="Create" class="btn btn-primary">Сохранить</button>
-            </div> 
+            </div>
         </form>
     </div>
 </div>

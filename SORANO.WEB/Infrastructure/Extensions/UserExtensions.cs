@@ -81,7 +81,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
             user.Password = model.Password;
 
             roles
-                .Where(r => model.Roles.Contains(r.Name))
+                .Where(r => model.Roles.Select(x => x.Name).Contains(r.Name))
                 .ToList()
                 .ForEach(r => user.Roles.Add(r));
         }

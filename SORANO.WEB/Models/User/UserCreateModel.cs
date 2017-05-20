@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using SORANO.WEB.Infrastructure.ValidationAttributes;
+using SORANO.WEB.Models.Role;
 
 namespace SORANO.WEB.Models.User
 {
@@ -20,15 +20,6 @@ namespace SORANO.WEB.Models.User
         public string Password { get; set; }
 
         [RequireNonEmpty(ErrorMessage = "Пользователю необходимо назначить хотя бы одну роль")]
-        public IEnumerable<string> Roles { get; set; }
-
-        public List<SelectListItem> AllRoles { get; set; } = new List<SelectListItem>
-        {
-            new SelectListItem { Value = "developer", Text = "Разработчик" },
-            new SelectListItem { Value = "administrator", Text = "Администратор" },
-            new SelectListItem { Value = "editor", Text = "Редактор" },
-            new SelectListItem { Value = "manager", Text = "Менеджер" },
-            new SelectListItem { Value = "user", Text = "Пользователь" },
-        };
+        public IList<RoleModel> Roles { get; set; } = new List<RoleModel>();
     }
 }

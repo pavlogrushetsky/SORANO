@@ -32,7 +32,7 @@ namespace SORANO.WEB
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddMemoryCache();
+            //services.AddMemoryCache();
             services.AddScoped(_ => new StockContext(Configuration.GetConnectionString("SORANO")));
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
 
