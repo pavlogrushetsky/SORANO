@@ -1,4 +1,4 @@
-﻿@model UserUpdateModel
+﻿@model UserModel
 
 @{ 
     ViewBag.Title = "SORANO - Редактирование пользователя";
@@ -15,12 +15,19 @@
 }
 
 <div class="row">
-    <div class="col-lg-5 col-md-6 col-sm-12">
+    <div class="col-lg-6 col-md-6 col-sm-12">
         <form asp-action="Update"
               asp-controller="User"
               method="post">
             <input type="hidden" asp-for="ID"/>
             <input type="hidden" asp-for="CanBeModified"/>
+            @for (var i = 0; i < Model.Roles.Count; i++)
+            {
+                @Html.HiddenFor(m => Model.Roles[i].ID)
+                @Html.HiddenFor(m => Model.Roles[i].Name)
+                @Html.HiddenFor(m => Model.Roles[i].Description)
+                @Html.HiddenFor(m => Model.Roles[i].IsSelected)
+            }
             <div asp-validation-summary="All" class="text-danger"></div>
             @if (Model.CanBeModified)
             {
@@ -63,14 +70,29 @@
                 <div class="form-group">
                     <label class="control-label">Роли:</label>
                     <div class="input-group">
-                        <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-vcard"></i></span>
-                        <select class="form-control" asp-for="Roles" asp-items="Model.AllRoles"></select>                    
+                        <span class="input-group-addon"><i class="fa fa-vcard"></i></span>
+                        <div class="form-control">
+                            @foreach (var role in Model.Roles)
+                            {
+                                <span class="label label-default">@role.Description</span>
+                            }
+                        </div>   
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit" asp-action="SelectRoles" asp-route-returnUrl="@Url.Action("Update", "User", new { id = Model.ID })" style="border-top-left-radius: 0px; border-bottom-left-radius: 0px;" title="Добавить роли"><i class="fa fa-plus-circle"></i></button>
+                        </span>  
+                        <span asp-validation-for="Roles" style="display: none;"></span>
                     </div>
                 </div>
             }            
             <div class="form-group">
-                <a class="btn btn-default" asp-controller="User" asp-action="List">Отмена</a>
-                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <a class="btn btn-default" asp-controller="User" asp-action="List">
+                    <i class="fa fa-close"></i>&nbsp;
+                    Отмена
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-check"></i>&nbsp;
+                    Сохранить
+                </button>
             </div> 
         </form>
     </div>
@@ -81,6 +103,7 @@
         $(document).ready(function() {
             $("input.input-validation-error").closest(".form-group").addClass("has-error");
             $("select.input-validation-error").closest(".form-group").addClass("has-error");
+            $("span.field-validation-error").closest(".form-group").addClass("has-error");
         });
     </script>
 }

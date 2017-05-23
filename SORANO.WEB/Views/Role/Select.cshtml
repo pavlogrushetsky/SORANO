@@ -27,6 +27,8 @@
               asp-antiforgery="true">
             <input type="hidden" asp-for="User.Login"/>
             <input type="hidden" asp-for="User.Description"/>
+            <input type="hidden" asp-for="User.CanBeModified" />
+            <input type="hidden" asp-for="ReturnUrl" />
             @for (var i = 0; i < Model.User.Roles.Count; i++)
             {
                 @Html.HiddenFor(m => Model.User.Roles[i].ID)

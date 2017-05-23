@@ -1,4 +1,4 @@
-﻿@model UserCreateModel
+﻿@model UserModel
 
 @{ 
     ViewBag.Title = "SORANO - Создание пользователя";
@@ -51,22 +51,28 @@
             <div class="form-group">
                 <label class="control-label">Роли:</label>
                 <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                    <span class="input-group-addon"><i class="fa fa-vcard"></i></span>
                     <div class="form-control">
                         @foreach (var role in Model.Roles)
                         {
                             <span class="label label-default">@role.Description</span>
                         }
                     </div>   
-                    @*<input class="form-control" asp-for="Roles" style="display: none;" />*@
                     <span class="input-group-btn">
-                        <button class="btn btn-default" type="submit" asp-action="SelectRoles">Добавить роли</button>
-                    </span>                    
+                        <button class="btn btn-default" type="submit" asp-action="SelectRoles" asp-route-returnUrl="@Url.Action("Create", "User")" style="border-top-left-radius: 0px; border-bottom-left-radius: 0px;" title="Добавить роли"><i class="fa fa-plus-circle"></i></button>
+                    </span>  
+                    <span asp-validation-for="Roles" style="display: none;"></span>
                 </div>
             </div>
             <div class="form-group">
-                <a class="btn btn-default" asp-controller="User" asp-action="List">Отмена</a>
-                <button type="submit" asp-action="Create" class="btn btn-primary">Сохранить</button>
+                <a class="btn btn-default" asp-controller="User" asp-action="List">
+                    <i class="fa fa-close"></i>&nbsp;
+                    Отмена
+                </a>
+                <button type="submit" asp-action="Create" class="btn btn-primary">
+                    <i class="fa fa-check"></i>&nbsp;
+                    Сохранить
+                </button>
             </div>
         </form>
     </div>
@@ -77,6 +83,7 @@
         $(document).ready(function() {
             $("input.input-validation-error").closest(".form-group").addClass("has-error");
             $("select.input-validation-error").closest(".form-group").addClass("has-error");
+            $("span.field-validation-error").closest(".form-group").addClass("has-error");
         });
     </script>
 }

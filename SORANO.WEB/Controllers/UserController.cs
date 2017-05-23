@@ -33,13 +33,12 @@ namespace SORANO.WEB.Controllers
         {
             var users = await _userService.GetAllIncludeAllAsync();
 
-            var models = new List<UserListModel>();
+            var models = new List<UserModel>();
 
             users.ForEach(u => 
             {
                 var isCurrent = u.IsCurrent(HttpContext);
-                var hasActivities = u.HasActivities();
-                models.Add(u.ToListModel(isCurrent, hasActivities));
+                models.Add(u.ToModel(isCurrent));
             });
 
             return View(models);
@@ -55,7 +54,7 @@ namespace SORANO.WEB.Controllers
         {
             var user = await _userService.GetIncludeAllAsync(id);
 
-            return View(user.ToDeleteModel(user.IsCurrent(HttpContext), user.HasActivities()));
+            return View(user.ToModel(user.IsCurrent(HttpContext)));
         }
 
         /// <summary>
@@ -68,7 +67,7 @@ namespace SORANO.WEB.Controllers
         {
             var user = await _userService.GetAsync(id);
 
-            return View(user.ToBlockModel(user.IsCurrent(HttpContext)));
+            return View(user.ToModel(user.IsCurrent(HttpContext)));
         }
 
         /// <summary>
@@ -81,7 +80,9 @@ namespace SORANO.WEB.Controllers
         {
             var user = await _userService.GetIncludeRolesAsync(id);
 
-            return View(user.ToUpdateModel(!user.IsCurrent(HttpContext)));
+            var model = TempData.Get<UserModel>("UserModel") ?? user.ToModel(user.IsCurrent(HttpContext));
+
+            return View(model);
         }
 
         /// <summary>
@@ -91,7 +92,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            var model = TempData.Get<UserCreateModel>("UserCreateModel") ?? new UserCreateModel();
+            var model = TempData.Get<UserModel>("UserModel") ?? new UserModel();
 
             return View(model);
         }
@@ -106,10 +107,7 @@ namespace SORANO.WEB.Controllers
         {
             var user = await _userService.GetIncludeAllAsync(id);
 
-            var isCurrent = user.IsCurrent(HttpContext);
-            var hasActivities = user.HasActivities();
-
-            return View(user.ToDetailsModel(isCurrent, hasActivities));
+            return View(user.ToModel(user.IsCurrent(HttpContext)));
         }
 
         #endregion
@@ -118,7 +116,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete([Bind("ID")]UserDeleteModel model)
+        public async Task<IActionResult> Delete([Bind("ID")]UserModel model)
         {
             await _userService.DeleteAsync(model.ID);
 
@@ -127,7 +125,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Block([Bind("ID")]UserDeleteModel model)
+        public async Task<IActionResult> Block([Bind("ID")]UserModel model)
         {
             var user = await _userService.GetAsync(model.ID);
 
@@ -140,7 +138,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update([Bind("ID,Login,Description,NewPassword,RepeatPassword,Roles,CanBeModified")]UserUpdateModel model)
+        public async Task<IActionResult> Update(UserModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -160,7 +158,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(UserCreateModel model)
+        public async Task<IActionResult> Create(UserModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -185,11 +183,11 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult SelectRoles([Bind("Login,Description,Roles")] UserCreateModel model)
+        public IActionResult SelectRoles([Bind("ID,CanBeModified,Login,Description,Roles")] UserModel model, string returnUrl)
         {
-            TempData.Put("UserCreateModel", model);
+            TempData.Put("UserModel", model);
 
-            return RedirectToAction("Select", "Role");
+            return RedirectToAction("Select", "Role", new { returnUrl });
         }
 
         #endregion                     

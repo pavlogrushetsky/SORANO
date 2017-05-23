@@ -1,4 +1,4 @@
-﻿@model UserDetailsModel
+﻿@model UserModel
 
 @{
     ViewBag.Title = "SORANO - Детали пользователя";
@@ -46,7 +46,7 @@
             <dd>
                 @foreach (var role in Model.Roles)
                 {
-                    <span class="label label-default">@role</span>
+                    <span class="label label-default">@role.Description</span>
                 }
             </dd>
             <dt>

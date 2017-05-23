@@ -7,6 +7,8 @@ namespace SORANO.WEB.Models.Role
     {
         public List<RoleModel> Roles { get; set; }
 
-        public UserCreateModel User { get; set; }
+        public UserModel User { get; set; }
+
+        public string ReturnUrl { get; set; }
     }
 }

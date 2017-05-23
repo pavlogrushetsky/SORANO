@@ -1,4 +1,4 @@
-﻿@model List<UserListModel>
+﻿@model List<UserModel>
 
 @{
     ViewBag.Title = "SORANO - Пользователи";
@@ -25,7 +25,10 @@
                 <i class="fa fa-fw fa-list" aria-hidden="true"></i>
                 Пользователи&nbsp;
                 <span class="badge">@Model.Count</span>                    
-                <a class="btn btn-default btn-xs pull-right" asp-controller="User" asp-action="Create">Создать пользователя</a>
+                <a class="btn btn-default btn-xs pull-right" asp-controller="User" asp-action="Create">
+                    <i class="fa fa-user-plus"></i>
+                    Создать пользователя
+                </a>
                 <div class="clearfix"></div>
             </div>
             <div class="panel-body">
@@ -64,7 +67,7 @@
                             <td>
                                 @foreach (var role in user.Roles)
                                 {
-                                    <div><span class="label label-default">@role</span></div>
+                                    <div><span class="label label-default">@role.Description</span></div>
                                 }
                             </td>
                             <td>

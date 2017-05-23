@@ -20,13 +20,18 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Select()
+        public async Task<IActionResult> Select(string returnUrl)
         {
-            var userCreateModel = TempData.Get<UserCreateModel>("UserCreateModel");
-
-            if (userCreateModel == null)
+            if (string.IsNullOrEmpty(returnUrl))
             {
                 return BadRequest();
+            }
+
+            var userModel = TempData.Get<UserModel>("UserModel");
+
+            if (userModel == null)
+            {
+                return Redirect(returnUrl);
             }
 
             var roles = await _roleService.GetAllAsync();
@@ -34,12 +39,13 @@ namespace SORANO.WEB.Controllers
             var model = new RoleSelectModel
             {
                 Roles = roles.Select(r => r.ToModel()).ToList(),
-                User = userCreateModel
+                User = userModel,
+                ReturnUrl = returnUrl
             };
 
             model.Roles.ToList().ForEach(r =>
             {
-                r.IsSelected = userCreateModel.Roles?.Select(x => x.Name).Contains(r.Name) ?? false;
+                r.IsSelected = userModel.Roles?.Select(x => x.Name).Contains(r.Name) ?? false;
             });
 
             return View(model);
@@ -63,18 +69,18 @@ namespace SORANO.WEB.Controllers
                 .ToList()
                 .ForEach(r => userModel.Roles.Add(r));
 
-            TempData.Put("UserCreateModel", userModel);
+            TempData.Put("UserModel", userModel);
 
-            return RedirectToAction("Create", "User");
+            return Redirect(model.ReturnUrl);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Cancel(RoleSelectModel model)
         {
-            TempData.Put("UserCreateModel", model.User);
+            TempData.Put("UserModel", model.User);
 
-            return RedirectToAction("Create", "User");
+            return Redirect(model.ReturnUrl);
         }
     }
 }
