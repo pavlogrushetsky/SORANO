@@ -160,7 +160,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Login,Description,Password,Roles")]UserCreateModel model)
+        public async Task<IActionResult> Create(UserCreateModel model)
         {
             if (!ModelState.IsValid)
             {

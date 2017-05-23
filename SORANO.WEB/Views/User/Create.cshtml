@@ -21,7 +21,10 @@
               method="post">
             @for (var i = 0; i < Model.Roles.Count; i++)
             {
-                @Html.HiddenFor(m => Model.Roles[i])
+                @Html.HiddenFor(m => Model.Roles[i].ID)
+                @Html.HiddenFor(m => Model.Roles[i].Name)
+                @Html.HiddenFor(m => Model.Roles[i].Description)
+                @Html.HiddenFor(m => Model.Roles[i].IsSelected)
             }
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
@@ -48,16 +51,18 @@
             <div class="form-group">
                 <label class="control-label">Роли:</label>
                 <div class="input-group">
-                    <div>
+                    <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                    <div class="form-control">
                         @foreach (var role in Model.Roles)
                         {
-                            <div><span class="label label-default">@role.Description</span></div>
+                            <span class="label label-default">@role.Description</span>
                         }
-                    </div>
-                    <span class="input-group-btn" style="vertical-align: top;">
-                        <button class="btn btn-default" type="submit" asp-action="SelectRoles" style="border-top-left-radius: 4px; border-bottom-left-radius: 4px;">Добавить роли</button>
-                    </span>
-                </div>            
+                    </div>   
+                    @*<input class="form-control" asp-for="Roles" style="display: none;" />*@
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit" asp-action="SelectRoles">Добавить роли</button>
+                    </span>                    
+                </div>
             </div>
             <div class="form-group">
                 <a class="btn btn-default" asp-controller="User" asp-action="List">Отмена</a>
