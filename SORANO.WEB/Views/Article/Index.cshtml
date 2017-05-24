@@ -46,9 +46,9 @@
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-lg-6 col-sm-12">
-                                @*<input class="form-control input-sm" style="font-weight: bold;" placeholder="Поиск артикулов и типов артикулов" type="text" id="article-search" />
-                                <br />*@
-                                <div>
+                                <input class="form-control input-sm" style="font-weight: bold;" placeholder="Поиск артикулов и типов артикулов" type="text" id="article-search" />
+                                <br />
+                                <div id="article-tree">
                                     
                                 </div>
                             </div>
@@ -137,15 +137,15 @@
     <script src="~/lib/datatables.net-responsive-bs/js/responsive.bootstrap.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            //$('#article-tree').treeview({
-            //    data: getArticleTree(),
-            //    collapseIcon: "glyphicon glyphicon-tag",
-            //    expandIcon: "glyphicon glyphicon-tags",
-            //    selectedBackColor: "#95a5a6",
-            //    showBorder: false,
-            //    enableLinks: true,
-            //    showTags: true
-            //});
+            $('#article-tree').treeview({
+                data: getArticleTree(),
+                collapseIcon: "glyphicon glyphicon-tag",
+                expandIcon: "glyphicon glyphicon-tags",
+                selectedBackColor: "#95a5a6",
+                showBorder: false,
+                enableLinks: true,
+                showTags: true
+            });
 
             var table = $("#article-datatable").DataTable({
                 responsive: true,

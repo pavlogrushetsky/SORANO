@@ -19,9 +19,7 @@ namespace SORANO.BLL.Services
 
         public async Task<IEnumerable<ArticleType>> GetAllWithArticlesAsync()
         {
-            var types = await _articleTypeRepository.GetAllAsync(t => t.Articles, t => t.ChildTypes);
-
-            return types.Where(t => !t.ParentTypeId.HasValue);
+            return await _articleTypeRepository.GetAllAsync(t => t.Articles, t => t.ParentType);
         }
 
         public async Task<IEnumerable<ArticleType>> GetAllAsync()
