@@ -1,4 +1,4 @@
-﻿@model ArticleTypeCreateModel
+﻿@model ArticleTypeModel
 
 @{
     ViewBag.Title = "SORANO - Создание типа артикулов";
@@ -35,7 +35,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label">Родительский тип:</label>
+                @*<label class="control-label">Родительский тип:</label>
                 <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-tags"></i></span>
                     @if (Model.AllTypes.Count > 0)
@@ -50,7 +50,7 @@
                 @if (Model.AllTypes.Count <= 0)
                 {
                     <span class="help-block">Отсутствуют типы артикулов, которые могут быть установлены как родительские</span>
-                }
+                }*@
             </div>
             <div class="form-group">
                 <a class="btn btn-default" asp-controller="Article" asp-action="Index">Отмена</a>

@@ -4,7 +4,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
 using SORANO.WEB.Infrastructure.Extensions;
@@ -29,75 +28,11 @@ namespace SORANO.WEB.Controllers
         #region GET Actions
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var articles = new List<Article>
-            {
-                new Article
-                {
-                    ID = 1,
-                    Code = "111111",
-                    Name = "Test Article #1",
-                    Description = "Test Article #1",
-                    Type = new ArticleType
-                    {
-                        Name = "Test Article Type"
-                    },
-                    Producer = "Test Producer"
-                }
-            };
+            var types = await _articleTypeService.GetAllWithArticlesAsync();           
 
-            var type1 = new ArticleType
-            {
-                Name = "Test article type #1"
-            };
-
-            var type2 = new ArticleType
-            {
-                Name = "Test article type #2"
-            };
-
-            var type3 = new ArticleType
-            {
-                Name = "Test article type #3"
-            };
-
-            type1.ChildTypes.Add(type2);
-
-            type2.Articles.Add(new Article
-            {
-                Name = "Test article #1",
-                Description = "Test article #1 description"
-            });
-
-            type2.Articles.Add(new Article
-            {
-                Name = "Test article #2",
-                Description = "Test article #2 description"
-            });
-
-            type3.Articles.Add(new Article
-            {
-                Name = "Test article #3",
-                Description = "Test article #3 description"
-            });
-
-            type3.Articles.Add(new Article
-            {
-                Name = "Test article #4",
-                Description = "Test article #4 description"
-            });
-
-            var model = new ArticleIndexModel
-            {
-                Tree = new List<ArticleType>
-                {
-                    type1, type3
-                },
-                Table = articles.ToList().Select(a => a.ToTableModel())
-            };
-
-            return View(model);
+            return View(types.Select(t => t.ToModel()).ToList());
         }
 
         [HttpGet]
@@ -113,21 +48,21 @@ namespace SORANO.WEB.Controllers
 
             var articleTypes = types as IList<ArticleType> ?? types.ToList();
 
-            var model = new ArticleTypeCreateModel();
+            var model = new ArticleTypeModel();
 
-            model.AllTypes.Add(new SelectListItem
-            {
-                Value = "0",
-                Selected = true,
-                Disabled = true,
-                Text = "Выберите один из типов"
-            });
+            //model.AllTypes.Add(new SelectListItem
+            //{
+            //    Value = "0",
+            //    Selected = true,
+            //    Disabled = true,
+            //    Text = "Выберите один из типов"
+            //});
 
-            model.AllTypes.AddRange(articleTypes.Select(t => new SelectListItem
-            {
-                Value = t.ID.ToString(),
-                Text = t.Name
-            }).ToList());
+            //model.AllTypes.AddRange(articleTypes.Select(t => new SelectListItem
+            //{
+            //    Value = t.ID.ToString(),
+            //    Text = t.Name
+            //}).ToList());
 
             return View(model);
         }
@@ -138,7 +73,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateArticleType(ArticleTypeCreateModel model)
+        public async Task<IActionResult> CreateArticleType(ArticleTypeModel model)
         {
             if (!ModelState.IsValid)
             {
