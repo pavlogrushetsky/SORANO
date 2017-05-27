@@ -7,12 +7,16 @@
 
   <ItemGroup>
     <Compile Remove="wwwroot\lib\bootstrap-theme-bootswatch-flatly\**" />
+    <Compile Remove="wwwroot\lib\bootstrap-treeview\**" />
     <Compile Remove="wwwroot\lib\datatables\**" />
     <Content Remove="wwwroot\lib\bootstrap-theme-bootswatch-flatly\**" />
+    <Content Remove="wwwroot\lib\bootstrap-treeview\**" />
     <Content Remove="wwwroot\lib\datatables\**" />
     <EmbeddedResource Remove="wwwroot\lib\bootstrap-theme-bootswatch-flatly\**" />
+    <EmbeddedResource Remove="wwwroot\lib\bootstrap-treeview\**" />
     <EmbeddedResource Remove="wwwroot\lib\datatables\**" />
     <None Remove="wwwroot\lib\bootstrap-theme-bootswatch-flatly\**" />
+    <None Remove="wwwroot\lib\bootstrap-treeview\**" />
     <None Remove="wwwroot\lib\datatables\**" />
   </ItemGroup>
 

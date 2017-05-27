@@ -1,4 +1,5 @@
-﻿@model IList<ArticleTypeModel>
+﻿@using SORANO.WEB.Models.ArticleType
+@model IList<SORANO.WEB.Models.ArticleType.ArticleTypeModel>
 
 @{
     ViewBag.Title = "SORANO - Артикулы";
@@ -7,7 +8,6 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/lib/bootstrap-treeview/dist/bootstrap-treeview.min.css"/>
     <link rel="stylesheet" href="~/lib/datatables.net-bs/css/dataTables.bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" />
 }
@@ -17,6 +17,10 @@
         <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
         <li class="active">Артикулы</li>
     </ul>
+}
+
+@{
+    var articles = Model.SelectMany(t => t.Articles).ToList();
 }
 
 <div class="row">
@@ -39,7 +43,7 @@
             <div class="tab-pane fade active in" id="article-tab-tree">
                 <div class="panel panel-primary" style="border-radius: 0;">
                     <div class="panel-heading" style="border-top-left-radius: 0; border-top-right-radius: 0;">
-                        <a class="btn btn-default btn-xs pull-right" asp-controller="Article" asp-action="CreateArticleType">Добавить новый тип артикулов</a>
+                        <a class="btn btn-default btn-xs pull-right" asp-controller="ArticleType" asp-action="Create">Добавить новый тип артикулов</a>
                         <a class="btn btn-default btn-xs pull-right" style="margin-right: 10px;" asp-controller="Article" asp-action="CreateArticle">Добавить новый артикул</a>
                         <div class="clearfix"></div>
                     </div>
@@ -48,8 +52,8 @@
                             <div class="col-lg-6 col-sm-12">
                                 <input class="form-control input-sm" style="font-weight: bold;" placeholder="Поиск артикулов и типов артикулов" type="text" id="article-search" />
                                 <br />
-                                <div id="article-tree">
-                                    <article-types-tree elements="@Model.ToList()"></article-types-tree>
+                                <div class="tree">
+                                    <article-types-tree elements="@Model.ToList()" detailed="true" show-articles="true"></article-types-tree>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-sm-12">
@@ -62,7 +66,7 @@
             <div class="tab-pane fade" id="article-tab-table">
                 <div class="panel panel-primary" style="border-radius: 0;">
                     <div class="panel-heading" style="border-top-left-radius: 0; border-top-right-radius: 0;">
-                        <a class="btn btn-default btn-xs pull-right" asp-controller="Article" asp-action="CreateArticleType">Добавить новый тип артикулов</a>
+                        <a class="btn btn-default btn-xs pull-right" asp-controller="ArticleType" asp-action="Create">Добавить новый тип артикулов</a>
                         <a class="btn btn-default btn-xs pull-right" style="margin-right: 10px;" asp-controller="Article" asp-action="CreateArticle">Добавить новый артикул</a>
                         <div class="clearfix"></div>
                     </div>
@@ -87,32 +91,32 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach (var article in Model.SelectMany(t => t.Articles))
+                            @for (var i = 0; i < articles.Count; i++)
                             {
                                 <tr>
-                                    <td>@article.ID</td>
-                                    <td>@article.Code</td>
-                                    <td>@article.Name</td>
-                                    <td>@article.Type.Name</td>
-                                    <td>@article.Producer</td>
+                                    <td>@articles[i].ID</td>
+                                    <td>@articles[i].Code</td>
+                                    <td>@articles[i].Name</td>
+                                    <td>@articles[i].Type.Name</td>
+                                    <td>@articles[i].Producer</td>
                                     <td>
                                         <a asp-controller="Article"
                                            asp-action="Details"
-                                           asp-route-id="@article.ID"
-                                           class="btn btn-xs btn-default" 
+                                           asp-route-id="@articles[i].ID"
+                                           class="btn btn-xs btn-default"
                                            title="Просмотреть информацию об артикуле">
                                             <i class="fa fa-info-circle" aria-hidden="true"></i>
                                         </a>
                                         <a asp-controller="Article"
                                            asp-action="Update"
-                                           asp-route-id="@article.ID"
+                                           asp-route-id="@articles[i].ID"
                                            class="btn btn-xs btn-default"
                                            title="Редактировать свойства артикула">
                                             <i class="fa fa-pencil-square" aria-hidden="true"></i>
                                         </a>
                                         <a asp-controller="Article"
                                            asp-action="Delete"
-                                           asp-route-id="@article.ID"
+                                           asp-route-id="@articles[i].ID"
                                            class="btn btn-xs btn-danger"
                                            title="Удалить артикул">
                                             <i class="fa fa-trash" aria-hidden="true"></i>
@@ -130,22 +134,26 @@
 </div>
 
 @section Scripts {
-    <script src="~/lib/bootstrap-treeview/dist/bootstrap-treeview.min.js"></script>
     <script src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
     <script src="~/lib/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
     <script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
     <script src="~/lib/datatables.net-responsive-bs/js/responsive.bootstrap.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            //$('#article-tree').treeview({
-            //    data: getArticleTree(),
-            //    collapseIcon: "glyphicon glyphicon-tag",
-            //    expandIcon: "glyphicon glyphicon-tags",
-            //    selectedBackColor: "#95a5a6",
-            //    showBorder: false,
-            //    enableLinks: true,
-            //    showTags: true
-            //});
+            $('.tree li:has(ul)').addClass('parent_li').find(' > span').attr('title', 'Свернуть ветку');
+            $('.tree li.parent_li > span').on('click', function (e) {
+                var children = $(this).parent('li.parent_li').find(' > ul > li');
+                if (children.is(":visible")) {
+                    children.hide('fast');
+                    $(this).attr('title', 'Развернуть ветку').find(' > i').addClass('fa-tags').removeClass('fa-tag');
+                    $(this).find(' > span').show('fast');
+                } else {
+                    children.show('fast');
+                    $(this).attr('title', 'Свернуть ветку').find(' > i').addClass('fa-tag').removeClass('fa-tags');
+                    $(this).find(' > span').hide('fast');
+                }
+                e.stopPropagation();
+            });
 
             var table = $("#article-datatable").DataTable({
                 responsive: true,
@@ -175,66 +183,5 @@
 
             $('.pagination').first().addClass('pagination-sm');
         });
-
-        function getArticleTree() {
-            var data = [
-                {
-                    text: " Parent 1",
-                    tags: ['2'],
-                    nodes: [
-                        {
-                            text: "Child 1",
-                            tags: ['2'],
-                            nodes: [
-                                {
-                                    text: "Grandchild 1",
-                                    icon: "glyphicon glyphicon-barcode",
-                                    href: "#",
-                                    type: "article"
-                                },
-                                {
-                                    text: "Grandchild 2",
-                                    icon: "glyphicon glyphicon-barcode",
-                                    href: "#",
-                                    type: "article"
-                                }
-                            ]
-                        },
-                        {
-                            text: "Child 2",
-                            tags: ['3'],
-                            nodes: [
-                                {
-                                    text: "Grandchild 1",
-                                    icon: "glyphicon glyphicon-barcode",
-                                    href: "#",
-                                    type: "article"
-                                },
-                                {
-                                    text: "Grandchild 2",
-                                    icon: "glyphicon glyphicon-barcode",
-                                    href: "#",
-                                    type: "article"
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    text: "Parent 2"
-                },
-                {
-                    text: "Parent 3"
-                },
-                {
-                    text: "Parent 4"
-                },
-                {
-                    text: "Parent 5"
-                }
-            ];
-
-            return data;
-        }
     </script>
 }

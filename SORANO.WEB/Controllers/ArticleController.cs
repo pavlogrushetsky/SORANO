@@ -8,6 +8,7 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.Article;
+using SORANO.WEB.Models.ArticleType;
 
 namespace SORANO.WEB.Controllers
 {
@@ -41,64 +42,9 @@ namespace SORANO.WEB.Controllers
             return View();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> CreateArticleType()
-        {
-            var types = await _articleTypeService.GetAllAsync();
-
-            var articleTypes = types as IList<ArticleType> ?? types.ToList();
-
-            var model = new ArticleTypeModel();
-
-            //model.AllTypes.Add(new SelectListItem
-            //{
-            //    Value = "0",
-            //    Selected = true,
-            //    Disabled = true,
-            //    Text = "Выберите один из типов"
-            //});
-
-            //model.AllTypes.AddRange(articleTypes.Select(t => new SelectListItem
-            //{
-            //    Value = t.ID.ToString(),
-            //    Text = t.Name
-            //}).ToList());
-
-            return View(model);
-        }
-
         #endregion
 
         #region POST Actions
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateArticleType(ArticleTypeModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            var articleType = new ArticleType();
-
-            articleType.FromCreateModel(model);
-
-            var currentUser = await _userService.GetAsync(HttpContext.User.FindFirst(ClaimTypes.Name)?.Value);
-
-            articleType.CreatedBy = currentUser.ID;
-            articleType.ModifiedBy = currentUser.ID;
-
-            articleType = await _articleTypeService.CreateAsync(articleType);
-
-            if (articleType != null)
-            {
-                return RedirectToAction("Index", "Article");
-            }
-
-            ModelState.AddModelError("", "Не удалось создать новый тип артикулов.");
-            return View(model);
-        }
 
         #endregion
     }

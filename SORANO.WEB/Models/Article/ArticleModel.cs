@@ -1,4 +1,6 @@
-﻿namespace SORANO.WEB.Models.Article
+﻿using SORANO.WEB.Models.ArticleType;
+
+namespace SORANO.WEB.Models.Article
 {
     public class ArticleModel
     {

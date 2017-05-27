@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using SORANO.WEB.Models.Article;
 
-namespace SORANO.WEB.Models.Article
+namespace SORANO.WEB.Models.ArticleType
 {
     public class ArticleTypeModel
     {
@@ -20,5 +21,7 @@ namespace SORANO.WEB.Models.Article
         public IList<ArticleTypeModel> ChildTypes { get; set; } = new List<ArticleTypeModel>();
 
         public IList<ArticleModel> Articles { get; set; } = new List<ArticleModel>();
+
+        public bool IsSelected { get; set; }
     }
 }
