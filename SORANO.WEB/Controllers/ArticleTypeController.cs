@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -30,6 +31,14 @@ namespace SORANO.WEB.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            var type = await _articleTypeService.Get(id);
+
+            return PartialView("_Details", type.ToModel());
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ArticleTypeModel model)
@@ -47,6 +56,8 @@ namespace SORANO.WEB.Controllers
 
             articleType.CreatedBy = currentUser.ID;
             articleType.ModifiedBy = currentUser.ID;
+            articleType.CreatedDate = DateTime.Now;
+            articleType.ModifiedDate = DateTime.Now;
 
             articleType = await _articleTypeService.CreateAsync(articleType);
 

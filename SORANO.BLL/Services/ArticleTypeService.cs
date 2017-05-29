@@ -27,6 +27,11 @@ namespace SORANO.BLL.Services
             return await _articleTypeRepository.GetAllAsync();
         }
 
+        public async Task<ArticleType> Get(int id)
+        {
+            return await _articleTypeRepository.GetAsync(t => t.ID == id, t => t.Articles, t => t.ParentType);
+        }
+
         public async Task<ArticleType> CreateAsync(ArticleType articleType)
         {
             return await _articleTypeRepository.AddAsync(articleType);

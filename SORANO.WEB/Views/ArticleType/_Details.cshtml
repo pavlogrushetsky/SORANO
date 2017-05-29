@@ -1,0 +1,97 @@
+﻿@model ArticleTypeModel
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">Детали типа артикулов</h3>
+    </div>
+    <div class="panel-body">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.ID)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ID)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Description)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Description)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.ChildTypes)
+            </dt>
+            <dd>
+                @if (Model.ChildTypes.Any())
+                {
+                    <table class="table">
+                        <tr>
+                            <th>Название</th>
+                            <th>Описание</th>
+                        </tr>
+                        @foreach (var child in Model.ChildTypes)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => child.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => child.Description)
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                }
+                else
+                {
+                    <span>Вложенные типы отсутствуют</span>
+                }
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Articles)
+            </dt>
+            <dd>
+                @if (Model.Articles.Any())
+                {
+                    <table class="table">
+                        <tr>
+                            <th>Название</th>
+                            <th>Описание</th>
+                        </tr>
+                        @foreach (var article in Model.Articles)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => article.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => article.Description)
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                }
+                else
+                {
+                    <span>Артикулы отсутствуют</span>
+                }
+            </dd>
+        </dl>        
+    </div>   
+    <div class="panel-footer">
+        <a class="btn btn-default" asp-controller="ArticleType" asp-action="Update">
+            <i class="fa fa-pencil-square"></i>
+            Редактировать
+        </a>
+        <a class="btn btn-danger" asp-controller="ArticleType" asp-action="Delete">
+            <i class="fa fa-trash"></i>
+            Удалить
+        </a>
+    </div>
+</div>

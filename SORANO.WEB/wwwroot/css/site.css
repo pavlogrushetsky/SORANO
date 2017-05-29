@@ -69,7 +69,7 @@
         margin-left: 10px;
     }
 
-    .tree li.parent_li > span {
+    .tree li > span {
         cursor: pointer
     }
 
@@ -81,10 +81,16 @@
         height: 30px
     }
 
-    .tree li.parent_li > span:hover, .tree li.parent_li > span:hover + ul li span {
+    /*.tree li.parent_li > span:hover, .tree li.parent_li > span:hover + ul li span {
         background: #eee;
         border: 1px solid #94a0b4;
         color: #000
+    }*/
+
+    .tree li.selected > span {
+        color: #ffffff;
+        background-color: #3498db;
+        border-color: #3498db;
     }
 
     .tree .fa-lg {

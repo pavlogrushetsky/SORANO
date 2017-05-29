@@ -25,5 +25,12 @@ namespace SORANO.WEB.Infrastructure.Extensions
 
             return model;
         }
+
+        public static void FromCreateModel(this ArticleType articleType, ArticleTypeModel model)
+        {
+            articleType.Name = model.Name;
+            articleType.Description = model.Description;
+            articleType.ParentTypeId = model.ParentType.ID > 0 ? (int?)model.ParentType.ID : null;
+        }
     }
 }

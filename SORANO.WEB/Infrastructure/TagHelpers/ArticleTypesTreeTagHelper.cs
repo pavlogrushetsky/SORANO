@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using SORANO.WEB.Models.Article;
 using SORANO.WEB.Models.ArticleType;
 
 namespace SORANO.WEB.Infrastructure.TagHelpers
@@ -47,7 +46,7 @@ namespace SORANO.WEB.Infrastructure.TagHelpers
 
         private void RenderType(ArticleTypeModel type, ref string html)
         {
-            html += "<li><span><i class='fa fa-tag'></i>" + type.Name;
+            html += "<li id='" + type.ID + "'><span><i class='fa fa-tag'></i>" + type.Name;
 
             if (type.ChildTypes.Any())
             {
@@ -70,27 +69,16 @@ namespace SORANO.WEB.Infrastructure.TagHelpers
                     RenderType(childType, ref html);
                 }
 
-                html += "</ul>";
-            }
-
-            if (ShowArticles && type.Articles.Any())
-            {
-                html += "<ul>";
-
-                foreach (var article in type.Articles)
+                if (ShowArticles && type.Articles.Any())
                 {
-                    html += "<li><span><i class='fa fa-barcode'></i>" + article.Name + "</span>";
-
-                    if (Detailed)
+                    foreach (var article in type.Articles)
                     {
-                        html += "<a class='btn btn-xs btn-link' title='Просмотреть подробную информацию'><i class='fa fa-info fa-lg'></i></a>";
+                        html += "<li><span><i class='fa fa-barcode'></i>" + article.Name + "</span></li>";
                     }
-
-                    html += "</li>";
                 }
 
                 html += "</ul>";
-            }
+            }         
 
             html += "</li>";           
         }

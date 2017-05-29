@@ -19,6 +19,11 @@
         <form asp-action="Create"
               asp-controller="ArticleType"
               method="post">
+            @if (Model.ParentType != null)
+            {
+                <input type="hidden" asp-for="ParentType.ID" />
+                <input type="hidden" asp-for="ParentType.Name" />
+            }          
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <label class="control-label" asp-for="Name">Название:</label>
