@@ -8,19 +8,30 @@
 
 @section Breadcrumb {
     <ul class="breadcrumb">
-        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
-        <li><a asp-controller="User" asp-action="List">Пользователи</a></li>
+        <li>
+            <a asp-controller="Home" asp-action="Index">
+                <i class="fa fa-home"></i>
+                Главная
+            </a>
+        </li>
+        <li>
+            <a asp-controller="User" asp-action="List">
+                <i class="fa fa-users"></i>
+                Пользователи
+            </a>
+        </li>
         <li class="active">Удаление пользователя</li>
     </ul>
 }
 
 <div class="col-lg-6 col-sm-12">
     <div class="row">
-        <h5 class="@(Model.CanBeDeleted ? "" : "text-danger")">
+        <p class="@(Model.CanBeDeleted ? "text-warning" : "text-danger")">
+            <i class="fa fa-fw fa-exclamation" aria-hidden="true"></i>
             @(Model.CanBeDeleted
                 ? "Вы уверены, что хотите удалить следующего пользователя?"
                 : "Пользователь не может быть удалён, так как у него есть связанные с ним действия или он является текущим пользователем в системе.")
-        </h5>
+        </p>
     </div>
     <br/>
     <div class="row">
@@ -41,8 +52,14 @@
         <form asp-action="Delete">
             <input type="hidden" asp-for="ID" />
             <div class="form-group">
-                <a class="btn btn-default" asp-controller="User" asp-action="List">Отмена</a>
-                <button type="submit" class="btn btn-danger @(Model.CanBeDeleted ? "" : "disabled")">Удалить</button>
+                <a class="btn btn-default" asp-controller="User" asp-action="List">
+                    <i class="fa fa-close"></i>
+                    Отмена
+                </a>
+                <button type="submit" class="btn btn-danger @(Model.CanBeDeleted ? "" : "disabled")">
+                    <i class="fa fa-trash"></i>
+                    Удалить
+                </button>
             </div>
         </form>
     </div>

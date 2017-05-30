@@ -1,16 +1,27 @@
 ﻿@model UserModel
 
 @{
-    ViewBag.Title = "SORANO - Блокирование пользователя";
-    ViewBag.Header = "Блокирование";
+    ViewBag.Title = "SORANO - " + (Model.IsBlocked ? "Разблокирование" : "Блокирование") + " пользователя";
+    ViewBag.Header = Model.IsBlocked ? "Разблокирование" : "Блокирование";
     ViewBag.Description = "пользователя";
+    ViewBag.Icon = Model.IsBlocked ? "fa fa-unlock" : "fa fa-lock";
 }
 
 @section Breadcrumb {
     <ul class="breadcrumb">
-        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
-        <li><a asp-controller="User" asp-action="List">Пользователи</a></li>
-        <li class="active">Блокирование пользователя</li>
+        <li>
+            <a asp-controller="Home" asp-action="Index">
+                <i class="fa fa-home"></i>
+                Главная
+            </a>
+        </li>
+        <li>
+            <a asp-controller="User" asp-action="List">
+                <i class="fa fa-users"></i>
+                Пользователи
+            </a>
+        </li>
+        <li class="active">@(Model.IsBlocked ? "Разблокирование" : "Блокирование")</li>
     </ul>
 }
 
@@ -18,17 +29,19 @@
     <div class="row">
         @if (Model.IsBlocked)
         {
-            <h5>
+            <p class="text-warning">
+                <i class="fa fa-fw fa-exclamation" aria-hidden="true"></i>
                 Вы уверены, что хотите разблокировать следующего пользователя?
-            </h5>
+            </p>
         }
         else
         {
-            <h5 class="@(Model.CanBeBlocked ? "" : "text-danger")">
+            <p class="@(Model.CanBeBlocked ? "text-warning" : "text-danger")">
+                <i class="fa fa-fw fa-exclamation" aria-hidden="true"></i>
                 @(Model.CanBeBlocked
                 ? "Вы уверены, что хотите заблокировать следующего пользователя?"
                 : "Пользователь не может быть заблокирован, так как он является текущим пользователем в системе.")
-            </h5>
+            </p>
         }
     </div>
     <br/>
@@ -50,8 +63,14 @@
         <form asp-action="Block">
             <input type="hidden" asp-for="ID" />
             <div class="form-group">
-                <a class="btn btn-default" asp-controller="User" asp-action="List">Отмена</a>
-                <button type="submit" class="btn btn@(Model.IsBlocked ? "-success" : "-warning") @((!Model.IsBlocked && Model.CanBeBlocked) || Model.IsBlocked ? "" : "disabled")">@(Model.IsBlocked ? "Разблокировать" : "Заблокировать")</button>
+                <a class="btn btn-default" asp-controller="User" asp-action="List">
+                    <i class="fa fa-close"></i>
+                    Отмена
+                </a>
+                <button type="submit" class="btn btn@(Model.IsBlocked ? "-success" : "-warning") @((!Model.IsBlocked && Model.CanBeBlocked) || Model.IsBlocked ? "" : "disabled")">
+                    <i class="fa @(Model.IsBlocked ? "fa-unlock" : "fa-lock")"></i>
+                    @(Model.IsBlocked ? "Разблокировать" : "Заблокировать")
+                </button>
             </div>
         </form>
     </div>

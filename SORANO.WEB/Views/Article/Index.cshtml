@@ -1,10 +1,10 @@
-﻿@using SORANO.WEB.Models.ArticleType
-@model IList<SORANO.WEB.Models.ArticleType.ArticleTypeModel>
+﻿@model IList<ArticleTypeModel>
 
 @{
     ViewBag.Title = "SORANO - Артикулы";
     ViewBag.Header = "Артикулы";
     ViewBag.Description = "и типы артикулов";
+    ViewBag.Icon = "fa fa-barcode";
 }
 
 @section Styles {
@@ -14,7 +14,12 @@
 
 @section Breadcrumb {
     <ul class="breadcrumb">
-        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li>
+            <a asp-controller="Home" asp-action="Index">
+                <i class="fa fa-home"></i>
+                Главная
+            </a>
+        </li>
         <li class="active">Артикулы</li>
     </ul>
 }
@@ -29,7 +34,7 @@
             <li class="active">
                 <a href="#article-tab-tree" data-toggle="tab" aria-expanded="False">
                     <i class="fa fa-fw fa-sitemap" aria-hidden="true"></i>
-                    Дерево артикулов
+                    Дерево типов
                 </a>                
             </li>
             <li>
@@ -50,11 +55,21 @@
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-lg-6 col-sm-12">
-                                <input class="form-control input-sm" style="font-weight: bold;" placeholder="Поиск артикулов и типов артикулов" type="text" id="article-search" />
-                                <br />
-                                <div class="tree">
-                                    <article-types-tree elements="@Model.ToList()" detailed="true" show-articles="true"></article-types-tree>
-                                </div>
+                                @if (Model.Any())
+                                {
+                                    <input class="form-control input-sm" style="font-weight: bold;" placeholder="Поиск артикулов и типов артикулов" type="text" id="article-search" />
+                                    <br />
+                                    <div class="tree">
+                                        <article-types-tree elements="@Model.ToList()" detailed="true" show-articles="true"></article-types-tree>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <p class="text-info">
+                                        <i class="fa fa-fw fa-info" aria-hidden="true"></i>
+                                        Типы артикулов отсутствуют
+                                    </p>
+                                }
                             </div>
                             <div class="col-lg-6 col-sm-12">
                                 <div id="details">

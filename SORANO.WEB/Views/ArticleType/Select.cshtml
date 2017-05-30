@@ -2,25 +2,51 @@
 
 @{
     ViewBag.Title = "SORANO - Добавление типа артикулов";
-    ViewBag.Header = "Добавление";
+    ViewBag.Header = "Назначение";
     ViewBag.Description = "родительского типа артикулов";
+    ViewBag.Icon = "fa fa-tags";
 }
 
 @section Breadcrumb {
     <ul class="breadcrumb">
-        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
-        <li><a asp-controller="Article" asp-action="Index">Артикулы</a></li>
-        <li><a asp-controller="ArticleType" asp-action="Create">Создание типа артикулов</a></li>
-        <li class="active">Добавление родительского типа</li>
+        <li>
+            <a asp-controller="Home" asp-action="Index">
+                <i class="fa fa-home"></i>
+                Главная
+            </a>
+        </li>
+        <li>
+            <a asp-controller="Article" asp-action="Index">
+                <i class="fa fa-barcode"></i>
+                Артикулы
+            </a>
+        </li>
+        <li>
+            <a asp-controller="ArticleType" asp-action="Create">
+                <i class="fa fa-tag"></i>
+                Создание типа артикулов
+            </a>
+        </li>
+        <li class="active">Назначение родительского типа</li>
     </ul>
 }
 
 <div class="row">
     <div class="col-lg-6">
-        <p class="text-info">
-            <i class="fa fa-fw fa-info" aria-hidden="true"></i>
-            Для назначения родительского типа выберите необходимый тип в дереве
-        </p>
+        @if (Model.Types.Any())
+        {
+            <p class="text-info">
+                <i class="fa fa-fw fa-info" aria-hidden="true"></i>
+                Для назначения родительского типа выберите необходимый тип в дереве
+            </p>
+        }
+        else
+        {
+            <p class="text-info">
+                <i class="fa fa-fw fa-info" aria-hidden="true"></i>
+                Типы артикулов отсутствуют
+            </p>
+        }        
         <form asp-controller="ArticleType"
               asp-action=""
               method="post"
@@ -42,13 +68,16 @@
                 @Html.HiddenFor(m => m.Types[i].IsSelected, new { id = "typeID_" + Model.Types[i].ID, @class = "selectedInput" })
             }
             <input type="hidden" asp-for="ReturnUrl" />
-            <div class="form-group">
-                <input class="form-control input-sm" style="font-weight: bold;" placeholder="Поиск типов артикулов" type="text" id="article-search" />
-                <br />
-                <div class="tree">
-                    <article-types-tree elements="@Model.Types" detailed="false" show-articles="false"></article-types-tree>
+            @if (Model.Types.Any())
+            {
+                <div class="form-group">
+                    <input class="form-control input-sm" style="font-weight: bold;" placeholder="Поиск типов артикулов" type="text" id="article-search" />
+                    <br />
+                    <div class="tree">
+                        <article-types-tree elements="@Model.Types" detailed="false" show-articles="false"></article-types-tree>
+                    </div>
                 </div>
-            </div>
+            }            
             <div class="form-group">
                 <button type="submit" class="btn btn-default" asp-action="Cancel">Отмена</button>
                 <button type="submit" class="btn btn-primary" asp-action="Select">Сохранить</button>

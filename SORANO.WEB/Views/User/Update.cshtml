@@ -4,97 +4,130 @@
     ViewBag.Title = "SORANO - Редактирование пользователя";
     ViewBag.Header = "Редактирование";
     ViewBag.Description = "свойств пользователя";
+    ViewBag.Icon = "fa fa-pencil-square";
 }
 
 @section Breadcrumb {
     <ul class="breadcrumb">
-        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
-        <li><a asp-controller="User" asp-action="List">Пользователи</a></li>
+        <li>
+            <a asp-controller="Home" asp-action="Index">
+                <i class="fa fa-home"></i>
+                Главная
+            </a>
+        </li>
+        <li>
+            <a asp-controller="User" asp-action="List">
+                <i class="fa fa-users"></i>
+                Пользователи
+            </a>
+        </li>
         <li class="active">Редактирование пользователя</li>
     </ul>
 }
 
 <div class="row">
     <div class="col-lg-6 col-md-6 col-sm-12">
-        <form asp-action="Update"
-              asp-controller="User"
-              method="post">
-            <input type="hidden" asp-for="ID"/>
-            <input type="hidden" asp-for="CanBeModified"/>
-            @for (var i = 0; i < Model.Roles.Count; i++)
+        <div class="row" style="margin-left: 0px;">
+            @if (!Model.CanBeModified)
             {
-                @Html.HiddenFor(m => Model.Roles[i].ID)
-                @Html.HiddenFor(m => Model.Roles[i].Name)
-                @Html.HiddenFor(m => Model.Roles[i].Description)
-                @Html.HiddenFor(m => Model.Roles[i].IsSelected)
+                <p class="text-info">
+                    <i class="fa fa-fw fa-info" aria-hidden="true"></i>
+                    Для текущего пользователя количество свойств для редактирования ограничено
+                </p>
             }
-            <div asp-validation-summary="All" class="text-danger"></div>
-            @if (Model.CanBeModified)
-            {
+        </div>
+        <br />
+        <div class="row" style="margin-left: 0px;">
+            <form asp-action="Update"
+                  asp-controller="User"
+                  method="post">
+                <input type="hidden" asp-for="ID" />
+                <input type="hidden" asp-for="CanBeModified" />
+                @for (var i = 0; i < Model.Roles.Count; i++)
+                {
+                    @Html.HiddenFor(m => Model.Roles[i].ID)
+                    @Html.HiddenFor(m => Model.Roles[i].Name)
+                    @Html.HiddenFor(m => Model.Roles[i].Description)
+                    @Html.HiddenFor(m => Model.Roles[i].IsSelected)
+                }
+                <div asp-validation-summary="All" class="text-danger"></div>
+                @if (Model.CanBeModified)
+                {
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Login">Логин:</label>
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-user-circle-o"></i></span>
+                            <input class="form-control" type="text" asp-for="Login" placeholder="Логин" />
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <input type="hidden" asp-for="Login" />
+                    <input type="hidden" asp-for="Roles" />
+                }
                 <div class="form-group">
-                    <label class="control-label" asp-for="Login">Логин:</label>
+                    <label class="control-label" asp-for="Description">Описание:</label>
                     <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-user-circle-o"></i></span>
-                        <input class="form-control" type="text" asp-for="Login" placeholder="Логин"/>
+                        <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-align-justify"></i></span>
+                        <textarea class="form-control" rows="3" asp-for="Description" placeholder="Описание"></textarea>
                     </div>
                 </div>
-            }
-            else
-            {
-                <input type="hidden" asp-for="Login" />
-                <input type="hidden" asp-for="Roles" />
-            }
-            <div class="form-group">
-                <label class="control-label" asp-for="Description">Описание:</label>
-                <div class="input-group">
-                    <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-align-justify"></i></span>
-                    <textarea class="form-control" rows="3" asp-for="Description" placeholder="Описание"></textarea>
-                </div>
-            </div>
-            @if (Model.CanBeModified)
-            {
-                <div class="form-group">
-                    <label class="control-label" asp-for="NewPassword">Новый пароль:</label>
-                    <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-key"></i></span>
-                        <input class="form-control" type="password" asp-for="NewPassword" placeholder="Новый пароль" />
+                @if (Model.CanBeModified)
+                {
+                    <div class="form-group">
+                        <label class="control-label" asp-for="NewPassword">Новый пароль:</label>
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-key"></i></span>
+                            <input class="form-control" type="password" asp-for="NewPassword" placeholder="Новый пароль" />
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label" asp-for="RepeatPassword">Новый пароль:</label>
-                    <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-key"></i></span>
-                        <input class="form-control" type="password" asp-for="RepeatPassword" placeholder="Повторите новый пароль" />
+                    <div class="form-group">
+                        <label class="control-label" asp-for="RepeatPassword">Новый пароль:</label>
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-key"></i></span>
+                            <input class="form-control" type="password" asp-for="RepeatPassword" placeholder="Повторите новый пароль" />
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Роли:</label>
-                    <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-vcard"></i></span>
-                        <div class="form-control">
-                            @foreach (var role in Model.Roles)
-                            {
-                                <span class="label label-default">@role.Description</span>
-                            }
-                        </div>   
-                        <span class="input-group-btn">
-                            <button class="btn btn-default" type="submit" asp-action="SelectRoles" asp-route-returnUrl="@Url.Action("Update", "User", new { id = Model.ID })" style="border-top-left-radius: 0px; border-bottom-left-radius: 0px;" title="Добавить роли"><i class="fa fa-plus-circle"></i></button>
-                        </span>  
-                        <span asp-validation-for="Roles" style="display: none;"></span>
+                    <div class="form-group">
+                        <label class="control-label">Роли:</label>
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-vcard"></i></span>
+                            <div class="form-control">
+                                @foreach (var role in Model.Roles)
+                                {
+                                    <span class="label label-default">@role.Description</span>
+                                }
+                            </div>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" 
+                                        type="submit" 
+                                        asp-action="SelectRoles" 
+                                        asp-route-returnUrl="@Url.Action("Update", "User", new { id = Model.ID })" 
+                                        style="border-top-left-radius: 0px; border-bottom-left-radius: 0px;" 
+                                        data-toggle="tooltip"
+                                        data-placement="right"
+                                        data-original-title="Назначить роли"
+                                        title="">
+                                    <i class="fa fa-pencil"></i>
+                                </button>
+                            </span>
+                            <span asp-validation-for="Roles" style="display: none;"></span>
+                        </div>
                     </div>
+                }
+                <div class="form-group">
+                    <a class="btn btn-default" asp-controller="User" asp-action="List">
+                        <i class="fa fa-close"></i>
+                        Отмена
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-check"></i>
+                        Сохранить
+                    </button>
                 </div>
-            }            
-            <div class="form-group">
-                <a class="btn btn-default" asp-controller="User" asp-action="List">
-                    <i class="fa fa-close"></i>&nbsp;
-                    Отмена
-                </a>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa fa-check"></i>&nbsp;
-                    Сохранить
-                </button>
-            </div> 
-        </form>
+            </form>
+        </div>
     </div>
 </div>
 

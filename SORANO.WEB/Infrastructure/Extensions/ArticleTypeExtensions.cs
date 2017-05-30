@@ -30,7 +30,14 @@ namespace SORANO.WEB.Infrastructure.Extensions
         {
             articleType.Name = model.Name;
             articleType.Description = model.Description;
-            articleType.ParentTypeId = model.ParentType.ID > 0 ? (int?)model.ParentType.ID : null;
+            if (model.ParentType != null && model.ParentType.ID > 0)
+            {
+                articleType.ParentTypeId = model.ParentType.ID;
+            }
+            else
+            {
+                articleType.ParentTypeId = null;
+            }
         }
     }
 }

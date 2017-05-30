@@ -4,6 +4,7 @@
     ViewBag.Title = "SORANO - Пользователи";
     ViewBag.Header = "Список";
     ViewBag.Description = "всех пользователей";
+    ViewBag.Icon = "fa fa-users";
 }
 
 @section Styles {
@@ -13,7 +14,12 @@
 
 @section Breadcrumb {
     <ul class="breadcrumb">
-        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li>
+            <a asp-controller="Home" asp-action="Index">
+                <i class="fa fa-home"></i>
+                Главная
+            </a>
+        </li>
         <li class="active">Пользователи</li>
     </ul>
 }
@@ -21,10 +27,9 @@
 <div class="row">
     <div class="col-lg-12">
         <div class="panel panel-primary">
-            <div class="panel-heading">  
-                <i class="fa fa-fw fa-list" aria-hidden="true"></i>
-                Пользователи&nbsp;
-                <span class="badge">@Model.Count</span>                    
+            <div class="panel-heading">                 
+                Таблица пользователей
+                <span class="badge" style="margin-left: 5px;">@Model.Count</span>                    
                 <a class="btn btn-default btn-xs pull-right" asp-controller="User" asp-action="Create">
                     <i class="fa fa-user-plus"></i>
                     Создать пользователя
@@ -59,7 +64,11 @@
                             <td>
                                 <a asp-controller="User"
                                    asp-action="Details"
-                                   asp-route-id="@user.ID">
+                                   asp-route-id="@user.ID"
+                                   data-toggle="tooltip"
+                                   data-placement="bottom"
+                                   data-original-title="Просмотреть информацию о пользователе"
+                                   title="">
                                     @user.Login
                                 </a>
                             </td>
@@ -80,24 +89,36 @@
                                    asp-action="Details"
                                    asp-route-id="@user.ID"
                                    class="btn btn-xs btn-default" 
-                                   title="Просмотреть информацию о пользователе">
+                                   data-toggle="tooltip"
+                                   data-placement="bottom"
+                                   data-original-title="Просмотреть информацию о пользователе"
+                                   title="">
                                     <i class="fa fa-info-circle" aria-hidden="true"></i>
                                 </a>
                                 <a asp-controller="User" 
                                    asp-action="Update"
                                    asp-route-id="@user.ID"
                                    class="btn btn-xs btn-default" 
-                                   title="Редактировать свойства пользователя">
+                                   data-toggle="tooltip"
+                                   data-placement="bottom"
+                                   data-original-title="Редактировать свойства пользователя"
+                                   title="">
                                     <i class="fa fa-pencil-square" aria-hidden="true"></i>
                                 </a>
                                 <a asp-controller="User"
                                    asp-action="Block"
                                    asp-route-id="@user.ID"
                                    class="btn btn-xs btn@(user.IsBlocked ? "-success" : "-warning") @((!user.IsBlocked && user.CanBeBlocked) || user.IsBlocked ? "" : "disabled")" 
-                                   title="@(user.IsBlocked ? "Разблокировать пользователя" : "Заблокировать пользователя")">
+                                   data-toggle="tooltip"
+                                   data-placement="bottom"
+                                   data-original-title="@(user.IsBlocked ? "Разблокировать пользователя" : "Заблокировать пользователя")"
+                                   title="">
                                     <i class="fa fa@(user.IsBlocked ? "-unlock-alt" : "-lock")" aria-hidden="true"></i>
                                 </a>
                                 <a class="btn btn-xs btn-danger @(user.CanBeDeleted ? "" : "disabled")" 
+                                   data-toggle="tooltip"
+                                   data-placement="bottom"
+                                   data-original-title="Удалить пользователя"
                                    title="Удалить пользователя" 
                                    asp-controller="User" 
                                    asp-action="Delete" 
@@ -109,7 +130,6 @@
                     }
                     </tbody>
                 </table>
-
             </div>
         </div>
     </div>
@@ -121,7 +141,7 @@
     <script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
     <script src="~/lib/datatables.net-responsive-bs/js/responsive.bootstrap.min.js"></script>
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(document).ready(function () {           
             var table = $("#users-datatable").DataTable({
                 responsive: true,
                 "columnDefs": [

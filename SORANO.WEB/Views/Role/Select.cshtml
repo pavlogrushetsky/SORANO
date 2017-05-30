@@ -1,17 +1,33 @@
 ﻿@model RoleSelectModel
 
 @{
-    ViewBag.Title = "SORANO - Добавление ролей";
-    ViewBag.Header = "Добавление";
-    ViewBag.Description = "ролей для пользователя";
+    ViewBag.Title = "SORANO - Назначение ролей";
+    ViewBag.Header = "Назначение";
+    ViewBag.Description = "ролей пользователю";
+    ViewBag.Icon = "fa fa-vcard";
 }
 
 @section Breadcrumb {
     <ul class="breadcrumb">
-        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
-        <li><a asp-controller="User" asp-action="List">Пользователи</a></li>
-        <li><a asp-controller="User" asp-action="Create">Создание пользователя</a></li>
-        <li class="active">Добавление ролей</li>
+        <li>
+            <a asp-controller="Home" asp-action="Index">
+                <i class="fa fa-home"></i>
+                Главная
+            </a>
+        </li>
+        <li>
+            <a asp-controller="User" asp-action="List">
+                <i class="fa fa-users"></i>
+                Пользователи
+            </a>
+        </li>
+        <li>
+            <a asp-controller="User" asp-action="Create">
+                <i class="fa fa-user-plus"></i>
+                Создание пользователя
+            </a>
+        </li>
+        <li class="active">Назначение ролей</li>
     </ul>
 }
 
@@ -62,8 +78,14 @@
                 </table>
             </div>
             <div class="form-group">
-                <button type="submit" class="btn btn-default" asp-action="Cancel">Отмена</button>
-                <button type="submit" class="btn btn-primary" asp-action="Select">Сохранить</button>
+                <button type="submit" class="btn btn-default" asp-action="Cancel">
+                    <i class="fa fa-close"></i>
+                    Отмена
+                </button>
+                <button type="submit" class="btn btn-primary" asp-action="Select">
+                    <i class="fa fa-check"></i>
+                    Сохранить
+                </button>
             </div>
         </form>
     </div>

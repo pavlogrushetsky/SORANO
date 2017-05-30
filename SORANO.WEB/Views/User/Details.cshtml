@@ -4,6 +4,7 @@
     ViewBag.Title = "SORANO - Детали пользователя";
     ViewBag.Header = "Детали";
     ViewBag.Description = "пользователя";
+    ViewBag.Icon = "fa fa-info-circle";
 }
 
 @section Styles {
@@ -13,8 +14,18 @@
 
 @section Breadcrumb {
     <ul class="breadcrumb">
-        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
-        <li><a asp-controller="User" asp-action="List">Пользователи</a></li>
+        <li>
+            <a asp-controller="Home" asp-action="Index">
+                <i class="fa fa-home"></i>
+                Главная
+            </a>
+        </li>
+        <li>
+            <a asp-controller="User" asp-action="List">
+                <i class="fa fa-users"></i>
+                Пользователи
+            </a>
+        </li>
         <li class="active">Детали пользователя</li>
     </ul>
 }
@@ -152,7 +163,10 @@
         </div>
     </div> 
     <div class="row">
-        <a class="btn btn-default" asp-controller="User" asp-action="List">Назад</a>
+        <a class="btn btn-default" asp-controller="User" asp-action="List">
+            <i class="fa fa-arrow-left"></i>
+            Назад
+        </a>
     </div>
 </div>
 
