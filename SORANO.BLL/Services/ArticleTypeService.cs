@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
@@ -33,6 +34,11 @@ namespace SORANO.BLL.Services
         public async Task<ArticleType> CreateAsync(ArticleType articleType)
         {
             return await _articleTypeRepository.AddAsync(articleType);
+        }
+
+        public async Task<ArticleType> UpdateAsync(ArticleType articleType)
+        {
+            return await _articleTypeRepository.UpdateAsync(articleType);
         }
     }
 }

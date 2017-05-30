@@ -46,7 +46,7 @@ namespace SORANO.WEB.Infrastructure.TagHelpers
 
         private void RenderType(ArticleTypeModel type, ref string html)
         {
-            html += "<li id='" + type.ID + "'><span><i class='fa fa-tag'></i>" + type.Name;
+            html += "<li id='" + type.ID + "'" + (type.IsSelected ? " class='selected'" : "") + "><span><i class='fa fa-tag'></i>" + type.Name;
 
             if (type.ChildTypes.Any())
             {

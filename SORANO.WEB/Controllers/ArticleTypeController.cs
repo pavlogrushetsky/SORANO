@@ -122,6 +122,35 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(ArticleTypeModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var articleType = await _articleTypeService.GetAsync(model.ID);
+
+            articleType.FromCreateModel(model);
+
+            var currentUser = await _userService.GetAsync(HttpContext.User.FindFirst(ClaimTypes.Name)?.Value);
+
+            articleType.ModifiedBy = currentUser.ID;
+            articleType.ModifiedDate = DateTime.Now;
+
+            articleType = await _articleTypeService.UpdateAsync(articleType);
+
+            if (articleType != null)
+            {
+                return RedirectToAction("Index", "Article");
+            }
+
+            ModelState.AddModelError("", "Не удалось обновить тип артикулов.");
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult SelectParentType(ArticleTypeModel model, string returnUrl)
         {
             TempData.Put("ArticleTypeModel", model);
