@@ -23,6 +23,8 @@ namespace SORANO.WEB.Controllers
             _userService = userService;
         }
 
+        #region GET Actions
+
         [HttpGet]
         public IActionResult Create()
         {
@@ -34,10 +36,58 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var type = await _articleTypeService.Get(id);
+            var type = await _articleTypeService.GetAsync(id);
 
             return PartialView("_Details", type.ToModel());
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Update(int id)
+        {
+            var articleType = await _articleTypeService.GetAsync(id);
+
+            var model = TempData.Get<ArticleTypeModel>("ArticleTypeModel") ?? articleType.ToModel();
+
+            ViewData["IsEdit"] = true;
+
+            return View("Create", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Select(string returnUrl)
+        {
+            if (string.IsNullOrEmpty(returnUrl))
+            {
+                return BadRequest();
+            }
+
+            var typeModel = TempData.Get<ArticleTypeModel>("ArticleTypeModel");
+
+            if (typeModel == null)
+            {
+                return Redirect(returnUrl);
+            }
+
+            var types = await _articleTypeService.GetAllAsync();
+
+            var model = new ArticleTypeSelectModel
+            {
+                Types = types.Select(t => t.ToModel()).ToList(),
+                ArticleType = typeModel,
+                ReturnUrl = returnUrl
+            };
+
+            model.Types.Where(t => t.ID == typeModel.ParentType?.ID).ToList().ForEach(t =>
+            {
+                t.IsSelected = true;
+            });
+
+            return View(model);
+        }
+
+        #endregion
+
+        #region POST Actions
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -76,39 +126,7 @@ namespace SORANO.WEB.Controllers
         {
             TempData.Put("ArticleTypeModel", model);
 
-            return RedirectToAction("Select", "ArticleType", new {returnUrl});
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Select(string returnUrl)
-        {
-            if (string.IsNullOrEmpty(returnUrl))
-            {
-                return BadRequest();
-            }
-
-            var typeModel = TempData.Get<ArticleTypeModel>("ArticleTypeModel");
-
-            if (typeModel == null)
-            {
-                return Redirect(returnUrl);
-            }
-
-            var types = await _articleTypeService.GetAllAsync();
-
-            var model = new ArticleTypeSelectModel
-            {
-                Types = types.Select(t => t.ToModel()).ToList(),
-                ArticleType = typeModel,
-                ReturnUrl = returnUrl
-            };
-
-            model.Types.Where(t => t.ID == typeModel.ParentType?.ID).ToList().ForEach(t =>
-            {
-                t.IsSelected = true;
-            });
-
-            return View(model);
+            return RedirectToAction("Select", "ArticleType", new { returnUrl });
         }
 
         [HttpPost]
@@ -134,5 +152,7 @@ namespace SORANO.WEB.Controllers
 
             return Redirect(model.ReturnUrl);
         }
+
+        #endregion        
     }
 }

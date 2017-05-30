@@ -10,7 +10,7 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<IEnumerable<ArticleType>> GetAllAsync();
 
-        Task<ArticleType> Get(int id);
+        Task<ArticleType> GetAsync(int id);
 
         Task<ArticleType> CreateAsync(ArticleType articleType);
     }

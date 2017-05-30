@@ -1,9 +1,14 @@
 ﻿@model ArticleTypeModel
 
 @{
-    ViewBag.Title = "SORANO - Создание типа артикулов";
-    ViewBag.Header = "Создание";
-    ViewBag.Description = "нового типа артикулов";
+    var isEdit = ViewData.ContainsKey("IsEdit");
+    var title = isEdit ? "Редактирование" : "Создание";
+}
+
+@{
+    ViewBag.Title = "SORANO - " + title + " типа артикулов";
+    ViewBag.Header = title;
+    ViewBag.Description = "типа артикулов";
     ViewBag.Icon = "fa fa-tag";
 }
 
@@ -21,13 +26,13 @@
                 Артикулы
             </a>
         </li>
-        <li class="active">Создание типа артикулов</li>
+        <li class="active">@title типа артикулов</li>
     </ul>
 }
 
 <div class="row">
     <div class="col-lg-6 col-md-6 col-sm-12">
-        <form asp-action="Create"
+        <form asp-action="@(isEdit ? "Update" : "Create")"
               asp-controller="ArticleType"
               method="post">
             @if (Model.ParentType != null)
@@ -61,7 +66,7 @@
                         <button class="btn btn-default" 
                                 type="submit" 
                                 asp-action="SelectParentType" 
-                                asp-route-returnUrl="@Url.Action("Create", "ArticleType")" 
+                                asp-route-returnUrl="@(isEdit ? Url.Action("Update", "ArticleType") : Url.Action("Create", "ArticleType"))" 
                                 style="border-top-left-radius: 0px; border-bottom-left-radius: 0px;" 
                                 data-toggle="tooltip"
                                 data-placement="right"

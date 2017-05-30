@@ -85,7 +85,10 @@
         </dl>        
     </div>   
     <div class="panel-footer">
-        <a class="btn btn-default" asp-controller="ArticleType" asp-action="Update">
+        <a class="btn btn-default" 
+           asp-controller="ArticleType" 
+           asp-action="Update"
+           asp-route-id="@Model.ID">
             <i class="fa fa-pencil-square"></i>
             Редактировать
         </a>

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
@@ -27,7 +25,7 @@ namespace SORANO.BLL.Services
             return await _articleTypeRepository.GetAllAsync();
         }
 
-        public async Task<ArticleType> Get(int id)
+        public async Task<ArticleType> GetAsync(int id)
         {
             return await _articleTypeRepository.GetAsync(t => t.ID == id, t => t.Articles, t => t.ParentType);
         }
