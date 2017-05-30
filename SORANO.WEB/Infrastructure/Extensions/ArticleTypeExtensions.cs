@@ -12,7 +12,8 @@ namespace SORANO.WEB.Infrastructure.Extensions
             {
                 ID = type.ID,
                 Name = type.Name,
-                Description = type.Description
+                Description = type.Description,
+                CanBeDeleted = !type.Articles.Any()
             };
 
             if (!deep)

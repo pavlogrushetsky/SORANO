@@ -85,6 +85,14 @@ namespace SORANO.WEB.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var articleType = await _articleTypeService.GetAsync(id);
+
+            return View(articleType.ToModel());
+        }
+
         #endregion
 
         #region POST Actions
@@ -147,7 +155,18 @@ namespace SORANO.WEB.Controllers
             }
 
             ModelState.AddModelError("", "Не удалось обновить тип артикулов.");
-            return View(model);
+            ViewData["IsEdit"] = true;
+            return View("Create", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(ArticleTypeModel model)
+        {
+            var currentUser = await _userService.GetAsync(HttpContext.User.FindFirst(ClaimTypes.Name)?.Value);
+
+            await _articleTypeService.DeleteAsync(model.ID, currentUser.ID);
+
+            return RedirectToAction("Index", "Article");
         }
 
         [HttpPost]

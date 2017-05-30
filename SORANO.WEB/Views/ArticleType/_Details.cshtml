@@ -92,7 +92,7 @@
             <i class="fa fa-pencil-square"></i>
             Редактировать
         </a>
-        <a class="btn btn-danger" asp-controller="ArticleType" asp-action="Delete">
+        <a class="btn btn-danger @(Model.CanBeDeleted ? "" : "disabled")" asp-controller="ArticleType" asp-action="Delete" asp-route-id="@Model.ID">
             <i class="fa fa-trash"></i>
             Удалить
         </a>
