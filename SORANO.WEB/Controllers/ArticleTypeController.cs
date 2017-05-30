@@ -94,7 +94,7 @@ namespace SORANO.WEB.Controllers
         public async Task<IActionResult> Create(ArticleTypeModel model)
         {
             if (!ModelState.IsValid)
-            {
+            {                
                 return View(model);
             }
 
@@ -126,7 +126,8 @@ namespace SORANO.WEB.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(model);
+                ViewData["IsEdit"] = true;
+                return View("Create", model);
             }
 
             var articleType = await _articleTypeService.GetAsync(model.ID);

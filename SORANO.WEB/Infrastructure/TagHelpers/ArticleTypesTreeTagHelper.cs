@@ -9,6 +9,8 @@ namespace SORANO.WEB.Infrastructure.TagHelpers
     {
         public List<ArticleTypeModel> Elements { get; set; }
 
+        public ArticleTypeModel CurrentElement { get; set; }
+
         public bool Detailed { get; set; }
 
         public bool ShowArticles { get; set; }
@@ -46,6 +48,11 @@ namespace SORANO.WEB.Infrastructure.TagHelpers
 
         private void RenderType(ArticleTypeModel type, ref string html)
         {
+            if (CurrentElement != null && (type.ID == CurrentElement.ID || CurrentElement.ChildTypes.Select(e => e.ID).Contains(type.ID)))
+            {
+                return;
+            }
+
             html += "<li id='" + type.ID + "'" + (type.IsSelected ? " class='selected'" : "") + "><span><i class='fa fa-tag'></i>" + type.Name;
 
             if (type.ChildTypes.Any())
