@@ -22,6 +22,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
             }
 
             model.ParentType = type.ParentType?.ToModel(false);
+            model.Recommendations = type.Recommendations?.Select(r => r.ToModel()).ToList();
             model.Articles = type.Articles?.Select(a => a.ToModel(model)).ToList();
 
             return model;

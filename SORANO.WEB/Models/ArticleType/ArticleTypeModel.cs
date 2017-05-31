@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using SORANO.WEB.Models.Article;
+using SORANO.WEB.Models.Recommendation;
 
 namespace SORANO.WEB.Models.ArticleType
 {
@@ -26,6 +27,9 @@ namespace SORANO.WEB.Models.ArticleType
 
         [Display(Name = "Артикулы")]
         public IList<ArticleModel> Articles { get; set; } = new List<ArticleModel>();
+
+        [Display(Name = "Рекомендации")]
+        public IList<RecommendationModel> Recommendations { get; set; } = new List<RecommendationModel>();
 
         public bool IsSelected { get; set; }
 

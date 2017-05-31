@@ -37,5 +37,8 @@
     <ProjectReference Include="..\SORANO.CORE\SORANO.CORE.csproj" />
     <ProjectReference Include="..\SORANO.DAL\SORANO.DAL.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\Recommendation\" />
+  </ItemGroup>
 
 </Project>
