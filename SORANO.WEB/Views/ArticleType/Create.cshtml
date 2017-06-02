@@ -82,51 +82,8 @@
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="form-group">
-                <label class="control-label" asp-for="Name">Рекоммендации:</label>
-
-                <table class="table table-responsive" style="width: 100%;">
-                    <thead>
-                        <tr>
-                            <th style="width: 70%"><i class="fa fa-fw fa-comment" aria-hidden="true"></i>Текст</th>
-                            <th style="width: 25%"><i class="fa fa-fw fa-hashtag" aria-hidden="true"></i>Значение</th>
-                            <th style="width: 5%"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td style="padding: 2px;"><textarea style="resize: vertical;" class="form-control input-sm" rows="1" asp-for="Name"></textarea></td>
-                            <td style="padding: 2px;"><input class="form-control input-sm" type="text" asp-for="Name" /></td>
-                            <td style="padding: 2px;">
-                                <a class="btn btn-sm btn-danger"
-                                   title="Просмотреть информацию об артикуле">
-                                    <i class="fa fa-trash" aria-hidden="true"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 2px;"><textarea style="resize: vertical;" class="form-control input-sm" rows="1" asp-for="Name"></textarea></td>
-                            <td style="padding: 2px;"><input class="form-control input-sm" type="text" asp-for="Name" /></td>
-                            <td style="padding: 2px;">
-                                <a class="btn btn-sm btn-danger"
-                                   title="Просмотреть информацию об артикуле">
-                                    <i class="fa fa-trash" aria-hidden="true"></i>
-                                </a>
-                            </td>
-                        </tr>
-
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="2" style="padding: 2px;"></td>
-                            <td style="padding: 2px;">
-                                <a class="btn btn-sm btn-success"
-                                   title="Просмотреть информацию об артикуле">
-                                    <i class="fa fa-plus" aria-hidden="true"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+                <label class="control-label" asp-for="Name">Рекомендации:</label>
+                <div id="recommendations"></div>
             </div>
         </div>
     </div>
@@ -149,6 +106,11 @@
 @section Scripts {
     <script type="text/javascript">
         $(document).ready(function () {
+            var recommendationsFormUrl = '@Url.Action("TableForm", "Recommendation")';
+            $.get(recommendationsFormUrl, { recommendations: @Html.Raw(Json.Serialize(Model.Recommendations)) }, function (data) {
+                $('#recommendations').html(data);
+            });
+
             $("input.input-validation-error").closest(".form-group").addClass("has-error");
             $("select.input-validation-error").closest(".form-group").addClass("has-error");
         });
