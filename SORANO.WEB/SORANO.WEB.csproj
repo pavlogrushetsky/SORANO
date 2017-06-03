@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\Recommendation\" />
+    <Folder Include="Views\Recommendation\" />
   </ItemGroup>
 
 </Project>

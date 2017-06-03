@@ -29,7 +29,7 @@ namespace SORANO.WEB.Models.ArticleType
         public IList<ArticleModel> Articles { get; set; } = new List<ArticleModel>();
 
         [Display(Name = "Рекомендации")]
-        public IList<RecommendationModel> Recommendations { get; set; } = new List<RecommendationModel>();
+        public List<RecommendationModel> Recommendations { get; set; } = new List<RecommendationModel>();
 
         public bool IsSelected { get; set; }
 

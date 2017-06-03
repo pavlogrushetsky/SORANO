@@ -8,6 +8,7 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.ArticleType;
+using SORANO.WEB.Models.Recommendation;
 
 namespace SORANO.WEB.Controllers
 {
@@ -200,6 +201,28 @@ namespace SORANO.WEB.Controllers
             TempData.Put("ArticleTypeModel", model.ArticleType);
 
             return Redirect(model.ReturnUrl);
+        }
+
+        [HttpPost]
+        public IActionResult AddRecommendation(ArticleTypeModel articleType, bool isEdit)
+        {
+            articleType.Recommendations.Add(new RecommendationModel());
+
+            ViewData["IsEdit"] = isEdit;
+
+            return View("Create", articleType);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteRecommendation(ArticleTypeModel articleType, bool isEdit, int num)
+        {
+            ModelState.Clear();
+
+            articleType.Recommendations.RemoveAt(num);
+
+            ViewData["IsEdit"] = isEdit;
+
+            return View("Create", articleType);
         }
 
         #endregion        
