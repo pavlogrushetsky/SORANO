@@ -1,14 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
-using SORANO.CORE.StockEntities;
 using SORANO.WEB.Infrastructure.Extensions;
-using SORANO.WEB.Models.Article;
-using SORANO.WEB.Models.ArticleType;
 
 namespace SORANO.WEB.Controllers
 {

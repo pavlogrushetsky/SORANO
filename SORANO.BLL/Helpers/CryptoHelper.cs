@@ -3,7 +3,7 @@ using System.Text;
 
 namespace SORANO.BLL.Helpers
 {
-    public static class CryptoHelper
+    internal static class CryptoHelper
     {
         public static string Hash(string password)
         {

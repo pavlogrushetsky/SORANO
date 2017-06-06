@@ -12,7 +12,7 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<ArticleType> GetAsync(int id);
 
-        Task<ArticleType> CreateAsync(ArticleType articleType);
+        Task<ArticleType> CreateAsync(ArticleType articleType, int userId);
 
         Task<ArticleType> UpdateAsync(ArticleType articleType, int userId);
 

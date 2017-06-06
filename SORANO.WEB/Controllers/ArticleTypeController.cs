@@ -1,11 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
-using SORANO.CORE.StockEntities;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.ArticleType;
 using SORANO.WEB.Models.Recommendation;
@@ -13,15 +10,13 @@ using SORANO.WEB.Models.Recommendation;
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    public class ArticleTypeController : Controller
+    public class ArticleTypeController : BaseController
     {
         private readonly IArticleTypeService _articleTypeService;
-        private readonly IUserService _userService;
 
-        public ArticleTypeController(IArticleTypeService articleTypeService, IUserService userService)
+        public ArticleTypeController(IArticleTypeService articleTypeService, IUserService userService) : base(userService)
         {
             _articleTypeService = articleTypeService;
-            _userService = userService;
         }
 
         #region GET Actions
@@ -98,69 +93,85 @@ namespace SORANO.WEB.Controllers
 
         #region POST Actions
 
+        /// <summary>
+        /// Create new article type
+        /// </summary>
+        /// <param name="model">Article type model</param>
+        /// <returns>Action result</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ArticleTypeModel model)
         {
-            if (!ModelState.IsValid)
-            {                
-                return View(model);
-            }
-
-            var articleType = new ArticleType();
-
-            articleType.FromCreateModel(model);
-
-            var currentUser = await _userService.GetAsync(HttpContext.User.FindFirst(ClaimTypes.Name)?.Value);
-
-            articleType.CreatedBy = currentUser.ID;
-            articleType.ModifiedBy = currentUser.ID;
-            articleType.CreatedDate = DateTime.Now;
-            articleType.ModifiedDate = DateTime.Now;
-
-            articleType = await _articleTypeService.CreateAsync(articleType);
-
-            if (articleType != null)
+            // Try to get result
+            return await TryGetActionResultAsync(async () =>
             {
-                return RedirectToAction("Index", "Article");
-            }
+                // Check the model
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
 
-            ModelState.AddModelError("", "Не удалось создать новый тип артикулов.");
-            return View(model);
+                // Convert model to article type entity
+                var articleType = model.ToEntity();
+
+                // Get current user
+                var currentUser = await GetCurrentUser();
+
+                // Call correspondent service method to create new article type
+                articleType = await _articleTypeService.CreateAsync(articleType, currentUser.ID);
+
+                // If succeeded
+                if (articleType != null)
+                {
+                    return RedirectToAction("Index", "Article");
+                }
+
+                // If failed
+                ModelState.AddModelError("", "Не удалось создать новый тип артикулов.");
+                return View(model);
+            });            
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(ArticleTypeModel model)
         {
-            if (!ModelState.IsValid)
+            // Try to get result
+            return await TryGetActionResultAsync(async () =>
             {
+                // Check the model
+                if (!ModelState.IsValid)
+                {
+                    ViewData["IsEdit"] = true;
+                    return View("Create", model);
+                }
+
+                // Convert model to article type entity
+                var articleType = model.ToEntity();
+
+                // Get current user
+                var currentUser = await GetCurrentUser();
+
+                // Call correspondent service method to update article type
+                articleType = await _articleTypeService.UpdateAsync(articleType, currentUser.ID);
+
+                // If succeeded
+                if (articleType != null)
+                {
+                    return RedirectToAction("Index", "Article");
+                }
+
+                // If failed
+                ModelState.AddModelError("", "Не удалось обновить тип артикулов.");
                 ViewData["IsEdit"] = true;
                 return View("Create", model);
-            }
-
-            var articleType = await _articleTypeService.GetAsync(model.ID);
-
-            articleType.FromCreateModel(model);
-
-            var currentUser = await _userService.GetAsync(HttpContext.User.FindFirst(ClaimTypes.Name)?.Value);
-
-            articleType = await _articleTypeService.UpdateAsync(articleType, currentUser.ID);
-
-            if (articleType != null)
-            {
-                return RedirectToAction("Index", "Article");
-            }
-
-            ModelState.AddModelError("", "Не удалось обновить тип артикулов.");
-            ViewData["IsEdit"] = true;
-            return View("Create", model);
+            });            
         }
 
         [HttpPost]
         public async Task<IActionResult> Delete(ArticleTypeModel model)
         {
-            var currentUser = await _userService.GetAsync(HttpContext.User.FindFirst(ClaimTypes.Name)?.Value);
+            var currentUser = await GetCurrentUser();
 
             await _articleTypeService.DeleteAsync(model.ID, currentUser.ID);
 

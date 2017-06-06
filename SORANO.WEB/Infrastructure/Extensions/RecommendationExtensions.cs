@@ -17,24 +17,22 @@ namespace SORANO.WEB.Infrastructure.Extensions
             };
         }
 
-        public static Recommendation ToEntity(this RecommendationModel model, int parentId, int userId)
+        public static Recommendation ToEntity(this RecommendationModel model)
         {
             return new Recommendation
             {
                 ID = model.ID,
-                ParentEntityID = parentId,
                 Value = string.IsNullOrEmpty(model.ValueString) ? (decimal?)null : decimal.Parse(model.ValueString),
-                Comment = model.Comment,
-                CreatedBy = userId,
-                ModifiedBy = userId,
-                CreatedDate = DateTime.Now,
-                ModifiedDate = DateTime.Now
+                Comment = model.Comment
             };
         }
 
-        public static void FromModel(this Recommendation recommendation, RecommendationModel model, int userId)
+        public static void FromModel(this Recommendation recommendation, RecommendationModel model)
         {
-            
+            recommendation.ID = model.ID;
+            recommendation.ParentEntityID = model.ParentID;
+            recommendation.Value = decimal.Parse(model.ValueString);
+            recommendation.Comment = model.Comment;
         }
     }
 }

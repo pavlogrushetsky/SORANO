@@ -26,38 +26,18 @@ namespace SORANO.WEB.Infrastructure.Extensions
             model.Articles = type.Articles?.Select(a => a.ToModel(model)).ToList();
 
             return model;
-        }
+        }       
 
-        public static void FromCreateModel(this ArticleType articleType, ArticleTypeModel model, int userId)
+        public static ArticleType ToEntity(this ArticleTypeModel model)
         {
-            articleType.Name = model.Name;
-            articleType.Description = model.Description;
-            if (model.ParentType != null && model.ParentType.ID > 0)
+            return new ArticleType
             {
-                articleType.ParentTypeId = model.ParentType.ID;
-            }
-            else
-            {
-                articleType.ParentTypeId = null;
-            }
-
-            articleType.Recommendations
-                .Where(r => !model.Recommendations.Select(x => x.ID).Contains(r.ID))
-                .ToList()
-                .ForEach(r => articleType.Recommendations.Remove(r));
-
-            model.Recommendations
-                .Where(r => !articleType.Recommendations.Select(x => x.ID).Contains(r.ID))
-                .ToList()
-                .ForEach(r => articleType.Recommendations.Add(r.ToEntity(articleType.ID, userId)));
-
-            model.Recommendations
-                .Where(r => articleType.Recommendations.Select(x => x.ID).Contains(r.ID))
-                .ToList()
-                .ForEach(r =>
-                {
-                    articleType.Recommendations.SingleOrDefault(x => x.ID == r.ID).FromModel(r, userId);
-                });
+                ID = model.ID,
+                Name = model.Name,
+                Description = model.Description,
+                ParentTypeId = model.ParentType != null && model.ParentType.ID > 0 ? (int?)model.ParentType.ID : null,
+                Recommendations = model.Recommendations.Select(r => r.ToEntity()).ToList()
+            };
         }
     }
 }
