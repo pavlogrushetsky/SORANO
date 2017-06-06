@@ -28,7 +28,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
             return model;
         }
 
-        public static void FromCreateModel(this ArticleType articleType, ArticleTypeModel model)
+        public static void FromCreateModel(this ArticleType articleType, ArticleTypeModel model, int userId)
         {
             articleType.Name = model.Name;
             articleType.Description = model.Description;
@@ -40,6 +40,24 @@ namespace SORANO.WEB.Infrastructure.Extensions
             {
                 articleType.ParentTypeId = null;
             }
+
+            articleType.Recommendations
+                .Where(r => !model.Recommendations.Select(x => x.ID).Contains(r.ID))
+                .ToList()
+                .ForEach(r => articleType.Recommendations.Remove(r));
+
+            model.Recommendations
+                .Where(r => !articleType.Recommendations.Select(x => x.ID).Contains(r.ID))
+                .ToList()
+                .ForEach(r => articleType.Recommendations.Add(r.ToEntity(articleType.ID, userId)));
+
+            model.Recommendations
+                .Where(r => articleType.Recommendations.Select(x => x.ID).Contains(r.ID))
+                .ToList()
+                .ForEach(r =>
+                {
+                    articleType.Recommendations.SingleOrDefault(x => x.ID == r.ID).FromModel(r, userId);
+                });
         }
     }
 }

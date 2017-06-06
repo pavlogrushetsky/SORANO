@@ -1,6 +1,4 @@
-﻿@using Microsoft.AspNetCore.Mvc.ViewFeatures
-@using Newtonsoft.Json
-@model ArticleTypeModel
+﻿@model ArticleTypeModel
 
 @{
     var isEdit = ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"];
@@ -36,13 +34,17 @@
       asp-controller="ArticleType"
       method="post">
     @if (Model.ParentType != null)
-            {
+    {
         <input type="hidden" asp-for="ParentType.ID" />
-                <input type="hidden" asp-for="ParentType.Name" />
+        <input type="hidden" asp-for="ParentType.Name" />
     }
     <input type="hidden" asp-for="ID" />
+    @for (var i = 0; i < Model.Recommendations.Count; i++)
+    {
+        <input type="hidden" asp-for="@Model.Recommendations[i].ID" />
+        <input type="hidden" asp-for="@Model.Recommendations[i].ParentID" />
+    }
     <div asp-validation-summary="All" class="text-danger"></div>
-
     <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="form-group">
@@ -71,7 +73,7 @@
                                 type="submit"
                                 asp-action="SelectParentType"
                                 asp-route-returnUrl="@(isEdit ? Url.Action("Update", "ArticleType") : Url.Action("Create", "ArticleType"))"
-                                style="border-top-left-radius: 0px; border-bottom-left-radius: 0px;"
+                                style="border-top-left-radius: 0; border-bottom-left-radius: 0;"
                                 data-toggle="tooltip"
                                 data-placement="right"
                                 data-original-title="Назначить родительский тип"
@@ -97,7 +99,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @for (int i = 0; i < Model.Recommendations.Count; i++)
+                            @for (var i = 0; i < Model.Recommendations.Count; i++)
                             {            
                                 <tr>
                                     <td style="padding: 2px;"><textarea style="resize: vertical;" class="form-control" rows="1" asp-for="@Model.Recommendations[i].Comment"></textarea></td>

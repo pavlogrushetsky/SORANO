@@ -145,10 +145,7 @@ namespace SORANO.WEB.Controllers
 
             var currentUser = await _userService.GetAsync(HttpContext.User.FindFirst(ClaimTypes.Name)?.Value);
 
-            articleType.ModifiedBy = currentUser.ID;
-            articleType.ModifiedDate = DateTime.Now;
-
-            articleType = await _articleTypeService.UpdateAsync(articleType);
+            articleType = await _articleTypeService.UpdateAsync(articleType, currentUser.ID);
 
             if (articleType != null)
             {

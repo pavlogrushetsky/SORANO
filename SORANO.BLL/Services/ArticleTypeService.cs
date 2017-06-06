@@ -41,8 +41,11 @@ namespace SORANO.BLL.Services
             return await _articleTypeRepository.AddAsync(articleType);
         }
 
-        public async Task<ArticleType> UpdateAsync(ArticleType articleType)
+        public async Task<ArticleType> UpdateAsync(ArticleType articleType, int userId)
         {
+            articleType.ModifiedBy = userId;
+            articleType.ModifiedDate = DateTime.Now;
+
             return await _articleTypeRepository.UpdateAsync(articleType);
         }
 

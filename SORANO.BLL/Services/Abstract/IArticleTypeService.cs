@@ -14,7 +14,7 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<ArticleType> CreateAsync(ArticleType articleType);
 
-        Task<ArticleType> UpdateAsync(ArticleType articleType);
+        Task<ArticleType> UpdateAsync(ArticleType articleType, int userId);
 
         Task DeleteAsync(int id, int userId);
     }
