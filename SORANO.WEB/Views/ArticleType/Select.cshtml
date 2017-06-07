@@ -54,6 +54,13 @@
             <input type="hidden" asp-for="ArticleType.ID" />
             <input type="hidden" asp-for="ArticleType.Name" />
             <input type="hidden" asp-for="ArticleType.Description" />
+            @for (int i = 0; i < Model.ArticleType.Recommendations.Count; i++)
+            {
+                @Html.HiddenFor(m => m.ArticleType.Recommendations[i].ID)
+                @Html.HiddenFor(m => m.ArticleType.Recommendations[i].ParentID)
+                @Html.HiddenFor(m => m.ArticleType.Recommendations[i].ValueString)
+                @Html.HiddenFor(m => m.ArticleType.Recommendations[i].Comment)
+            }
             @if (Model.ArticleType.ParentType != null)
             {
                 <input type="hidden" asp-for="ArticleType.ParentType.ID" />

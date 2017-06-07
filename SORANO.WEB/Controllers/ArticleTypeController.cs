@@ -30,11 +30,19 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> Brief(int id)
+        {
+            var type = await _articleTypeService.GetAsync(id);
+
+            return PartialView("_Brief", type.ToModel());
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
             var type = await _articleTypeService.GetAsync(id);
 
-            return PartialView("_Details", type.ToModel());
+            return View("Details", type.ToModel());
         }
 
         [HttpGet]

@@ -6,15 +6,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\Recommendation\**" />
     <Compile Remove="wwwroot\lib\bootstrap-theme-bootswatch-flatly\**" />
     <Compile Remove="wwwroot\lib\bootstrap-treeview\**" />
     <Compile Remove="wwwroot\lib\datatables\**" />
+    <Content Remove="Views\Recommendation\**" />
     <Content Remove="wwwroot\lib\bootstrap-theme-bootswatch-flatly\**" />
     <Content Remove="wwwroot\lib\bootstrap-treeview\**" />
     <Content Remove="wwwroot\lib\datatables\**" />
+    <EmbeddedResource Remove="Views\Recommendation\**" />
     <EmbeddedResource Remove="wwwroot\lib\bootstrap-theme-bootswatch-flatly\**" />
     <EmbeddedResource Remove="wwwroot\lib\bootstrap-treeview\**" />
     <EmbeddedResource Remove="wwwroot\lib\datatables\**" />
+    <None Remove="Views\Recommendation\**" />
     <None Remove="wwwroot\lib\bootstrap-theme-bootswatch-flatly\**" />
     <None Remove="wwwroot\lib\bootstrap-treeview\**" />
     <None Remove="wwwroot\lib\datatables\**" />
@@ -39,7 +43,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\Recommendation\" />
-    <Folder Include="Views\Recommendation\" />
   </ItemGroup>
 
 </Project>

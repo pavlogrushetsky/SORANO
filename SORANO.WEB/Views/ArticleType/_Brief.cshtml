@@ -1,0 +1,130 @@
+﻿@model ArticleTypeModel
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Краткая информация о типе артикулов</h3>
+    </div>
+    <div class="panel-body">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Name)                
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Description)                
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Description)
+            </dd>
+            @if (Model.ChildTypes.Any())
+            {
+                <dt>
+                    @Html.DisplayNameFor(model => model.ChildTypes)
+                </dt>
+                <dd>
+                    <table class="table">
+                        <tr>
+                            <th>Название</th>
+                            <th>Описание</th>
+                        </tr>
+                        @foreach (var child in Model.ChildTypes)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => child.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => child.Description)
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </dd>
+            }        
+            @if (Model.Articles.Any())
+            {
+                <dt>
+                    @Html.DisplayNameFor(model => model.Articles)                    
+                </dt>
+                <dd>
+                    <table class="table">
+                        <tr>
+                            <th>Название</th>
+                            <th>Описание</th>
+                        </tr>
+                        @foreach (var article in Model.Articles)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => article.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => article.Description)
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </dd>
+            }  
+            @if (Model.Recommendations.Any())
+            {
+                <dt>
+                    @Html.DisplayNameFor(model => model.Recommendations)                    
+                </dt>
+                <dd>
+                    <table class="table">
+                        <tr>
+                            <th>Текст</th>
+                            <th>Значение</th>
+                        </tr>
+                        @foreach (var recommendation in Model.Recommendations)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => recommendation.Comment)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => recommendation.ValueString)
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </dd>
+            }
+        </dl>        
+    </div>   
+    <div class="panel-footer">
+        <a class="btn btn-default"
+           asp-controller="ArticleType"
+           asp-action="Details"
+           asp-route-id="@Model.ID"
+           data-toggle="tooltip"
+           data-placement="bottom"
+           data-original-title="Просмотреть информацию о типе артикулов"
+           title="">
+            <i class="fa fa-info-circle"></i>
+        </a>
+        <a class="btn btn-default" 
+           asp-controller="ArticleType" 
+           asp-action="Update"
+           asp-route-id="@Model.ID"
+           data-toggle="tooltip"
+           data-placement="bottom"
+           data-original-title="Редактировать тип артикулов"
+           title="">
+            <i class="fa fa-pencil-square"></i>
+        </a>
+        <a class="btn btn-danger @(Model.CanBeDeleted ? "" : "disabled")" 
+           asp-controller="ArticleType" 
+           asp-action="Delete" 
+           asp-route-id="@Model.ID"
+           data-toggle="tooltip"
+           data-placement="bottom"
+           data-original-title="Удалить тип артикулов"
+           title="">
+            <i class="fa fa-trash"></i>
+        </a>
+    </div>
+</div>
