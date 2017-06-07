@@ -5,6 +5,7 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.AccountEntities;
 using SORANO.DAL.Repositories.Abstract;
 using SORANO.BLL.Helpers;
+using SORANO.DAL.Context;
 
 namespace SORANO.BLL.Services
 {
@@ -12,11 +13,13 @@ namespace SORANO.BLL.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IDeliveryItemRepository _deliveryItemRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UserService(IUserRepository userRepository, IDeliveryItemRepository deliveryItemRepository)
+        public UserService(IUnitOfWork unitOfWork, IUserRepository userRepository, IDeliveryItemRepository deliveryItemRepository)
         {
             _userRepository = userRepository;
             _deliveryItemRepository = deliveryItemRepository;
+            _unitOfWork = unitOfWork;
         }        
 
         /// <summary>
@@ -49,14 +52,20 @@ namespace SORANO.BLL.Services
 
             user.Password = CryptoHelper.Hash(user.Password);
 
-            return await _userRepository.AddAsync(user);
+            var added = _userRepository.Add(user);
+
+            await _unitOfWork.CommitAsync();
+
+            return added;
         }
 
         public async Task DeleteAsync(int id)
         {
             var existentUser = await _userRepository.GetAsync(u => u.ID == id);
 
-            await _userRepository.DeleteAsync(existentUser);
+            _userRepository.Delete(existentUser);
+
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task<User> GetAsync(string login)
@@ -98,14 +107,20 @@ namespace SORANO.BLL.Services
 
             user.Password = CryptoHelper.Hash(newPassword);
 
-            await _userRepository.UpdateAsync(user);
+            _userRepository.Update(user);
+
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task<User> UpdateAsync(User user)
         {
             user.Password = CryptoHelper.Hash(user.Password);
 
-            return await _userRepository.UpdateAsync(user);
+            var updated = _userRepository.Update(user);
+
+            await _unitOfWork.CommitAsync();
+
+            return updated;
         }
     }
 }

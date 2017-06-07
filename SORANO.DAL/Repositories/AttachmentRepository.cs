@@ -12,8 +12,8 @@ namespace SORANO.DAL.Repositories
         /// <summary>
         /// Generic repository for attachments
         /// </summary>
-        /// <param name="context">Data context</param>
-        public AttachmentRepository(StockContext context) : base(context)
+        /// <param name="factory">Context factory</param>
+        public AttachmentRepository(IStockFactory factory) : base(factory)
         {
         }
     }

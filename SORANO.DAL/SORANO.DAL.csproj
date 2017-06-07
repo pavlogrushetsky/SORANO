@@ -63,7 +63,11 @@
     <Compile Include="Context\Configurations\StorageConfiguration.cs" />
     <Compile Include="Context\Configurations\SupplierConfiguration.cs" />
     <Compile Include="Context\Configurations\UserConfiguration.cs" />
+    <Compile Include="Context\IStockFactory.cs" />
+    <Compile Include="Context\IUnitOfWork.cs" />
     <Compile Include="Context\StockContext.cs" />
+    <Compile Include="Context\StockFactory.cs" />
+    <Compile Include="Context\UnitOfWork.cs" />
     <Compile Include="Migrations\201705031910003_Initial.cs" />
     <Compile Include="Migrations\201705031910003_Initial.Designer.cs">
       <DependentUpon>201705031910003_Initial.cs</DependentUpon>

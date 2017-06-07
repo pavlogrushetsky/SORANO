@@ -12,8 +12,8 @@ namespace SORANO.DAL.Repositories
         /// <summary>
         /// Generic repository for users
         /// </summary>
-        /// <param name="context">Data context</param>
-        public UserRepository(StockContext context) : base(context)
+        /// <param name="factory">Context factory</param>
+        public UserRepository(IStockFactory factory) : base(factory)
         {            
         }
     }

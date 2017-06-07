@@ -12,8 +12,8 @@ namespace SORANO.DAL.Repositories
         /// <summary>
         /// Generic repository for location types
         /// </summary>
-        /// <param name="context">Data context</param>
-        public LocationTypeRepository(StockContext context) : base(context)
+        /// <param name="factory">Context factory</param>
+        public LocationTypeRepository(IStockFactory factory) : base(factory)
         {            
         }
     }

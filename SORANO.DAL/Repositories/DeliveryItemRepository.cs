@@ -12,8 +12,8 @@ namespace SORANO.DAL.Repositories
         /// <summary>
         /// Generic repository for delivery items
         /// </summary>
-        /// <param name="context">Data context</param>
-        public DeliveryItemRepository(StockContext context) : base(context)
+        /// <param name="factory">Context factory</param>
+        public DeliveryItemRepository(IStockFactory factory) : base(factory)
         {            
         }
     }

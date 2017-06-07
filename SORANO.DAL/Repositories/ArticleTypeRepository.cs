@@ -12,8 +12,8 @@ namespace SORANO.DAL.Repositories
         /// <summary>
         /// Generic repository for article types
         /// </summary>
-        /// <param name="context">Data context</param>
-        public ArticleTypeRepository(StockContext context) : base(context)
+        /// <param name="factory">Context factory</param>
+        public ArticleTypeRepository(IStockFactory factory) : base(factory)
         {          
         }
     }

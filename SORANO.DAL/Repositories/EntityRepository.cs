@@ -17,15 +17,32 @@ namespace SORANO.DAL.Repositories
     public class EntityRepository<T> : IEntityRepository<T> where T : Entity, new()
     {
         // Data context
-        private readonly StockContext _context;
+        private StockContext _context;
+
+        // Data set
+        private readonly IDbSet<T> _dataSet;
+
+        // Factory
+        protected IStockFactory Factory
+        {
+            get;
+            private set;
+        }
+
+        // Data context
+        protected StockContext Context
+        {
+            get { return _context ?? (_context = Factory.Init()); }
+        }
 
         /// <summary>
         /// Generic repository for the stock entities
         /// </summary>
-        /// <param name="context">Data context</param>
-        public EntityRepository(StockContext context)
+        /// <param name="factory"></param>
+        public EntityRepository(IStockFactory factory)
         {
-            _context = context;
+            Factory = factory;
+            _dataSet = Context.Set<T>();
         }
 
         /// <summary>
@@ -34,7 +51,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entities</returns>
         public virtual IEnumerable<T> GetAll()
         {
-            return _context.Set<T>().AsEnumerable();
+            return _dataSet.AsEnumerable();
         }
 
         /// <summary>
@@ -43,7 +60,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entities</returns>
         public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await _context.Set<T>().ToListAsync();
+            return await _dataSet.ToListAsync();
         }
 
         /// <summary>
@@ -53,7 +70,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entities</returns>
         public virtual IEnumerable<T> GetAll(params Expression<Func<T, object>>[] properties)
         {
-            IQueryable<T> query = _context.Set<T>();
+            IQueryable<T> query = _dataSet;
             query = properties.Aggregate(query, (current, property) => current.Include(property));
 
             return query.AsEnumerable();
@@ -66,7 +83,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entities</returns>
         public virtual async Task<IEnumerable<T>> GetAllAsync(params Expression<Func<T, object>>[] properties)
         {
-            IQueryable<T> query = _context.Set<T>();
+            IQueryable<T> query = _dataSet;
             query = properties.Aggregate(query, (current, property) => current.Include(property));
 
             return await query.ToListAsync();
@@ -79,7 +96,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entity</returns>
         public virtual T Get(int id)
         {
-            return _context.Set<T>().FirstOrDefault(x => x.ID == id);
+            return _dataSet.FirstOrDefault(x => x.ID == id);
         }
 
         /// <summary>
@@ -89,7 +106,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entity</returns>
         public virtual async Task<T> GetAsync(int id)
         {
-            return await _context.Set<T>().FirstOrDefaultAsync(x => x.ID == id);
+            return await _dataSet.FirstOrDefaultAsync(x => x.ID == id);
         }
 
         /// <summary>
@@ -99,7 +116,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entity</returns>
         public virtual T Get(Expression<Func<T, bool>> predicate)
         {
-            return _context.Set<T>().FirstOrDefault(predicate);
+            return _dataSet.FirstOrDefault(predicate);
         }
 
         /// <summary>
@@ -109,7 +126,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entity</returns>
         public virtual async Task<T> GetAsync(Expression<Func<T, bool>> predicate)
         {
-            return await _context.Set<T>().FirstOrDefaultAsync(predicate);
+            return await _dataSet.FirstOrDefaultAsync(predicate);
         }
 
         /// <summary>
@@ -120,7 +137,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock Entity</returns>
         public virtual T Get(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] properties)
         {
-            IQueryable<T> query = _context.Set<T>();
+            IQueryable<T> query = _dataSet;
             query = properties.Aggregate(query, (current, property) => current.Include(property));
 
             return query.Where(predicate).FirstOrDefault();
@@ -134,7 +151,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock Entity</returns>
         public virtual async Task<T> GetAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] properties)
         {
-            IQueryable<T> query = _context.Set<T>();
+            IQueryable<T> query = _dataSet;
             query = properties.Aggregate(query, (current, property) => current.Include(property));
 
             return await query.Where(predicate).FirstOrDefaultAsync();
@@ -147,7 +164,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entities</returns>
         public virtual IEnumerable<T> FindBy(Expression<Func<T, bool>> predicate)
         {
-            return _context.Set<T>().Where(predicate);
+            return _dataSet.Where(predicate);
         }
 
         /// <summary>
@@ -157,7 +174,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entities</returns>
         public virtual async Task<IEnumerable<T>> FindByAsync(Expression<Func<T, bool>> predicate)
         {
-            return await _context.Set<T>().Where(predicate).ToListAsync();
+            return await _dataSet.Where(predicate).ToListAsync();
         }
 
         /// <summary>
@@ -166,7 +183,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Count of entities</returns>
         public virtual int Count()
         {
-            return _context.Set<T>().Count();
+            return _dataSet.Count();
         }
 
         /// <summary>
@@ -175,7 +192,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Count of entities</returns>
         public virtual async Task<int> CountAsync()
         {
-            return await _context.Set<T>().CountAsync();
+            return await _dataSet.CountAsync();
         }
 
         /// <summary>
@@ -185,21 +202,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Added entity</returns> 
         public virtual T Add(T entity)
         {
-            _context.Set<T>().Add(entity);
-            _context.SaveChanges();
-
-            return entity;
-        }
-
-        /// <summary>
-        /// Add stock entity asynchronously
-        /// </summary>
-        /// <param name="entity">Stock entity to be added</param>
-        /// <returns>Added entity</returns> 
-        public virtual async Task<T> AddAsync(T entity)
-        {
-            _context.Set<T>().Add(entity);
-            await _context.SaveChangesAsync();
+            _dataSet.Add(entity);
 
             return entity;
         }
@@ -211,23 +214,8 @@ namespace SORANO.DAL.Repositories
         /// <returns>Updated entity</returns>   
         public virtual T Update(T entity)
         {
-            var entry = _context.Entry(entity);
-            entry.State = EntityState.Modified;
-            _context.SaveChanges();
-
-            return entity;
-        }
-
-        /// <summary>
-        /// Update stock entity asynchronously
-        /// </summary>
-        /// <param name="entity">Stock entity to be updated</param>
-        /// <returns>Updated entity</returns>   
-        public virtual async Task<T> UpdateAsync(T entity)
-        {
-            var entry = _context.Entry(entity);
-            entry.State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            _dataSet.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
 
             return entity;
         }
@@ -238,18 +226,7 @@ namespace SORANO.DAL.Repositories
         /// <param name="entity">Stock entity to be deleted</param>
         public virtual void Delete(T entity)
         {
-            _context.Set<T>().Remove(entity);
-            _context.SaveChanges();
-        }
-
-        /// <summary>
-        /// Delete stock entity asynchronously
-        /// </summary>
-        /// <param name="entity">Stock entity to be deleted</param>
-        public virtual async Task DeleteAsync(T entity)
-        {
-            _context.Set<T>().Remove(entity);
-            await _context.SaveChangesAsync();
+            _dataSet.Remove(entity);
         }
 
         /// <summary>
@@ -258,30 +235,12 @@ namespace SORANO.DAL.Repositories
         /// <param name="predicate">Predicate for entities to be deleted</param>
         public virtual void Delete(Expression<Func<T, bool>> predicate)
         {
-            IEnumerable<T> entities = _context.Set<T>().Where(predicate);
+            IEnumerable<T> entities = _dataSet.Where(predicate);
 
             foreach (var entity in entities)
             {
-                _context.Set<T>().Remove(entity);
+                _dataSet.Remove(entity);
             }
-
-            _context.SaveChanges();
-        }
-
-        /// <summary>
-        /// Delete stock entities asynchronously
-        /// </summary>
-        /// <param name="predicate">Predicate for entities to be deleted</param>
-        public virtual async Task DeleteAsync(Expression<Func<T, bool>> predicate)
-        {
-            IEnumerable<T> entities = _context.Set<T>().Where(predicate);
-
-            foreach (var entity in entities)
-            {
-                _context.Set<T>().Remove(entity);
-            }
-
-            await _context.SaveChangesAsync();
         }
     }
 }

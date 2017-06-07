@@ -12,8 +12,8 @@ namespace SORANO.DAL.Repositories
         /// <summary>
         /// Generic repository for roles
         /// </summary>
-        /// <param name="context">Data context</param>
-        public RoleRepository(StockContext context) : base(context)
+        /// <param name="factory">Context factory</param>
+        public RoleRepository(IStockFactory factory) : base(factory)
         {            
         }
     }

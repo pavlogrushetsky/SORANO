@@ -5,6 +5,7 @@ using SORANO.CORE.AccountEntities;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Context.Configurations;
 using SORANO.DAL.Migrations;
+using System.Threading.Tasks;
 
 namespace SORANO.DAL.Context
 {
@@ -109,6 +110,23 @@ namespace SORANO.DAL.Context
         /// Roles
         /// </summary>
         public IDbSet<Role> Roles { get; set; }
+
+        /// <summary>
+        /// Commit changes asynchronously
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task CommitAsync()
+        {
+            await base.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Commit changes
+        /// </summary>
+        public virtual void Commit()
+        {
+            base.SaveChanges();
+        }
 
         protected override void OnModelCreating(DbModelBuilder builder)
         {

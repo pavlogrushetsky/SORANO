@@ -1,7 +1,6 @@
 ﻿using SORANO.CORE;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -117,25 +116,11 @@ namespace SORANO.DAL.Repositories.Abstract
         T Add(T entity);
 
         /// <summary>
-        /// Add stock entity asyncronously
-        /// </summary>
-        /// <param name="entity">Stock entity to be added</param>
-        /// <returns>Added entity</returns>
-        Task<T> AddAsync(T entity);
-
-        /// <summary>
         /// Update stock entity
         /// </summary>
         /// <param name="entity">Stock entity to be updated</param>
         /// <returns>Updated entity</returns>  
         T Update(T entity);
-
-        /// <summary>
-        /// Update stock entity asyncronously
-        /// </summary>
-        /// <param name="entity">Stock entity to be updated</param>
-        /// <returns>Updated entity</returns>  
-        Task<T> UpdateAsync(T entity);
 
         /// <summary>
         /// Delete stock entity
@@ -144,21 +129,9 @@ namespace SORANO.DAL.Repositories.Abstract
         void Delete(T entity);
 
         /// <summary>
-        /// Delete stock entity asyncronously
-        /// </summary>
-        /// <param name="entity">Stock entity to be deleted</param>
-        Task DeleteAsync(T entity);
-
-        /// <summary>
         /// Delete stock entities
         /// </summary>
         /// <param name="predicate">Predicate for entities to be deleted</param>
         void Delete(Expression<Func<T, bool>> predicate);
-
-        /// <summary>
-        /// Delete stock entities asyncronously
-        /// </summary>
-        /// <param name="predicate">Predicate for entities to be deleted</param>
-        Task DeleteAsync(Expression<Func<T, bool>> predicate);
     }
 }

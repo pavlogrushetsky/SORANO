@@ -8,6 +8,7 @@ using SORANO.BLL.Properties;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories.Abstract;
+using SORANO.DAL.Context;
 
 namespace SORANO.BLL.Services
 {
@@ -15,11 +16,13 @@ namespace SORANO.BLL.Services
     {
         private readonly IArticleTypeRepository _articleTypeRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ArticleTypeService(IArticleTypeRepository articleTypeRepository, IUserRepository userRepository)
+        public ArticleTypeService(IUnitOfWork unitOfWork, IArticleTypeRepository articleTypeRepository, IUserRepository userRepository)
         {
             _articleTypeRepository = articleTypeRepository;
             _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<IEnumerable<ArticleType>> GetAllWithArticlesAsync()
@@ -79,7 +82,11 @@ namespace SORANO.BLL.Services
                 recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            return await _articleTypeRepository.AddAsync(articleType);
+            var saved = _articleTypeRepository.Add(articleType);
+
+            await _unitOfWork.CommitAsync();
+
+            return saved;
         }
 
         /// <summary>
@@ -161,7 +168,11 @@ namespace SORANO.BLL.Services
                     rec.UpdateModifiedFields(userId);
                 });
 
-            return await _articleTypeRepository.UpdateAsync(existentArticleType);
+            var updated = _articleTypeRepository.Update(existentArticleType);
+
+            await _unitOfWork.CommitAsync();
+
+            return updated;
         }
 
         public async Task DeleteAsync(int id, int userId)
@@ -173,13 +184,15 @@ namespace SORANO.BLL.Services
                 childType.ParentTypeId = existentArticleType.ParentTypeId;
                 childType.ModifiedBy = userId;
                 childType.ModifiedDate = DateTime.Now;
-                await _articleTypeRepository.UpdateAsync(childType);
+                _articleTypeRepository.Update(childType);
             }
 
             existentArticleType.DeletedBy = userId;
             existentArticleType.DeletedDate = DateTime.Now;
 
-            await _articleTypeRepository.UpdateAsync(existentArticleType);
+            _articleTypeRepository.Update(existentArticleType);
+
+            await _unitOfWork.CommitAsync();
         }
     }
 }
