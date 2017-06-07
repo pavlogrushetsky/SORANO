@@ -12,10 +12,7 @@ namespace SORANO.DAL.Context
             _factory = factory;
         }
 
-        public StockContext Context
-        {
-            get { return _context ?? (_context = _factory.Init()); }
-        }
+        public StockContext Context => _context ?? (_context = _factory.Init());
 
         public void Commit()
         {

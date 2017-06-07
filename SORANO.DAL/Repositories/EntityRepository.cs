@@ -14,34 +14,24 @@ namespace SORANO.DAL.Repositories
     /// Generic repository for the stock entities
     /// </summary>
     /// <typeparam name="T">Stock entity type</typeparam>
-    public class EntityRepository<T> : IEntityRepository<T> where T : Entity, new()
+    public abstract class EntityRepository<T> : IEntityRepository<T> where T : Entity, new()
     {
         // Data context
         private StockContext _context;
 
+        protected StockContext Context => _context ?? (_context = _factory.Init());
+
         // Data set
         private readonly IDbSet<T> _dataSet;
-
-        // Factory
-        protected IStockFactory Factory
-        {
-            get;
-            private set;
-        }
-
-        // Data context
-        protected StockContext Context
-        {
-            get { return _context ?? (_context = Factory.Init()); }
-        }
+        private readonly IStockFactory _factory;
 
         /// <summary>
         /// Generic repository for the stock entities
         /// </summary>
         /// <param name="factory"></param>
-        public EntityRepository(IStockFactory factory)
+        protected EntityRepository(IStockFactory factory)
         {
-            Factory = factory;
+            _factory = factory;
             _dataSet = Context.Set<T>();
         }
 

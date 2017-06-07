@@ -9,8 +9,6 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.DAL.Context;
 using SORANO.DAL.Repositories;
 using SORANO.DAL.Repositories.Abstract;
-using System.Net;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace SORANO.WEB
@@ -33,8 +31,11 @@ namespace SORANO.WEB
         {
             services.AddMvc();
             //services.AddMemoryCache();
-            services.AddScoped(_ => new StockContext(Configuration.GetConnectionString("SORANO")));
+            //services.AddScoped(_ => new StockContext(Configuration.GetConnectionString("SORANO")));
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
+
+            services.AddSingleton<IStockFactory, StockFactory>();
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             // Add dependencies for repositories
             services.AddTransient<IUserRepository, UserRepository>();
@@ -67,19 +68,6 @@ namespace SORANO.WEB
                 AutomaticAuthenticate = true,
                 AutomaticChallenge = true
             });
-
-            // Global exceptions handling
-            //app.UseExceptionHandler(handler => handler.Run(async context =>
-            //{
-            //    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            //    context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-
-            //    var error = context.Features.Get<IExceptionHandlerFeature>();
-            //    if (error != null)
-            //    {
-            //        await context.Response.WriteAsync(error.Error.Message).ConfigureAwait(false);
-            //    }
-            //}));
 
             app.UseMvc(routes => 
             {

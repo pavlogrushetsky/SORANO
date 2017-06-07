@@ -8,15 +8,12 @@ namespace SORANO.DAL.Context
 
         public StockContext Init()
         {
-            return _context ?? (_context = new StockContext());
+            return _context ?? (_context = new StockContext("SORANO"));
         }
 
         protected override void DisposeCore()
         {
-            if (_context != null)
-            {
-                _context.Dispose();
-            }
+            _context?.Dispose();
         }
     }
 
