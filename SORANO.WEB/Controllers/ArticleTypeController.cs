@@ -116,6 +116,7 @@ namespace SORANO.WEB.Controllers
                 // Check the model
                 if (!ModelState.IsValid)
                 {
+                    ModelState.RemoveDuplicateErrorMessages();
                     return View(model);
                 }
 
@@ -151,6 +152,7 @@ namespace SORANO.WEB.Controllers
                 if (!ModelState.IsValid)
                 {
                     ViewData["IsEdit"] = true;
+                    ModelState.RemoveDuplicateErrorMessages();
                     return View("Create", model);
                 }
 
@@ -222,6 +224,8 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         public IActionResult AddRecommendation(ArticleTypeModel articleType, bool isEdit)
         {
+            ModelState.Clear();
+
             articleType.Recommendations.Add(new RecommendationModel());
 
             ViewData["IsEdit"] = isEdit;
