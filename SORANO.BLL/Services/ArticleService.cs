@@ -17,7 +17,7 @@ namespace SORANO.BLL.Services
 
         public async Task<IEnumerable<Article>> GetAllWithTypeAsync()
         {
-            return await _unitOfWork.Get<Article>().GetAllAsync(a => a.Type);
+            return await _unitOfWork.Get<Article>().GetAllAsync(a => a.Type);          
         }
     }
 }

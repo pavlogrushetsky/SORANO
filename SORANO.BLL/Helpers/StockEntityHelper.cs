@@ -21,5 +21,13 @@ namespace SORANO.BLL.Helpers
 
             return entity;
         }
+
+        public static StockEntity UpdateDeletedFields(this StockEntity entity, int userId)
+        {
+            entity.DeletedBy = userId;
+            entity.DeletedDate = DateTime.Now;
+
+            return entity;
+        }
     }
 }

@@ -185,9 +185,9 @@ namespace SORANO.DAL.Repositories
         /// <returns>Added entity</returns> 
         public virtual T Add(T entity)
         {
-            _dataSet.Add(entity);
+            var addedEntity = _dataSet.Add(entity);
 
-            return entity;
+            return addedEntity;
         }
 
         /// <summary>
@@ -197,10 +197,10 @@ namespace SORANO.DAL.Repositories
         /// <returns>Updated entity</returns>   
         public virtual T Update(T entity)
         {
-            _dataSet.Attach(entity);
-            _context.Entry(entity).State = EntityState.Modified;
+            var attachedEntity = _dataSet.Attach(entity);
+            _context.Entry(attachedEntity).State = EntityState.Modified;
 
-            return entity;
+            return attachedEntity;
         }
 
         /// <summary>

@@ -25,16 +25,16 @@ namespace SORANO.BLL.Services
         public async Task<List<User>> GetAllIncludeAllAsync()
         {
             var users = await _unitOfWork.Get<User>().GetAllAsync(u => u.Roles, u => u.CreatedEntities,
-                u => u.DeletedEntities,
-                u => u.ModifiedEntities,
-                u => u.SoldGoods);
+            u => u.DeletedEntities,
+            u => u.ModifiedEntities,
+            u => u.SoldGoods);
 
-            return users.ToList();
+            return users.ToList();       
         }
 
         public async Task<User> GetIncludeRolesAsync(int id)
         {
-            return await _unitOfWork.Get<User>().GetAsync(u => u.ID == id, u => u.Roles);
+            return await _unitOfWork.Get<User>().GetAsync(u => u.ID == id, u => u.Roles);           
         }
 
         public async Task<User> CreateAsync(User user)
@@ -52,7 +52,7 @@ namespace SORANO.BLL.Services
 
             await _unitOfWork.SaveAsync();
 
-            return added;
+            return added;          
         }
 
         public async Task DeleteAsync(int id)
@@ -61,40 +61,40 @@ namespace SORANO.BLL.Services
 
             _unitOfWork.Get<User>().Delete(existentUser);
 
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.SaveAsync();           
         }
 
         public async Task<User> GetAsync(string login)
         {
-            return await _unitOfWork.Get<User>().GetAsync(u => u.Login.Equals(login));
+            return await _unitOfWork.Get<User>().GetAsync(u => u.Login.Equals(login));           
         }
 
         public async Task<User> GetIncludeAllAsync(int id)
         {
             var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == id, u => u.Roles,
-                u => u.CreatedEntities,
-                u => u.DeletedEntities,
-                u => u.ModifiedEntities,
-                u => u.SoldGoods);
+            u => u.CreatedEntities,
+            u => u.DeletedEntities,
+            u => u.ModifiedEntities,
+            u => u.SoldGoods);
 
             user.SoldGoods.ToList().ForEach(g =>
             {
                 g.DeliveryItem = _unitOfWork.Get<DeliveryItem>().Get(d => d.ID == g.DeliveryItemID, d => d.Article);
             });
 
-            return user;
+            return user;           
         }
 
         public async Task<User> GetAsync(int id)
         {
-            return await _unitOfWork.Get<User>().GetAsync(u => u.ID == id);
+            return await _unitOfWork.Get<User>().GetAsync(u => u.ID == id);         
         }
 
         public async Task<User> GetAsync(string login, string password)
         {
             var hash = CryptoHelper.Hash(password);
 
-            return await _unitOfWork.Get<User>().GetAsync(u => !u.IsBlocked && u.Login.Equals(login) && u.Password.Equals(hash), u => u.Roles);
+            return await _unitOfWork.Get<User>().GetAsync(u => !u.IsBlocked && u.Login.Equals(login) && u.Password.Equals(hash), u => u.Roles);          
         }
 
         public async Task ChangePasswordAsync(string login, string newPassword)
@@ -105,7 +105,7 @@ namespace SORANO.BLL.Services
 
             _unitOfWork.Get<User>().Update(user);
 
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.SaveAsync();           
         }
 
         public async Task<User> UpdateAsync(User user)
@@ -116,7 +116,7 @@ namespace SORANO.BLL.Services
 
             await _unitOfWork.SaveAsync();
 
-            return updated;
+            return updated;           
         }
     }
 }

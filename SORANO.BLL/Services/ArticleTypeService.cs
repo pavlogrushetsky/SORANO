@@ -22,7 +22,7 @@ namespace SORANO.BLL.Services
 
         public async Task<IEnumerable<ArticleType>> GetAllWithArticlesAsync()
         {
-            var articleTypes = await _unitOfWork.Get<ArticleType>().GetAllAsync(t => t.Articles, t => t.ParentType);
+            var articleTypes = await _unitOfWork.Get<ArticleType>().GetAllAsync(t => t.Articles, t => t.ParentType, t => t.Recommendations);
 
             return articleTypes.Where(t => !t.DeletedDate.HasValue);
         }
@@ -31,12 +31,12 @@ namespace SORANO.BLL.Services
         {
             var articleTypes = await _unitOfWork.Get<ArticleType>().GetAllAsync();
 
-            return articleTypes.Where(t => !t.DeletedDate.HasValue);
+            return articleTypes.Where(t => !t.DeletedDate.HasValue);         
         }
 
         public async Task<ArticleType> GetAsync(int id)
         {
-            return await _unitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id, t => t.Articles, t => t.ParentType, t => t.Recommendations);
+            return await _unitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id, t => t.Articles, t => t.ParentType, t => t.Recommendations);          
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace SORANO.BLL.Services
 
             await _unitOfWork.SaveAsync();
 
-            return saved;
+            return saved;           
         }
 
         /// <summary>
@@ -134,7 +134,11 @@ namespace SORANO.BLL.Services
             existentArticleType.Recommendations
                 .Where(r => !articleType.Recommendations.Select(x => x.ID).Contains(r.ID))
                 .ToList()
-                .ForEach(r => existentArticleType.Recommendations.Remove(r));
+                .ForEach(r => 
+                {
+                    r.UpdateDeletedFields(userId);
+                    _unitOfWork.Get<Recommendation>().Update(r);
+                });
 
             // Add newly created recommendations to existent article type
             articleType.Recommendations
@@ -167,27 +171,25 @@ namespace SORANO.BLL.Services
 
             await _unitOfWork.SaveAsync();
 
-            return updated;
+            return updated;          
         }
 
         public async Task DeleteAsync(int id, int userId)
         {
             var existentArticleType = await _unitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id, t => t.ParentType, t => t.ChildTypes);
 
-            foreach (var childType in existentArticleType.ChildTypes.ToList())
+            existentArticleType.ChildTypes.ToList().ForEach(t =>
             {
-                childType.ParentTypeId = existentArticleType.ParentTypeId;
-                childType.ModifiedBy = userId;
-                childType.ModifiedDate = DateTime.Now;
-                _unitOfWork.Get<ArticleType>().Update(childType);
-            }
+                t.ParentTypeId = existentArticleType.ParentTypeId;
+                t.UpdateModifiedFields(userId);
+                _unitOfWork.Get<ArticleType>().Update(t);
+            });
 
-            existentArticleType.DeletedBy = userId;
-            existentArticleType.DeletedDate = DateTime.Now;
+            existentArticleType.UpdateDeletedFields(userId);
 
             _unitOfWork.Get<ArticleType>().Update(existentArticleType);
 
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.SaveAsync();           
         }
     }
 }

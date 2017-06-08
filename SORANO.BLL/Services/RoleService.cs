@@ -17,7 +17,7 @@ namespace SORANO.BLL.Services
 
         public async Task<IEnumerable<Role>> GetAllAsync()
         {
-            return await _unitOfWork.Get<Role>().GetAllAsync();
+            return await _unitOfWork.Get<Role>().GetAllAsync();            
         }
     }
 }
