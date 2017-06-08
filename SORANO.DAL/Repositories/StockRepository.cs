@@ -34,7 +34,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entities</returns>
         public virtual IEnumerable<T> GetAll()
         {
-            return _dataSet.AsEnumerable();
+            return _dataSet.Where(e => !e.IsDeleted).AsEnumerable();
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entities</returns>
         public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await _dataSet.ToListAsync();
+            return await _dataSet.Where(e => !e.IsDeleted).ToListAsync();
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entities</returns>
         public virtual IEnumerable<T> GetAll(params Expression<Func<T, object>>[] properties)
         {
-            IQueryable<T> query = _dataSet;
+            IQueryable<T> query = _dataSet.Where(e => !e.IsDeleted);
             query = properties.Aggregate(query, (current, property) => current.Include(property));
 
             return query.AsEnumerable();
@@ -66,7 +66,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entities</returns>
         public virtual async Task<IEnumerable<T>> GetAllAsync(params Expression<Func<T, object>>[] properties)
         {
-            IQueryable<T> query = _dataSet;
+            IQueryable<T> query = _dataSet.Where(e => !e.IsDeleted);
             query = properties.Aggregate(query, (current, property) => current.Include(property));
 
             return await query.ToListAsync();
@@ -79,7 +79,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entity</returns>
         public virtual T Get(int id)
         {
-            return _dataSet.FirstOrDefault(x => x.ID == id);
+            return _dataSet.FirstOrDefault(x => x.ID == id && !x.IsDeleted);
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entity</returns>
         public virtual async Task<T> GetAsync(int id)
         {
-            return await _dataSet.FirstOrDefaultAsync(x => x.ID == id);
+            return await _dataSet.FirstOrDefaultAsync(x => x.ID == id && !x.IsDeleted);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entity</returns>
         public virtual T Get(Expression<Func<T, bool>> predicate)
         {
-            return _dataSet.FirstOrDefault(predicate);
+            return _dataSet.Where(e => !e.IsDeleted).FirstOrDefault(predicate);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entity</returns>
         public virtual async Task<T> GetAsync(Expression<Func<T, bool>> predicate)
         {
-            return await _dataSet.FirstOrDefaultAsync(predicate);
+            return await _dataSet.Where(e => !e.IsDeleted).FirstOrDefaultAsync(predicate);
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock Entity</returns>
         public virtual T Get(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] properties)
         {
-            IQueryable<T> query = _dataSet;
+            IQueryable<T> query = _dataSet.Where(e => !e.IsDeleted);
             query = properties.Aggregate(query, (current, property) => current.Include(property));
 
             return query.Where(predicate).FirstOrDefault();
@@ -134,7 +134,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock Entity</returns>
         public virtual async Task<T> GetAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] properties)
         {
-            IQueryable<T> query = _dataSet;
+            IQueryable<T> query = _dataSet.Where(e => !e.IsDeleted);
             query = properties.Aggregate(query, (current, property) => current.Include(property));
 
             return await query.Where(predicate).FirstOrDefaultAsync();
@@ -147,7 +147,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entities</returns>
         public virtual IEnumerable<T> FindBy(Expression<Func<T, bool>> predicate)
         {
-            return _dataSet.Where(predicate);
+            return _dataSet.Where(e => !e.IsDeleted).Where(predicate);
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entities</returns>
         public virtual async Task<IEnumerable<T>> FindByAsync(Expression<Func<T, bool>> predicate)
         {
-            return await _dataSet.Where(predicate).ToListAsync();
+            return await _dataSet.Where(e => !e.IsDeleted).Where(predicate).ToListAsync();
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Count of entities</returns>
         public virtual int Count()
         {
-            return _dataSet.Count();
+            return _dataSet.Where(e => !e.IsDeleted).Count();
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace SORANO.DAL.Repositories
         /// <returns>Count of entities</returns>
         public virtual async Task<int> CountAsync()
         {
-            return await _dataSet.CountAsync();
+            return await _dataSet.Where(e => !e.IsDeleted).CountAsync();
         }
 
         /// <summary>

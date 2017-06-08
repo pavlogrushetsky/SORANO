@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using SORANO.CORE.StockEntities;
 
 namespace SORANO.BLL.Helpers
@@ -26,6 +25,7 @@ namespace SORANO.BLL.Helpers
         {
             entity.DeletedBy = userId;
             entity.DeletedDate = DateTime.Now;
+            entity.IsDeleted = true;
 
             return entity;
         }

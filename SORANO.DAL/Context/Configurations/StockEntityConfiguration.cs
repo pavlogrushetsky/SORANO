@@ -17,6 +17,9 @@ namespace SORANO.DAL.Context.Configurations
         {
             HasKey(e => e.ID);
 
+            Property(e => e.IsDeleted)
+                .IsRequired();
+
             Property(e => e.CreatedDate)
                 .IsRequired()
                 .HasColumnType("datetime2");

@@ -63,6 +63,10 @@
     <Compile Include="Context\Configurations\StorageConfiguration.cs" />
     <Compile Include="Context\Configurations\SupplierConfiguration.cs" />
     <Compile Include="Context\Configurations\UserConfiguration.cs" />
+    <Compile Include="Migrations\201706081150373_AddedIsDeletedFlag.cs" />
+    <Compile Include="Migrations\201706081150373_AddedIsDeletedFlag.Designer.cs">
+      <DependentUpon>201706081150373_AddedIsDeletedFlag.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\IUnitOfWork.cs" />
     <Compile Include="Context\StockContext.cs" />
     <Compile Include="Repositories\UnitOfWork.cs" />
@@ -87,6 +91,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201705031910003_Initial.resx">
       <DependentUpon>201705031910003_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706081150373_AddedIsDeletedFlag.resx">
+      <DependentUpon>201706081150373_AddedIsDeletedFlag.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

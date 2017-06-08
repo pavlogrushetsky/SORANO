@@ -9,5 +9,10 @@
         /// Unique identifier of the entity
         /// </summary>
         public int ID { get; set; }
+
+        /// <summary>
+        /// Specifies whether entity is marked as deleted or not
+        /// </summary>
+        public bool IsDeleted { get; set; }
     }
 }
