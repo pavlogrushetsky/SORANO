@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using SORANO.BLL.Helpers;
 using SORANO.BLL.Properties;
 using SORANO.BLL.Services.Abstract;
+using SORANO.CORE.AccountEntities;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 
@@ -24,19 +25,19 @@ namespace SORANO.BLL.Services
         {
             var articleTypes = await _unitOfWork.Get<ArticleType>().GetAllAsync(t => t.Articles, t => t.ParentType, t => t.Recommendations);
 
-            return articleTypes.Where(t => !t.DeletedDate.HasValue);
+            return articleTypes;
         }
 
         public async Task<IEnumerable<ArticleType>> GetAllAsync()
         {
             var articleTypes = await _unitOfWork.Get<ArticleType>().GetAllAsync();
 
-            return articleTypes.Where(t => !t.DeletedDate.HasValue);         
+            return articleTypes;         
         }
 
         public async Task<ArticleType> GetAsync(int id)
         {
-            return await _unitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id, t => t.Articles, t => t.ParentType, t => t.Recommendations);          
+            return await _unitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id && !t.IsDeleted, t => t.Articles, t => t.ParentType, t => t.Recommendations);          
         }
 
         /// <summary>
@@ -60,7 +61,7 @@ namespace SORANO.BLL.Services
             }
 
             // Get user by specified identifier
-            var user = await _unitOfWork.Get<ArticleType>().GetAsync(u => u.ID == userId);
+            var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
             // Check user
             if (user == null)
@@ -105,7 +106,7 @@ namespace SORANO.BLL.Services
             }
 
             // Get user by specified identifier
-            var user = await _unitOfWork.Get<ArticleType>().GetAsync(u => u.ID == userId);
+            var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
             // Check user
             if (user == null)

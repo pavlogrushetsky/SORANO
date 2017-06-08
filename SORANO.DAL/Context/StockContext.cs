@@ -1,11 +1,11 @@
-﻿using System.Data.Common;
-using System.Data.Entity;
-using SORANO.CORE;
+﻿using System.Data.Entity;
 using SORANO.CORE.AccountEntities;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Context.Configurations;
 using SORANO.DAL.Migrations;
 using System.Threading.Tasks;
+using EntityFramework.DynamicFilters;
+using SORANO.CORE;
 
 namespace SORANO.DAL.Context
 {
@@ -28,7 +28,7 @@ namespace SORANO.DAL.Context
         /// </summary>
         public StockContext() : base("SORANO")
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<StockContext, Configuration>("SORANO"));
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<StockContext, Configuration>("SORANO"));           
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace SORANO.DAL.Context
         /// <returns></returns>
         public virtual async Task CommitAsync()
         {
-            await base.SaveChangesAsync();
+            await SaveChangesAsync();
         }
 
         /// <summary>
@@ -125,11 +125,14 @@ namespace SORANO.DAL.Context
         /// </summary>
         public virtual void Commit()
         {
-            base.SaveChanges();
+            SaveChanges();
         }
 
         protected override void OnModelCreating(DbModelBuilder builder)
         {
+            // Apply global filter
+            builder.Filter("IsDeleted", (Entity e) => e.IsDeleted, false);
+
             // Adding configuration for stock entities
             builder.Configurations.Add(new StockEntityConfiguration());
             builder.Configurations.Add(new UserConfiguration());

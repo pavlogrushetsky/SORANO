@@ -38,13 +38,11 @@ namespace SORANO.DAL.Repositories
             {
                 return _repositories[key] as StockRepository<T>;
             }
-            else
-            {
-                var repo = new StockRepository<T>(_context);
-                _repositories.Add(key, repo);
 
-                return repo;
-            }
+            var repo = new StockRepository<T>(_context);
+            _repositories.Add(key, repo);
+
+            return repo;
         }
 
         /// <summary>
@@ -64,7 +62,7 @@ namespace SORANO.DAL.Repositories
             await _context.CommitAsync();
         }
 
-        private bool disposed = false;
+        private bool disposed;
 
         protected virtual void Dispose(bool disposing)
         {
