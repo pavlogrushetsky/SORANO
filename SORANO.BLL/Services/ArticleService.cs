@@ -2,22 +2,22 @@
 using System.Threading.Tasks;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
-using SORANO.DAL.Repositories.Abstract;
+using SORANO.DAL.Repositories;
 
 namespace SORANO.BLL.Services
 {
     public class ArticleService : IArticleService
     {
-        private readonly IArticleRepository _articleRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ArticleService(IArticleRepository articleRepository)
+        public ArticleService(IUnitOfWork unitOfWork)
         {
-            _articleRepository = articleRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<IEnumerable<Article>> GetAllWithTypeAsync()
         {
-            return await _articleRepository.GetAllAsync(a => a.Type);
+            return await _unitOfWork.Get<Article>().GetAllAsync(a => a.Type);
         }
     }
 }

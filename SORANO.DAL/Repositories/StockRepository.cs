@@ -1,6 +1,5 @@
 ﻿using SORANO.CORE;
 using SORANO.DAL.Context;
-using SORANO.DAL.Repositories.Abstract;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -14,25 +13,19 @@ namespace SORANO.DAL.Repositories
     /// Generic repository for the stock entities
     /// </summary>
     /// <typeparam name="T">Stock entity type</typeparam>
-    public abstract class EntityRepository<T> : IEntityRepository<T> where T : Entity, new()
+    public class StockRepository<T> where T : Entity, new()
     {
-        // Data context
-        private StockContext _context;
-
-        protected StockContext Context => _context ?? (_context = _factory.Init());
-
-        // Data set
+        private readonly StockContext _context;
         private readonly IDbSet<T> _dataSet;
-        private readonly IStockFactory _factory;
 
         /// <summary>
         /// Generic repository for the stock entities
         /// </summary>
-        /// <param name="factory"></param>
-        protected EntityRepository(IStockFactory factory)
+        /// <param name="context"></param>
+        public StockRepository(StockContext context)
         {
-            _factory = factory;
-            _dataSet = Context.Set<T>();
+            _context = context;
+            _dataSet = _context.Set<T>();
         }
 
         /// <summary>

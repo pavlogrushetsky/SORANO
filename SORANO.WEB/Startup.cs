@@ -7,9 +7,8 @@ using Microsoft.Extensions.Configuration;
 using SORANO.BLL.Services;
 using SORANO.BLL.Services.Abstract;
 using SORANO.DAL.Context;
-using SORANO.DAL.Repositories;
-using SORANO.DAL.Repositories.Abstract;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using SORANO.DAL.Repositories;
 
 namespace SORANO.WEB
 {
@@ -30,19 +29,11 @@ namespace SORANO.WEB
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            //services.AddMemoryCache();
-            //services.AddScoped(_ => new StockContext(Configuration.GetConnectionString("SORANO")));
+
+            services.AddScoped(_ => new StockContext(Configuration.GetConnectionString("SORANO")));
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
 
-            services.AddSingleton<IStockFactory, StockFactory>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
-
-            // Add dependencies for repositories
-            services.AddTransient<IUserRepository, UserRepository>();
-            services.AddTransient<IRoleRepository, RoleRepository>();
-            services.AddTransient<IDeliveryItemRepository, DeliveryItemRepository>();
-            services.AddTransient<IArticleRepository, ArticleRepository>();
-            services.AddTransient<IArticleTypeRepository, ArticleTypeRepository>();
 
             // Add dependencies for services
             services.AddTransient<IUserService, UserService>();

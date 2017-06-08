@@ -7,41 +7,36 @@ using SORANO.BLL.Helpers;
 using SORANO.BLL.Properties;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
-using SORANO.DAL.Repositories.Abstract;
-using SORANO.DAL.Context;
+using SORANO.DAL.Repositories;
 
 namespace SORANO.BLL.Services
 {
     public class ArticleTypeService : IArticleTypeService
     {
-        private readonly IArticleTypeRepository _articleTypeRepository;
-        private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public ArticleTypeService(IUnitOfWork unitOfWork, IArticleTypeRepository articleTypeRepository, IUserRepository userRepository)
+        public ArticleTypeService(IUnitOfWork unitOfWork)
         {
-            _articleTypeRepository = articleTypeRepository;
-            _userRepository = userRepository;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<IEnumerable<ArticleType>> GetAllWithArticlesAsync()
         {
-            var articleTypes = await _articleTypeRepository.GetAllAsync(t => t.Articles, t => t.ParentType);
+            var articleTypes = await _unitOfWork.Get<ArticleType>().GetAllAsync(t => t.Articles, t => t.ParentType);
 
             return articleTypes.Where(t => !t.DeletedDate.HasValue);
         }
 
         public async Task<IEnumerable<ArticleType>> GetAllAsync()
         {
-            var articleTypes = await _articleTypeRepository.GetAllAsync();
+            var articleTypes = await _unitOfWork.Get<ArticleType>().GetAllAsync();
 
             return articleTypes.Where(t => !t.DeletedDate.HasValue);
         }
 
         public async Task<ArticleType> GetAsync(int id)
         {
-            return await _articleTypeRepository.GetAsync(t => t.ID == id, t => t.Articles, t => t.ParentType, t => t.Recommendations);
+            return await _unitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id, t => t.Articles, t => t.ParentType, t => t.Recommendations);
         }
 
         /// <summary>
@@ -65,7 +60,7 @@ namespace SORANO.BLL.Services
             }
 
             // Get user by specified identifier
-            var user = await _userRepository.GetAsync(u => u.ID == userId);
+            var user = await _unitOfWork.Get<ArticleType>().GetAsync(u => u.ID == userId);
 
             // Check user
             if (user == null)
@@ -82,9 +77,9 @@ namespace SORANO.BLL.Services
                 recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            var saved = _articleTypeRepository.Add(articleType);
+            var saved = _unitOfWork.Get<ArticleType>().Add(articleType);
 
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.SaveAsync();
 
             return saved;
         }
@@ -110,7 +105,7 @@ namespace SORANO.BLL.Services
             }
 
             // Get user by specified identifier
-            var user = await _userRepository.GetAsync(u => u.ID == userId);
+            var user = await _unitOfWork.Get<ArticleType>().GetAsync(u => u.ID == userId);
 
             // Check user
             if (user == null)
@@ -119,7 +114,7 @@ namespace SORANO.BLL.Services
             }
 
             // Get existent article type by identifier
-            var existentArticleType = await _articleTypeRepository.GetAsync(t => t.ID == articleType.ID);
+            var existentArticleType = await _unitOfWork.Get<ArticleType>().GetAsync(t => t.ID == articleType.ID);
 
             // Check existent article type
             if (existentArticleType == null)
@@ -168,31 +163,31 @@ namespace SORANO.BLL.Services
                     rec.UpdateModifiedFields(userId);
                 });
 
-            var updated = _articleTypeRepository.Update(existentArticleType);
+            var updated = _unitOfWork.Get<ArticleType>().Update(existentArticleType);
 
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.SaveAsync();
 
             return updated;
         }
 
         public async Task DeleteAsync(int id, int userId)
         {
-            var existentArticleType = await _articleTypeRepository.GetAsync(t => t.ID == id, t => t.ParentType, t => t.ChildTypes);
+            var existentArticleType = await _unitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id, t => t.ParentType, t => t.ChildTypes);
 
             foreach (var childType in existentArticleType.ChildTypes.ToList())
             {
                 childType.ParentTypeId = existentArticleType.ParentTypeId;
                 childType.ModifiedBy = userId;
                 childType.ModifiedDate = DateTime.Now;
-                _articleTypeRepository.Update(childType);
+                _unitOfWork.Get<ArticleType>().Update(childType);
             }
 
             existentArticleType.DeletedBy = userId;
             existentArticleType.DeletedDate = DateTime.Now;
 
-            _articleTypeRepository.Update(existentArticleType);
+            _unitOfWork.Get<ArticleType>().Update(existentArticleType);
 
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.SaveAsync();
         }
     }
 }

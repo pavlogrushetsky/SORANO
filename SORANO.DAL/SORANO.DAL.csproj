@@ -63,49 +63,16 @@
     <Compile Include="Context\Configurations\StorageConfiguration.cs" />
     <Compile Include="Context\Configurations\SupplierConfiguration.cs" />
     <Compile Include="Context\Configurations\UserConfiguration.cs" />
-    <Compile Include="Context\IStockFactory.cs" />
-    <Compile Include="Context\IUnitOfWork.cs" />
+    <Compile Include="Repositories\IUnitOfWork.cs" />
     <Compile Include="Context\StockContext.cs" />
-    <Compile Include="Context\StockFactory.cs" />
-    <Compile Include="Context\UnitOfWork.cs" />
+    <Compile Include="Repositories\UnitOfWork.cs" />
     <Compile Include="Migrations\201705031910003_Initial.cs" />
     <Compile Include="Migrations\201705031910003_Initial.Designer.cs">
       <DependentUpon>201705031910003_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\Abstract\IArticleRepository.cs" />
-    <Compile Include="Repositories\Abstract\IArticleTypeRepository.cs" />
-    <Compile Include="Repositories\Abstract\IAttachmentRepository.cs" />
-    <Compile Include="Repositories\Abstract\IAttachmentTypeRepository.cs" />
-    <Compile Include="Repositories\Abstract\IClientRepository.cs" />
-    <Compile Include="Repositories\Abstract\IDeliveryItemRepository.cs" />
-    <Compile Include="Repositories\Abstract\IDeliveryRepository.cs" />
-    <Compile Include="Repositories\Abstract\IGoodsRepository.cs" />
-    <Compile Include="Repositories\Abstract\ILocationRepository.cs" />
-    <Compile Include="Repositories\Abstract\ILocationTypeRepository.cs" />
-    <Compile Include="Repositories\Abstract\IRecommendationRepository.cs" />
-    <Compile Include="Repositories\Abstract\IRoleRepository.cs" />
-    <Compile Include="Repositories\Abstract\IEntityRepository.cs" />
-    <Compile Include="Repositories\Abstract\IStorageRepository.cs" />
-    <Compile Include="Repositories\Abstract\ISupplierRepository.cs" />
-    <Compile Include="Repositories\Abstract\IUserRepository.cs" />
-    <Compile Include="Repositories\ArticleRepository.cs" />
-    <Compile Include="Repositories\ArticleTypeRepository.cs" />
-    <Compile Include="Repositories\AttachmentRepository.cs" />
-    <Compile Include="Repositories\AttachmentTypeRepository.cs" />
-    <Compile Include="Repositories\ClientRepository.cs" />
-    <Compile Include="Repositories\DeliveryItemRepository.cs" />
-    <Compile Include="Repositories\DeliveryRepository.cs" />
-    <Compile Include="Repositories\GoodsRepository.cs" />
-    <Compile Include="Repositories\LocationRepository.cs" />
-    <Compile Include="Repositories\LocationTypeRepository.cs" />
-    <Compile Include="Repositories\RecommendationRepository.cs" />
-    <Compile Include="Repositories\RoleRepository.cs" />
-    <Compile Include="Repositories\EntityRepository.cs" />
-    <Compile Include="Repositories\StorageRepository.cs" />
-    <Compile Include="Repositories\SupplierRepository.cs" />
-    <Compile Include="Repositories\UserRepository.cs" />
+    <Compile Include="Repositories\StockRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SORANO.CORE\SORANO.CORE.csproj">

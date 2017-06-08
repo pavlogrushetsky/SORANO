@@ -3,22 +3,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.AccountEntities;
-using SORANO.DAL.Repositories.Abstract;
 using SORANO.BLL.Helpers;
-using SORANO.DAL.Context;
+using SORANO.DAL.Repositories;
+using SORANO.CORE.StockEntities;
 
 namespace SORANO.BLL.Services
 {
     public class UserService : IUserService
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IDeliveryItemRepository _deliveryItemRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public UserService(IUnitOfWork unitOfWork, IUserRepository userRepository, IDeliveryItemRepository deliveryItemRepository)
+        public UserService(IUnitOfWork unitOfWork)
         {
-            _userRepository = userRepository;
-            _deliveryItemRepository = deliveryItemRepository;
             _unitOfWork = unitOfWork;
         }        
 
@@ -28,7 +24,7 @@ namespace SORANO.BLL.Services
         /// <returns>List of users with all related data</returns>
         public async Task<List<User>> GetAllIncludeAllAsync()
         {
-            var users = await _userRepository.GetAllAsync(u => u.Roles, u => u.CreatedEntities,
+            var users = await _unitOfWork.Get<User>().GetAllAsync(u => u.Roles, u => u.CreatedEntities,
                 u => u.DeletedEntities,
                 u => u.ModifiedEntities,
                 u => u.SoldGoods);
@@ -38,12 +34,12 @@ namespace SORANO.BLL.Services
 
         public async Task<User> GetIncludeRolesAsync(int id)
         {
-            return await _userRepository.GetAsync(u => u.ID == id, u => u.Roles);
+            return await _unitOfWork.Get<User>().GetAsync(u => u.ID == id, u => u.Roles);
         }
 
         public async Task<User> CreateAsync(User user)
         {
-            var existentUser = await _userRepository.GetAsync(u => u.Login.Equals(user.Login));
+            var existentUser = await _unitOfWork.Get<User>().GetAsync(u => u.Login.Equals(user.Login));
 
             if (existentUser != null)
             {
@@ -52,30 +48,30 @@ namespace SORANO.BLL.Services
 
             user.Password = CryptoHelper.Hash(user.Password);
 
-            var added = _userRepository.Add(user);
+            var added = _unitOfWork.Get<User>().Add(user);
 
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.SaveAsync();
 
             return added;
         }
 
         public async Task DeleteAsync(int id)
         {
-            var existentUser = await _userRepository.GetAsync(u => u.ID == id);
+            var existentUser = await _unitOfWork.Get<User>().GetAsync(u => u.ID == id);
 
-            _userRepository.Delete(existentUser);
+            _unitOfWork.Get<User>().Delete(existentUser);
 
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task<User> GetAsync(string login)
         {
-            return await _userRepository.GetAsync(u => u.Login.Equals(login));
+            return await _unitOfWork.Get<User>().GetAsync(u => u.Login.Equals(login));
         }
 
         public async Task<User> GetIncludeAllAsync(int id)
         {
-            var user = await _userRepository.GetAsync(u => u.ID == id, u => u.Roles,
+            var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == id, u => u.Roles,
                 u => u.CreatedEntities,
                 u => u.DeletedEntities,
                 u => u.ModifiedEntities,
@@ -83,7 +79,7 @@ namespace SORANO.BLL.Services
 
             user.SoldGoods.ToList().ForEach(g =>
             {
-                g.DeliveryItem = _deliveryItemRepository.Get(d => d.ID == g.DeliveryItemID, d => d.Article);
+                g.DeliveryItem = _unitOfWork.Get<DeliveryItem>().Get(d => d.ID == g.DeliveryItemID, d => d.Article);
             });
 
             return user;
@@ -91,34 +87,34 @@ namespace SORANO.BLL.Services
 
         public async Task<User> GetAsync(int id)
         {
-            return await _userRepository.GetAsync(u => u.ID == id);
+            return await _unitOfWork.Get<User>().GetAsync(u => u.ID == id);
         }
 
         public async Task<User> GetAsync(string login, string password)
         {
             var hash = CryptoHelper.Hash(password);
 
-            return await _userRepository.GetAsync(u => !u.IsBlocked && u.Login.Equals(login) && u.Password.Equals(hash), u => u.Roles);
+            return await _unitOfWork.Get<User>().GetAsync(u => !u.IsBlocked && u.Login.Equals(login) && u.Password.Equals(hash), u => u.Roles);
         }
 
         public async Task ChangePasswordAsync(string login, string newPassword)
         {
-            var user = await _userRepository.GetAsync(u => u.Login.Equals(login));
+            var user = await _unitOfWork.Get<User>().GetAsync(u => u.Login.Equals(login));
 
             user.Password = CryptoHelper.Hash(newPassword);
 
-            _userRepository.Update(user);
+            _unitOfWork.Get<User>().Update(user);
 
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task<User> UpdateAsync(User user)
         {
             user.Password = CryptoHelper.Hash(user.Password);
 
-            var updated = _userRepository.Update(user);
+            var updated = _unitOfWork.Get<User>().Update(user);
 
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.SaveAsync();
 
             return updated;
         }
