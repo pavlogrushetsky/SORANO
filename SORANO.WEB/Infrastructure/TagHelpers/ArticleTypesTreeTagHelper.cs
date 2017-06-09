@@ -67,7 +67,7 @@ namespace SORANO.WEB.Infrastructure.TagHelpers
                 html += "<a class='btn btn-xs btn-link' data-toggle='tooltip' data-placement='right' data-original-title='Просмотреть краткую информацию' title =''><i class='fa fa-info fa-lg'></i></a>";
             }
 
-            if (type.ChildTypes.Any())
+            if (type.ChildTypes.Any() || ShowArticles && type.Articles.Any())
             {
                 html += "<ul>";
 
@@ -82,7 +82,7 @@ namespace SORANO.WEB.Infrastructure.TagHelpers
                     {
                         html += "<li><span><i class='fa fa-barcode'></i>" + article.Name + "</span></li>";
                     }
-                }
+                }                
 
                 html += "</ul>";
             }         

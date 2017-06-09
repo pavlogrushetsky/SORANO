@@ -129,4 +129,10 @@
   <data name="ArticleTypeNotFoundException" xml:space="preserve">
     <value>Тип артикулов не найден.</value>
   </data>
+  <data name="ArticleCannotBeNullException" xml:space="preserve">
+    <value>Артикул не может быть null.</value>
+  </data>
+  <data name="ArticleInvalidIdentifierException" xml:space="preserve">
+    <value>Недопустимое значение идентификатора артикула.</value>
+  </data>
 </root>

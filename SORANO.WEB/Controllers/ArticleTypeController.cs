@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
+using SORANO.WEB.Models.Article;
 using SORANO.WEB.Models.ArticleType;
 using SORANO.WEB.Models.Recommendation;
 
@@ -66,8 +67,9 @@ namespace SORANO.WEB.Controllers
             }
 
             var typeModel = TempData.Get<ArticleTypeModel>("ArticleTypeModel");
+            var articleModel = TempData.Get<ArticleModel>("ArticleModel");
 
-            if (typeModel == null)
+            if (typeModel == null && articleModel == null)
             {
                 return Redirect(returnUrl);
             }
@@ -78,13 +80,26 @@ namespace SORANO.WEB.Controllers
             {
                 Types = types.Select(t => t.ToModel()).ToList(),
                 ArticleType = typeModel,
+                Article = articleModel,
                 ReturnUrl = returnUrl
             };
 
-            model.Types.Where(t => t.ID == typeModel.ParentType?.ID).ToList().ForEach(t =>
+            if (typeModel != null)
             {
-                t.IsSelected = true;
-            });
+                model.Types.Where(t => t.ID == typeModel.ParentType?.ID)
+                    .ToList()
+                    .ForEach(t =>
+                    {
+                        t.IsSelected = true;
+                    });
+            }
+            else
+            {
+                model.Types.Where(t => t.ID == articleModel.Type?.ID).ToList().ForEach(t =>
+                {
+                    t.IsSelected = true;
+                });
+            }           
 
             return View(model);
         }
@@ -202,13 +217,23 @@ namespace SORANO.WEB.Controllers
         public IActionResult Select(ArticleTypeSelectModel model)
         {
             var typeModel = model.ArticleType;
+            var articleModel = model.Article;
 
             var selectedType = model.Types.SingleOrDefault(t => t.IsSelected);
 
-            typeModel.ParentType = selectedType;
+            if (typeModel != null)
+            {
+                typeModel.ParentType = selectedType;
 
-            TempData.Put("ArticleTypeModel", typeModel);
+                TempData.Put("ArticleTypeModel", typeModel);
+            }
+            else
+            {
+                articleModel.Type = selectedType;
 
+                TempData.Put("ArticleModel", articleModel);
+            }
+            
             return Redirect(model.ReturnUrl);
         }
 

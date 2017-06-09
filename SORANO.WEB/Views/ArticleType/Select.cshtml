@@ -1,7 +1,7 @@
 ﻿@model ArticleTypeSelectModel
 
 @{
-    ViewBag.Title = "SORANO - Добавление типа артикулов";
+    ViewBag.Title = "SORANO - Назначение родительского типа артикулов";
     ViewBag.Header = "Назначение";
     ViewBag.Description = "родительского типа артикулов";
     ViewBag.Icon = "fa fa-tags";
@@ -22,10 +22,20 @@
             </a>
         </li>
         <li>
-            <a asp-controller="ArticleType" asp-action="Create">
-                <i class="fa fa-tag"></i>
-                Создание типа артикулов
-            </a>
+            @if (Model.ArticleType != null)
+            {
+                <a asp-controller="ArticleType" asp-action="Create">
+                    <i class="fa fa-tag"></i>
+                    Создание типа артикулов
+                </a>
+            }
+            else
+            {
+                <a asp-controller="Article" asp-action="Create">
+                    <i class="fa fa-barcode"></i>
+                    Создание артикула
+                </a>
+            }
         </li>
         <li class="active">Назначение родительского типа</li>
     </ul>
@@ -51,40 +61,58 @@
               asp-action=""
               method="post"
               asp-antiforgery="true">
-            <input type="hidden" asp-for="ArticleType.ID" />
-            <input type="hidden" asp-for="ArticleType.Name" />
-            <input type="hidden" asp-for="ArticleType.Description" />
-            @for (int i = 0; i < Model.ArticleType.Recommendations.Count; i++)
+            @if (Model.ArticleType != null)
             {
-                @Html.HiddenFor(m => m.ArticleType.Recommendations[i].ID)
-                @Html.HiddenFor(m => m.ArticleType.Recommendations[i].ParentID)
-                @Html.HiddenFor(m => m.ArticleType.Recommendations[i].ValueString)
-                @Html.HiddenFor(m => m.ArticleType.Recommendations[i].Comment)
+                <input type="hidden" asp-for="ArticleType.ID"/>
+                <input type="hidden" asp-for="ArticleType.Name"/>
+                <input type="hidden" asp-for="ArticleType.Description"/>
+
+                for (int i = 0; i < Model.ArticleType.Recommendations.Count; i++)
+                {
+                    @Html.HiddenFor(m => m.ArticleType.Recommendations[i].ID)
+                    @Html.HiddenFor(m => m.ArticleType.Recommendations[i].ParentID)
+                    @Html.HiddenFor(m => m.ArticleType.Recommendations[i].ValueString)
+                    @Html.HiddenFor(m => m.ArticleType.Recommendations[i].Comment)
+                }
+
+                if (Model.ArticleType.ParentType != null)
+                {
+                    <input type="hidden" asp-for="ArticleType.ParentType.ID"/>
+                    <input type="hidden" asp-for="ArticleType.ParentType.Name"/>
+                    <input type="hidden" asp-for="ArticleType.ParentType.Description"/>
+                }
             }
-            @if (Model.ArticleType.ParentType != null)
+            @if (Model.Article != null)
             {
-                <input type="hidden" asp-for="ArticleType.ParentType.ID" />
-                <input type="hidden" asp-for="ArticleType.ParentType.Name" />
-                <input type="hidden" asp-for="ArticleType.ParentType.Description" />
+                <input type="hidden" asp-for="Article.ID" />
+                <input type="hidden" asp-for="Article.Name" />
+                <input type="hidden" asp-for="Article.Description" />
+                <input type="hidden" asp-for="Article.Producer" />
+                <input type="hidden" asp-for="Article.Code" />
+                <input type="hidden" asp-for="Article.Barcode" />
+
+                <input type="hidden" asp-for="Article.Type.ID"/>
+                <input type="hidden" asp-for="Article.Type.Name" />
             }
+                     
             @for (var i = 0; i < Model.Types.Count; i++)
             {
                 @Html.HiddenFor(m => m.Types[i].ID)
                 @Html.HiddenFor(m => m.Types[i].Name)
                 @Html.HiddenFor(m => m.Types[i].Description)
-                @Html.HiddenFor(m => m.Types[i].IsSelected, new { id = "typeID_" + Model.Types[i].ID, @class = "selectedInput" })
+                @Html.HiddenFor(m => m.Types[i].IsSelected, new {id = "typeID_" + Model.Types[i].ID, @class = "selectedInput"})
             }
-            <input type="hidden" asp-for="ReturnUrl" />
+            <input type="hidden" asp-for="ReturnUrl"/>
             @if (Model.Types.Any())
             {
                 <div class="form-group">
-                    <input class="form-control input-sm" style="font-weight: bold;" placeholder="Поиск типов артикулов" type="text" id="article-search" />
-                    <br />
+                    <input class="form-control input-sm" style="font-weight: bold;" placeholder="Поиск типов артикулов" type="text" id="article-search"/>
+                    <br/>
                     <div class="tree">
                         <article-types-tree elements="@Model.Types" detailed="false" show-articles="false" current-element="@Model.ArticleType"></article-types-tree>
                     </div>
                 </div>
-            }            
+            }
             <div class="form-group">
                 <button type="submit" class="btn btn-default" asp-action="Cancel">Отмена</button>
                 <button type="submit" class="btn btn-primary" asp-action="Select">Сохранить</button>

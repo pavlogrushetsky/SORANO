@@ -61,6 +61,24 @@ namespace SORANO.BLL.Properties {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Артикул не может быть null..
+        /// </summary>
+        internal static string ArticleCannotBeNullException {
+            get {
+                return ResourceManager.GetString("ArticleCannotBeNullException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Недопустимое значение идентификатора артикула..
+        /// </summary>
+        internal static string ArticleInvalidIdentifierException {
+            get {
+                return ResourceManager.GetString("ArticleInvalidIdentifierException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Тип артикула не может быть null..
         /// </summary>
         internal static string ArticleTypeCannotBeNullException {

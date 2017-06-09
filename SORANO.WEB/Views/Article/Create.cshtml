@@ -1,0 +1,195 @@
+﻿@model ArticleModel
+
+@{
+    var isEdit = ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"];
+    var title = isEdit ? "Редактирование" : "Создание";
+}
+
+@{
+    ViewBag.Title = "SORANO - " + title + " артикулов";
+    ViewBag.Header = title;
+    ViewBag.Description = " артикула";
+    ViewBag.Icon = "fa fa-barcode";
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li>
+            <a asp-controller="Home" asp-action="Index">
+                <i class="fa fa-home"></i>
+                Главная
+            </a>
+        </li>
+        <li>
+            <a asp-controller="Article" asp-action="Index">
+                <i class="fa fa-barcode"></i>
+                Артикулы
+            </a>
+        </li>
+        <li class="active">@title артикула</li>
+    </ul>
+}
+
+<form asp-action="@(isEdit ? "Update" : "Create")"
+      asp-controller="Article"
+      method="post">
+    <input type="hidden" asp-for="ID"/>
+    <input type="hidden" asp-for="Type.ID"/>
+    <input type="hidden" asp-for="Type.Name" />
+    @for (var i = 0; i < Model.Recommendations.Count; i++)
+    {
+        <input type="hidden" asp-for="@Model.Recommendations[i].ID" />
+        <input type="hidden" asp-for="@Model.Recommendations[i].ParentID" />
+    }
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12">
+            <div class="form-group">
+                <label class="control-label" asp-for="Name">Название:</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+                    <input class="form-control" type="text" asp-for="Name" placeholder="Название" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="Description">Описание:</label>
+                <div class="input-group">
+                    <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-align-justify"></i></span>
+                    <textarea class="form-control" style="resize: vertical;" rows="3" asp-for="Description" placeholder="Описание"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="Producer">Производитель:</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-suitcase"></i></span>
+                    <input class="form-control" type="text" asp-for="Producer" placeholder="Производитель" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="Code">Код:</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+                    <input class="form-control" type="text" asp-for="Code" placeholder="Код" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="Barcode">Штрих-код:</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+                    <input class="form-control" type="text" asp-for="Barcode" placeholder="Штрих-код" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Родительский тип:</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-tags"></i></span>
+                    <div class="form-control">
+                        <span>@Model.Type?.Name</span>
+                    </div>
+                    <span class="input-group-btn">
+                        <button class="btn btn-default"
+                                type="submit"
+                                asp-action="SelectParentType"
+                                asp-route-returnUrl="@(isEdit ? Url.Action("Update", "Article") : Url.Action("Create", "Article"))"
+                                style="border-top-left-radius: 0; border-bottom-left-radius: 0;"
+                                data-toggle="tooltip"
+                                data-placement="right"
+                                data-original-title="Назначить родительский тип"
+                                title="">
+                            <i class="fa fa-pencil"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12">
+            <div class="form-group">
+                <label class="control-label" asp-for="Name">Рекомендации:</label>
+                <div id="recommendations">
+                    <table class="table table-responsive" style="width: 100%; margin-bottom: 2px;">
+                        @if (Model.Recommendations.Any())
+                        {
+                            <thead>
+                            <tr>
+                                <th style="width: 70%"><i class="fa fa-fw fa-comment" aria-hidden="true"></i>Текст</th>
+                                <th style="width: 25%"><i class="fa fa-fw fa-hashtag" aria-hidden="true"></i>Значение</th>
+                                <th style="width: 5%"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @for (var i = 0; i < Model.Recommendations.Count; i++)
+                            {
+                                <tr>
+                                    <td style="padding: 2px;"><textarea style="resize: vertical;" class="form-control recommendations" rows="1" asp-for="@Model.Recommendations[i].Comment"></textarea></td>
+                                    <td style="padding: 2px;"><input class="form-control recommendations" type="text" asp-for="@Model.Recommendations[i].ValueString" /></td>
+                                    <td style="padding: 2px;">
+                                        <button class="btn btn-danger"
+                                                type="submit"
+                                                asp-action="DeleteRecommendation"
+                                                asp-route-isEdit="@isEdit"
+                                                asp-route-num="@i"
+                                                data-toggle="tooltip"
+                                                data-placement="right"
+                                                data-original-title="Удалить рекомендацию"
+                                                title="">
+                                            <i class="fa fa-trash" aria-hidden="true"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        }
+                        <tfoot>
+                        <tr>
+                            <td colspan="2" style="padding: 2px; vertical-align: middle;">
+                                @if (!Model.Recommendations.Any())
+                                {
+                                    <p class="text-info">
+                                        <i class="fa fa-fw fa-info" aria-hidden="true"></i>
+                                        Рекомендации отсутствуют
+                                    </p>
+                                }
+                            </td>
+                            <td style="padding: 2px;">
+                                <button class="btn btn-success pull-right"
+                                        type="submit"
+                                        asp-action="AddRecommendation"
+                                        asp-route-isEdit="@isEdit"
+                                        data-toggle="tooltip"
+                                        data-placement="right"
+                                        data-original-title="Добавить рекомендацию"
+                                        title="">
+                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group">
+                <a class="btn btn-default" asp-controller="Article" asp-action="Index">
+                    <i class="fa fa-close"></i>
+                    Отмена
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-check"></i>
+                    Сохранить
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("input.input-validation-error").not(".recommendations").closest(".form-group").addClass("has-error");
+            $("select.input-validation-error").closest(".form-group").addClass("has-error");
+        });
+    </script>
+}
