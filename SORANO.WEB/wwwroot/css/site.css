@@ -110,3 +110,11 @@
 @media screen and (max-width: 767px) {
     .table-responsive { border: 0px; }
 }
+
+textarea.form-control.recommendations.input-validation-error {
+    border: 2px solid #e74c3c;
+}
+
+input.form-control.recommendations.input-validation-error {
+    border: 2px solid #e74c3c;
+} 

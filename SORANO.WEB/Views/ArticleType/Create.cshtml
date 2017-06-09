@@ -102,8 +102,8 @@
                             @for (var i = 0; i < Model.Recommendations.Count; i++)
                             {            
                                 <tr>
-                                    <td style="padding: 2px;"><textarea style="resize: vertical;" class="form-control" rows="1" asp-for="@Model.Recommendations[i].Comment"></textarea></td>
-                                    <td style="padding: 2px;"><input class="form-control" type="text" asp-for="@Model.Recommendations[i].ValueString"/></td>
+                                    <td style="padding: 2px;"><textarea style="resize: vertical;" class="form-control recommendations" rows="1" asp-for="@Model.Recommendations[i].Comment"></textarea></td>
+                                    <td style="padding: 2px;"><input class="form-control recommendations" type="text" asp-for="@Model.Recommendations[i].ValueString"/></td>
                                     <td style="padding: 2px;">
                                         <button class="btn btn-danger" 
                                                 type="submit"
@@ -170,9 +170,8 @@
 @section Scripts {
     <script type="text/javascript">
         $(document).ready(function () {
-            $("input.input-validation-error").closest(".form-group").addClass("has-error");
-            $("select.input-validation-error").closest(".form-group").addClass("has-error");
-            $("textarea.input-validation-error").closest(".form-group").addClass("has-error");
+            $("input.input-validation-error").not(".recommendations").closest(".form-group").addClass("has-error");
+            $("select.input-validation-error").closest(".form-group").addClass("has-error");           
         });
     </script>
 }
