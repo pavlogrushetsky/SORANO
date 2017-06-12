@@ -55,6 +55,7 @@
     <Compile Include="Services\Abstract\IUserService.cs" />
     <Compile Include="Services\ArticleService.cs" />
     <Compile Include="Services\ArticleTypeService.cs" />
+    <Compile Include="Services\BaseService.cs" />
     <Compile Include="Services\RoleService.cs" />
     <Compile Include="Services\UserService.cs" />
   </ItemGroup>

@@ -32,7 +32,6 @@ namespace SORANO.WEB.Models.Article
         public string Barcode { get; set; }
 
         [Display(Name = "Тип артикулов")]
-        [Required(ErrorMessage = "Необходимо указать родительский тип артикулов")]
         public ArticleTypeModel Type { get; set; }
 
         [Display(Name = "Рекомендации")]

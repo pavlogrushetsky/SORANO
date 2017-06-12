@@ -39,6 +39,18 @@ namespace SORANO.WEB.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Update(int id)
+        {
+            var article = await _articleService.GetAsync(id);
+
+            var model = TempData.Get<ArticleModel>("ArticleModel") ?? article.ToModel(article.Type.ToModel(false));
+
+            ViewData["IsEdit"] = true;
+
+            return View("Create", model);
+        }
+
         #endregion
 
         #region POST Actions
@@ -59,6 +71,16 @@ namespace SORANO.WEB.Controllers
             // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
+                ModelState.Keys.Where(k => k.StartsWith("Type")).ToList().ForEach(k =>
+                {
+                    ModelState.Remove(k);
+                });
+
+                if (model.Type == null || model.Type.ID <= 0)
+                {                   
+                    ModelState.AddModelError("Type", "Необходимо указать родительский тип артикулов");
+                }
+
                 // Check the model
                 if (!ModelState.IsValid)
                 {
@@ -84,6 +106,48 @@ namespace SORANO.WEB.Controllers
                 // If failed
                 ModelState.AddModelError("", "Не удалось создать новый артикул.");
                 return View(model);
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(ArticleModel model)
+        {
+            // Try to get result
+            return await TryGetActionResultAsync(async () =>
+            {
+                ModelState.Keys.Where(k => k.StartsWith("Type")).ToList().ForEach(k =>
+                {
+                    ModelState.Remove(k);
+                });
+
+                // Check the model
+                if (!ModelState.IsValid)
+                {
+                    ViewData["IsEdit"] = true;
+                    ModelState.RemoveDuplicateErrorMessages();
+                    return View("Create", model);
+                }
+
+                // Convert model to article type entity
+                var article = model.ToEntity();
+
+                // Get current user
+                var currentUser = await GetCurrentUser();
+
+                // Call correspondent service method to update article
+                article = await _articleService.UpdateAsync(article, currentUser.ID);
+
+                // If succeeded
+                if (article != null)
+                {
+                    return RedirectToAction("Index", "Article");
+                }
+
+                // If failed
+                ModelState.AddModelError("", "Не удалось обновить артикул.");
+                ViewData["IsEdit"] = true;
+                return View("Create", model);
             });
         }
 

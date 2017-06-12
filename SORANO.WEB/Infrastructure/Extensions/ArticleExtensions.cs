@@ -17,7 +17,8 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 Producer = article.Producer,
                 Description = article.Description,
                 Barcode = article.Barcode,
-                Type = type
+                Type = type,
+                Recommendations = article.Recommendations?.Select(r => r.ToModel()).ToList()
             };
         }
 

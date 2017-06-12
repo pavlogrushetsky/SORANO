@@ -12,13 +12,10 @@ using SORANO.DAL.Repositories;
 
 namespace SORANO.BLL.Services
 {
-    public class ArticleTypeService : IArticleTypeService
+    public class ArticleTypeService : BaseService, IArticleTypeService
     {
-        private readonly IUnitOfWork _unitOfWork;
-
-        public ArticleTypeService(IUnitOfWork unitOfWork)
+        public ArticleTypeService(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
-            _unitOfWork = unitOfWork;
         }
 
         public async Task<IEnumerable<ArticleType>> GetAllWithArticlesAsync()
@@ -37,7 +34,7 @@ namespace SORANO.BLL.Services
 
         public async Task<ArticleType> GetAsync(int id)
         {
-            return await _unitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id && !t.IsDeleted, t => t.Articles, t => t.ParentType, t => t.Recommendations);          
+            return await _unitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id, t => t.Articles, t => t.ParentType, t => t.Recommendations);          
         }
 
         /// <summary>
@@ -99,7 +96,7 @@ namespace SORANO.BLL.Services
                 throw new ArgumentNullException(nameof(articleType), Resource.ArticleTypeCannotBeNullException);
             }
 
-            // Identifier of new article type must be equal 0
+            // Identifier of new article type must be > 0
             if (articleType.ID <= 0)
             {
                 throw new ArgumentException(Resource.ArticleTypeInvalidIdentifierException, nameof(articleType.ID));
@@ -131,42 +128,7 @@ namespace SORANO.BLL.Services
             // Update modified fields for existent article type
             existentArticleType.UpdateModifiedFields(userId);
 
-            // Remove deleted recommendations for existent article type
-            existentArticleType.Recommendations
-                .Where(r => !articleType.Recommendations.Select(x => x.ID).Contains(r.ID))
-                .ToList()
-                .ForEach(r => 
-                {
-                    r.UpdateDeletedFields(userId);
-                    _unitOfWork.Get<Recommendation>().Update(r);
-                });
-
-            // Add newly created recommendations to existent article type
-            articleType.Recommendations
-                .Where(r => !existentArticleType.Recommendations.Select(x => x.ID).Contains(r.ID))
-                .ToList()
-                .ForEach(r =>
-                {
-                    r.ParentEntityID = existentArticleType.ID;
-                    r.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-                    existentArticleType.Recommendations.Add(r);
-                });
-
-            // Update existent recommendations
-            articleType.Recommendations
-                .Where(r => existentArticleType.Recommendations.Select(x => x.ID).Contains(r.ID))
-                .ToList()
-                .ForEach(r =>
-                {
-                    var rec = existentArticleType.Recommendations.SingleOrDefault(x => x.ID == r.ID);
-                    if (rec == null)
-                    {
-                        return;
-                    }
-                    rec.Comment = r.Comment;
-                    rec.Value = r.Value;
-                    rec.UpdateModifiedFields(userId);
-                });
+            UpdateRecommendations(articleType, existentArticleType, userId);
 
             var updated = _unitOfWork.Get<ArticleType>().Update(existentArticleType);
 

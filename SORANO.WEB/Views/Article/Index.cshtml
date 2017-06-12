@@ -121,20 +121,29 @@
                                            asp-action="Details"
                                            asp-route-id="@articles[i].ID"
                                            class="btn btn-xs btn-default"
-                                           title="Просмотреть информацию об артикуле">
+                                           data-toggle="tooltip"
+                                           data-placement="bottom"
+                                           data-original-title="Просмотреть информацию об артикуле"
+                                           title="">
                                             <i class="fa fa-info-circle" aria-hidden="true"></i>
                                         </a>
                                         <a asp-controller="Article"
                                            asp-action="Update"
                                            asp-route-id="@articles[i].ID"
                                            class="btn btn-xs btn-default"
-                                           title="Редактировать свойства артикула">
+                                           data-toggle="tooltip"
+                                           data-placement="bottom"
+                                           data-original-title="Редактировать свойства артикула"
+                                           title="">
                                             <i class="fa fa-pencil-square" aria-hidden="true"></i>
                                         </a>
                                         <a asp-controller="Article"
                                            asp-action="Delete"
                                            asp-route-id="@articles[i].ID"
                                            class="btn btn-xs btn-danger"
+                                           data-toggle="tooltip"
+                                           data-placement="bottom"
+                                           data-original-title="Удалить артикул"
                                            title="Удалить артикул">
                                             <i class="fa fa-trash" aria-hidden="true"></i>
                                         </a>

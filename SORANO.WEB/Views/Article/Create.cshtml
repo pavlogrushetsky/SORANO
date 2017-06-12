@@ -97,8 +97,9 @@
                                 data-original-title="Назначить родительский тип"
                                 title="">
                             <i class="fa fa-pencil"></i>
-                        </button>
+                        </button>                       
                     </span>
+                    <span asp-validation-for="Type" style="display: none;"></span>
                 </div>
             </div>
         </div>
@@ -190,6 +191,7 @@
         $(document).ready(function () {
             $("input.input-validation-error").not(".recommendations").closest(".form-group").addClass("has-error");
             $("select.input-validation-error").closest(".form-group").addClass("has-error");
+            $("span.field-validation-error").closest(".form-group").addClass("has-error");
         });
     </script>
 }

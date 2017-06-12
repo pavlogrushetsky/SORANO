@@ -135,4 +135,7 @@
   <data name="ArticleInvalidIdentifierException" xml:space="preserve">
     <value>Недопустимое значение идентификатора артикула.</value>
   </data>
+  <data name="ArticleNotFoundException" xml:space="preserve">
+    <value>Артикул не найден.</value>
+  </data>
 </root>
