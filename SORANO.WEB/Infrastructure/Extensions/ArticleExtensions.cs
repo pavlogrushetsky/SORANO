@@ -16,10 +16,14 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 Name = article.Name,
                 Producer = article.Producer,
                 Description = article.Description,
-                Barcode = article.Barcode,
+                Barcode = article.Barcode,                
                 Type = type,
                 Recommendations = article.Recommendations?.Select(r => r.ToModel()).ToList(),
-                CanBeDeleted = !article.DeliveryItems.Any()
+                CanBeDeleted = !article.DeliveryItems.Any(),
+                Created = article.CreatedDate.ToString("dd.MM.yyyy"),
+                Modified = article.ModifiedDate.ToString("dd.MM.yyyy"),
+                CreatedBy = article.CreatedByUser?.Login,
+                ModifiedBy = article.ModifiedByUser?.Login
             };
         }
 

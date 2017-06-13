@@ -28,6 +28,19 @@ namespace SORANO.BLL.Services
             return await _unitOfWork.Get<Article>().GetAsync(a => a.ID == id, a => a.Type, a => a.Recommendations, a => a.DeliveryItems);
         }
 
+        public async Task<Article> GetIncludeAllAsync(int id)
+        {
+            var article = await _unitOfWork.Get<Article>().GetAsync(a => a.ID == id, 
+                a => a.Attachments,
+                a => a.CreatedByUser,
+                a => a.DeliveryItems,
+                a => a.ModifiedByUser,
+                a => a.Recommendations,
+                a => a.Type);
+
+            return article;
+        }
+
         public async Task<Article> CreateAsync(Article article, int userId)
         {
             // Check passed article

@@ -113,7 +113,17 @@
                                 <tr>
                                     <td>@articles[i].ID</td>
                                     <td>@articles[i].Code</td>
-                                    <td>@articles[i].Name</td>
+                                    <td>
+                                        <a asp-controller="Article"
+                                           asp-action="Details"
+                                           asp-route-id="@articles[i].ID"
+                                           data-toggle="tooltip"
+                                           data-placement="bottom"
+                                           data-original-title="Просмотреть информацию об артикуле"
+                                           title="">
+                                            @articles[i].Name
+                                        </a>
+                                    </td>
                                     <td>@articles[i].Type.Name</td>
                                     <td>@articles[i].Producer</td>
                                     <td>

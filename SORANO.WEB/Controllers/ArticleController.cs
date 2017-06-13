@@ -59,6 +59,14 @@ namespace SORANO.WEB.Controllers
             return View(article.ToModel(article.Type.ToModel(false)));
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            var article = await _articleService.GetIncludeAllAsync(id);
+
+            return View(article.ToModel(article.Type.ToModel(false)));
+        }
+
         #endregion
 
         #region POST Actions
