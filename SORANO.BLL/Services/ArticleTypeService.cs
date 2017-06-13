@@ -37,6 +37,20 @@ namespace SORANO.BLL.Services
             return await _unitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id, t => t.Articles, t => t.ParentType, t => t.Recommendations);          
         }
 
+        public async Task<ArticleType> GetIncludeAllAsync(int id)
+        {
+            var articleType = await _unitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id,
+                t => t.Attachments,
+                t => t.CreatedByUser,
+                t => t.ModifiedByUser,
+                t => t.Recommendations,
+                t => t.ChildTypes,
+                t => t.Articles,
+                t => t.ParentType);
+
+            return articleType;
+        }
+
         /// <summary>
         /// Create new article type asynchronously
         /// </summary>

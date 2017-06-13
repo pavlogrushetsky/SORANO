@@ -39,14 +39,6 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(int id)
-        {
-            var type = await _articleTypeService.GetAsync(id);
-
-            return View("Details", type.ToModel());
-        }
-
-        [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
             var articleType = await _articleTypeService.GetAsync(id);
@@ -108,6 +100,14 @@ namespace SORANO.WEB.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var articleType = await _articleTypeService.GetAsync(id);
+
+            return View(articleType.ToModel());
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            var articleType = await _articleTypeService.GetIncludeAllAsync(id);
 
             return View(articleType.ToModel());
         }

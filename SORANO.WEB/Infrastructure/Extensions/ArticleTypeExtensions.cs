@@ -13,7 +13,11 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 ID = type.ID,
                 Name = type.Name,
                 Description = type.Description,
-                CanBeDeleted = !type.Articles.Any()
+                CanBeDeleted = !type.Articles.Any(),              
+                Created = type.CreatedDate.ToString("dd.MM.yyyy"),
+                Modified = type.ModifiedDate.ToString("dd.MM.yyyy"),
+                CreatedBy = type.CreatedByUser?.Login,
+                ModifiedBy = type.ModifiedByUser?.Login,
             };
 
             if (!deep)
@@ -21,6 +25,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 return model;
             }
 
+            model.ChildTypes = type.ChildTypes?.Select(t => t.ToModel(false)).ToList();
             model.ParentType = type.ParentType?.ToModel(false);
             model.Recommendations = type.Recommendations?.Select(r => r.ToModel()).ToList();
             model.Articles = type.Articles?.Select(a => a.ToModel(model)).ToList();

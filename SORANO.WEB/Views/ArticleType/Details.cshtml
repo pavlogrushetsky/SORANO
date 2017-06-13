@@ -1,0 +1,123 @@
+﻿@model ArticleTypeModel
+
+@{
+    ViewBag.Title = "SORANO - Детали типа артикулов";
+    ViewBag.Header = "Детали";
+    ViewBag.Description = "типа артикулов";
+    ViewBag.Icon = "fa fa-info-circle";
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li>
+            <a asp-controller="Home" asp-action="Index">
+                <i class="fa fa-home"></i>
+                Главная
+            </a>
+        </li>
+        <li>
+            <a asp-controller="Article" asp-action="Index">
+                <i class="fa fa-barcode"></i>
+                Артикулы
+            </a>
+        </li>
+        <li class="active">Детали типа артикулов</li>
+    </ul>
+}
+
+<div class="col-lg-12">
+    <div class="row">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.ID)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ID)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+            @if (!string.IsNullOrEmpty(Model.Description))
+            {
+                <dt>
+                    @Html.DisplayNameFor(model => model.Description)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Description)
+                </dd>
+            }    
+            @if (Model.ParentType != null)
+            {
+                <dt>
+                    @Html.DisplayNameFor(model => model.ParentType)
+                </dt>
+                <dd>
+                    <a asp-controller="ArticleType"
+                       asp-action="Details"
+                       asp-route-id="@Model.ParentType.ID"
+                       data-toggle="tooltip"
+                       data-placement="right"
+                       data-original-title="Просмотреть информацию о родительском типе артикулов"
+                       title="">
+                        @Html.DisplayFor(model => model.ParentType.Name)
+                    </a>
+                </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.ParentType.Description)
+                </dd>
+            }            
+            <dt>
+                @Html.DisplayNameFor(model => model.Created)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Created)               
+            </dd> 
+            <dd>
+                @Html.DisplayFor(model => model.CreatedBy)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Modified)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Modified)                
+            </dd>
+            <dd>
+                @Html.DisplayFor(model => model.ModifiedBy)
+            </dd>
+            @if (Model.Recommendations.Any())
+            {
+                <dt>
+                    @Html.DisplayNameFor(model => model.Recommendations)
+                </dt>
+                <dd>
+                    <table class="table table-striped">
+                        <tr>
+                            <th>Текст</th>
+                            <th>Значение</th>
+                        </tr>
+                        @foreach (var recommendation in Model.Recommendations)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => recommendation.Comment)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => recommendation.ValueString)
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </dd>
+            }
+        </dl>
+    </div>
+    <div class="row">
+        <a class="btn btn-default" asp-controller="Article" asp-action="Index">
+            <i class="fa fa-arrow-left"></i>
+            Назад
+        </a>
+    </div>
+</div>

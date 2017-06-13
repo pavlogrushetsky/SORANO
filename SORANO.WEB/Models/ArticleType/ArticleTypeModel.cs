@@ -34,5 +34,15 @@ namespace SORANO.WEB.Models.ArticleType
         public bool IsSelected { get; set; }
 
         public bool CanBeDeleted { get; set; }
+
+        [Display(Name = "Создан")]
+        public string Created { get; set; }
+
+        public string CreatedBy { get; set; }
+
+        [Display(Name = "Изменён")]
+        public string Modified { get; set; }
+
+        public string ModifiedBy { get; set; }
     }
 }
