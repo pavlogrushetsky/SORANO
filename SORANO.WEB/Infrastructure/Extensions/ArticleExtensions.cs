@@ -18,7 +18,8 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 Description = article.Description,
                 Barcode = article.Barcode,
                 Type = type,
-                Recommendations = article.Recommendations?.Select(r => r.ToModel()).ToList()
+                Recommendations = article.Recommendations?.Select(r => r.ToModel()).ToList(),
+                CanBeDeleted = !article.DeliveryItems.Any()
             };
         }
 

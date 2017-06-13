@@ -36,5 +36,7 @@ namespace SORANO.WEB.Models.Article
 
         [Display(Name = "Рекомендации")]
         public List<RecommendationModel> Recommendations { get; set; } = new List<RecommendationModel>();
+
+        public bool CanBeDeleted { get; set; }
     }
 }

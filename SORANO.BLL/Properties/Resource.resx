@@ -138,4 +138,10 @@
   <data name="ArticleNotFoundException" xml:space="preserve">
     <value>Артикул не найден.</value>
   </data>
+  <data name="ArticleCannotBeDeletedException" xml:space="preserve">
+    <value>Артикул не может быть удалён.</value>
+  </data>
+  <data name="ArticleWithSameBarcodeException" xml:space="preserve">
+    <value>Артикул с таким штрих-кодом уже существует.</value>
+  </data>
 </root>

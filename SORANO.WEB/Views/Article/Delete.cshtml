@@ -1,9 +1,9 @@
-﻿@model UserModel
+﻿@model ArticleModel
 
 @{
-    ViewBag.Title = "SORANO - Удаление пользователя";
+    ViewBag.Title = "SORANO - Удаление артикула";
     ViewBag.Header = "Удаление";
-    ViewBag.Description = "пользователя";
+    ViewBag.Description = "артикула";
     ViewBag.Icon = "fa fa-trash";
 }
 
@@ -16,12 +16,12 @@
             </a>
         </li>
         <li>
-            <a asp-controller="User" asp-action="List">
-                <i class="fa fa-users"></i>
-                Пользователи
+            <a asp-controller="Article" asp-action="Index">
+                <i class="fa fa-barcode"></i>
+                Артикулы
             </a>
         </li>
-        <li class="active">Удаление пользователя</li>
+        <li class="active">Удаление артикула</li>
     </ul>
 }
 
@@ -30,18 +30,18 @@
         <p class="@(Model.CanBeDeleted ? "text-warning" : "text-danger")">
             <i class="fa fa-fw fa-exclamation" aria-hidden="true"></i>
             @(Model.CanBeDeleted
-                ? "Вы уверены, что хотите удалить следующего пользователя?"
-                : "Пользователь не может быть удалён, так как у него есть связанные с ним действия или он является текущим пользователем в системе.")
+                ? "Вы уверены, что хотите удалить следующий артикул?"
+                : "Артикул не может быть удалён, так как у него есть связанные с ним поставки.")
         </p>
     </div>
-    <br/>
+    <br />
     <div class="row">
         <dl class="dl-horizontal">
             <dt>
-                @Html.DisplayNameFor(model => model.Login)
+                @Html.DisplayNameFor(model => model.Name)
             </dt>
             <dd>
-                @Html.DisplayFor(model => model.Login)
+                @Html.DisplayFor(model => model.Name)
             </dd>
             <dt>
                 @Html.DisplayNameFor(model => model.Description)
@@ -49,11 +49,29 @@
             <dd>
                 @Html.DisplayFor(model => model.Description)
             </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Producer)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Producer)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Code)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Code)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Barcode)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Barcode)
+            </dd>
         </dl>
         <form asp-action="Delete">
             <input type="hidden" asp-for="ID" />
             <div class="form-group">
-                <a class="btn btn-default" asp-controller="User" asp-action="List">
+                <a class="btn btn-default" asp-controller="Article" asp-action="Index">
                     <i class="fa fa-close"></i>
                     Отмена
                 </a>

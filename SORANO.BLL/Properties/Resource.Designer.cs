@@ -61,6 +61,15 @@ namespace SORANO.BLL.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Артикул не может быть удалён..
+        /// </summary>
+        internal static string ArticleCannotBeDeletedException {
+            get {
+                return ResourceManager.GetString("ArticleCannotBeDeletedException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Артикул не может быть null..
         /// </summary>
         internal static string ArticleCannotBeNullException {
@@ -111,6 +120,15 @@ namespace SORANO.BLL.Properties {
         internal static string ArticleTypeNotFoundException {
             get {
                 return ResourceManager.GetString("ArticleTypeNotFoundException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Артикул с таким штрих-кодом уже существует..
+        /// </summary>
+        internal static string ArticleWithSameBarcodeException {
+            get {
+                return ResourceManager.GetString("ArticleWithSameBarcodeException", resourceCulture);
             }
         }
         

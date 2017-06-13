@@ -25,7 +25,7 @@ namespace SORANO.BLL.Services
 
         public async Task<Article> GetAsync(int id)
         {
-            return await _unitOfWork.Get<Article>().GetAsync(a => a.ID == id, a => a.Type, a => a.Recommendations);
+            return await _unitOfWork.Get<Article>().GetAsync(a => a.ID == id, a => a.Type, a => a.Recommendations, a => a.DeliveryItems);
         }
 
         public async Task<Article> CreateAsync(Article article, int userId)
@@ -40,6 +40,13 @@ namespace SORANO.BLL.Services
             if (article.ID != 0)
             {
                 throw new ArgumentException(Resource.ArticleInvalidIdentifierException, nameof(article.ID));
+            }
+
+            var articlesWithSameBarcode = await _unitOfWork.Get<Article>().FindByAsync(a => a.Barcode.Equals(article.Barcode));
+
+            if (articlesWithSameBarcode.Any())
+            {
+                throw new Exception(Resource.ArticleWithSameBarcodeException);
             }
 
             // Get user by specified identifier
@@ -81,6 +88,13 @@ namespace SORANO.BLL.Services
                 throw new ArgumentException(Resource.ArticleInvalidIdentifierException, nameof(article.ID));
             }
 
+            var articlesWithSameBarcode = await _unitOfWork.Get<Article>().FindByAsync(a => a.Barcode.Equals(article.Barcode) && a.ID != article.ID);
+
+            if (articlesWithSameBarcode.Any())
+            {
+                throw new Exception(Resource.ArticleWithSameBarcodeException);
+            }
+
             // Get user by specified identifier
             var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
@@ -117,6 +131,22 @@ namespace SORANO.BLL.Services
             await _unitOfWork.SaveAsync();
 
             return updated;
+        }
+
+        public async Task DeleteAsync(int id, int userId)
+        {
+            var existentArticle = await _unitOfWork.Get<Article>().GetAsync(t => t.ID == id, t => t.DeliveryItems);
+
+            if (existentArticle.DeliveryItems.Any())
+            {
+                throw new Exception(Resource.ArticleCannotBeDeletedException);
+            }
+
+            existentArticle.UpdateDeletedFields(userId);
+
+            _unitOfWork.Get<Article>().Update(existentArticle);
+
+            await _unitOfWork.SaveAsync();
         }
     }
 }

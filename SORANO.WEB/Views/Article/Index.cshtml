@@ -140,7 +140,7 @@
                                         <a asp-controller="Article"
                                            asp-action="Delete"
                                            asp-route-id="@articles[i].ID"
-                                           class="btn btn-xs btn-danger"
+                                           class="btn btn-xs btn-danger @(articles[i].CanBeDeleted ? "" : "disabled")"
                                            data-toggle="tooltip"
                                            data-placement="bottom"
                                            data-original-title="Удалить артикул"

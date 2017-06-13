@@ -153,6 +153,10 @@ namespace SORANO.WEB.Controllers
                 // If failed
                 ModelState.AddModelError("", "Не удалось создать новый тип артикулов.");
                 return View(model);
+            }, (ex) => 
+            {
+                ModelState.AddModelError("", ex);
+                return View(model);
             });            
         }
 
@@ -188,6 +192,11 @@ namespace SORANO.WEB.Controllers
 
                 // If failed
                 ModelState.AddModelError("", "Не удалось обновить тип артикулов.");
+                ViewData["IsEdit"] = true;
+                return View("Create", model);
+            }, (ex) => 
+            {
+                ModelState.AddModelError("", ex);
                 ViewData["IsEdit"] = true;
                 return View("Create", model);
             });            
