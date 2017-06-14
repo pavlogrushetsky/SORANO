@@ -1,6 +1,11 @@
-﻿namespace SORANO.BLL.Services.Abstract
+﻿using SORANO.CORE.StockEntities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace SORANO.BLL.Services.Abstract
 {
     public interface ILocationTypeService
     {
+        Task<IEnumerable<LocationType>> GetAllAsync();
     }
 }
