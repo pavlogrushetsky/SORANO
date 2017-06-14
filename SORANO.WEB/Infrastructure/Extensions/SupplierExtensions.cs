@@ -10,9 +10,15 @@ namespace SORANO.WEB.Infrastructure.Extensions
         {
             return new SupplierModel
             {
+                ID = supplier.ID,
                 Name = supplier.Name,
                 Description = supplier.Description,
-                Recommendations = supplier.Recommendations?.Select(r => r.ToModel()).ToList()
+                Recommendations = supplier.Recommendations?.Select(r => r.ToModel()).ToList(),
+                CanBeDeleted = !supplier.Deliveries.Any(),
+                Created = supplier.CreatedDate.ToString("dd.MM.yyyy"),
+                Modified = supplier.ModifiedDate.ToString("dd.MM.yyyy"),
+                CreatedBy = supplier.CreatedByUser?.Login,
+                ModifiedBy = supplier.ModifiedByUser?.Login
             };
         }
 

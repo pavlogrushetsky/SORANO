@@ -21,5 +21,17 @@ namespace SORANO.WEB.Models.Supplier
 
         [Display(Name = "Рекомендации")]
         public List<RecommendationModel> Recommendations { get; set; } = new List<RecommendationModel>();
+
+        public bool CanBeDeleted { get; set; }
+
+        [Display(Name = "Создан")]
+        public string Created { get; set; }
+
+        public string CreatedBy { get; set; }
+
+        [Display(Name = "Изменён")]
+        public string Modified { get; set; }
+
+        public string ModifiedBy { get; set; }
     }
 }

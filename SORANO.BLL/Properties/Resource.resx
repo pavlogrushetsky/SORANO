@@ -144,4 +144,16 @@
   <data name="ArticleWithSameBarcodeException" xml:space="preserve">
     <value>Артикул с таким штрих-кодом уже существует.</value>
   </data>
+  <data name="SupplierCannotBeNullException" xml:space="preserve">
+    <value>Поставщик не может быть null.</value>
+  </data>
+  <data name="SupplierInvalidIdentifierException" xml:space="preserve">
+    <value>Недопустимое значение идентификатора поставщика.</value>
+  </data>
+  <data name="SupplierNotFoundException" xml:space="preserve">
+    <value>Поставщик не найден.</value>
+  </data>
+  <data name="SupplierCannotBeDeletedException" xml:space="preserve">
+    <value>Поставщик не может быть удалён.</value>
+  </data>
 </root>

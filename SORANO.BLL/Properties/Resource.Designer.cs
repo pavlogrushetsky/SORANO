@@ -133,6 +133,42 @@ namespace SORANO.BLL.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Поставщик не может быть удалён..
+        /// </summary>
+        internal static string SupplierCannotBeDeletedException {
+            get {
+                return ResourceManager.GetString("SupplierCannotBeDeletedException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Поставщик не может быть null..
+        /// </summary>
+        internal static string SupplierCannotBeNullException {
+            get {
+                return ResourceManager.GetString("SupplierCannotBeNullException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Недопустимое значение идентификатора поставщика..
+        /// </summary>
+        internal static string SupplierInvalidIdentifierException {
+            get {
+                return ResourceManager.GetString("SupplierInvalidIdentifierException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Поставщик не найден..
+        /// </summary>
+        internal static string SupplierNotFoundException {
+            get {
+                return ResourceManager.GetString("SupplierNotFoundException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Указанный пользователь не найден..
         /// </summary>
         internal static string UserNotFoundException {

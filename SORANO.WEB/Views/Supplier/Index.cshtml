@@ -89,7 +89,7 @@
                                        title="">
                                         <i class="fa fa-pencil-square" aria-hidden="true"></i>
                                     </a>
-                                    <a class="btn btn-xs btn-danger"
+                                    <a class="btn btn-xs btn-danger @(supplier.CanBeDeleted ? "" : "disabled")"
                                        data-toggle="tooltip"
                                        data-placement="bottom"
                                        data-original-title="Удалить поставщика"
