@@ -41,10 +41,10 @@ namespace SORANO.BLL.Services
                 throw new ObjectNotFoundException(Resource.UserNotFoundException);
             }
 
-            // Update created and modified fields for article
+            // Update created and modified fields for supplier
             supplier.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-            // Update created and modified fields for each article recommendation
+            // Update created and modified fields for each supplier recommendation
             foreach (var recommendation in supplier.Recommendations)
             {
                 recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);

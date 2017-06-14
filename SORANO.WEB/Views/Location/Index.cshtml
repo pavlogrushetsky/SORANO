@@ -158,10 +158,10 @@
             });
 
             locationsTable.columns().eq( 0 ).each( function ( colIdx ) {
-                $( 'input', $('th')[colIdx] ).on( 'keyup change', function () {
+                $('input', $('#locations-datatable th')[colIdx] ).on( 'keyup change', function () {
                     locationsTable
-                        .column( colIdx )
-                        .search( this.value )
+                        .column(colIdx)
+                        .search(this.value)
                         .draw();
                 });
             });
@@ -183,7 +183,7 @@
             });
 
             locationTypesTable.columns().eq(0).each(function (colIdx) {
-                $('input', $('th')[colIdx]).on('keyup change', function () {
+                $('input', $('#location-types-datatable th')[colIdx]).on('keyup change', function () {
                     locationTypesTable
                         .column(colIdx)
                         .search(this.value)
@@ -191,7 +191,7 @@
                 });
             });
 
-            $('.pagination').first().addClass('pagination-sm');
+            $('.pagination').addClass('pagination-sm');
         });
     </script>
 }

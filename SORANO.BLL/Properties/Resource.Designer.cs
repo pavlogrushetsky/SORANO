@@ -133,6 +133,33 @@ namespace SORANO.BLL.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Тип мест не может быть null..
+        /// </summary>
+        internal static string LocationTypeCannotBeNullException {
+            get {
+                return ResourceManager.GetString("LocationTypeCannotBeNullException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Недопустимое значение идентификатора типа мест..
+        /// </summary>
+        internal static string LocationTypeInvalidIdentifierException {
+            get {
+                return ResourceManager.GetString("LocationTypeInvalidIdentifierException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Тип мест с таким названием уже существует..
+        /// </summary>
+        internal static string LocationTypeWithSameNameException {
+            get {
+                return ResourceManager.GetString("LocationTypeWithSameNameException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Поставщик не может быть удалён..
         /// </summary>
         internal static string SupplierCannotBeDeletedException {

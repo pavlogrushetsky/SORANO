@@ -156,4 +156,13 @@
   <data name="SupplierCannotBeDeletedException" xml:space="preserve">
     <value>Поставщик не может быть удалён.</value>
   </data>
+  <data name="LocationTypeCannotBeNullException" xml:space="preserve">
+    <value>Тип мест не может быть null.</value>
+  </data>
+  <data name="LocationTypeInvalidIdentifierException" xml:space="preserve">
+    <value>Недопустимое значение идентификатора типа мест.</value>
+  </data>
+  <data name="LocationTypeWithSameNameException" xml:space="preserve">
+    <value>Тип мест с таким названием уже существует.</value>
+  </data>
 </root>
