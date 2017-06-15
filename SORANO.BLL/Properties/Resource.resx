@@ -165,4 +165,7 @@
   <data name="LocationTypeWithSameNameException" xml:space="preserve">
     <value>Тип мест с таким названием уже существует.</value>
   </data>
+  <data name="LocationTypeNotFoundException" xml:space="preserve">
+    <value>Тип мест не найден.</value>
+  </data>
 </root>

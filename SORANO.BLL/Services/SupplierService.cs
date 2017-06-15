@@ -87,7 +87,7 @@ namespace SORANO.BLL.Services
                 throw new ArgumentNullException(nameof(supplier), Resource.SupplierCannotBeNullException);
             }
 
-            // Identifier of new supplier must be > 0
+            // Identifier of supplier must be > 0
             if (supplier.ID <= 0)
             {
                 throw new ArgumentException(Resource.SupplierInvalidIdentifierException, nameof(supplier.ID));

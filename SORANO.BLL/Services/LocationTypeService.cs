@@ -23,6 +23,11 @@ namespace SORANO.BLL.Services
             return await _unitOfWork.Get<LocationType>().GetAllAsync(l => l.Recommendations, l => l.Locations);
         }
 
+        public async Task<LocationType> GetAsync(int id)
+        {
+            return await _unitOfWork.Get<LocationType>().GetAsync(l => l.ID == id, l => l.Recommendations, l => l.Locations);
+        }
+
         public async Task<LocationType> CreateAsync(LocationType locationType, int userId)
         {
             // Check passed location type
@@ -67,6 +72,61 @@ namespace SORANO.BLL.Services
             await _unitOfWork.SaveAsync();
 
             return saved;
+        }
+
+        public async Task<LocationType> UpdateAsync(LocationType locationType, int userId)
+        {
+            // Check passed location type
+            if (locationType == null)
+            {
+                throw new ArgumentNullException(nameof(locationType), Resource.LocationTypeCannotBeNullException);
+            }
+
+            // Identifier of location type must be > 0
+            if (locationType.ID <= 0)
+            {
+                throw new ArgumentException(Resource.LocationTypeInvalidIdentifierException, nameof(locationType.ID));
+            }
+
+            var locationTypes = await _unitOfWork.Get<LocationType>().FindByAsync(t => t.Name.Equals(locationType.Name) && t.ID != locationType.ID);
+
+            if (locationTypes.Any())
+            {
+                throw new Exception(Resource.LocationTypeWithSameNameException);
+            }
+
+            // Get user by specified identifier
+            var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
+
+            // Check user
+            if (user == null)
+            {
+                throw new ObjectNotFoundException(Resource.UserNotFoundException);
+            }
+
+            // Get existent location type by identifier
+            var existentLocationType = await _unitOfWork.Get<LocationType>().GetAsync(t => t.ID == locationType.ID);
+
+            // Check existent location type
+            if (existentLocationType == null)
+            {
+                throw new ObjectNotFoundException(Resource.LocationTypeNotFoundException);
+            }
+
+            // Update fields
+            existentLocationType.Name = locationType.Name;
+            existentLocationType.Description = locationType.Description;
+
+            // Update modified fields for existent location type
+            existentLocationType.UpdateModifiedFields(userId);
+
+            UpdateRecommendations(locationType, existentLocationType, userId);
+
+            var updated = _unitOfWork.Get<LocationType>().Update(existentLocationType);
+
+            await _unitOfWork.SaveAsync();
+
+            return updated;
         }
     }
 }

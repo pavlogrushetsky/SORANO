@@ -99,7 +99,7 @@ namespace SORANO.WEB.Controllers
                 // If failed
                 ModelState.AddModelError("", "Не удалось создать нового поставщика.");
                 return View(model);
-            }, (ex) =>
+            }, ex =>
             {
                 ModelState.AddModelError("", ex);
                 return View(model);
@@ -140,7 +140,7 @@ namespace SORANO.WEB.Controllers
                 ModelState.AddModelError("", "Не удалось обновить поставщика.");
                 ViewData["IsEdit"] = true;
                 return View("Create", model);
-            }, (ex) =>
+            }, ex =>
             {
                 ModelState.AddModelError("", ex);
                 ViewData["IsEdit"] = true;
@@ -158,10 +158,7 @@ namespace SORANO.WEB.Controllers
                 await _supplierService.DeleteAsync(model.ID, currentUser.ID);
 
                 return RedirectToAction("Index", "Supplier");
-            }, (ex) =>
-            {
-                return RedirectToAction("Index", "Supplier");
-            });
+            }, ex => RedirectToAction("Index", "Supplier"));
         }
 
         [HttpPost]
