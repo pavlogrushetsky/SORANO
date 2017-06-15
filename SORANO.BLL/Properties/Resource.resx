@@ -168,4 +168,7 @@
   <data name="LocationTypeNotFoundException" xml:space="preserve">
     <value>Тип мест не найден.</value>
   </data>
+  <data name="LocationTypeCannotBeDeletedException" xml:space="preserve">
+    <value>Тип мест не может быть удалён.</value>
+  </data>
 </root>

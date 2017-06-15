@@ -28,6 +28,18 @@ namespace SORANO.BLL.Services
             return await _unitOfWork.Get<LocationType>().GetAsync(l => l.ID == id, l => l.Recommendations, l => l.Locations);
         }
 
+        public async Task<LocationType> GetIncludeAllAsync(int id)
+        {
+            var locationType = await _unitOfWork.Get<LocationType>().GetAsync(l => l.ID == id,
+                l => l.Attachments,
+                l => l.CreatedByUser,
+                l => l.Locations,
+                l => l.ModifiedByUser,
+                l => l.Recommendations);
+
+            return locationType;
+        }
+
         public async Task<LocationType> CreateAsync(LocationType locationType, int userId)
         {
             // Check passed location type
@@ -127,6 +139,22 @@ namespace SORANO.BLL.Services
             await _unitOfWork.SaveAsync();
 
             return updated;
+        }
+
+        public async Task DeleteAsync(int id, int userId)
+        {
+            var existentLocationType = await _unitOfWork.Get<LocationType>().GetAsync(t => t.ID == id, t => t.Locations);
+
+            if (existentLocationType.Locations.Any())
+            {
+                throw new Exception(Resource.LocationTypeCannotBeDeletedException);
+            }
+
+            existentLocationType.UpdateDeletedFields(userId);
+
+            _unitOfWork.Get<LocationType>().Update(existentLocationType);
+
+            await _unitOfWork.SaveAsync();
         }
     }
 }

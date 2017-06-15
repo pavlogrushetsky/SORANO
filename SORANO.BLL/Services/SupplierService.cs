@@ -69,14 +69,14 @@ namespace SORANO.BLL.Services
 
         public async Task<Supplier> GetIncludeAllAsync(int id)
         {
-            var article = await _unitOfWork.Get<Supplier>().GetAsync(s => s.ID == id,
+            var supplier = await _unitOfWork.Get<Supplier>().GetAsync(s => s.ID == id,
                 s => s.Attachments,
                 s => s.CreatedByUser,
                 s => s.Deliveries,
                 s => s.ModifiedByUser,
                 s => s.Recommendations);
 
-            return article;
+            return supplier;
         }
 
         public async Task<Supplier> UpdateAsync(Supplier supplier, int userId)

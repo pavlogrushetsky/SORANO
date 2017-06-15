@@ -133,6 +133,15 @@ namespace SORANO.BLL.Properties {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Тип мест не может быть удалён..
+        /// </summary>
+        internal static string LocationTypeCannotBeDeletedException {
+            get {
+                return ResourceManager.GetString("LocationTypeCannotBeDeletedException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Тип мест не может быть null..
         /// </summary>
         internal static string LocationTypeCannotBeNullException {

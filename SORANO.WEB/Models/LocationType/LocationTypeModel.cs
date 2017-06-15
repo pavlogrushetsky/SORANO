@@ -1,6 +1,7 @@
 ﻿using SORANO.WEB.Models.Recommendation;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using SORANO.WEB.Models.Location;
 
 namespace SORANO.WEB.Models.LocationType
 {
@@ -21,6 +22,9 @@ namespace SORANO.WEB.Models.LocationType
 
         [Display(Name = "Рекомендации")]
         public List<RecommendationModel> Recommendations { get; set; } = new List<RecommendationModel>();
+
+        [Display(Name = "Места")]
+        public List<LocationModel> Locations { get; set; } = new List<LocationModel>();
 
         public bool CanBeDeleted { get; set; }
 

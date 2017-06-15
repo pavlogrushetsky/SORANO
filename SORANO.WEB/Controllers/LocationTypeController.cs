@@ -38,6 +38,22 @@ namespace SORANO.WEB.Controllers
             return View("Create", model);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var locationType = await _locationTypeService.GetAsync(id);
+
+            return View(locationType.ToModel());
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            var locationType = await _locationTypeService.GetIncludeAllAsync(id);
+
+            return View(locationType.ToModel());
+        }
+
         #endregion
 
         #region POST Actions
@@ -121,6 +137,19 @@ namespace SORANO.WEB.Controllers
                 ViewData["IsEdit"] = true;
                 return View("Create", model);
             });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(LocationTypeModel model)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var currentUser = await GetCurrentUser();
+
+                await _locationTypeService.DeleteAsync(model.ID, currentUser.ID);
+
+                return RedirectToAction("Index", "Location");
+            }, ex => RedirectToAction("Index", "Location"));
         }
 
         [HttpPost]
