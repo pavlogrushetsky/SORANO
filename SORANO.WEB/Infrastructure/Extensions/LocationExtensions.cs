@@ -29,7 +29,8 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 ID = model.ID,
                 Name = model.Name,
                 Comment = model.Comment,
-                Recommendations = model.Recommendations.Select(r => r.ToEntity()).ToList()
+                Recommendations = model.Recommendations.Select(r => r.ToEntity()).ToList(),
+                TypeID = int.Parse(model.Type)
             };
         }
     }

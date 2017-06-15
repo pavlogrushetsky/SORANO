@@ -17,6 +17,6 @@ namespace SORANO.WEB.Models.LocationType
         public string Description { get; set; }
 
         [Display(Name = "Места")]
-        public List<LocationModel> Locations { get; set; } = new List<LocationModel>();       
+        public List<LocationModel> Locations { get; set; } = new List<LocationModel>();               
     }
 }

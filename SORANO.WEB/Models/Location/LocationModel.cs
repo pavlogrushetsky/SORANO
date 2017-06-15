@@ -13,5 +13,8 @@ namespace SORANO.WEB.Models.Location
         [Display(Name = "Коментарий")]
         [MaxLength(1000, ErrorMessage = "Длина коментария не должна превышать 1000 символов")]
         public string Comment { get; set; }
+
+        [Display(Name = "Тип")]
+        public string Type { get; set; }
     }
 }

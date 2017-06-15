@@ -171,4 +171,10 @@
   <data name="LocationTypeCannotBeDeletedException" xml:space="preserve">
     <value>Тип мест не может быть удалён.</value>
   </data>
+  <data name="LocationCannotBeNullException" xml:space="preserve">
+    <value>Место не может быть null.</value>
+  </data>
+  <data name="LocationInvalidIdentifierException" xml:space="preserve">
+    <value>Недопустимое значение идентификатора места.</value>
+  </data>
 </root>

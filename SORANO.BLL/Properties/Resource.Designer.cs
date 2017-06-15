@@ -133,6 +133,24 @@ namespace SORANO.BLL.Properties {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Место не может быть null..
+        /// </summary>
+        internal static string LocationCannotBeNullException {
+            get {
+                return ResourceManager.GetString("LocationCannotBeNullException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Недопустимое значение идентификатора места..
+        /// </summary>
+        internal static string LocationInvalidIdentifierException {
+            get {
+                return ResourceManager.GetString("LocationInvalidIdentifierException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Тип мест не может быть удалён..
         /// </summary>
         internal static string LocationTypeCannotBeDeletedException {
