@@ -1,15 +1,10 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using SORANO.WEB.Models.ArticleType;
-using SORANO.WEB.Models.Recommendation;
 
 namespace SORANO.WEB.Models.Article
 {
-    public class ArticleModel
-    {
-        [Display(Name = "ID")]
-        public int ID { get; set; }       
-
+    public class ArticleModel : EntityBaseModel
+    {     
         [Display(Name = "Название")]
         [Required(ErrorMessage = "Необходимо указать название артикула")]
         [MaxLength(500, ErrorMessage = "Длина названия не должна превышать 500 символов")]
@@ -34,20 +29,5 @@ namespace SORANO.WEB.Models.Article
 
         [Display(Name = "Тип артикулов")]
         public ArticleTypeModel Type { get; set; }
-
-        [Display(Name = "Рекомендации")]
-        public List<RecommendationModel> Recommendations { get; set; } = new List<RecommendationModel>();
-
-        public bool CanBeDeleted { get; set; }
-
-        [Display(Name = "Создан")]
-        public string Created { get; set; }
-
-        public string CreatedBy { get; set; }
-
-        [Display(Name = "Изменён")]
-        public string Modified { get; set; }
-
-        public string ModifiedBy { get; set; }
     }
 }

@@ -1,14 +1,9 @@
-﻿using SORANO.WEB.Models.Recommendation;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SORANO.WEB.Models.Location
 {
-    public class LocationModel
+    public class LocationModel : EntityBaseModel
     {
-        [Display(Name = "ID")]
-        public int ID { get; set; }
-
         [Display(Name = "Название")]
         [Required(ErrorMessage = "Необходимо указать название места")]
         [MaxLength(200, ErrorMessage = "Длина названия не должна превышать 200 символов")]
@@ -18,20 +13,5 @@ namespace SORANO.WEB.Models.Location
         [Display(Name = "Коментарий")]
         [MaxLength(1000, ErrorMessage = "Длина коментария не должна превышать 1000 символов")]
         public string Comment { get; set; }
-
-        [Display(Name = "Рекомендации")]
-        public List<RecommendationModel> Recommendations { get; set; } = new List<RecommendationModel>();
-
-        public bool CanBeDeleted { get; set; }
-
-        [Display(Name = "Создано")]
-        public string Created { get; set; }
-
-        public string CreatedBy { get; set; }
-
-        [Display(Name = "Изменёно")]
-        public string Modified { get; set; }
-
-        public string ModifiedBy { get; set; }
     }
 }
