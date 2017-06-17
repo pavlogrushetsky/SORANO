@@ -25,6 +25,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <None Remove="Properties\PublishProfiles\FolderProfile1.pubxml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="wwwroot\css\site.css" />
   </ItemGroup>
   <ItemGroup>

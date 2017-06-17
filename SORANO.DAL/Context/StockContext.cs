@@ -20,7 +20,10 @@ namespace SORANO.DAL.Context
         /// <param name="connectionString">Connection string</param>
         public StockContext(string connectionString) : base(connectionString)
         {
+
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<StockContext, Configuration>(true));
+
+            Database.Initialize(true);
         }
 
         /// <summary>
@@ -28,7 +31,10 @@ namespace SORANO.DAL.Context
         /// </summary>
         public StockContext() : base("SORANO")
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<StockContext, Configuration>("SORANO"));           
+
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<StockContext, Configuration>("SORANO"));
+
+            Database.Initialize(true);
         }
 
         /// <summary>
