@@ -14,18 +14,8 @@
 
 @section Breadcrumb {
     <ul class="breadcrumb">
-        <li>
-            <a asp-controller="Home" asp-action="Index">
-                <i class="fa fa-home"></i>
-                Главная
-            </a>
-        </li>
-        <li>
-            <a asp-controller="Article" asp-action="Index">
-                <i class="fa fa-barcode"></i>
-                Артикулы
-            </a>
-        </li>
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li><a asp-controller="Article" asp-action="Index">Артикулы</a></li>
         <li class="active">@title типа артикулов</li>
     </ul>
 }

@@ -14,12 +14,7 @@
 
 @section Breadcrumb {
     <ul class="breadcrumb">
-        <li>
-            <a asp-controller="Home" asp-action="Index">
-                <i class="fa fa-home"></i>
-                Главная
-            </a>
-        </li>
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
         <li class="active">Артикулы</li>
     </ul>
 }
@@ -48,7 +43,15 @@
             <div class="tab-pane fade active in" id="article-tab-tree">
                 <div class="panel panel-primary" style="border-radius: 0;">
                     <div class="panel-heading" style="border-top-left-radius: 0; border-top-right-radius: 0;">
-                        <a class="btn btn-default btn-xs pull-right" asp-controller="ArticleType" asp-action="Create">Добавить новый тип артикулов</a>
+                        <a class="btn btn-default btn-xs pull-right"
+                           asp-controller="ArticleType"
+                           asp-action="Create"
+                           data-toggle="tooltip"
+                           data-placement="right"
+                           data-original-title="Добавить тип артикулов"
+                           title="">
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                        </a>
                         <div class="clearfix"></div>
                     </div>
                     <div class="panel-body">
@@ -82,7 +85,15 @@
             <div class="tab-pane fade" id="article-tab-table">
                 <div class="panel panel-primary" style="border-radius: 0;">
                     <div class="panel-heading" style="border-top-left-radius: 0; border-top-right-radius: 0;">
-                        <a class="btn btn-default btn-xs pull-right" asp-controller="Article" asp-action="Create">Добавить новый артикул</a>
+                        <a class="btn btn-default btn-xs pull-right"
+                           asp-controller="Article"
+                           asp-action="Create"
+                           data-toggle="tooltip"
+                           data-placement="right"
+                           data-original-title="Добавить артикул"
+                           title="">
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                        </a>
                         <div class="clearfix"></div>
                     </div>
                     <div class="panel-body">

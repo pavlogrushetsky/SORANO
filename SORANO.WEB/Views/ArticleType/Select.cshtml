@@ -9,32 +9,16 @@
 
 @section Breadcrumb {
     <ul class="breadcrumb">
-        <li>
-            <a asp-controller="Home" asp-action="Index">
-                <i class="fa fa-home"></i>
-                Главная
-            </a>
-        </li>
-        <li>
-            <a asp-controller="Article" asp-action="Index">
-                <i class="fa fa-barcode"></i>
-                Артикулы
-            </a>
-        </li>
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li><a asp-controller="Article" asp-action="Index">Артикулы</a></li>
         <li>
             @if (Model.ArticleType != null)
             {
-                <a asp-controller="ArticleType" asp-action="Create">
-                    <i class="fa fa-tag"></i>
-                    Создание типа артикулов
-                </a>
+                <a asp-controller="ArticleType" asp-action="Create">Создание типа артикулов</a>
             }
             else
             {
-                <a asp-controller="Article" asp-action="Create">
-                    <i class="fa fa-barcode"></i>
-                    Создание артикула
-                </a>
+                <a asp-controller="Article" asp-action="Create">Создание артикула</a>
             }
         </li>
         <li class="active">Назначение родительского типа</li>

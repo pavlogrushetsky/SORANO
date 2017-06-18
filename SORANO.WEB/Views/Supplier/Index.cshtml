@@ -14,12 +14,7 @@
 
 @section Breadcrumb {
     <ul class="breadcrumb">
-        <li>
-            <a asp-controller="Home" asp-action="Index">
-                <i class="fa fa-home"></i>
-                Главная
-            </a>
-        </li>
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
         <li class="active">Поставщики</li>
     </ul>
 }
@@ -30,8 +25,14 @@
             <div class="panel-heading">
                 Таблица поставщиков
                 <span class="badge" style="margin-left: 5px;">@Model.Count</span>
-                <a class="btn btn-default btn-xs pull-right" asp-controller="Supplier" asp-action="Create">
-                    Создать поставщика
+                <a class="btn btn-default btn-xs pull-right"
+                   asp-controller="Supplier"
+                   asp-action="Create"
+                   data-toggle="tooltip"
+                   data-placement="right"
+                   data-original-title="Добавить поставщика"
+                   title="">
+                    <i class="fa fa-plus" aria-hidden="true"></i>
                 </a>
                 <div class="clearfix"></div>
             </div>

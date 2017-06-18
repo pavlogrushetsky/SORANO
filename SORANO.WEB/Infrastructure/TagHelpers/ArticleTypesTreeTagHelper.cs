@@ -19,15 +19,22 @@ namespace SORANO.WEB.Infrastructure.TagHelpers
         {
             foreach (var model in Elements)
             {
-                if (model.ParentType != null)
+                if (model.ParentType == null)
                 {
-                    Elements.Single(e => e.ID == model.ParentType.ID).ChildTypes.Add(model);
+                    continue;
                 }
+
+                var el = Elements.Single(e => e.ID == model.ParentType.ID).ChildTypes.SingleOrDefault(i =>i.ID == model.ID);
+                Elements.Single(e => e.ID == model.ParentType.ID).ChildTypes.Remove(el);
+                Elements.Single(e => e.ID == model.ParentType.ID).ChildTypes.Add(model);
             }
 
             Elements.ForEach(e =>
             {
-                e.ParentType?.ChildTypes.Add(e);
+                if (e.ParentType != null && e.ParentType.ChildTypes.All(c => c.ID != e.ID))
+                {
+                    e.ParentType.ChildTypes.Add(e);
+                }                
             });
 
             output.TagName = "ul";
