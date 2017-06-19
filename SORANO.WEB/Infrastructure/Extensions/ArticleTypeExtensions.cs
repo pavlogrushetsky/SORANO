@@ -14,7 +14,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 ID = type.ID,
                 Name = type.Name,
                 Description = type.Description,
-                CanBeDeleted = !type.Articles.Any() && !type.IsDeleted,      
+                CanBeDeleted = !type.Articles.Any(a => !a.IsDeleted) && !type.IsDeleted,      
                 IsDeleted = type.IsDeleted,
                 Created = type.CreatedDate.ToString("dd.MM.yyyy"),
                 Modified = type.ModifiedDate.ToString("dd.MM.yyyy"),

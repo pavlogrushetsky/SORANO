@@ -1,6 +1,6 @@
 ﻿@model ArticleTypeModel
 
-<div class="panel panel-default">
+<div class="panel panel-info">
     <div class="panel-heading">
         <h3 class="panel-title">Краткая информация о типе артикулов</h3>
     </div>
@@ -12,35 +12,31 @@
             <dd>
                 @Html.DisplayFor(model => model.Name)
             </dd>
-            <dt>
-                @Html.DisplayNameFor(model => model.Description)                
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.Description)
-            </dd>
+            @if (!string.IsNullOrEmpty(Model.Description))
+            {
+                <dt>
+                    @Html.DisplayNameFor(model => model.Description)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Description)
+                </dd>
+            }            
+            @if (Model.IsDeleted)
+            {
+                <dt>
+                    @Html.DisplayNameFor(model => model.IsDeleted)
+                </dt>
+                <dd>
+                    <span class="label label-danger">Удалён</span>
+                </dd>
+            }
             @if (Model.ChildTypes.Any())
             {
                 <dt>
                     @Html.DisplayNameFor(model => model.ChildTypes)
                 </dt>
                 <dd>
-                    <table class="table">
-                        <tr>
-                            <th>Название</th>
-                            <th>Описание</th>
-                        </tr>
-                        @foreach (var child in Model.ChildTypes)
-                        {
-                            <tr>
-                                <td>
-                                    @Html.DisplayFor(modelItem => child.Name)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => child.Description)
-                                </td>
-                            </tr>
-                        }
-                    </table>
+                    <span class="badge">@Model.ChildTypes.Count</span>
                 </dd>
             }        
             @if (Model.Articles.Any())
@@ -49,23 +45,7 @@
                     @Html.DisplayNameFor(model => model.Articles)                    
                 </dt>
                 <dd>
-                    <table class="table">
-                        <tr>
-                            <th>Название</th>
-                            <th>Описание</th>
-                        </tr>
-                        @foreach (var article in Model.Articles)
-                        {
-                            <tr>
-                                <td>
-                                    @Html.DisplayFor(modelItem => article.Name)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => article.Description)
-                                </td>
-                            </tr>
-                        }
-                    </table>
+                    <span class="badge">@Model.Articles.Count</span>
                 </dd>
             }  
             @if (Model.Recommendations.Any())
@@ -74,29 +54,13 @@
                     @Html.DisplayNameFor(model => model.Recommendations)                    
                 </dt>
                 <dd>
-                    <table class="table">
-                        <tr>
-                            <th>Текст</th>
-                            <th>Значение</th>
-                        </tr>
-                        @foreach (var recommendation in Model.Recommendations)
-                        {
-                            <tr>
-                                <td>
-                                    @Html.DisplayFor(modelItem => recommendation.Comment)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => recommendation.ValueString)
-                                </td>
-                            </tr>
-                        }
-                    </table>
+                    <span class="badge">@Model.Recommendations.Count</span>
                 </dd>
             }
         </dl>        
     </div>   
     <div class="panel-footer">
-        <a class="btn btn-default"
+        <a class="btn btn-sm btn-default"
            asp-controller="ArticleType"
            asp-action="Details"
            asp-route-id="@Model.ID"
@@ -106,25 +70,31 @@
            title="">
             <i class="fa fa-info-circle"></i>
         </a>
-        <a class="btn btn-default" 
-           asp-controller="ArticleType" 
-           asp-action="Update"
-           asp-route-id="@Model.ID"
-           data-toggle="tooltip"
-           data-placement="bottom"
-           data-original-title="Редактировать тип артикулов"
-           title="">
-            <i class="fa fa-pencil-square"></i>
-        </a>
-        <a class="btn btn-danger @(Model.CanBeDeleted ? "" : "disabled")" 
-           asp-controller="ArticleType" 
-           asp-action="Delete" 
-           asp-route-id="@Model.ID"
-           data-toggle="tooltip"
-           data-placement="bottom"
-           data-original-title="Удалить тип артикулов"
-           title="">
-            <i class="fa fa-trash"></i>
-        </a>
+        @if (!Model.IsDeleted)
+        {
+            <a class="btn btn-sm btn-default"
+               asp-controller="ArticleType"
+               asp-action="Update"
+               asp-route-id="@Model.ID"
+               data-toggle="tooltip"
+               data-placement="bottom"
+               data-original-title="Редактировать тип артикулов"
+               title="">
+                <i class="fa fa-pencil-square"></i>
+            </a>
+        }
+        @if (Model.CanBeDeleted)
+        {
+            <a class="btn btn-sm btn-danger"
+                asp-controller="ArticleType"
+                asp-action="Delete"
+                asp-route-id="@Model.ID"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                data-original-title="Удалить тип артикулов"
+                title="">
+                <i class="fa fa-trash"></i>
+            </a>
+        }        
     </div>
 </div>
