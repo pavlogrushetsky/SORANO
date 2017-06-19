@@ -101,6 +101,24 @@
             <dd>
                 @Html.DisplayFor(model => model.ModifiedBy)
             </dd>
+            @if (Model.IsDeleted)
+            {
+                <dt>
+                    @Html.DisplayNameFor(model => model.IsDeleted)
+                </dt>
+                <dd>
+                    <span class="label label-danger">Удалён</span>
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Deleted)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Deleted)
+                </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.DeletedBy)
+                </dd>
+            }
             @if (Model.Recommendations.Any())
             {
                 <dt>

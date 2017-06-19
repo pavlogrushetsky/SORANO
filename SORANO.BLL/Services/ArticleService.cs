@@ -18,27 +18,21 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<IEnumerable<Article>> GetAllWithTypeAsync()
+        public async Task<IEnumerable<Article>> GetAllAsync(bool withDeleted)
         {
-            return await _unitOfWork.Get<Article>().GetAllAsync(a => a.Type);          
+            var articles = await _unitOfWork.Get<Article>().GetAllAsync();
+
+            if (!withDeleted)
+            {
+                return articles.Where(a => !a.IsDeleted);
+            }
+
+            return articles;
         }
 
         public async Task<Article> GetAsync(int id)
         {
-            return await _unitOfWork.Get<Article>().GetAsync(a => a.ID == id, a => a.Type, a => a.Recommendations, a => a.DeliveryItems);
-        }
-
-        public async Task<Article> GetIncludeAllAsync(int id)
-        {
-            var article = await _unitOfWork.Get<Article>().GetAsync(a => a.ID == id, 
-                a => a.Attachments,
-                a => a.CreatedByUser,
-                a => a.DeliveryItems,
-                a => a.ModifiedByUser,
-                a => a.Recommendations,
-                a => a.Type);
-
-            return article;
+            return await _unitOfWork.Get<Article>().GetAsync(a => a.ID == id);
         }
 
         public async Task<Article> CreateAsync(Article article, int userId)
@@ -148,7 +142,7 @@ namespace SORANO.BLL.Services
 
         public async Task DeleteAsync(int id, int userId)
         {
-            var existentArticle = await _unitOfWork.Get<Article>().GetAsync(t => t.ID == id, t => t.DeliveryItems);
+            var existentArticle = await _unitOfWork.Get<Article>().GetAsync(t => t.ID == id);
 
             if (existentArticle.DeliveryItems.Any())
             {

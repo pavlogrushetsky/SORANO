@@ -20,22 +20,17 @@ namespace SORANO.BLL.Services
 
         public async Task<IEnumerable<LocationType>> GetAllAsync()
         {
-            return await _unitOfWork.Get<LocationType>().GetAllAsync(l => l.Recommendations, l => l.Locations);
+            return await _unitOfWork.Get<LocationType>().GetAllAsync();
         }
 
         public async Task<LocationType> GetAsync(int id)
         {
-            return await _unitOfWork.Get<LocationType>().GetAsync(l => l.ID == id, l => l.Recommendations, l => l.Locations);
+            return await _unitOfWork.Get<LocationType>().GetAsync(l => l.ID == id);
         }
 
         public async Task<LocationType> GetIncludeAllAsync(int id)
         {
-            var locationType = await _unitOfWork.Get<LocationType>().GetAsync(l => l.ID == id,
-                l => l.Attachments,
-                l => l.CreatedByUser,
-                l => l.Locations,
-                l => l.ModifiedByUser,
-                l => l.Recommendations);
+            var locationType = await _unitOfWork.Get<LocationType>().GetAsync(l => l.ID == id);
 
             return locationType;
         }
@@ -143,7 +138,7 @@ namespace SORANO.BLL.Services
 
         public async Task DeleteAsync(int id, int userId)
         {
-            var existentLocationType = await _unitOfWork.Get<LocationType>().GetAsync(t => t.ID == id, t => t.Locations);
+            var existentLocationType = await _unitOfWork.Get<LocationType>().GetAsync(t => t.ID == id);
 
             if (existentLocationType.Locations.Any())
             {

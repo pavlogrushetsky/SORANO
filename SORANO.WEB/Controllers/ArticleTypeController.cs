@@ -66,7 +66,7 @@ namespace SORANO.WEB.Controllers
                 return Redirect(returnUrl);
             }
 
-            var types = await _articleTypeService.GetAllAsync();
+            var types = await _articleTypeService.GetAllAsync(false);
 
             var model = new ArticleTypeSelectModel
             {
@@ -107,7 +107,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var articleType = await _articleTypeService.GetIncludeAllAsync(id);
+            var articleType = await _articleTypeService.GetAsync(id);
 
             return View(articleType.ToModel());
         }

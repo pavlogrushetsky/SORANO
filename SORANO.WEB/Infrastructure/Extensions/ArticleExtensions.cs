@@ -19,11 +19,14 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 Barcode = article.Barcode,                
                 Type = type,
                 Recommendations = article.Recommendations?.Select(r => r.ToModel()).ToList(),
-                CanBeDeleted = !article.DeliveryItems.Any(),
+                CanBeDeleted = !article.DeliveryItems.Any() && !article.IsDeleted,
+                IsDeleted = article.IsDeleted,
                 Created = article.CreatedDate.ToString("dd.MM.yyyy"),
                 Modified = article.ModifiedDate.ToString("dd.MM.yyyy"),
+                Deleted = article.DeletedDate?.ToString("dd.MM.yyyy"),
                 CreatedBy = article.CreatedByUser?.Login,
-                ModifiedBy = article.ModifiedByUser?.Login
+                ModifiedBy = article.ModifiedByUser?.Login,
+                DeletedBy = article.DeletedByUser?.Login
             };
         }
 

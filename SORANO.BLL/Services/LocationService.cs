@@ -19,7 +19,7 @@ namespace SORANO.BLL.Services
 
         public async Task<IEnumerable<Location>> GetAllAsync()
         {
-            return await _unitOfWork.Get<Location>().GetAllAsync(l => l.Recommendations, l => l.Storages);
+            return await _unitOfWork.Get<Location>().GetAllAsync();
         }
 
         public async Task<Location> CreateAsync(Location location, int userId)

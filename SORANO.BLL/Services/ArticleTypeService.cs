@@ -18,37 +18,27 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<IEnumerable<ArticleType>> GetAllWithArticlesAsync()
+        public async Task<IEnumerable<ArticleType>> GetAllAsync(bool withDeleted)
         {
-            var articleTypes = await _unitOfWork.Get<ArticleType>().GetAllAsync(t => t.Articles, t => t.ParentType, t => t.Recommendations);
+            var articleTypes = await _unitOfWork.Get<ArticleType>().GetAllAsync();
+
+            if (!withDeleted)
+            {
+                var filtered = articleTypes.Where(t => !t.IsDeleted).ToList();
+                filtered.ForEach(t =>
+                {
+                    t.ChildTypes = t.ChildTypes.Where(c => !c.IsDeleted).ToList();
+                    t.Articles = t.Articles.Where(a => !a.IsDeleted).ToList();
+                });
+                return filtered;
+            }
 
             return articleTypes;
         }
 
-        public async Task<IEnumerable<ArticleType>> GetAllAsync()
-        {
-            var articleTypes = await _unitOfWork.Get<ArticleType>().GetAllAsync();
-
-            return articleTypes;         
-        }
-
         public async Task<ArticleType> GetAsync(int id)
         {
-            return await _unitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id, t => t.Articles, t => t.ParentType, t => t.Recommendations);          
-        }
-
-        public async Task<ArticleType> GetIncludeAllAsync(int id)
-        {
-            var articleType = await _unitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id,
-                t => t.Attachments,
-                t => t.CreatedByUser,
-                t => t.ModifiedByUser,
-                t => t.Recommendations,
-                t => t.ChildTypes,
-                t => t.Articles,
-                t => t.ParentType);
-
-            return articleType;
+            return await _unitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id);          
         }
 
         /// <summary>
@@ -153,7 +143,7 @@ namespace SORANO.BLL.Services
 
         public async Task DeleteAsync(int id, int userId)
         {
-            var existentArticleType = await _unitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id, t => t.ParentType, t => t.ChildTypes);
+            var existentArticleType = await _unitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id);
 
             existentArticleType.ChildTypes.ToList().ForEach(t =>
             {

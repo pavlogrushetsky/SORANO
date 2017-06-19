@@ -17,35 +17,11 @@ namespace SORANO.WEB.Infrastructure.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            foreach (var model in Elements)
-            {
-                if (model.ParentType == null)
-                {
-                    continue;
-                }
-
-                var el = Elements.Single(e => e.ID == model.ParentType.ID).ChildTypes.SingleOrDefault(i =>i.ID == model.ID);
-                Elements.Single(e => e.ID == model.ParentType.ID).ChildTypes.Remove(el);
-                Elements.Single(e => e.ID == model.ParentType.ID).ChildTypes.Add(model);
-            }
-
-            Elements.ForEach(e =>
-            {
-                if (e.ParentType != null && e.ParentType.ChildTypes.All(c => c.ID != e.ID))
-                {
-                    e.ParentType.ChildTypes.Add(e);
-                }                
-            });
-
             output.TagName = "ul";
 
             var tree = "";
 
-            var parents = Elements
-                .Where(e => e.ParentType == null)
-                .ToList();
-
-            parents.ForEach(e =>
+            Elements.ForEach(e =>
             {
                 RenderType(e, ref tree);
             });
@@ -60,7 +36,7 @@ namespace SORANO.WEB.Infrastructure.TagHelpers
                 return;
             }
 
-            html += "<li id='" + type.ID + "'" + (type.IsSelected ? " class='selected'" : "") + "><span><i class='fa fa-tag'></i>" + type.Name;
+            html += "<li id='" + type.ID + "' class='" + (type.IsSelected ? "selected" : "") + (type.IsDeleted ? " deleted" : "") + "'" + "><span><i class='fa fa-tag'></i>" + type.Name;
 
             if (type.ChildTypes.Any())
             {
@@ -87,7 +63,7 @@ namespace SORANO.WEB.Infrastructure.TagHelpers
                 {
                     foreach (var article in type.Articles)
                     {
-                        html += "<li><span><i class='fa fa-barcode'></i>" + article.Name + "</span></li>";
+                        html += "<li class='" + (article.IsDeleted ? " deleted" : "") + "'><span><i class='fa fa-barcode'></i>" + article.Name + "</span></li>";
                     }
                 }                
 

@@ -43,33 +43,9 @@ namespace SORANO.DAL.Repositories
         /// <returns>Stock entities</returns>
         public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await _dataSet.ToListAsync();
-        }
+            var entities = await _dataSet.ToListAsync();
 
-        /// <summary>
-        /// Get all stock entities including specified properties
-        /// </summary>
-        /// <param name="properties">Properties to include in selection</param>
-        /// <returns>Stock entities</returns>
-        public virtual IEnumerable<T> GetAll(params Expression<Func<T, object>>[] properties)
-        {
-            IQueryable<T> query = _dataSet;
-            query = properties.Aggregate(query, (current, property) => current.Include(property));
-
-            return query.AsEnumerable();
-        }
-
-        /// <summary>
-        /// Get all stock entities including specified properties asyncronously
-        /// </summary>
-        /// <param name="properties">Properties to include in selection</param>
-        /// <returns>Stock entities</returns>
-        public virtual async Task<IEnumerable<T>> GetAllAsync(params Expression<Func<T, object>>[] properties)
-        {
-            IQueryable<T> query = _dataSet;
-            query = properties.Aggregate(query, (current, property) => current.Include(property));
-
-            return await query.ToListAsync();
+            return entities;
         }
 
         /// <summary>
@@ -110,34 +86,6 @@ namespace SORANO.DAL.Repositories
         public virtual async Task<T> GetAsync(Expression<Func<T, bool>> predicate)
         {
             return await _dataSet.FirstOrDefaultAsync(predicate);
-        }
-
-        /// <summary>
-        /// Get single stock entity for which the specified predicate is true including specified properties
-        /// </summary>
-        /// <param name="predicate">Predicate</param>
-        /// <param name="properties">Properties to include in selection</param>
-        /// <returns>Stock Entity</returns>
-        public virtual T Get(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] properties)
-        {
-            IQueryable<T> query = _dataSet;
-            query = properties.Aggregate(query, (current, property) => current.Include(property));
-
-            return query.Where(predicate).FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Get single stock entity asynchronously for which the specified predicate is true including specified properties
-        /// </summary>
-        /// <param name="predicate">Predicate</param>
-        /// <param name="properties">Properties to include in selection</param>
-        /// <returns>Stock Entity</returns>
-        public virtual async Task<T> GetAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] properties)
-        {
-            IQueryable<T> query = _dataSet;
-            query = properties.Aggregate(query, (current, property) => current.Include(property));
-
-            return await query.Where(predicate).FirstOrDefaultAsync();
         }
 
         /// <summary>

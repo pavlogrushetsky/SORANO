@@ -6,9 +6,7 @@ namespace SORANO.BLL.Services.Abstract
 {
     public interface IArticleTypeService
     {
-        Task<IEnumerable<ArticleType>> GetAllWithArticlesAsync();
-
-        Task<IEnumerable<ArticleType>> GetAllAsync();
+        Task<IEnumerable<ArticleType>> GetAllAsync(bool withDeleted);
 
         Task<ArticleType> GetAsync(int id);
 
@@ -17,7 +15,5 @@ namespace SORANO.BLL.Services.Abstract
         Task<ArticleType> UpdateAsync(ArticleType articleType, int userId);
 
         Task DeleteAsync(int id, int userId);
-
-        Task<ArticleType> GetIncludeAllAsync(int id);
     }
 }

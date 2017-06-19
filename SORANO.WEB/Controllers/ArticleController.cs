@@ -13,22 +13,22 @@ namespace SORANO.WEB.Controllers
     public class ArticleController : BaseController
     {
         private readonly IArticleService _articleService;
-        private readonly IArticleTypeService _articleTypeService;
 
         public ArticleController(IArticleService articleService, IArticleTypeService articleTypeService, IUserService userService) : base(userService)
         {
             _articleService = articleService;
-            _articleTypeService = articleTypeService;
         }
 
         #region GET Actions
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(bool withDeleted = false)
         {
-            var types = await _articleTypeService.GetAllWithArticlesAsync();           
+            var articles = await _articleService.GetAllAsync(withDeleted);
 
-            return View(types.Select(t => t.ToModel()).ToList());
+            ViewBag.WithDeleted = withDeleted;
+
+            return View(articles.Select(a => a.ToModel(a.Type.ToModel(false))).ToList());
         }
 
         [HttpGet]
@@ -62,7 +62,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var article = await _articleService.GetIncludeAllAsync(id);
+            var article = await _articleService.GetAsync(id);
 
             return View(article.ToModel(article.Type.ToModel(false)));
         }

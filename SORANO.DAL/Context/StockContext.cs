@@ -4,8 +4,6 @@ using SORANO.CORE.StockEntities;
 using SORANO.DAL.Context.Configurations;
 using SORANO.DAL.Migrations;
 using System.Threading.Tasks;
-using EntityFramework.DynamicFilters;
-using SORANO.CORE;
 
 namespace SORANO.DAL.Context
 {
@@ -136,9 +134,6 @@ namespace SORANO.DAL.Context
 
         protected override void OnModelCreating(DbModelBuilder builder)
         {
-            // Apply global filter
-            builder.Filter("IsDeleted", (Entity e) => e.IsDeleted, false);
-
             // Adding configuration for stock entities
             builder.Configurations.Add(new StockEntityConfiguration());
             builder.Configurations.Add(new UserConfiguration());

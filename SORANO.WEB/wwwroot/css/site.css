@@ -97,10 +97,16 @@
             color: #ffffff
         }
 
-    .tree li.selected > span {
+    .tree li.selected:not(.deleted) > span {
         color: #ffffff;
         background-color: #3498db;
         border-color: #3498db;
+    }
+
+    .tree li.deleted > span {
+        color: #ffffff;
+        background-color: #e74c3c;
+        border-color: #e74c3c;
     }
 
     .tree .fa-lg {

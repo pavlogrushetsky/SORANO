@@ -24,17 +24,14 @@ namespace SORANO.BLL.Services
         /// <returns>List of users with all related data</returns>
         public async Task<List<User>> GetAllIncludeAllAsync()
         {
-            var users = await _unitOfWork.Get<User>().GetAllAsync(u => u.Roles, u => u.CreatedEntities,
-            u => u.DeletedEntities,
-            u => u.ModifiedEntities,
-            u => u.SoldGoods);
+            var users = await _unitOfWork.Get<User>().GetAllAsync();
 
             return users.ToList();       
         }
 
         public async Task<User> GetIncludeRolesAsync(int id)
         {
-            return await _unitOfWork.Get<User>().GetAsync(u => u.ID == id, u => u.Roles);           
+            return await _unitOfWork.Get<User>().GetAsync(u => u.ID == id);           
         }
 
         public async Task<User> CreateAsync(User user)
@@ -71,15 +68,11 @@ namespace SORANO.BLL.Services
 
         public async Task<User> GetIncludeAllAsync(int id)
         {
-            var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == id, u => u.Roles,
-            u => u.CreatedEntities,
-            u => u.DeletedEntities,
-            u => u.ModifiedEntities,
-            u => u.SoldGoods);
+            var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == id);
 
             user.SoldGoods.ToList().ForEach(g =>
             {
-                g.DeliveryItem = _unitOfWork.Get<DeliveryItem>().Get(d => d.ID == g.DeliveryItemID, d => d.Article);
+                g.DeliveryItem = _unitOfWork.Get<DeliveryItem>().Get(d => d.ID == g.DeliveryItemID);
             });
 
             return user;           
@@ -94,7 +87,7 @@ namespace SORANO.BLL.Services
         {
             var hash = CryptoHelper.Hash(password);
 
-            return await _unitOfWork.Get<User>().GetAsync(u => !u.IsBlocked && u.Login.Equals(login) && u.Password.Equals(hash), u => u.Roles);          
+            return await _unitOfWork.Get<User>().GetAsync(u => !u.IsBlocked && u.Login.Equals(login) && u.Password.Equals(hash));          
         }
 
         public async Task ChangePasswordAsync(string login, string newPassword)

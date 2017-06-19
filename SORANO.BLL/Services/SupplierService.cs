@@ -59,22 +59,17 @@ namespace SORANO.BLL.Services
 
         public async Task<IEnumerable<Supplier>> GetAllAsync()
         {
-            return await _unitOfWork.Get<Supplier>().GetAllAsync(s => s.Recommendations);
+            return await _unitOfWork.Get<Supplier>().GetAllAsync();
         }
 
         public async Task<Supplier> GetAsync(int id)
         {
-            return await _unitOfWork.Get<Supplier>().GetAsync(s => s.ID == id, s => s.Recommendations, s => s.Deliveries);
+            return await _unitOfWork.Get<Supplier>().GetAsync(s => s.ID == id);
         }
 
         public async Task<Supplier> GetIncludeAllAsync(int id)
         {
-            var supplier = await _unitOfWork.Get<Supplier>().GetAsync(s => s.ID == id,
-                s => s.Attachments,
-                s => s.CreatedByUser,
-                s => s.Deliveries,
-                s => s.ModifiedByUser,
-                s => s.Recommendations);
+            var supplier = await _unitOfWork.Get<Supplier>().GetAsync(s => s.ID == id);
 
             return supplier;
         }
@@ -129,7 +124,7 @@ namespace SORANO.BLL.Services
 
         public async Task DeleteAsync(int id, int userId)
         {
-            var existentSupplier = await _unitOfWork.Get<Supplier>().GetAsync(t => t.ID == id, t => t.Deliveries);
+            var existentSupplier = await _unitOfWork.Get<Supplier>().GetAsync(t => t.ID == id);
 
             if (existentSupplier.Deliveries.Any())
             {

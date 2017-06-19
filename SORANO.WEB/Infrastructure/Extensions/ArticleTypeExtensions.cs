@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using SORANO.CORE.StockEntities;
 using SORANO.WEB.Models.ArticleType;
+using System.Collections.Generic;
 
 namespace SORANO.WEB.Infrastructure.Extensions
 {
@@ -13,12 +14,16 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 ID = type.ID,
                 Name = type.Name,
                 Description = type.Description,
-                CanBeDeleted = !type.Articles.Any(),              
+                CanBeDeleted = !type.Articles.Any() && !type.IsDeleted,      
+                IsDeleted = type.IsDeleted,
                 Created = type.CreatedDate.ToString("dd.MM.yyyy"),
                 Modified = type.ModifiedDate.ToString("dd.MM.yyyy"),
                 CreatedBy = type.CreatedByUser?.Login,
                 ModifiedBy = type.ModifiedByUser?.Login,
             };
+
+            model.Recommendations = type.Recommendations?.Select(r => r.ToModel()).ToList();
+            model.Articles = type.Articles?.Select(a => a.ToModel(model)).ToList();
 
             if (!deep)
             {
@@ -26,12 +31,32 @@ namespace SORANO.WEB.Infrastructure.Extensions
             }
 
             model.ChildTypes = type.ChildTypes?.Select(t => t.ToModel(false)).ToList();
-            model.ParentType = type.ParentType?.ToModel(false);
-            model.Recommendations = type.Recommendations?.Select(r => r.ToModel()).ToList();
-            model.Articles = type.Articles?.Select(a => a.ToModel(model)).ToList();
+            model.ParentType = type.ParentType?.ToModel(false);            
 
             return model;
-        }       
+        }     
+        
+        public static List<ArticleTypeModel> ToTree(this List<ArticleType> types)
+        {
+            var parents = types.Where(t => t.ParentTypeId == null).Select(t => t.ToModel(false)).ToList();
+
+            parents.ForEach(p =>
+            {
+                p.FillChildren(types);
+            });
+
+            return parents;
+        }
+
+        private static void FillChildren(this ArticleTypeModel parent, List<ArticleType> children)
+        {
+            parent.ChildTypes = children.Where(c => c.ParentTypeId == parent.ID).Select(c => c.ToModel(false)).ToList();
+
+            parent.ChildTypes.ToList().ForEach(c =>
+            {
+                c.FillChildren(children);
+            });
+        }
 
         public static ArticleType ToEntity(this ArticleTypeModel model)
         {
