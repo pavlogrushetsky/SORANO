@@ -103,9 +103,37 @@ namespace SORANO.BLL.Services
 
         public async Task<User> UpdateAsync(User user)
         {
-            user.Password = CryptoHelper.Hash(user.Password);
+            var existentUser = await _unitOfWork.Get<User>().GetAsync(user.ID);
 
-            var updated = _unitOfWork.Get<User>().Update(user);
+            existentUser.Login = user.Login;
+            existentUser.Description = user.Description;
+
+            if (!string.IsNullOrEmpty(user.Password))
+            {
+                existentUser.Password = CryptoHelper.Hash(user.Password);
+            }
+
+            var roles = await _unitOfWork.Get<Role>().GetAllAsync();
+
+            existentUser.Roles
+                .ToList()
+                .Where(r => !user.Roles.Select(er => er.ID).Contains(r.ID)).ToList()
+                .ForEach(r =>
+                {
+                    existentUser.Roles.Remove(r);
+                });
+
+            roles
+                .Where(r => user.Roles.Select(er => er.ID).Contains(r.ID) &&
+                            !existentUser.Roles.Select(er => er.ID).Contains(r.ID)).ToList()
+                .ForEach(r =>
+                {
+                    existentUser.Roles.Add(r);
+                });
+
+            existentUser.Roles = user.Roles;
+
+            var updated = _unitOfWork.Get<User>().Update(existentUser);
 
             await _unitOfWork.SaveAsync();
 

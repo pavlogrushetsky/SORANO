@@ -145,11 +145,7 @@ namespace SORANO.WEB.Controllers
                 return View(model);
             }
 
-            var user = await _userService.GetAsync(model.ID);
-
-            var roles = await _roleService.GetAllAsync();
-
-            user.FromUpdateModel(model, roles.ToList(), model.CanBeModified);
+            var user = model.ToEntity();
 
             await _userService.UpdateAsync(user);
 

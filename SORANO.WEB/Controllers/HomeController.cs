@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SORANO.WEB.Controllers
 {
-    [Authorize(Roles = "user")]
+    [Authorize(Roles = "developer,administrator,manager,editor,user")]
     public class HomeController : Controller
     {
         public IActionResult Index()

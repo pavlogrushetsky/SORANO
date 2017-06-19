@@ -14,5 +14,15 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 Description = role.Description
             };
         }
+
+        public static Role ToEntity(this RoleModel model)
+        {
+            return new Role
+            {
+                ID = model.ID,
+                Name = model.Name,
+                Description = model.Description
+            };
+        }
     }
 }

@@ -48,38 +48,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
             }
 
             return model;
-        }
-
-        public static void FromUpdateModel(this User user, UserModel model, List<Role> roles, bool canBeModified = true)
-        {
-            
-            user.Description = model.Description;
-
-            if (!canBeModified)
-            {
-                return;
-            }
-
-            user.Login = model.Login;
-
-            if (!string.IsNullOrEmpty(model.NewPassword))
-            {
-                user.Password = model.NewPassword;
-            }
-
-            user.Roles
-                .Where(r => !model.Roles.Select(m => m.Name).Contains(r.Name))
-                .ToList()
-                .ForEach(r => user.Roles.Remove(r));
-
-            var existentRoles = user.Roles;
-
-            roles
-                .Where(r => model.Roles.Select(m => m.Name).Contains(r.Name))
-                .Except(existentRoles)
-                .ToList()
-                .ForEach(r => user.Roles.Add(r));
-        }
+        }       
 
         public static void FromCreateModel(this User user, UserModel model, List<Role> roles)
         {
@@ -91,6 +60,18 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 .Where(r => model.Roles.Select(x => x.Name).Contains(r.Name))
                 .ToList()
                 .ForEach(r => user.Roles.Add(r));
+        }
+
+        public static User ToEntity(this UserModel model)
+        {
+            return new User
+            {
+                ID = model.ID,
+                Login = model.Login,
+                Description = model.Description,
+                Password = model.Password,
+                Roles = model.Roles.Select(r => r.ToEntity()).ToList()
+            };
         }
 
         /// <summary>
