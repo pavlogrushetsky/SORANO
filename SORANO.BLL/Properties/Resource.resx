@@ -177,4 +177,10 @@
   <data name="LocationInvalidIdentifierException" xml:space="preserve">
     <value>Недопустимое значение идентификатора места.</value>
   </data>
+  <data name="UserInvalidIdentifierException" xml:space="preserve">
+    <value>Недопустимое значение идентификатора пользователя.</value>
+  </data>
+  <data name="UserWithSameLoginException" xml:space="preserve">
+    <value>Пользователь с таким логином уже существует.</value>
+  </data>
 </root>

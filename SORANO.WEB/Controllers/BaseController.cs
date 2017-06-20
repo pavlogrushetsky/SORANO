@@ -12,7 +12,7 @@ namespace SORANO.WEB.Controllers
     /// </summary>
     public class BaseController : Controller
     {
-        private readonly IUserService _userService;
+        protected readonly IUserService _userService;
 
         /// <summary>
         /// Controller to perform controllers' base functionality

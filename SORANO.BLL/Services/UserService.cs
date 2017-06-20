@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.AccountEntities;
 using SORANO.BLL.Helpers;
+using SORANO.BLL.Properties;
 using SORANO.DAL.Repositories;
 using SORANO.CORE.StockEntities;
 
@@ -29,27 +31,58 @@ namespace SORANO.BLL.Services
             return users.ToList();       
         }
 
-        public async Task<User> GetIncludeRolesAsync(int id)
-        {
-            return await _unitOfWork.Get<User>().GetAsync(u => u.ID == id);           
-        }
-
         public async Task<User> CreateAsync(User user)
         {
-            var existentUser = await _unitOfWork.Get<User>().GetAsync(u => u.Login.Equals(user.Login));
-
-            if (existentUser != null)
+            if (user.ID != 0)
             {
-                return null;
+                throw new ArgumentException(Resource.UserInvalidIdentifierException);
+            }
+
+            var userWithSameLogin = await _unitOfWork.Get<User>().FindByAsync(u => u.Login.Equals(user.Login));
+
+            if (userWithSameLogin.Any())
+            {
+                throw new Exception(Resource.UserWithSameLoginException);
             }
 
             user.Password = CryptoHelper.Hash(user.Password);
+
+            var roles = await _unitOfWork.Get<Role>().GetAllAsync();
+
+            var rolesToAttach = roles.Where(r => user.Roles.Select(x => x.ID).Contains(r.ID));
+
+            user.Roles = rolesToAttach.ToList();
 
             var added = _unitOfWork.Get<User>().Add(user);
 
             await _unitOfWork.SaveAsync();
 
             return added;          
+        }
+
+        public async Task<User> UpdateAsync(User user)
+        {
+            var existentUser = await _unitOfWork.Get<User>().GetAsync(user.ID);
+
+            existentUser.Login = user.Login;
+            existentUser.Description = user.Description;
+
+            if (!string.IsNullOrEmpty(user.Password))
+            {
+                existentUser.Password = CryptoHelper.Hash(user.Password);
+            }
+
+            var roles = await _unitOfWork.Get<Role>().GetAllAsync();
+
+            var rolesToAttach = roles.Where(r => user.Roles.Select(x => x.ID).Contains(r.ID));
+
+            existentUser.Roles = rolesToAttach.ToList();
+
+            var updated = _unitOfWork.Get<User>().Update(existentUser);
+
+            await _unitOfWork.SaveAsync();
+
+            return updated;
         }
 
         public async Task DeleteAsync(int id)
@@ -99,45 +132,6 @@ namespace SORANO.BLL.Services
             _unitOfWork.Get<User>().Update(user);
 
             await _unitOfWork.SaveAsync();           
-        }
-
-        public async Task<User> UpdateAsync(User user)
-        {
-            var existentUser = await _unitOfWork.Get<User>().GetAsync(user.ID);
-
-            existentUser.Login = user.Login;
-            existentUser.Description = user.Description;
-
-            if (!string.IsNullOrEmpty(user.Password))
-            {
-                existentUser.Password = CryptoHelper.Hash(user.Password);
-            }
-
-            var roles = await _unitOfWork.Get<Role>().GetAllAsync();
-
-            existentUser.Roles
-                .ToList()
-                .Where(r => !user.Roles.Select(er => er.ID).Contains(r.ID)).ToList()
-                .ForEach(r =>
-                {
-                    existentUser.Roles.Remove(r);
-                });
-
-            roles
-                .Where(r => user.Roles.Select(er => er.ID).Contains(r.ID) &&
-                            !existentUser.Roles.Select(er => er.ID).Contains(r.ID)).ToList()
-                .ForEach(r =>
-                {
-                    existentUser.Roles.Add(r);
-                });
-
-            existentUser.Roles = user.Roles;
-
-            var updated = _unitOfWork.Get<User>().Update(existentUser);
-
-            await _unitOfWork.SaveAsync();
-
-            return updated;           
-        }
+        }       
     }
 }

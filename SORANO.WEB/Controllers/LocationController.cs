@@ -38,7 +38,7 @@ namespace SORANO.WEB.Controllers
         {
             var types = await _locationTypeService.GetAllAsync();
 
-            var LocationTypes = new List<SelectListItem>
+            var locationTypes = new List<SelectListItem>
             {
                 new SelectListItem
                 {
@@ -47,13 +47,13 @@ namespace SORANO.WEB.Controllers
                 }
             };
 
-            LocationTypes.AddRange(types.Select(l => new SelectListItem
+            locationTypes.AddRange(types.Select(l => new SelectListItem
             {
                 Value = l.ID.ToString(),
                 Text = l.Name
             }));
 
-            ViewBag.LocationTypes = LocationTypes;
+            ViewBag.LocationTypes = locationTypes;
 
             return View(new LocationModel());
         }

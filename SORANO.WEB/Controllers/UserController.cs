@@ -3,22 +3,20 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
-using SORANO.CORE.AccountEntities;
 using SORANO.WEB.Models.User;
 using SORANO.WEB.Infrastructure.Extensions;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer, administrator")]
-    public class UserController : Controller
+    public class UserController : BaseController
     {
-        private readonly IUserService _userService;
         private readonly IRoleService _roleService;
 
-        public UserController(IUserService userService, IRoleService roleService)
+        public UserController(IUserService userService, IRoleService roleService) : base(userService)
         {
-            _userService = userService;
             _roleService = roleService;
         }
 
@@ -35,10 +33,11 @@ namespace SORANO.WEB.Controllers
 
             var models = new List<UserModel>();
 
-            users.ForEach(u => 
+            var currentUser = await GetCurrentUser();
+
+            users.ForEach(u =>
             {
-                var isCurrent = u.IsCurrent(HttpContext);
-                models.Add(u.ToModel(isCurrent));
+                models.Add(u.ToModel(u.ID == currentUser.ID));
             });
 
             return View(models);
@@ -54,7 +53,9 @@ namespace SORANO.WEB.Controllers
         {
             var user = await _userService.GetIncludeAllAsync(id);
 
-            return View(user.ToModel(user.IsCurrent(HttpContext)));
+            var currentUser = await GetCurrentUser();
+
+            return View(user.ToModel(user.ID == currentUser.ID));
         }
 
         /// <summary>
@@ -67,7 +68,9 @@ namespace SORANO.WEB.Controllers
         {
             var user = await _userService.GetAsync(id);
 
-            return View(user.ToModel(user.IsCurrent(HttpContext)));
+            var currentUser = GetCurrentUser();
+
+            return View(user.ToModel(user.ID == currentUser.Id));
         }
 
         /// <summary>
@@ -77,12 +80,27 @@ namespace SORANO.WEB.Controllers
         /// <returns>Update view</returns>
         [HttpGet]
         public async Task<IActionResult> Update(int id)
-        {
-            var user = await _userService.GetIncludeRolesAsync(id);
+        {           
+            var user = await _userService.GetAsync(id);
 
-            var model = TempData.Get<UserModel>("UserModel") ?? user.ToModel(user.IsCurrent(HttpContext));
+            var currentUser = await GetCurrentUser();
 
-            return View(model);
+            var model = user.ToModel(user.ID == currentUser.ID);
+
+            var roles = await _roleService.GetAllAsync();
+
+            var userRoles = roles.Select(r => new SelectListItem
+            {
+                Value = r.ID.ToString(),
+                Text = r.Description,
+                Selected = user.Roles.Select(x => x.ID).Contains(r.ID)
+            });
+
+            ViewBag.Roles = userRoles;
+
+            ViewData["IsEdit"] = true;
+
+            return View("Create", model);
         }
 
         /// <summary>
@@ -90,11 +108,19 @@ namespace SORANO.WEB.Controllers
         /// </summary>
         /// <returns>Create view</returns>
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var model = TempData.Get<UserModel>("UserModel") ?? new UserModel();
+            var roles = await _roleService.GetAllAsync();
 
-            return View(model);
+            var userRoles = roles.Select(r => new SelectListItem
+            {
+                Value = r.ID.ToString(),
+                Text = r.Description
+            });
+
+            ViewBag.Roles = userRoles;
+
+            return View(new UserModel());
         }
 
         /// <summary>
@@ -107,7 +133,9 @@ namespace SORANO.WEB.Controllers
         {
             var user = await _userService.GetIncludeAllAsync(id);
 
-            return View(user.ToModel(user.IsCurrent(HttpContext)));
+            var currentUser = await GetCurrentUser();
+
+            return View(user.ToModel(user.ID == currentUser.ID));
         }
 
         #endregion
@@ -140,50 +168,76 @@ namespace SORANO.WEB.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(UserModel model)
         {
-            if (!ModelState.IsValid)
+            return await TryGetActionResultAsync(async () =>
             {
-                return View(model);
-            }
+                if (!ModelState.IsValid)
+                {
+                    ViewData["IsEdit"] = true;
+                    return View("Create", model);
+                }
 
-            var user = model.ToEntity();
+                var user = model.ToEntity();
 
-            await _userService.UpdateAsync(user);
+                user = await _userService.UpdateAsync(user);
 
-            return RedirectToAction("List");
+                if (user != null)
+                {
+                    return RedirectToAction("List", "User");
+                }
+
+                ModelState.AddModelError("", "Не удалось обновить пользователя.");
+                ViewData["IsEdit"] = true;
+                return View("Create", model);
+            }, ex =>
+            {
+                ModelState.AddModelError("", ex);
+                ViewData["IsEdit"] = true;
+                return View("Create", model);
+            });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UserModel model)
         {
-            if (!ModelState.IsValid)
+            return await TryGetActionResultAsync(async () =>
             {
+                var roles = await _roleService.GetAllAsync();
+
+                var userRoles = roles.Select(r => new SelectListItem
+                {
+                    Value = r.ID.ToString(),
+                    Text = r.Description
+                });
+
+                ViewBag.Roles = userRoles;
+
+                if (model.RoleIDs == null || !model.RoleIDs.Any())
+                {
+                    ModelState.AddModelError("RoleIDs", "Пользователю необходимо назначить хотя бы одну роль.");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                var user = model.ToEntity();
+
+                user = await _userService.CreateAsync(user);
+
+                if (user != null)
+                {
+                    return RedirectToAction("List", "User");
+                }
+
+                ModelState.AddModelError("Login", "Пользователь с таким логином уже существует в системе");
                 return View(model);
-            }
-
-            var roles = await _roleService.GetAllAsync();
-
-            var user = new User();
-            user.FromCreateModel(model, roles.ToList());            
-
-            user = await _userService.CreateAsync(user);
-
-            if (user != null)
+            }, ex =>
             {
-                return RedirectToAction("List", "User");
-            }
-
-            ModelState.AddModelError("Login", "Пользователь с таким логином уже существует в системе");
-            return View(model);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult SelectRoles([Bind("ID,CanBeModified,Login,Description,Roles")] UserModel model, string returnUrl)
-        {
-            TempData.Put("UserModel", model);
-
-            return RedirectToAction("Select", "Role", new { returnUrl });
+                ModelState.AddModelError("", ex);
+                return View(model);
+            });
         }
 
         #endregion                     

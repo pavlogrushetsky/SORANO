@@ -232,11 +232,29 @@ namespace SORANO.BLL.Properties {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Недопустимое значение идентификатора пользователя..
+        /// </summary>
+        internal static string UserInvalidIdentifierException {
+            get {
+                return ResourceManager.GetString("UserInvalidIdentifierException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Указанный пользователь не найден..
         /// </summary>
         internal static string UserNotFoundException {
             get {
                 return ResourceManager.GetString("UserNotFoundException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Пользователь с таким логином уже существует..
+        /// </summary>
+        internal static string UserWithSameLoginException {
+            get {
+                return ResourceManager.GetString("UserWithSameLoginException", resourceCulture);
             }
         }
     }

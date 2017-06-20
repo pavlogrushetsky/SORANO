@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using SORANO.WEB.Infrastructure.ValidationAttributes;
-using SORANO.WEB.Models.Role;
 
 namespace SORANO.WEB.Models.User
 {
@@ -32,8 +31,10 @@ namespace SORANO.WEB.Models.User
         public string RepeatPassword { get; set; }
 
         [Display(Name = "Роли")]
-        [RequireNonEmpty(ErrorMessage = "Пользователю необходимо назначить хотя бы одну роль")]
-        public IList<RoleModel> Roles { get; set; } = new List<RoleModel>();
+        public IEnumerable<string> RoleIDs { get; set; }
+
+        [Display(Name = "Роли")]
+        public List<string> Roles { get; set; } = new List<string>();
 
         [Display(Name = "Продажи")]
         public List<UserSaleModel> Sales { get; set; } = new List<UserSaleModel>();

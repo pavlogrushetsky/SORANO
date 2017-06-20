@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using SORANO.CORE.AccountEntities;
+﻿using SORANO.CORE.AccountEntities;
 using SORANO.WEB.Models.User;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 
 namespace SORANO.WEB.Infrastructure.Extensions
 {
@@ -26,7 +23,8 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 ID = user.ID,
                 Login = user.Login,
                 Description = user.Description,                               
-                Roles = user.Roles?.Select(r => r.ToModel()).ToList(),
+                Roles = user.Roles?.Select(r => r.Description).ToList(),
+                RoleIDs = user.Roles?.Select(r => r.ID.ToString()),
                 IsBlocked = user.IsBlocked,
                 CanBeDeleted = !(isCurrent || hasActivities),
                 CanBeBlocked = !isCurrent,
@@ -50,18 +48,6 @@ namespace SORANO.WEB.Infrastructure.Extensions
             return model;
         }       
 
-        public static void FromCreateModel(this User user, UserModel model, List<Role> roles)
-        {
-            user.Login = model.Login;
-            user.Description = model.Description;
-            user.Password = model.Password;
-
-            roles
-                .Where(r => model.Roles.Select(x => x.Name).Contains(r.Name))
-                .ToList()
-                .ForEach(r => user.Roles.Add(r));
-        }
-
         public static User ToEntity(this UserModel model)
         {
             return new User
@@ -70,19 +56,11 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 Login = model.Login,
                 Description = model.Description,
                 Password = model.Password,
-                Roles = model.Roles.Select(r => r.ToEntity()).ToList()
+                Roles = model.RoleIDs.Select(r => new Role
+                {
+                    ID = int.Parse(r)
+                }).ToList()
             };
-        }
-
-        /// <summary>
-        /// Check if user is currently logged in user
-        /// </summary>
-        /// <param name="user">User</param>
-        /// <param name="context">HttpContext</param>
-        /// <returns>True if user is currently logged in user else false</returns>
-        public static bool IsCurrent(this User user, HttpContext context)
-        {
-            return context.User.FindFirst(ClaimTypes.Name)?.Value?.Equals(user.Login) ?? false;
         }
     }
 }

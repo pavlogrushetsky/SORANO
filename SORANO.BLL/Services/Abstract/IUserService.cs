@@ -14,8 +14,6 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<User> GetAsync(int id);
 
-        Task<User> GetIncludeRolesAsync(int id);
-
         Task<List<User>> GetAllIncludeAllAsync();
 
         Task<User> CreateAsync(User user);
