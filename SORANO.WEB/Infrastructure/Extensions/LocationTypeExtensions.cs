@@ -6,21 +6,27 @@ namespace SORANO.WEB.Infrastructure.Extensions
 {
     public static class LocationTypeExtensions
     {
-        public static LocationTypeModel ToModel(this LocationType locationType)
+        public static LocationTypeModel ToModel(this LocationType locationType, bool deep = true)
         {
-            return new LocationTypeModel
+            var model = new LocationTypeModel
             {
                 ID = locationType.ID,
                 Name = locationType.Name,
                 Description = locationType.Description,
                 Recommendations = locationType.Recommendations?.Select(r => r.ToModel()).ToList(),
-                Locations = locationType.Locations?.Select(l => l.ToModel()).ToList(),
-                CanBeDeleted = !locationType.Locations?.Any() ?? false,
+                CanBeDeleted = !locationType.Locations.Any(l => !l.IsDeleted) && !locationType.IsDeleted,
                 Created = locationType.CreatedDate.ToString("dd.MM.yyyy"),
                 Modified = locationType.ModifiedDate.ToString("dd.MM.yyyy"),
                 CreatedBy = locationType.CreatedByUser?.Login,
                 ModifiedBy = locationType.ModifiedByUser?.Login
             };
+
+            if (deep)
+            {
+                model.Locations = locationType.Locations?.Select(l => l.ToModel()).ToList();
+            }
+
+            return model;
         }
 
         public static LocationType ToEntity(this LocationTypeModel model)

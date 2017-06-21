@@ -58,6 +58,45 @@ namespace SORANO.WEB.Controllers
             return View(new LocationModel());
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Update(int id)
+        {
+            var location = await _locationService.GetAsync(id);
+
+            var model = location.ToModel();
+
+            var types = await _locationTypeService.GetAllAsync();
+
+            var locationTypes = types.Select(t => new SelectListItem
+            {
+                Value = t.ID.ToString(),
+                Text = t.Name,
+                Selected = t.ID == location.TypeID
+            });
+
+            ViewBag.LocationTypes = locationTypes;
+
+            ViewData["IsEdit"] = true;
+
+            return View("Create", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var location = await _locationService.GetAsync(id);
+
+            return View(location.ToModel());
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            var location = await _locationService.GetAsync(id);
+
+            return View(location.ToModel());
+        }
+
         #endregion
 
         #region POST Actions
@@ -89,7 +128,7 @@ namespace SORANO.WEB.Controllers
                 ViewBag.LocationTypes = LocationTypes;
 
                 int typeId;
-                int.TryParse(model.Type, out typeId);
+                int.TryParse(model.TypeID, out typeId);
 
                 if (typeId <= 0)
                 {
@@ -119,13 +158,86 @@ namespace SORANO.WEB.Controllers
                 }
 
                 // If failed
-                ModelState.AddModelError("", "Не удалось создать новый тип мест.");
+                ModelState.AddModelError("", "Не удалось создать новое место.");
                 return View(model);
             }, ex =>
             {
                 ModelState.AddModelError("", ex);
                 return View(model);
             });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(LocationModel model)
+        {
+            // Try to get result
+            return await TryGetActionResultAsync(async () =>
+            {
+                var types = await _locationTypeService.GetAllAsync();
+
+                var locationTypes = types.Select(t => new SelectListItem
+                {
+                    Value = t.ID.ToString(),
+                    Text = t.Name
+                });
+
+                ViewBag.LocationTypes = locationTypes;
+
+                int typeId;
+                int.TryParse(model.TypeID, out typeId);
+
+                if (typeId <= 0)
+                {
+                    ModelState.AddModelError("Type", "Необходимо указать тип места.");
+                }
+
+                // Check the model
+                if (!ModelState.IsValid)
+                {
+                    ViewData["IsEdit"] = true;
+                    ModelState.RemoveDuplicateErrorMessages();
+                    return View(model);
+                }
+
+                // Convert model to location entity
+                var location = model.ToEntity();
+
+                // Get current user
+                var currentUser = await GetCurrentUser();
+
+                // Call correspondent service method to update location
+                location = await _locationService.UpdateAsync(location, currentUser.ID);
+
+                // If succeeded
+                if (location != null)
+                {
+                    return RedirectToAction("Index", "Location");
+                }
+
+                // If failed
+                ModelState.AddModelError("", "Не удалось обновить место.");
+                ViewData["IsEdit"] = true;
+                return View(model);
+            }, ex =>
+            {
+                ModelState.AddModelError("", ex);
+                ViewData["IsEdit"] = true;
+                return View(model);
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(LocationModel model)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var currentUser = await GetCurrentUser();
+
+                await _locationService.DeleteAsync(model.ID, currentUser.ID);
+
+                return RedirectToAction("Index", "Location");
+            }, ex => RedirectToAction("Index", "Location"));
         }
 
         [HttpPost]

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using SORANO.BLL.Helpers;
 using SORANO.BLL.Properties;
 using SORANO.CORE.AccountEntities;
+using System.Linq;
 
 namespace SORANO.BLL.Services
 {
@@ -20,6 +21,11 @@ namespace SORANO.BLL.Services
         public async Task<IEnumerable<Location>> GetAllAsync()
         {
             return await _unitOfWork.Get<Location>().GetAllAsync();
+        }
+
+        public async Task<Location> GetAsync(int id)
+        {
+            return await _unitOfWork.Get<Location>().GetAsync(s => s.ID == id);
         }
 
         public async Task<Location> CreateAsync(Location location, int userId)
@@ -63,6 +69,75 @@ namespace SORANO.BLL.Services
             await _unitOfWork.SaveAsync();
 
             return saved;
+        }
+
+        public async Task<Location> UpdateAsync(Location location, int userId)
+        {
+            // Check passed location
+            if (location == null)
+            {
+                throw new ArgumentNullException(nameof(location), Resource.LocationCannotBeNullException);
+            }
+
+            // Identifier of new location must be > 0
+            if (location.ID <= 0)
+            {
+                throw new ArgumentException(Resource.LocationInvalidIdentifierException, nameof(location.ID));
+            }
+
+            // Get user by specified identifier
+            var user = await _unitOfWork.Get<User>().GetAsync(s => s.ID == userId);
+
+            // Check user
+            if (user == null)
+            {
+                throw new ObjectNotFoundException(Resource.UserNotFoundException);
+            }
+
+            var existentLocation = await _unitOfWork.Get<Location>().GetAsync(l => l.ID == location.ID);
+
+            if (existentLocation == null)
+            {
+                throw new ObjectNotFoundException(Resource.LocationNotFoundException);
+            }
+
+            existentLocation.Name = location.Name;
+            existentLocation.Comment = location.Comment; 
+
+            var type = await _unitOfWork.Get<LocationType>().GetAsync(t => t.ID == location.TypeID);
+
+            if (type.ID != existentLocation.TypeID)
+            {
+                existentLocation.Type = type;
+                type.UpdateModifiedFields(userId);
+            }           
+
+            existentLocation.UpdateModifiedFields(userId);
+
+            // Update recommendations
+            UpdateRecommendations(location, existentLocation, userId);
+
+            var saved = _unitOfWork.Get<Location>().Update(existentLocation);
+
+            await _unitOfWork.SaveAsync();
+
+            return saved;
+        }
+
+        public async Task DeleteAsync(int id, int userId)
+        {
+            var existentLocation = await _unitOfWork.Get<Location>().GetAsync(t => t.ID == id);
+
+            if (existentLocation.Storages.Any() || existentLocation.SoldGoods.Any())
+            {
+                throw new Exception(Resource.LocationCannotBeDeletedException);
+            }
+
+            existentLocation.UpdateDeletedFields(userId);
+
+            _unitOfWork.Get<Location>().Update(existentLocation);
+
+            await _unitOfWork.SaveAsync();
         }
     }
 }

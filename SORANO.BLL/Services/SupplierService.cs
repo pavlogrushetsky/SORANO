@@ -101,7 +101,7 @@ namespace SORANO.BLL.Services
             var existentSupplier = await _unitOfWork.Get<Supplier>().GetAsync(t => t.ID == supplier.ID);
 
             // Check existent supplier
-            if (supplier == null)
+            if (existentSupplier == null)
             {
                 throw new ObjectNotFoundException(Resource.SupplierNotFoundException);
             }

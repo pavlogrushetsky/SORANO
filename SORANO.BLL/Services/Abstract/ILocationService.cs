@@ -9,5 +9,11 @@ namespace SORANO.BLL.Services.Abstract
         Task<IEnumerable<Location>> GetAllAsync();
 
         Task<Location> CreateAsync(Location location, int userId);
+
+        Task<Location> UpdateAsync(Location location, int userId);
+
+        Task<Location> GetAsync(int id);
+
+        Task DeleteAsync(int id, int userId);
     }
 }
