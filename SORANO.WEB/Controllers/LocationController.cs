@@ -7,12 +7,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.WEB.Models.Location;
-using SORANO.WEB.Models.Recommendation;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    public class LocationController : BaseController
+    public class LocationController : EntityBaseController<LocationModel>
     {
         private readonly ILocationService _locationService;
         private readonly ILocationTypeService _locationTypeService;
@@ -238,30 +237,6 @@ namespace SORANO.WEB.Controllers
 
                 return RedirectToAction("Index", "Location");
             }, ex => RedirectToAction("Index", "Location"));
-        }
-
-        [HttpPost]
-        public IActionResult AddRecommendation(LocationModel location, bool isEdit)
-        {
-            ModelState.Clear();
-
-            location.Recommendations.Add(new RecommendationModel());
-
-            ViewData["IsEdit"] = isEdit;
-
-            return View("Create", location);
-        }
-
-        [HttpPost]
-        public IActionResult DeleteRecommendation(LocationModel location, bool isEdit, int num)
-        {
-            ModelState.Clear();
-
-            location.Recommendations.RemoveAt(num);
-
-            ViewData["IsEdit"] = isEdit;
-
-            return View("Create", location);
         }
 
         #endregion

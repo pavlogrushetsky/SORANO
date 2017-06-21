@@ -50,6 +50,7 @@
                 <input type="hidden" asp-for="ArticleType.ID"/>
                 <input type="hidden" asp-for="ArticleType.Name"/>
                 <input type="hidden" asp-for="ArticleType.Description"/>
+                <input type="hidden" asp-for="ArticleType.ReturnUrl" />
 
                 for (int i = 0; i < Model.ArticleType.Recommendations.Count; i++)
                 {
@@ -74,6 +75,7 @@
                 <input type="hidden" asp-for="Article.Producer" />
                 <input type="hidden" asp-for="Article.Code" />
                 <input type="hidden" asp-for="Article.Barcode" />
+                <input type="hidden" asp-for="Article.ReturnUrl" />
 
                 <input type="hidden" asp-for="Article.Type.ID"/>
                 <input type="hidden" asp-for="Article.Type.Name" />

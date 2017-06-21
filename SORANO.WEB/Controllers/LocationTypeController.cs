@@ -3,13 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.LocationType;
-using SORANO.WEB.Models.Recommendation;
 using System.Threading.Tasks;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    public class LocationTypeController : BaseController
+    public class LocationTypeController : EntityBaseController<LocationTypeModel>
     {
         private readonly ILocationTypeService _locationTypeService;
 
@@ -150,30 +149,6 @@ namespace SORANO.WEB.Controllers
 
                 return RedirectToAction("Index", "Location");
             }, ex => RedirectToAction("Index", "Location"));
-        }
-
-        [HttpPost]
-        public IActionResult AddRecommendation(LocationTypeModel locationType, bool isEdit)
-        {
-            ModelState.Clear();
-
-            locationType.Recommendations.Add(new RecommendationModel());
-
-            ViewData["IsEdit"] = isEdit;
-
-            return View("Create", locationType);
-        }
-
-        [HttpPost]
-        public IActionResult DeleteRecommendation(LocationTypeModel locationType, bool isEdit, int num)
-        {
-            ModelState.Clear();
-
-            locationType.Recommendations.RemoveAt(num);
-
-            ViewData["IsEdit"] = isEdit;
-
-            return View("Create", locationType);
         }
 
         #endregion

@@ -29,6 +29,7 @@
         <input type="hidden" asp-for="ParentType.Name" />
     }
     <input type="hidden" asp-for="ID" />
+    <input type="hidden" asp-for="ReturnUrl" />
     @for (var i = 0; i < Model.Recommendations.Count; i++)
     {
         <input type="hidden" asp-for="@Model.Recommendations[i].ID" />
@@ -144,7 +145,7 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="form-group">
-                <a class="btn btn-default" asp-controller="Article" asp-action="Index">
+                <a class="btn btn-default" href="@Model.ReturnUrl">
                     <i class="fa fa-close"></i>
                     Отмена
                 </a>

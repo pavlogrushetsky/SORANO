@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
-using SORANO.WEB.Models.Recommendation;
 using SORANO.WEB.Models.Supplier;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,7 +9,7 @@ using System.Threading.Tasks;
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    public class SupplierController : BaseController
+    public class SupplierController : EntityBaseController<SupplierModel>
     {
         private readonly ISupplierService _supplierService;
 
@@ -159,30 +158,6 @@ namespace SORANO.WEB.Controllers
 
                 return RedirectToAction("Index", "Supplier");
             }, ex => RedirectToAction("Index", "Supplier"));
-        }
-
-        [HttpPost]
-        public IActionResult AddRecommendation(SupplierModel supplier, bool isEdit)
-        {
-            ModelState.Clear();
-
-            supplier.Recommendations.Add(new RecommendationModel());
-
-            ViewData["IsEdit"] = isEdit;
-
-            return View("Create", supplier);
-        }
-
-        [HttpPost]
-        public IActionResult DeleteRecommendation(SupplierModel supplier, bool isEdit, int num)
-        {
-            ModelState.Clear();
-
-            supplier.Recommendations.RemoveAt(num);
-
-            ViewData["IsEdit"] = isEdit;
-
-            return View("Create", supplier);
         }
 
         #endregion

@@ -42,6 +42,7 @@
                         <a class="btn btn-default btn-xs pull-right"
                            asp-controller="Article"
                            asp-action="Create"
+                           asp-route-returnUrl="@ViewContext.HttpContext.Request.PathAndQuery()"
                            data-toggle="tooltip"
                            data-placement="right"
                            data-original-title="Добавить артикул"
@@ -148,6 +149,7 @@
                         <a class="btn btn-default btn-xs pull-right"
                            asp-controller="ArticleType"
                            asp-action="Create"
+                           asp-route-returnUrl="@ViewContext.HttpContext.Request.PathAndQuery()"
                            data-toggle="tooltip"
                            data-placement="right"
                            data-original-title="Добавить тип артикулов"
@@ -191,7 +193,16 @@
     <script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
     <script src="~/lib/datatables.net-responsive-bs/js/responsive.bootstrap.min.js"></script>
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                localStorage.setItem('articles-active-tab', $(e.target).attr('href'));
+            });
+
+            var lastTab = localStorage.getItem('articles-active-tab');
+            if (lastTab) {
+                $('[href="' + lastTab + '"]').tab('show');
+            }
+
             $('.tree li:has(ul)').addClass('parent_li').find(' > span').attr('title', 'Свернуть ветку');
             $('.tree li.parent_li > span').on('click', function (e) {
                 var children = $(this).parent('li.parent_li').find(' > ul > li');

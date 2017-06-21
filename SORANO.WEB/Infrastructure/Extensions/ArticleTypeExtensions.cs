@@ -23,13 +23,13 @@ namespace SORANO.WEB.Infrastructure.Extensions
             };
 
             model.Recommendations = type.Recommendations?.Select(r => r.ToModel()).ToList();
-            model.Articles = type.Articles?.Select(a => a.ToModel(model)).ToList();
 
             if (!deep)
             {
                 return model;
             }
 
+            model.Articles = type.Articles?.Select(a => a.ToModel()).ToList();
             model.ChildTypes = type.ChildTypes?.Select(t => t.ToModel(false)).ToList();
             model.ParentType = type.ParentType?.ToModel(false);            
 

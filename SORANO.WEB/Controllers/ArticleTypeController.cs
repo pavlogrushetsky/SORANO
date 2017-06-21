@@ -6,12 +6,11 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.Article;
 using SORANO.WEB.Models.ArticleType;
-using SORANO.WEB.Models.Recommendation;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    public class ArticleTypeController : BaseController
+    public class ArticleTypeController : EntityBaseController<ArticleTypeModel>
     {
         private readonly IArticleTypeService _articleTypeService;
 
@@ -23,9 +22,10 @@ namespace SORANO.WEB.Controllers
         #region GET Actions
 
         [HttpGet]
-        public IActionResult Create()
+        public IActionResult Create(string returnUrl = null)
         {
             var model = TempData.Get<ArticleTypeModel>("ArticleTypeModel") ?? new ArticleTypeModel();
+            model.ReturnUrl = returnUrl;
 
             return View(model);
         }
@@ -51,9 +51,9 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Select(string returnUrl)
+        public async Task<IActionResult> Select(string @return)
         {
-            if (string.IsNullOrEmpty(returnUrl))
+            if (string.IsNullOrEmpty(@return))
             {
                 return BadRequest();
             }
@@ -63,7 +63,7 @@ namespace SORANO.WEB.Controllers
 
             if (typeModel == null && articleModel == null)
             {
-                return Redirect(returnUrl);
+                return Redirect(@return);
             }
 
             var types = await _articleTypeService.GetAllAsync(false);
@@ -73,7 +73,7 @@ namespace SORANO.WEB.Controllers
                 Types = types.Select(t => t.ToModel()).ToList(),
                 ArticleType = typeModel,
                 Article = articleModel,
-                ReturnUrl = returnUrl
+                ReturnUrl = @return
             };
 
             if (typeModel != null)
@@ -147,7 +147,7 @@ namespace SORANO.WEB.Controllers
                 // If succeeded
                 if (articleType != null)
                 {
-                    return RedirectToAction("Index", "Article");
+                    return Redirect(model.ReturnUrl);
                 }
 
                 // If failed
@@ -250,33 +250,17 @@ namespace SORANO.WEB.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Cancel(ArticleTypeSelectModel model)
         {
-            TempData.Put("ArticleTypeModel", model.ArticleType);
+            if (model.Article != null)
+            {
+                TempData.Put("ArticleModel", model.Article);
+            }
+
+            if (model.ArticleType != null)
+            {
+                TempData.Put("ArticleTypeModel", model.ArticleType);
+            }          
 
             return Redirect(model.ReturnUrl);
-        }
-
-        [HttpPost]
-        public IActionResult AddRecommendation(ArticleTypeModel articleType, bool isEdit)
-        {
-            ModelState.Clear();
-
-            articleType.Recommendations.Add(new RecommendationModel());
-
-            ViewData["IsEdit"] = isEdit;
-
-            return View("Create", articleType);
-        }
-
-        [HttpPost]
-        public IActionResult DeleteRecommendation(ArticleTypeModel articleType, bool isEdit, int num)
-        {
-            ModelState.Clear();
-
-            articleType.Recommendations.RemoveAt(num);
-
-            ViewData["IsEdit"] = isEdit;
-
-            return View("Create", articleType);
         }
 
         #endregion        

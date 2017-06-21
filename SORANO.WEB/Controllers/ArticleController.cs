@@ -5,15 +5,23 @@ using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.Article;
-using SORANO.WEB.Models.Recommendation;
 
 namespace SORANO.WEB.Controllers
 {
+    /// <summary>
+    /// Controller to handle requests to articles
+    /// </summary>
     [Authorize(Roles = "developer,administrator,manager")]
-    public class ArticleController : BaseController
+    public class ArticleController : EntityBaseController<ArticleModel>
     {
         private readonly IArticleService _articleService;
 
+        /// <summary>
+        /// Article controller
+        /// </summary>
+        /// <param name="articleService">Articles service</param>
+        /// <param name="articleTypeService">Article types service</param>
+        /// <param name="userService">Users service</param>
         public ArticleController(IArticleService articleService, IArticleTypeService articleTypeService, IUserService userService) : base(userService)
         {
             _articleService = articleService;
@@ -21,6 +29,11 @@ namespace SORANO.WEB.Controllers
 
         #region GET Actions
 
+        /// <summary>
+        /// Get Index view
+        /// </summary>
+        /// <param name="withDeleted">Show deleted articles</param>
+        /// <returns>Index view</returns>
         [HttpGet]
         public async Task<IActionResult> Index(bool withDeleted = false)
         {
@@ -28,63 +41,93 @@ namespace SORANO.WEB.Controllers
 
             ViewBag.WithDeleted = withDeleted;
 
-            return View(articles.Select(a => a.ToModel(a.Type.ToModel(false))).ToList());
+            return View(articles.Select(a => a.ToModel()).ToList());
         }
 
+        /// <summary>
+        /// Get Create view
+        /// </summary>
+        /// <returns>Create view</returns>
         [HttpGet]
-        public IActionResult Create()
+        public IActionResult Create(string returnUrl = null)
         {
-            var model = TempData.Get<ArticleModel>("ArticleModel") ?? new ArticleModel(); 
+            var model = TempData.Get<ArticleModel>("ArticleModel") ?? new ArticleModel();
+            model.ReturnUrl = returnUrl;
 
             return View(model);
         }
 
+        /// <summary>
+        /// Get Update/Create view for specified article
+        /// </summary>
+        /// <param name="id">Article identifier</param>
+        /// <returns>Update/Create view</returns>
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
             var article = await _articleService.GetAsync(id);
 
-            var model = TempData.Get<ArticleModel>("ArticleModel") ?? article.ToModel(article.Type.ToModel(false));
+            var model = TempData.Get<ArticleModel>("ArticleModel") ?? article.ToModel();
 
             ViewData["IsEdit"] = true;
 
             return View("Create", model);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var article = await _articleService.GetAsync(id);
-
-            return View(article.ToModel(article.Type.ToModel(false)));
-        }
-
+        /// <summary>
+        /// Get Details view for specified article
+        /// </summary>
+        /// <param name="id">Article identifier</param>
+        /// <returns>Details view</returns>
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
             var article = await _articleService.GetAsync(id);
 
-            return View(article.ToModel(article.Type.ToModel(false)));
+            return View(article.ToModel());
         }
+
+        /// <summary>
+        /// Get Delete view for specified article
+        /// </summary>
+        /// <param name="id">Article identifier</param>
+        /// <returns>Delete view</returns>
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var article = await _articleService.GetAsync(id);
+
+            return View(article.ToModel());
+        }        
 
         #endregion
 
         #region POST Actions
 
+        /// <summary>
+        /// Post article for redirection to article type selection view
+        /// </summary>
+        /// <param name="model">Article model</param>
+        /// <param name="returnUrl">Return url</param>
+        /// <returns>Article type Select view</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult SelectParentType(ArticleModel model, string returnUrl)
+        public IActionResult SelectParentType(ArticleModel model, string @return)
         {
             TempData.Put("ArticleModel", model);
 
-            return RedirectToAction("Select", "ArticleType", new { returnUrl });
+            return RedirectToAction("Select", "ArticleType", new { @return });
         }
 
+        /// <summary>
+        /// Post article for creation
+        /// </summary>
+        /// <param name="model">Article model</param>
+        /// <returns>Index view</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ArticleModel model)
         {
-            // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
                 ModelState.Keys.Where(k => k.StartsWith("Type")).ToList().ForEach(k =>
@@ -97,29 +140,23 @@ namespace SORANO.WEB.Controllers
                     ModelState.AddModelError("Type", "Необходимо указать родительский тип артикулов");
                 }
 
-                // Check the model
                 if (!ModelState.IsValid)
                 {
                     ModelState.RemoveDuplicateErrorMessages();
                     return View(model);
                 }
 
-                // Convert model to article entity
                 var article = model.ToEntity();
 
-                // Get current user
                 var currentUser = await GetCurrentUser();
 
-                // Call correspondent service method to create new article
                 article = await _articleService.CreateAsync(article, currentUser.ID);
 
-                // If succeeded
                 if (article != null)
                 {
-                    return RedirectToAction("Index", "Article");
+                    return Redirect(model.ReturnUrl);
                 }
 
-                // If failed
                 ModelState.AddModelError("", "Не удалось создать новый артикул.");
                 return View(model);
             }, (ex) => 
@@ -133,7 +170,6 @@ namespace SORANO.WEB.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(ArticleModel model)
         {
-            // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
                 ModelState.Keys.Where(k => k.StartsWith("Type")).ToList().ForEach(k =>
@@ -141,7 +177,6 @@ namespace SORANO.WEB.Controllers
                     ModelState.Remove(k);
                 });
 
-                // Check the model
                 if (!ModelState.IsValid)
                 {
                     ViewData["IsEdit"] = true;
@@ -149,22 +184,17 @@ namespace SORANO.WEB.Controllers
                     return View("Create", model);
                 }
 
-                // Convert model to article type entity
                 var article = model.ToEntity();
 
-                // Get current user
                 var currentUser = await GetCurrentUser();
 
-                // Call correspondent service method to update article
                 article = await _articleService.UpdateAsync(article, currentUser.ID);
 
-                // If succeeded
                 if (article != null)
                 {
                     return RedirectToAction("Index", "Article");
                 }
 
-                // If failed
                 ModelState.AddModelError("", "Не удалось обновить артикул.");
                 ViewData["IsEdit"] = true;
                 return View("Create", model);
@@ -190,31 +220,7 @@ namespace SORANO.WEB.Controllers
             {
                 return RedirectToAction("Index", "Article");
             });            
-        }
-
-        [HttpPost]
-        public IActionResult AddRecommendation(ArticleModel article, bool isEdit)
-        {
-            ModelState.Clear();
-
-            article.Recommendations.Add(new RecommendationModel());
-
-            ViewData["IsEdit"] = isEdit;
-
-            return View("Create", article);
-        }
-
-        [HttpPost]
-        public IActionResult DeleteRecommendation(ArticleModel article, bool isEdit, int num)
-        {
-            ModelState.Clear();
-
-            article.Recommendations.RemoveAt(num);
-
-            ViewData["IsEdit"] = isEdit;
-
-            return View("Create", article);
-        }
+        }        
 
         #endregion
     }

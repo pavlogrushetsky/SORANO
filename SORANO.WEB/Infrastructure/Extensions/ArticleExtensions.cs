@@ -1,13 +1,12 @@
 ﻿using System.Linq;
 using SORANO.CORE.StockEntities;
 using SORANO.WEB.Models.Article;
-using SORANO.WEB.Models.ArticleType;
 
 namespace SORANO.WEB.Infrastructure.Extensions
 {
     public static class ArticleExtensions
     {
-        public static ArticleModel ToModel(this Article article, ArticleTypeModel type)
+        public static ArticleModel ToModel(this Article article)
         {
             return new ArticleModel
             {
@@ -17,7 +16,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 Producer = article.Producer,
                 Description = article.Description,
                 Barcode = article.Barcode,                
-                Type = type,
+                Type = article.Type.ToModel(false),
                 Recommendations = article.Recommendations?.Select(r => r.ToModel()).ToList(),
                 CanBeDeleted = !article.DeliveryItems.Any() && !article.IsDeleted,
                 IsDeleted = article.IsDeleted,
