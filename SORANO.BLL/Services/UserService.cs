@@ -74,9 +74,23 @@ namespace SORANO.BLL.Services
 
             var roles = await _unitOfWork.Get<Role>().GetAllAsync();
 
-            var rolesToAttach = roles.Where(r => user.Roles.Select(x => x.ID).Contains(r.ID));
+            // Add new roles
+            user.Roles.ToList().ForEach(r =>
+            {
+                if (!existentUser.Roles.Select(er => er.ID).Contains(r.ID))
+                {
+                    existentUser.Roles.Add(roles.Single(x => x.ID == r.ID));
+                }
+            });
 
-            existentUser.Roles = rolesToAttach.ToList();
+            // Remove deleted roles
+            existentUser.Roles.ToList().ForEach(er =>
+            {
+                if (!user.Roles.Select(r => r.ID).Contains(er.ID))
+                {
+                    existentUser.Roles.Remove(er);
+                }
+            });
 
             var updated = _unitOfWork.Get<User>().Update(existentUser);
 

@@ -55,7 +55,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 ID = model.ID,
                 Login = model.Login,
                 Description = model.Description,
-                Password = model.Password,
+                Password = model.NewPassword ?? model.Password,
                 Roles = model.RoleIDs.Select(r => new Role
                 {
                     ID = int.Parse(r)

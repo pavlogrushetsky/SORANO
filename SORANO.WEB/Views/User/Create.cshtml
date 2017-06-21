@@ -9,7 +9,7 @@
     ViewBag.Title = "SORANO - " + title + " пользователя";
     ViewBag.Header = title;
     ViewBag.Description = "пользователя";
-    ViewBag.Icon = "fa fa-user-plus";
+    ViewBag.Icon = "fa " + (isEdit ? "fa-pencil-square" : "fa-user-plus");
 }
 
 @section Breadcrumb {

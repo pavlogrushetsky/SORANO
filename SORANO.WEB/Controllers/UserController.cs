@@ -68,9 +68,9 @@ namespace SORANO.WEB.Controllers
         {
             var user = await _userService.GetAsync(id);
 
-            var currentUser = GetCurrentUser();
+            var currentUser = await GetCurrentUser();
 
-            return View(user.ToModel(user.ID == currentUser.Id));
+            return View(user.ToModel(user.ID == currentUser.ID));
         }
 
         /// <summary>
@@ -170,6 +170,16 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
+                var roles = await _roleService.GetAllAsync();
+
+                var userRoles = roles.Select(r => new SelectListItem
+                {
+                    Value = r.ID.ToString(),
+                    Text = r.Description
+                });
+
+                ViewBag.Roles = userRoles;
+
                 if (!ModelState.IsValid)
                 {
                     ViewData["IsEdit"] = true;
