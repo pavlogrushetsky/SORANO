@@ -14,7 +14,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 ID = type.ID,
                 Name = type.Name,
                 Description = type.Description,
-                CanBeDeleted = !type.Articles.Any(a => !a.IsDeleted) && !type.IsDeleted,      
+                CanBeDeleted = type.Articles.All(a => a.IsDeleted) && !type.IsDeleted,      
                 IsDeleted = type.IsDeleted,
                 Created = type.CreatedDate.ToString("dd.MM.yyyy"),
                 Modified = type.ModifiedDate.ToString("dd.MM.yyyy"),
@@ -38,7 +38,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
         
         public static List<ArticleTypeModel> ToTree(this List<ArticleType> types)
         {
-            var parents = types.Where(t => t.ParentTypeId == null).Select(t => t.ToModel(false)).ToList();
+            var parents = types.Where(t => t.ParentTypeId == null).Select(t => t.ToModel()).ToList();
 
             parents.ForEach(p =>
             {
@@ -50,7 +50,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
 
         private static void FillChildren(this ArticleTypeModel parent, List<ArticleType> children)
         {
-            parent.ChildTypes = children.Where(c => c.ParentTypeId == parent.ID).Select(c => c.ToModel(false)).ToList();
+            parent.ChildTypes = children.Where(c => c.ParentTypeId == parent.ID).Select(c => c.ToModel()).ToList();
 
             parent.ChildTypes.ToList().ForEach(c =>
             {

@@ -61,13 +61,15 @@ namespace SORANO.WEB.Controllers
         /// Get Update/Create view for specified article
         /// </summary>
         /// <param name="id">Article identifier</param>
+        /// <param name="returnUrl"></param>
         /// <returns>Update/Create view</returns>
         [HttpGet]
-        public async Task<IActionResult> Update(int id)
+        public async Task<IActionResult> Update(int id, string returnUrl = null)
         {
             var article = await _articleService.GetAsync(id);
 
             var model = TempData.Get<ArticleModel>("ArticleModel") ?? article.ToModel();
+            model.ReturnUrl = returnUrl;
 
             ViewData["IsEdit"] = true;
 
@@ -78,26 +80,34 @@ namespace SORANO.WEB.Controllers
         /// Get Details view for specified article
         /// </summary>
         /// <param name="id">Article identifier</param>
+        /// <param name="returnUrl"></param>
         /// <returns>Details view</returns>
         [HttpGet]
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(int id, string returnUrl = null)
         {
             var article = await _articleService.GetAsync(id);
 
-            return View(article.ToModel());
+            var model = article.ToModel();
+            model.ReturnUrl = returnUrl;
+
+            return View(model);
         }
 
         /// <summary>
         /// Get Delete view for specified article
         /// </summary>
         /// <param name="id">Article identifier</param>
+        /// <param name="returnUrl"></param>
         /// <returns>Delete view</returns>
         [HttpGet]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, string returnUrl = null)
         {
             var article = await _articleService.GetAsync(id);
 
-            return View(article.ToModel());
+            var model = article.ToModel();
+            model.ReturnUrl = returnUrl;
+
+            return View(model);
         }        
 
         #endregion
@@ -108,7 +118,7 @@ namespace SORANO.WEB.Controllers
         /// Post article for redirection to article type selection view
         /// </summary>
         /// <param name="model">Article model</param>
-        /// <param name="returnUrl">Return url</param>
+        /// <param name="return">Return url</param>
         /// <returns>Article type Select view</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -159,7 +169,7 @@ namespace SORANO.WEB.Controllers
 
                 ModelState.AddModelError("", "Не удалось создать новый артикул.");
                 return View(model);
-            }, (ex) => 
+            }, ex => 
             {
                 ModelState.AddModelError("", ex);
                 return View(model);
@@ -192,13 +202,13 @@ namespace SORANO.WEB.Controllers
 
                 if (article != null)
                 {
-                    return RedirectToAction("Index", "Article");
+                    return Redirect(model.ReturnUrl);
                 }
 
                 ModelState.AddModelError("", "Не удалось обновить артикул.");
                 ViewData["IsEdit"] = true;
                 return View("Create", model);
-            }, (ex) =>
+            }, ex =>
             {
                 ModelState.AddModelError("", ex);
                 ViewData["IsEdit"] = true;
@@ -215,11 +225,8 @@ namespace SORANO.WEB.Controllers
 
                 await _articleService.DeleteAsync(model.ID, currentUser.ID);
 
-                return RedirectToAction("Index", "Article");
-            }, (ex) => 
-            {
-                return RedirectToAction("Index", "Article");
-            });            
+                return Redirect(model.ReturnUrl);
+            }, ex => Redirect(model.ReturnUrl));            
         }        
 
         #endregion
