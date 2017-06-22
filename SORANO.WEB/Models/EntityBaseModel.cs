@@ -31,7 +31,5 @@ namespace SORANO.WEB.Models
 
         [Display(Name = "Статус")]
         public virtual bool IsDeleted { get; set; }
-
-        public string ReturnUrl { get; set; }
     }
 }

@@ -30,6 +30,13 @@ namespace SORANO.WEB
         {
             services.AddMvc();
 
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                options.CookieName = ".SORANO.Session";
+            });
+
             services.AddScoped(_ => new StockContext(Configuration.GetConnectionString("SORANO")));
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
 
@@ -63,12 +70,14 @@ namespace SORANO.WEB
                 AutomaticChallenge = true
             });
 
+            app.UseSession();
+
             app.UseMvc(routes => 
             {
                 routes.MapRoute(
                     "default", 
                     "{controller=Home}/{action=Index}/{id?}");
-            });
+            });            
         }
     }
 }

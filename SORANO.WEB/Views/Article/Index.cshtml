@@ -42,7 +42,6 @@
                         <a class="btn btn-default btn-xs pull-right"
                            asp-controller="Article"
                            asp-action="Create"
-                           asp-route-returnUrl="@ViewContext.HttpContext.Request.PathAndQuery()"
                            data-toggle="tooltip"
                            data-placement="right"
                            data-original-title="Добавить артикул"
@@ -52,13 +51,13 @@
                         <a class="btn btn-default btn-xs pull-right"
                            style="margin-right: 5px;"
                            asp-controller="Article"
-                           asp-action="Index"
-                           asp-route-withdeleted=@(ViewBag.WithDeleted ? "false" : "true")
+                           asp-action="ShowDeletedArticles"
+                           asp-route-show=@(ViewBag.ShowDeletedArticles ? "false" : "true")
                            data-toggle="tooltip"
                            data-placement="right"
-                           data-original-title=@(ViewBag.WithDeleted ? "Скрыть удалённые" : "Отобразить удалённые")
+                           data-original-title=@(ViewBag.ShowDeletedArticles ? "Скрыть удалённые артикулы" : "Отобразить удалённые артикулы")
                            title="">
-                            <i class="fa @(ViewBag.WithDeleted ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
+                            <i class="fa @(ViewBag.ShowDeletedArticles ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
                         </a>
                         <div class="clearfix"></div>
                     </div>
@@ -92,7 +91,6 @@
                                             <a asp-controller="Article"
                                                asp-action="Details"
                                                asp-route-id="@Model[i].ID"
-                                               asp-route-returnUrl="@ViewContext.HttpContext.Request.PathAndQuery()"
                                                data-toggle="tooltip"
                                                data-placement="bottom"
                                                data-original-title="Просмотреть информацию об артикуле"
@@ -106,7 +104,6 @@
                                             <a asp-controller="Article"
                                                asp-action="Details"
                                                asp-route-id="@Model[i].ID"
-                                               asp-route-returnUrl="@ViewContext.HttpContext.Request.PathAndQuery()"
                                                class="btn btn-xs btn-default"
                                                data-toggle="tooltip"
                                                data-placement="bottom"
@@ -119,7 +116,6 @@
                                                 <a asp-controller="Article"
                                                    asp-action="Update"
                                                    asp-route-id="@Model[i].ID"
-                                                   asp-route-returnUrl="@ViewContext.HttpContext.Request.PathAndQuery()"
                                                    class="btn btn-xs btn-default"
                                                    data-toggle="tooltip"
                                                    data-placement="bottom"
@@ -130,7 +126,6 @@
                                                 <a asp-controller="Article"
                                                    asp-action="Delete"
                                                    asp-route-id="@Model[i].ID"
-                                                   asp-route-returnUrl="@ViewContext.HttpContext.Request.PathAndQuery()"
                                                    class="btn btn-xs btn-danger @(Model[i].CanBeDeleted ? "" : "disabled")"
                                                    data-toggle="tooltip"
                                                    data-placement="bottom"
@@ -153,7 +148,6 @@
                         <a class="btn btn-default btn-xs pull-right"
                            asp-controller="ArticleType"
                            asp-action="Create"
-                           asp-route-returnUrl="@ViewContext.HttpContext.Request.PathAndQuery()"
                            data-toggle="tooltip"
                            data-placement="right"
                            data-original-title="Добавить тип артикулов"
@@ -162,21 +156,21 @@
                         </a>
                         <a class="btn btn-default btn-xs pull-right"
                            style="margin-right: 5px;"
-                           asp-controller="Article"
-                           asp-action="Index"
-                           asp-route-withdeleted=@(ViewBag.WithDeleted ? "false" : "true")
+                           asp-controller="ArticleType"
+                           asp-action="ShowDeletedArticleTypes"
+                           asp-route-show=@(ViewBag.ShowDeletedArticleTypes ? "false" : "true")
                            data-toggle="tooltip"
                            data-placement="right"
-                           data-original-title=@(ViewBag.WithDeleted ? "Скрыть удалённые" : "Отобразить удалённые")
+                           data-original-title=@(ViewBag.ShowDeletedArticleTypes ? "Скрыть удалённые типы артикулов" : "Отобразить удалённые типы артикулов")
                            title="">
-                            <i class="fa @(ViewBag.WithDeleted ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
+                            <i class="fa @(ViewBag.ShowDeletedArticleTypes ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
                         </a>
                         <div class="clearfix"></div>
                     </div>
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-lg-6 col-sm-12">
-                                @await Component.InvokeAsync("ArticleTypes", new { withDeleted = ViewBag.WithDeleted })                               
+                                @await Component.InvokeAsync("ArticleTypes", new { withDeleted = ViewBag.ShowDeletedArticleTypes })                               
                             </div>
                             <div class="col-lg-6 col-sm-12">
                                 <div id="details">

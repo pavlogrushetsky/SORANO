@@ -50,7 +50,6 @@
                 <input type="hidden" asp-for="ArticleType.ID"/>
                 <input type="hidden" asp-for="ArticleType.Name"/>
                 <input type="hidden" asp-for="ArticleType.Description"/>
-                <input type="hidden" asp-for="ArticleType.ReturnUrl" />
 
                 for (int i = 0; i < Model.ArticleType.Recommendations.Count; i++)
                 {
@@ -75,12 +74,11 @@
                 <input type="hidden" asp-for="Article.Producer" />
                 <input type="hidden" asp-for="Article.Code" />
                 <input type="hidden" asp-for="Article.Barcode" />
-                <input type="hidden" asp-for="Article.ReturnUrl" />
 
                 <input type="hidden" asp-for="Article.Type.ID"/>
                 <input type="hidden" asp-for="Article.Type.Name" />
             }
-                     
+            <input type="hidden" asp-for="ReturnUrl" />         
             @for (var i = 0; i < Model.Types.Count; i++)
             {
                 @Html.HiddenFor(m => m.Types[i].ID)
@@ -88,7 +86,6 @@
                 @Html.HiddenFor(m => m.Types[i].Description)
                 @Html.HiddenFor(m => m.Types[i].IsSelected, new {id = "typeID_" + Model.Types[i].ID, @class = "selectedInput"})
             }
-            <input type="hidden" asp-for="ReturnUrl"/>
             @if (Model.Types.Any())
             {
                 <div class="form-group">

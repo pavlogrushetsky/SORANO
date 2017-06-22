@@ -6,6 +6,7 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.Article;
 using SORANO.WEB.Models.ArticleType;
+using Microsoft.AspNetCore.Http;
 
 namespace SORANO.WEB.Controllers
 {
@@ -22,10 +23,17 @@ namespace SORANO.WEB.Controllers
         #region GET Actions
 
         [HttpGet]
-        public IActionResult Create(string returnUrl = null)
+        public IActionResult ShowDeletedArticleTypes(bool show)
+        {
+            HttpContext.Session.SetBool("ShowDeletedArticleTypes", show);
+
+            return RedirectToAction("Index", "Article");
+        }
+
+        [HttpGet]
+        public IActionResult Create()
         {
             var model = TempData.Get<ArticleTypeModel>("ArticleTypeModel") ?? new ArticleTypeModel();
-            model.ReturnUrl = returnUrl;
 
             return View(model);
         }
@@ -51,9 +59,9 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Select(string @return)
+        public async Task<IActionResult> Select(string returnUrl)
         {
-            if (string.IsNullOrEmpty(@return))
+            if (string.IsNullOrEmpty(returnUrl))
             {
                 return BadRequest();
             }
@@ -63,7 +71,7 @@ namespace SORANO.WEB.Controllers
 
             if (typeModel == null && articleModel == null)
             {
-                return Redirect(@return);
+                return Redirect(returnUrl);
             }
 
             var types = await _articleTypeService.GetAllAsync(false);
@@ -73,7 +81,7 @@ namespace SORANO.WEB.Controllers
                 Types = types.Select(t => t.ToModel()).ToList(),
                 ArticleType = typeModel,
                 Article = articleModel,
-                ReturnUrl = @return
+                ReturnUrl = returnUrl
             };
 
             if (typeModel != null)
@@ -147,7 +155,7 @@ namespace SORANO.WEB.Controllers
                 // If succeeded
                 if (articleType != null)
                 {
-                    return Redirect(model.ReturnUrl);
+                    return RedirectToAction("Index", "Article");
                 }
 
                 // If failed

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.Article;
+using Microsoft.AspNetCore.Http;
 
 namespace SORANO.WEB.Controllers
 {
@@ -35,13 +36,30 @@ namespace SORANO.WEB.Controllers
         /// <param name="withDeleted">Show deleted articles</param>
         /// <returns>Index view</returns>
         [HttpGet]
-        public async Task<IActionResult> Index(bool withDeleted = false)
+        public async Task<IActionResult> Index()
         {
-            var articles = await _articleService.GetAllAsync(withDeleted);
+            bool showDeletedArticles = HttpContext.Session.GetBool("ShowDeletedArticles");
+            bool showDeletedArticleTypes = HttpContext.Session.GetBool("ShowDeletedArticleTypes");
 
-            ViewBag.WithDeleted = withDeleted;
+            var articles = await _articleService.GetAllAsync(showDeletedArticles);
+
+            ViewBag.ShowDeletedArticles = showDeletedArticles;
+            ViewBag.ShowDeletedArticleTypes = showDeletedArticleTypes;
 
             return View(articles.Select(a => a.ToModel()).ToList());
+        }
+
+        /// <summary>
+        /// Reload Index view with/without showing deleted articles
+        /// </summary>
+        /// <param name="show">If true show deleted articles</param>
+        /// <returns>Redirection to Index view</returns>
+        [HttpGet]
+        public IActionResult ShowDeletedArticles(bool show)
+        {
+            HttpContext.Session.SetBool("ShowDeletedArticles", show);
+
+            return RedirectToAction("Index");
         }
 
         /// <summary>
@@ -49,10 +67,9 @@ namespace SORANO.WEB.Controllers
         /// </summary>
         /// <returns>Create view</returns>
         [HttpGet]
-        public IActionResult Create(string returnUrl = null)
+        public IActionResult Create()
         {
             var model = TempData.Get<ArticleModel>("ArticleModel") ?? new ArticleModel();
-            model.ReturnUrl = returnUrl;
 
             return View(model);
         }
@@ -64,12 +81,11 @@ namespace SORANO.WEB.Controllers
         /// <param name="returnUrl"></param>
         /// <returns>Update/Create view</returns>
         [HttpGet]
-        public async Task<IActionResult> Update(int id, string returnUrl = null)
+        public async Task<IActionResult> Update(int id)
         {
             var article = await _articleService.GetAsync(id);
 
             var model = TempData.Get<ArticleModel>("ArticleModel") ?? article.ToModel();
-            model.ReturnUrl = returnUrl;
 
             ViewData["IsEdit"] = true;
 
@@ -83,12 +99,11 @@ namespace SORANO.WEB.Controllers
         /// <param name="returnUrl"></param>
         /// <returns>Details view</returns>
         [HttpGet]
-        public async Task<IActionResult> Details(int id, string returnUrl = null)
+        public async Task<IActionResult> Details(int id)
         {
             var article = await _articleService.GetAsync(id);
 
             var model = article.ToModel();
-            model.ReturnUrl = returnUrl;
 
             return View(model);
         }
@@ -100,12 +115,11 @@ namespace SORANO.WEB.Controllers
         /// <param name="returnUrl"></param>
         /// <returns>Delete view</returns>
         [HttpGet]
-        public async Task<IActionResult> Delete(int id, string returnUrl = null)
+        public async Task<IActionResult> Delete(int id)
         {
             var article = await _articleService.GetAsync(id);
 
             var model = article.ToModel();
-            model.ReturnUrl = returnUrl;
 
             return View(model);
         }        
@@ -122,11 +136,11 @@ namespace SORANO.WEB.Controllers
         /// <returns>Article type Select view</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult SelectParentType(ArticleModel model, string @return)
+        public IActionResult SelectParentType(ArticleModel model, string returnUrl)
         {
             TempData.Put("ArticleModel", model);
 
-            return RedirectToAction("Select", "ArticleType", new { @return });
+            return RedirectToAction("Select", "ArticleType", new { returnUrl });
         }
 
         /// <summary>
@@ -164,7 +178,7 @@ namespace SORANO.WEB.Controllers
 
                 if (article != null)
                 {
-                    return Redirect(model.ReturnUrl);
+                    return RedirectToAction("Index", "Article");
                 }
 
                 ModelState.AddModelError("", "Не удалось создать новый артикул.");
@@ -202,7 +216,7 @@ namespace SORANO.WEB.Controllers
 
                 if (article != null)
                 {
-                    return Redirect(model.ReturnUrl);
+                    return RedirectToAction("Index", "Article");
                 }
 
                 ModelState.AddModelError("", "Не удалось обновить артикул.");
@@ -225,8 +239,8 @@ namespace SORANO.WEB.Controllers
 
                 await _articleService.DeleteAsync(model.ID, currentUser.ID);
 
-                return Redirect(model.ReturnUrl);
-            }, ex => Redirect(model.ReturnUrl));            
+                return RedirectToAction("Index", "Article");
+            }, ex => RedirectToAction("Index", "Article"));            
         }        
 
         #endregion
