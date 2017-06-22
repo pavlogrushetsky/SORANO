@@ -6,7 +6,7 @@ namespace SORANO.BLL.Services.Abstract
 {
     public interface ISupplierService
     {
-        Task<IEnumerable<Supplier>> GetAllAsync();
+        Task<IEnumerable<Supplier>> GetAllAsync(bool withDeleted);
 
         Task<Supplier> CreateAsync(Supplier supplier, int userId);
 

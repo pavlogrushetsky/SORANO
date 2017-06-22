@@ -23,9 +23,21 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var suppliers = await _supplierService.GetAllAsync();
+            bool showDeleted = HttpContext.Session.GetBool("ShowDeletedSuppliers");
+
+            var suppliers = await _supplierService.GetAllAsync(showDeleted);
+
+            ViewBag.ShowDeleted = showDeleted;
 
             return View(suppliers.Select(s => s.ToModel()).ToList());
+        }
+
+        [HttpGet]
+        public IActionResult ShowDeleted(bool show)
+        {
+            HttpContext.Session.SetBool("ShowDeletedSuppliers", show);
+
+            return RedirectToAction("Index");
         }
 
         [HttpGet]

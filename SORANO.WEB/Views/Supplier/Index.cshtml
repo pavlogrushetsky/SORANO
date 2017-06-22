@@ -34,6 +34,17 @@
                    title="">
                     <i class="fa fa-plus" aria-hidden="true"></i>
                 </a>
+                <a class="btn btn-default btn-xs pull-right"
+                   style="margin-right: 5px;"
+                   asp-controller="Supplier"
+                   asp-action="ShowDeleted"
+                   asp-route-show=@(ViewBag.ShowDeleted ? "false" : "true")
+                   data-toggle="tooltip"
+                   data-placement="right"
+                   data-original-title=@(ViewBag.ShowDeleted ? "Скрыть удалённых поставщиков" : "Отобразить удалённые поставщики")
+                   title="">
+                    <i class="fa @(ViewBag.ShowDeleted ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
+                </a>
                 <div class="clearfix"></div>
             </div>
             <div class="panel-body">
@@ -55,7 +66,7 @@
                     <tbody>
                         @foreach (var supplier in Model)
                         {
-                            <tr>
+                            <tr class="@(supplier.IsDeleted ? "danger" : "")">
                                 <td>@supplier.ID</td>
                                 <td>
                                     <a asp-controller="Supplier"
@@ -80,26 +91,32 @@
                                        title="">
                                         <i class="fa fa-info-circle" aria-hidden="true"></i>
                                     </a>
-                                    <a asp-controller="Supplier"
-                                       asp-action="Update"
-                                       asp-route-id="@supplier.ID"
-                                       class="btn btn-xs btn-default"
-                                       data-toggle="tooltip"
-                                       data-placement="bottom"
-                                       data-original-title="Редактировать свойства поставщика"
-                                       title="">
-                                        <i class="fa fa-pencil-square" aria-hidden="true"></i>
-                                    </a>
-                                    <a class="btn btn-xs btn-danger @(supplier.CanBeDeleted ? "" : "disabled")"
-                                       data-toggle="tooltip"
-                                       data-placement="bottom"
-                                       data-original-title="Удалить поставщика"
-                                       title=""
-                                       asp-controller="Supplier"
-                                       asp-action="Delete"
-                                       asp-route-id="@supplier.ID">
-                                        <i class="fa fa-trash" aria-hidden="true"></i>
-                                    </a>
+                                    @if (!supplier.IsDeleted)
+                                    {
+                                        <a asp-controller="Supplier"
+                                           asp-action="Update"
+                                           asp-route-id="@supplier.ID"
+                                           class="btn btn-xs btn-default"
+                                           data-toggle="tooltip"
+                                           data-placement="bottom"
+                                           data-original-title="Редактировать свойства поставщика"
+                                           title="">
+                                            <i class="fa fa-pencil-square" aria-hidden="true"></i>
+                                        </a>
+                                        @if (supplier.CanBeDeleted)
+                                        {
+                                            <a class="btn btn-xs btn-danger"
+                                               data-toggle="tooltip"
+                                               data-placement="bottom"
+                                               data-original-title="Удалить поставщика"
+                                               title=""
+                                               asp-controller="Supplier"
+                                               asp-action="Delete"
+                                               asp-route-id="@supplier.ID">
+                                                <i class="fa fa-trash" aria-hidden="true"></i>
+                                            </a>
+                                        }
+                                    }                                    
                                 </td>
                             </tr>
                         }
@@ -130,19 +147,20 @@
                     "infoEmpty": "Записи отсутствуют",
                     "infoFiltered": "(Отфильтровано из _MAX_ записей)",
                     "search": "Поиск"
+                },
+                "drawCallback": function () {
+                    $('.pagination').addClass('pagination-sm');
                 }
             });
 
             table.columns().eq( 0 ).each( function ( colIdx ) {
-                $( 'input', $('th')[colIdx] ).on( 'keyup change', function () {
+                $('input', $('#suppliers-datatable th')[colIdx] ).on( 'keyup change', function () {
                     table
                         .column( colIdx )
                         .search( this.value )
                         .draw();
                 });
             });
-
-            $('.pagination').first().addClass('pagination-sm');
         });
     </script>
 }

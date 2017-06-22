@@ -7,6 +7,11 @@
     ViewBag.Icon = "fa fa-info-circle";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/lib/datatables.net-bs/css/dataTables.bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" />
+}
+
 @section Breadcrumb {
     <ul class="breadcrumb">
         <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
@@ -119,32 +124,48 @@
                     @Html.DisplayFor(model => model.DeletedBy)
                 </dd>
             }
-            @if (Model.Recommendations.Any())
-            {
-                <dt>
-                    @Html.DisplayNameFor(model => model.Recommendations)
-                </dt>
-                <dd>
-                    <table class="table table-striped">
-                        <tr>
-                            <th>Текст</th>
-                            <th>Значение</th>
-                        </tr>
-                        @foreach (var recommendation in Model.Recommendations)
-                        {
-                            <tr>
-                                <td>
-                                    @Html.DisplayFor(modelItem => recommendation.Comment)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => recommendation.ValueString)
-                                </td>
-                            </tr>
-                        }
-                    </table>
-                </dd>
-            }
         </dl>
+    </div>
+    <div class="row">
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseRecommendations">
+                            <span>
+                                <i class="fa fa-fw fa-comments" aria-hidden="true"></i>
+                                @Html.DisplayNameFor(m => m.Recommendations)
+                                <span class="badge pull-right">@Model.Recommendations.Count</span>
+                            </span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseRecommendations" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        @Html.Partial("~/Views/Shared/_Recommendations.cshtml", Model.Recommendations)
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseDeliveries">
+                            <span>
+                                <i class="fa fa-fw fa-cart-arrow-down" aria-hidden="true"></i>
+                                @* TODO *@
+                                Позиции поставок 
+                                <span class="badge pull-right">0</span>
+                            </span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseDeliveries" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        @* TODO *@
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="row">
         <a class="btn btn-default" asp-action="Index" asp-controller="Article">
@@ -153,3 +174,38 @@
         </a>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/lib/datatables.net-responsive-bs/js/responsive.bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var recommendationsTable = $("#recommendations-datatable").DataTable({
+                responsive: true,
+                "pagingType": "numbers",
+                "language": {
+                    "lengthMenu": "Отобразить _MENU_ рекомендаций на странице",
+                    "zeroRecords": "Рекомендации отсутствуют",
+                    "info": "Отображение страницы _PAGE_ из _PAGES_",
+                    "infoEmpty": "Записи отсутствуют",
+                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                    "search": "Поиск"
+                },
+                "drawCallback": function () {
+                    $('.pagination').addClass('pagination-sm');
+                }
+            });
+
+            recommendationsTable.columns().eq( 0 ).each( function ( colIdx ) {
+                $( 'input', $('#recommendations-datatable th')[colIdx] ).on( 'keyup change', function () {
+                    recommendationsTable
+                        .column( colIdx )
+                        .search( this.value )
+                        .draw();
+                });
+            });
+        });
+    </script>
+}

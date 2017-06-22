@@ -13,12 +13,15 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 ID = supplier.ID,
                 Name = supplier.Name,
                 Description = supplier.Description,
-                Recommendations = supplier.Recommendations?.Select(r => r.ToModel()).ToList(),
-                CanBeDeleted = !supplier.Deliveries.Any(),
+                Recommendations = supplier.Recommendations?.Where(r => !r.IsDeleted).Select(r => r.ToModel()).ToList(),
+                CanBeDeleted = !supplier.Deliveries.Any() && !supplier.IsDeleted,
+                IsDeleted = supplier.IsDeleted,
                 Created = supplier.CreatedDate.ToString("dd.MM.yyyy"),
                 Modified = supplier.ModifiedDate.ToString("dd.MM.yyyy"),
+                Deleted = supplier.DeletedDate?.ToString("dd.MM.yyyy"),
                 CreatedBy = supplier.CreatedByUser?.Login,
-                ModifiedBy = supplier.ModifiedByUser?.Login
+                ModifiedBy = supplier.ModifiedByUser?.Login,
+                DeletedBy = supplier.DeletedByUser?.Login
             };
         }
 

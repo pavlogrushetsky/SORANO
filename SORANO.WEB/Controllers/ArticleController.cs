@@ -55,7 +55,7 @@ namespace SORANO.WEB.Controllers
         /// <param name="show">If true show deleted articles</param>
         /// <returns>Redirection to Index view</returns>
         [HttpGet]
-        public IActionResult ShowDeletedArticles(bool show)
+        public IActionResult ShowDeleted(bool show)
         {
             HttpContext.Session.SetBool("ShowDeletedArticles", show);
 

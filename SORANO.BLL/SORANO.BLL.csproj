@@ -51,6 +51,7 @@
     </Compile>
     <Compile Include="Services\Abstract\IArticleService.cs" />
     <Compile Include="Services\Abstract\IArticleTypeService.cs" />
+    <Compile Include="Services\Abstract\IAttachmentTypeService.cs" />
     <Compile Include="Services\Abstract\ILocationService.cs" />
     <Compile Include="Services\Abstract\ILocationTypeService.cs" />
     <Compile Include="Services\Abstract\IRoleService.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="Services\Abstract\IUserService.cs" />
     <Compile Include="Services\ArticleService.cs" />
     <Compile Include="Services\ArticleTypeService.cs" />
+    <Compile Include="Services\AttachmentTypeService.cs" />
     <Compile Include="Services\BaseService.cs" />
     <Compile Include="Services\LocationService.cs" />
     <Compile Include="Services\LocationTypeService.cs" />

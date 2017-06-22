@@ -18,11 +18,13 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 IsDeleted = type.IsDeleted,
                 Created = type.CreatedDate.ToString("dd.MM.yyyy"),
                 Modified = type.ModifiedDate.ToString("dd.MM.yyyy"),
+                Deleted = type.DeletedDate?.ToString("dd.MM.yyyy"),
                 CreatedBy = type.CreatedByUser?.Login,
                 ModifiedBy = type.ModifiedByUser?.Login,
+                DeletedBy = type.DeletedByUser?.Login
             };
 
-            model.Recommendations = type.Recommendations?.Select(r => r.ToModel()).ToList();
+            model.Recommendations = type.Recommendations?.Where(r => !r.IsDeleted).Select(r => r.ToModel()).ToList();
 
             if (!deep)
             {

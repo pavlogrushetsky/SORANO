@@ -133,6 +133,51 @@ namespace SORANO.BLL.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Тип вложений не может быть удалён..
+        /// </summary>
+        internal static string AttachmentTypeCannotBeDeletedException {
+            get {
+                return ResourceManager.GetString("AttachmentTypeCannotBeDeletedException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Тип вложений не может быть null..
+        /// </summary>
+        internal static string AttachmentTypeCannotBeNullException {
+            get {
+                return ResourceManager.GetString("AttachmentTypeCannotBeNullException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Недопустимое значение идентификатора типа вложений..
+        /// </summary>
+        internal static string AttachmentTypeInvalidIdentifierException {
+            get {
+                return ResourceManager.GetString("AttachmentTypeInvalidIdentifierException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Тип вложений не найден..
+        /// </summary>
+        internal static string AttachmentTypeNotFoundException {
+            get {
+                return ResourceManager.GetString("AttachmentTypeNotFoundException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Тип вложений с таким названием уже существует..
+        /// </summary>
+        internal static string AttachmentTypeWithSameNameException {
+            get {
+                return ResourceManager.GetString("AttachmentTypeWithSameNameException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Место не может быть удалено..
         /// </summary>
         internal static string LocationCannotBeDeletedException {

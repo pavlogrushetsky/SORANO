@@ -189,4 +189,19 @@
   <data name="LocationCannotBeDeletedException" xml:space="preserve">
     <value>Место не может быть удалено.</value>
   </data>
+  <data name="AttachmentTypeCannotBeNullException" xml:space="preserve">
+    <value>Тип вложений не может быть null.</value>
+  </data>
+  <data name="AttachmentTypeInvalidIdentifierException" xml:space="preserve">
+    <value>Недопустимое значение идентификатора типа вложений.</value>
+  </data>
+  <data name="AttachmentTypeNotFoundException" xml:space="preserve">
+    <value>Тип вложений не найден.</value>
+  </data>
+  <data name="AttachmentTypeCannotBeDeletedException" xml:space="preserve">
+    <value>Тип вложений не может быть удалён.</value>
+  </data>
+  <data name="AttachmentTypeWithSameNameException" xml:space="preserve">
+    <value>Тип вложений с таким названием уже существует.</value>
+  </data>
 </root>

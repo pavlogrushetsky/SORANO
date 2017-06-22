@@ -57,9 +57,16 @@ namespace SORANO.BLL.Services
             return saved;
         }
 
-        public async Task<IEnumerable<Supplier>> GetAllAsync()
+        public async Task<IEnumerable<Supplier>> GetAllAsync(bool withDeleted)
         {
-            return await _unitOfWork.Get<Supplier>().GetAllAsync();
+            var suppliers = await _unitOfWork.Get<Supplier>().GetAllAsync();
+
+            if (!withDeleted)
+            {
+                return suppliers.Where(s => !s.IsDeleted);
+            }
+
+            return suppliers;
         }
 
         public async Task<Supplier> GetAsync(int id)

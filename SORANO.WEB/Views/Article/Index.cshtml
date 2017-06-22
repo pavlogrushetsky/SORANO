@@ -51,7 +51,7 @@
                         <a class="btn btn-default btn-xs pull-right"
                            style="margin-right: 5px;"
                            asp-controller="Article"
-                           asp-action="ShowDeletedArticles"
+                           asp-action="ShowDeleted"
                            asp-route-show=@(ViewBag.ShowDeletedArticles ? "false" : "true")
                            data-toggle="tooltip"
                            data-placement="right"
@@ -98,7 +98,17 @@
                                                 @Model[i].Name
                                             </a>
                                         </td>
-                                        <td>@Model[i].Type.Name</td>
+                                        <td>
+                                            <a asp-controller="ArticleType"
+                                               asp-action="Details"
+                                               asp-route-id="@Model[i].Type.ID"
+                                               data-toggle="tooltip"
+                                               data-placement="bottom"
+                                               data-original-title="Просмотреть информацию о типе артикулов"
+                                               title="">
+                                                @Model[i].Type.Name
+                                            </a>
+                                        </td>
                                         <td>@Model[i].Producer</td>
                                         <td>
                                             <a asp-controller="Article"
@@ -157,7 +167,7 @@
                         <a class="btn btn-default btn-xs pull-right"
                            style="margin-right: 5px;"
                            asp-controller="ArticleType"
-                           asp-action="ShowDeletedArticleTypes"
+                           asp-action="ShowDeleted"
                            asp-route-show=@(ViewBag.ShowDeletedArticleTypes ? "false" : "true")
                            data-toggle="tooltip"
                            data-placement="right"
@@ -237,6 +247,9 @@
                     "infoEmpty": "Записи отсутствуют",
                     "infoFiltered": "(Отфильтровано из _MAX_ записей)",
                     "search": "Поиск"
+                },
+                "drawCallback": function () {
+                    $('.pagination').first().addClass('pagination-sm');
                 }
             });
 
@@ -249,8 +262,6 @@
                             .draw();
                     });
             });  
-
-            $('.pagination').first().addClass('pagination-sm');
         });
     </script>
 }

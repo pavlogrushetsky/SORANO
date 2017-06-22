@@ -155,6 +155,15 @@
     <script src="~/lib/datatables.net-responsive-bs/js/responsive.bootstrap.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                localStorage.setItem('locations-active-tab', $(e.target).attr('href'));
+            });
+
+            var lastTab = localStorage.getItem('locations-active-tab');
+            if (lastTab) {
+                $('[href="' + lastTab + '"]').tab('show');
+            }
+
             var locationsTable = $("#locations-datatable").DataTable({
                 responsive: true,
                 "columnDefs": [

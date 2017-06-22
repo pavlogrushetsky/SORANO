@@ -17,7 +17,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 Description = article.Description,
                 Barcode = article.Barcode,                
                 Type = article.Type.ToModel(false),
-                Recommendations = article.Recommendations?.Select(r => r.ToModel()).ToList(),
+                Recommendations = article.Recommendations?.Where(r => !r.IsDeleted).Select(r => r.ToModel()).ToList(),
                 CanBeDeleted = !article.DeliveryItems.Any() && !article.IsDeleted,
                 IsDeleted = article.IsDeleted,
                 Created = article.CreatedDate.ToString("dd.MM.yyyy"),

@@ -50,6 +50,7 @@ namespace SORANO.WEB
             services.AddTransient<ISupplierService, SupplierService>();
             services.AddTransient<ILocationService, LocationService>();
             services.AddTransient<ILocationTypeService, LocationTypeService>();
+            services.AddTransient<IAttachmentTypeService, AttachmentTypeService>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

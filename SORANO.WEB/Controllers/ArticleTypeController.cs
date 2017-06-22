@@ -23,7 +23,7 @@ namespace SORANO.WEB.Controllers
         #region GET Actions
 
         [HttpGet]
-        public IActionResult ShowDeletedArticleTypes(bool show)
+        public IActionResult ShowDeleted(bool show)
         {
             HttpContext.Session.SetBool("ShowDeletedArticleTypes", show);
 
