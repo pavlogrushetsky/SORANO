@@ -95,6 +95,60 @@
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="form-group">
+                <label class="control-label">Вложения:</label>
+                <div id="attachments">
+                    <table class="table table-responsive" style="width: 100%; margin-bottom: 2px;">
+                        <tbody>
+                        <tr>
+                            <td style="width: 70%; padding: 2px;">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-file-image-o"></i></span>
+                                    <input class="form-control" type="text" />
+                                </div>
+                            </td>
+                            <td style="width: 25%; padding: 2px;">
+                                <select class="form-control"></select>
+                            </td>
+                            <td style="width: 5%; padding: 2px;">
+                                <button class="btn btn-danger"
+                                        type="submit"
+                                        asp-action="DeleteRecommendation"
+                                        asp-route-isEdit="@isEdit"
+                                        data-toggle="tooltip"
+                                        data-placement="right"
+                                        data-original-title="Удалить вложение"
+                                        title="">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2" style="padding: 2px; vertical-align: middle;">
+                                    <p class="text-info">
+                                        <i class="fa fa-fw fa-info" aria-hidden="true"></i>
+                                        Вложения отсутствуют
+                                    </p>
+                                </td>
+                                <td style="padding: 2px;">
+                                    <button class="btn btn-success pull-right"
+                                            type="submit"
+                                            asp-action="AddRecommendation"
+                                            asp-route-isEdit="@isEdit"
+                                            data-toggle="tooltip"
+                                            data-placement="right"
+                                            data-original-title="Добавить вложение"
+                                            title="">
+                                        <i class="fa fa-paperclip" aria-hidden="true"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="form-group">
                 <label class="control-label" asp-for="Name">Рекомендации:</label>
                 <div id="recommendations">
                     <table class="table table-responsive" style="width: 100%; margin-bottom: 2px;">
@@ -112,7 +166,7 @@
                             {
                                 <tr>
                                     <td style="padding: 2px;"><textarea style="resize: vertical;" class="form-control recommendations" rows="1" asp-for="@Model.Recommendations[i].Comment"></textarea></td>
-                                    <td style="padding: 2px;"><input class="form-control recommendations" type="text" asp-for="@Model.Recommendations[i].ValueString" /></td>
+                                    <td style="padding: 2px;"><input class="form-control recommendations" type="text" asp-for="@Model.Recommendations[i].ValueString"/></td>
                                     <td style="padding: 2px;">
                                         <button class="btn btn-danger"
                                                 type="submit"
