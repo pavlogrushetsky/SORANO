@@ -24,7 +24,7 @@
 <div class="row">
     <div class="col-lg-6 col-md-6 col-sm-12">
         <div class="row" style="margin-left: 0;">
-            @if (Model.Name.Equals("Основное изображение"))
+            @if (isEdit && Model.Name.Equals("Основное изображение"))
             {
                 <p class="text-info">
                     <i class="fa fa-fw fa-info" aria-hidden="true"></i>
@@ -38,7 +38,7 @@
                   method="post">
                 <input type="hidden" asp-for="ID" />
                 <div asp-validation-summary="All" class="text-danger"></div>
-                @if (!Model.Name.Equals("Основное изображение"))
+                @if (!isEdit || !Model.Name.Equals("Основное изображение"))
                 {
                     <div class="row">
                         <div class="col-lg-6 col-md-6 col-sm-12">
