@@ -14,7 +14,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 Name = attachmentType.Name,
                 Comment = attachmentType.Comment,
                 AttachmentsCount = attachmentType.Attachments.Count,
-                CanBeDeleted = !attachmentType.Attachments.Any() && !attachmentType.IsDeleted,
+                CanBeDeleted = !attachmentType.Attachments.Any() && !attachmentType.IsDeleted && !attachmentType.Name.Equals("Основное изображение"),
                 IsDeleted = attachmentType.IsDeleted
             };
         }

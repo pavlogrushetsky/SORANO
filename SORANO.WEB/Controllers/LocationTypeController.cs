@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.LocationType;
@@ -12,7 +13,10 @@ namespace SORANO.WEB.Controllers
     {
         private readonly ILocationTypeService _locationTypeService;
 
-        public LocationTypeController(ILocationTypeService locationTypeService, IUserService userService) : base(userService)
+        public LocationTypeController(ILocationTypeService locationTypeService, 
+            IUserService userService, 
+            IAttachmentTypeService attachmentTypeService,
+            IMemoryCache memoryCache) : base(userService, attachmentTypeService, memoryCache)
         {
             _locationTypeService = locationTypeService;
         }

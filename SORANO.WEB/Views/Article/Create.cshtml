@@ -22,7 +22,8 @@
 
 <form asp-action="@(isEdit ? "Update" : "Create")"
       asp-controller="Article"
-      method="post">
+      method="post"
+      enctype="multipart/form-data">
     <input type="hidden" asp-for="ID"/>
     <input type="hidden" asp-for="Type.ID"/>
     <input type="hidden" asp-for="Type.Name" />
@@ -30,6 +31,10 @@
     {
         <input type="hidden" asp-for="@Model.Recommendations[i].ID" />
         <input type="hidden" asp-for="@Model.Recommendations[i].ParentID" />
+    }
+    @for (int i = 0; i < Model.Attachments.Count; i++)
+    {
+        <input type="hidden" asp-for="@Model.Attachments[i].ID" />
     }
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="row">
@@ -98,49 +103,79 @@
                 <label class="control-label">Вложения:</label>
                 <div id="attachments">
                     <table class="table table-responsive" style="width: 100%; margin-bottom: 2px;">
-                        <tbody>
-                        <tr>
-                            <td style="width: 70%; padding: 2px;">
-                                <div class="input-group">
-                                    <span class="input-group-addon"><i class="fa fa-file-image-o"></i></span>
-                                    <input class="form-control" type="text" />
-                                </div>
-                            </td>
-                            <td style="width: 25%; padding: 2px;">
-                                <select class="form-control"></select>
-                            </td>
-                            <td style="width: 5%; padding: 2px;">
-                                <button class="btn btn-danger"
-                                        type="submit"
-                                        asp-action="DeleteRecommendation"
-                                        asp-route-isEdit="@isEdit"
-                                        data-toggle="tooltip"
-                                        data-placement="right"
-                                        data-original-title="Удалить вложение"
-                                        title="">
-                                    <i class="fa fa-trash" aria-hidden="true"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        </tbody>
+                        @if (Model.Attachments.Any())
+                        {
+                            <thead>
+                                <tr>
+                                    <th style="width: 60%"><i class="fa fa-fw fa-align-justify" aria-hidden="true"></i>Название</th>
+                                    <th style="width: 35%"><i class="fa fa-fw fa-paperclip" aria-hidden="true"></i>Тип</th>
+                                    <th style="width: 5%"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Attachments.Count; i++)
+                                {
+                                    <tr>
+                                        <td style="width: 60%; padding: 2px;">
+                                            <div class="input-group">
+                                                <span class="input-group-addon"><i class="fa fa-file-image-o"></i></span>
+                                                <input class="form-control" type="text" id="attachment_name_@i" asp-for="@Model.Attachments[i].Name" />
+                                                <span class="input-group-btn">
+                                                    <label class="btn btn-default">
+                                                        <i class="fa fa-paperclip"></i>
+                                                        <input type="file" 
+                                                               style="display: none !important;" 
+                                                               id="attachment_input_@i" 
+                                                               name="attachments"
+                                                               data-toggle="tooltip"
+                                                               data-placement="right"
+                                                               data-original-title="Выбрать файл"/>
+                                                    </label>
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td style="width: 35%; padding: 2px;">
+                                            <select class="form-control" asp-for="@Model.Attachments[i].TypeID" asp-items="@ViewBag.AttachmentTypes"></select>
+                                        </td>
+                                        <td style="width: 5%; padding: 2px;">
+                                            <button class="btn btn-danger"
+                                                    type="submit"
+                                                    asp-action="DeleteAttachment"
+                                                    asp-route-isEdit="@isEdit"
+                                                    asp-route-num="@i"
+                                                    data-toggle="tooltip"
+                                                    data-placement="right"
+                                                    data-original-title="Удалить вложение"
+                                                    title="">
+                                                <i class="fa fa-trash" aria-hidden="true"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }                                
+                            </tbody>
+                        }
+                        
                         <tfoot>
                             <tr>
                                 <td colspan="2" style="padding: 2px; vertical-align: middle;">
-                                    <p class="text-info">
-                                        <i class="fa fa-fw fa-info" aria-hidden="true"></i>
-                                        Вложения отсутствуют
-                                    </p>
+                                    @if (!Model.Attachments.Any())
+                                    {
+                                        <p class="text-info">
+                                            <i class="fa fa-fw fa-info" aria-hidden="true"></i>
+                                            Вложения отсутствуют
+                                        </p>
+                                    }                                   
                                 </td>
                                 <td style="padding: 2px;">
                                     <button class="btn btn-success pull-right"
                                             type="submit"
-                                            asp-action="AddRecommendation"
+                                            asp-action="AddAttachment"
                                             asp-route-isEdit="@isEdit"
                                             data-toggle="tooltip"
                                             data-placement="right"
                                             data-original-title="Добавить вложение"
                                             title="">
-                                        <i class="fa fa-paperclip" aria-hidden="true"></i>
+                                        <i class="fa fa-plus" aria-hidden="true"></i>
                                     </button>
                                 </td>
                             </tr>
@@ -236,6 +271,16 @@
             $("input.input-validation-error").not(".recommendations").closest(".form-group").addClass("has-error");
             $("select.input-validation-error").closest(".form-group").addClass("has-error");
             $("span.field-validation-error").closest(".form-group").addClass("has-error");
+
+            $('input[type=file]').change(function () {
+                var id = $(this).attr('id');
+                var name = document.getElementById(id).files[0].name;
+                var matches = id.match(/\d+$/);
+                if (matches) {
+                    var number = matches[0];
+                    $('#attachment_name_' + number).val(name);
+                }
+            });
         });
     </script>
 }

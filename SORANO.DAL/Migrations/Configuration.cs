@@ -3,6 +3,8 @@ using SORANO.CORE.AccountEntities;
 
 namespace SORANO.DAL.Migrations
 {
+    using SORANO.CORE.StockEntities;
+    using System;
     using System.Data.Entity.Migrations;
 
     internal sealed class Configuration : DbMigrationsConfiguration<Context.StockContext>
@@ -17,7 +19,7 @@ namespace SORANO.DAL.Migrations
         {
             if (!context.Users.Any() && !context.Roles.Any())
             {
-                var developer = context.Users.Add(new User
+                var mainDeveloper = context.Users.Add(new User
                 {
                     Description = "Pavlo Grushetsky",
                     Login = "pavlo.grushetsky",
@@ -25,34 +27,49 @@ namespace SORANO.DAL.Migrations
                     IsBlocked = false
                 });
 
-                developer.Roles.Add(new Role
+                mainDeveloper.Roles.Add(new Role
                 {
                     Name = "developer",
                     Description = "Developer"
                 });
 
-                developer.Roles.Add(new Role
+                mainDeveloper.Roles.Add(new Role
                 {
                     Name = "administrator",
                     Description = "Administrator"
                 });
 
-                developer.Roles.Add(new Role
+                mainDeveloper.Roles.Add(new Role
                 {
                     Name = "editor",
                     Description = "Editor"
                 });
 
-                developer.Roles.Add(new Role
+                mainDeveloper.Roles.Add(new Role
                 {
                     Name = "manager",
                     Description = "Manager"
                 });
 
-                developer.Roles.Add(new Role
+                mainDeveloper.Roles.Add(new Role
                 {
                     Name = "user",
                     Description = "User"
+                });
+            }
+
+            if (!context.AttachmentTypes.Any(a => a.Name.Equals("Основное изображение")))
+            {
+                var developer = context.Users.First(u => u.Roles.Select(r => r.Name).Contains("developer"));
+
+                var attachmentType = context.AttachmentTypes.Add(new AttachmentType
+                {
+                    Name = "Основное изображение",
+                    Comment = "Изображение для отображения на странице детальной информации",
+                    CreatedDate = DateTime.Now,
+                    CreatedBy = developer.ID,
+                    ModifiedDate = DateTime.Now,
+                    ModifiedBy = developer.ID
                 });
             }
 

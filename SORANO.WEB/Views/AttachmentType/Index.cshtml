@@ -66,16 +66,19 @@
                                 <td>
                                     @if (!attachmentType.IsDeleted)
                                     {
-                                        <a asp-controller="AttachmentType"
-                                           asp-action="Update"
-                                           asp-route-id="@attachmentType.ID"
-                                           class="btn btn-xs btn-default"
-                                           data-toggle="tooltip"
-                                           data-placement="bottom"
-                                           data-original-title="Редактировать свойства типа вложений"
-                                           title="">
-                                            <i class="fa fa-pencil-square" aria-hidden="true"></i>
-                                        </a>
+                                        @if (!attachmentType.Name.Equals("Основное изображение"))
+                                        {
+                                            <a asp-controller="AttachmentType"
+                                               asp-action="Update"
+                                               asp-route-id="@attachmentType.ID"
+                                               class="btn btn-xs btn-default"
+                                               data-toggle="tooltip"
+                                               data-placement="bottom"
+                                               data-original-title="Редактировать свойства типа вложений"
+                                               title="">
+                                                <i class="fa fa-pencil-square" aria-hidden="true"></i>
+                                            </a>
+                                        }
                                         @if (attachmentType.CanBeDeleted)
                                         {
                                             <a class="btn btn-xs btn-danger"

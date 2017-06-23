@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.Supplier;
@@ -13,7 +14,10 @@ namespace SORANO.WEB.Controllers
     {
         private readonly ISupplierService _supplierService;
 
-        public SupplierController(ISupplierService supplierService, IUserService userService) : base(userService)
+        public SupplierController(ISupplierService supplierService, 
+            IUserService userService, 
+            IAttachmentTypeService attachmentTypeService,
+            IMemoryCache memoryCache) : base(userService, attachmentTypeService, memoryCache)
         {
             _supplierService = supplierService;
         }

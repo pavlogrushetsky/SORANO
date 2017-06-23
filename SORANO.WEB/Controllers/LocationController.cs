@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.WEB.Models.Location;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace SORANO.WEB.Controllers
 {
@@ -16,7 +17,11 @@ namespace SORANO.WEB.Controllers
         private readonly ILocationService _locationService;
         private readonly ILocationTypeService _locationTypeService;
 
-        public LocationController(ILocationService locationService, IUserService userService, ILocationTypeService locationTypeService) : base(userService)
+        public LocationController(ILocationService locationService, 
+            IUserService userService, 
+            ILocationTypeService locationTypeService, 
+            IAttachmentTypeService attachmentTypeService,
+            IMemoryCache memoryCache) : base(userService, attachmentTypeService, memoryCache)
         {
             _locationService = locationService;
             _locationTypeService = locationTypeService;

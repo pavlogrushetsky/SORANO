@@ -6,6 +6,7 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.Article;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace SORANO.WEB.Controllers
 {
@@ -23,7 +24,11 @@ namespace SORANO.WEB.Controllers
         /// <param name="articleService">Articles service</param>
         /// <param name="articleTypeService">Article types service</param>
         /// <param name="userService">Users service</param>
-        public ArticleController(IArticleService articleService, IArticleTypeService articleTypeService, IUserService userService) : base(userService)
+        public ArticleController(IArticleService articleService, 
+            IArticleTypeService articleTypeService, 
+            IUserService userService, 
+            IAttachmentTypeService attachmentTypeService, 
+            IMemoryCache memoryCache) : base(userService, attachmentTypeService, memoryCache)
         {
             _articleService = articleService;
         }
@@ -67,9 +72,11 @@ namespace SORANO.WEB.Controllers
         /// </summary>
         /// <returns>Create view</returns>
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var model = TempData.Get<ArticleModel>("ArticleModel") ?? new ArticleModel();
+
+            ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
             return View(model);
         }
@@ -86,6 +93,8 @@ namespace SORANO.WEB.Controllers
             var article = await _articleService.GetAsync(id);
 
             var model = TempData.Get<ArticleModel>("ArticleModel") ?? article.ToModel();
+
+            ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
             ViewData["IsEdit"] = true;
 
@@ -152,6 +161,8 @@ namespace SORANO.WEB.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ArticleModel model)
         {
+            ViewBag.AttachmentTypes = await GetAttachmentTypes();
+
             return await TryGetActionResultAsync(async () =>
             {
                 ModelState.Keys.Where(k => k.StartsWith("Type")).ToList().ForEach(k =>
@@ -166,7 +177,7 @@ namespace SORANO.WEB.Controllers
 
                 if (!ModelState.IsValid)
                 {
-                    ModelState.RemoveDuplicateErrorMessages();
+                    ModelState.RemoveDuplicateErrorMessages();                    
                     return View(model);
                 }
 
@@ -194,6 +205,8 @@ namespace SORANO.WEB.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(ArticleModel model)
         {
+            ViewBag.AttachmentTypes = await GetAttachmentTypes();
+
             return await TryGetActionResultAsync(async () =>
             {
                 ModelState.Keys.Where(k => k.StartsWith("Type")).ToList().ForEach(k =>

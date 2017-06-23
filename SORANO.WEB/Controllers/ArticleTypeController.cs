@@ -7,6 +7,7 @@ using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.Article;
 using SORANO.WEB.Models.ArticleType;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace SORANO.WEB.Controllers
 {
@@ -15,7 +16,10 @@ namespace SORANO.WEB.Controllers
     {
         private readonly IArticleTypeService _articleTypeService;
 
-        public ArticleTypeController(IArticleTypeService articleTypeService, IUserService userService) : base(userService)
+        public ArticleTypeController(IArticleTypeService articleTypeService, 
+            IUserService userService, 
+            IAttachmentTypeService attachmentTypeService,
+            IMemoryCache memoryCache) : base(userService, attachmentTypeService, memoryCache)
         {
             _articleTypeService = articleTypeService;
         }

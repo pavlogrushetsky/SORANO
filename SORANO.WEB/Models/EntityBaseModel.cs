@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using SORANO.WEB.Models.Recommendation;
+using SORANO.WEB.Models.Attachment;
 
 namespace SORANO.WEB.Models
 {
@@ -11,6 +12,9 @@ namespace SORANO.WEB.Models
 
         [Display(Name = "Рекомендации")]
         public virtual List<RecommendationModel> Recommendations { get; set; } = new List<RecommendationModel>();
+
+        [Display(Name = "Вложения")]
+        public virtual List<AttachmentModel> Attachments { get; set; } = new List<AttachmentModel>();
 
         [Display(Name = "Создание")]
         public virtual string Created { get; set; }

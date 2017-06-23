@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.AttachmentType;
@@ -11,11 +12,10 @@ namespace SORANO.WEB.Controllers
     [Authorize(Roles = "developer,administrator,manager")]
     public class AttachmentTypeController : EntityBaseController<AttachmentTypeModel>
     {
-        private readonly IAttachmentTypeService _attachmentTypeService;
-
-        public AttachmentTypeController(IAttachmentTypeService attachmentTypeService, IUserService userService) : base(userService)
+        public AttachmentTypeController(IAttachmentTypeService attachmentTypeService, 
+            IUserService userService, 
+            IMemoryCache memoryCache) : base(userService, attachmentTypeService, memoryCache)
         {
-            _attachmentTypeService = attachmentTypeService;
         }
 
         #region GET Actions
