@@ -9,6 +9,7 @@ using SORANO.WEB.Models.Recommendation;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+// ReSharper disable Mvc.ViewNotResolved
 
 namespace SORANO.WEB.Controllers
 {
@@ -78,6 +79,8 @@ namespace SORANO.WEB.Controllers
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
             ViewData["IsEdit"] = isEdit;
+
+            
 
             return View("Create", entity);
         }
