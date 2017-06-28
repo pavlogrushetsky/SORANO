@@ -3,7 +3,7 @@ using SORANO.CORE.AccountEntities;
 
 namespace SORANO.DAL.Migrations
 {
-    using SORANO.CORE.StockEntities;
+    using CORE.StockEntities;
     using System;
     using System.Data.Entity.Migrations;
 
@@ -62,10 +62,11 @@ namespace SORANO.DAL.Migrations
             {
                 var developer = context.Users.First(u => u.Roles.Select(r => r.Name).Contains("developer"));
 
-                var attachmentType = context.AttachmentTypes.Add(new AttachmentType
+                context.AttachmentTypes.Add(new AttachmentType
                 {
                     Name = "Основное изображение",
                     Comment = "Изображение для отображения на странице детальной информации",
+                    Extensions = "image/*",
                     CreatedDate = DateTime.Now,
                     CreatedBy = developer.ID,
                     ModifiedDate = DateTime.Now,

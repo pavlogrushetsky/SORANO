@@ -26,6 +26,10 @@ namespace SORANO.DAL.Context.Configurations
                 .IsOptional()
                 .HasMaxLength(1000);
 
+            Property(a => a.Extensions)
+                .IsOptional()
+                .HasMaxLength(1000);
+
             HasMany(a => a.TypeAttachments)
                 .WithRequired(a => a.Type)
                 .HasForeignKey(a => a.AttachmentTypeID);

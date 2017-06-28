@@ -18,6 +18,11 @@ namespace SORANO.CORE.StockEntities
         public string Comment { get; set; }
 
         /// <summary>
+        /// String to filter acceptable files' types
+        /// </summary>
+        public string Extensions { get; set; }
+
+        /// <summary>
         /// Attachment of this type
         /// </summary>
         public virtual ICollection<Attachment> TypeAttachments { get; set; } = new HashSet<Attachment>();
