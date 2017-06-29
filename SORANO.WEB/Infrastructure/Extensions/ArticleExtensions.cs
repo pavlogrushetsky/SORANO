@@ -34,7 +34,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
 
         public static Article ToEntity(this ArticleModel model)
         {
-            return new Article
+            var article = new Article
             {
                 ID = model.ID,
                 Name = model.Name,
@@ -43,8 +43,13 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 Code = model.Code,
                 Barcode = model.Barcode,
                 TypeID = model.Type.ID,
-                Recommendations = model.Recommendations.Select(r => r.ToEntity()).ToList()
+                Recommendations = model.Recommendations.Select(r => r.ToEntity()).ToList(),
+                Attachments = model.Attachments.Select(a => a.ToEntity()).ToList()
             };
+
+            article.Attachments.Add(model.MainPicture.ToEntity());
+
+            return article;
         }
     }
 }

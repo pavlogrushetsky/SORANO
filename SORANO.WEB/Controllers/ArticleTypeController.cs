@@ -1,12 +1,12 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.Article;
 using SORANO.WEB.Models.ArticleType;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace SORANO.WEB.Controllers
@@ -17,9 +17,10 @@ namespace SORANO.WEB.Controllers
         private readonly IArticleTypeService _articleTypeService;
 
         public ArticleTypeController(IArticleTypeService articleTypeService, 
-            IUserService userService, 
+            IUserService userService,
+            IHostingEnvironment environment,
             IAttachmentTypeService attachmentTypeService,
-            IMemoryCache memoryCache) : base(userService, attachmentTypeService, memoryCache)
+            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, memoryCache)
         {
             _articleTypeService = articleTypeService;
         }

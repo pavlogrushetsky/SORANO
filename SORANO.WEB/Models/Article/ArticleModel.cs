@@ -29,9 +29,6 @@ namespace SORANO.WEB.Models.Article
         public string Barcode { get; set; }
 
         [Display(Name = "Тип артикулов")]
-        public ArticleTypeModel Type { get; set; }
-
-        [Display(Name = "Основное изображение")]
-        public AttachmentModel MainPicture { get; set; }
+        public ArticleTypeModel Type { get; set; }       
     }
 }

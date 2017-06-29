@@ -5,6 +5,7 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.WEB.Models.Location;
 using Microsoft.Extensions.Caching.Memory;
@@ -18,10 +19,11 @@ namespace SORANO.WEB.Controllers
         private readonly ILocationTypeService _locationTypeService;
 
         public LocationController(ILocationService locationService, 
-            IUserService userService, 
+            IUserService userService,
+            IHostingEnvironment environment,
             ILocationTypeService locationTypeService, 
             IAttachmentTypeService attachmentTypeService,
-            IMemoryCache memoryCache) : base(userService, attachmentTypeService, memoryCache)
+            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, memoryCache)
         {
             _locationService = locationService;
             _locationTypeService = locationTypeService;

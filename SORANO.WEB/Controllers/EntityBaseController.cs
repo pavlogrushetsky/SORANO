@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Memory;
@@ -7,8 +8,11 @@ using SORANO.WEB.Models;
 using SORANO.WEB.Models.Attachment;
 using SORANO.WEB.Models.Recommendation;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+
 // ReSharper disable Mvc.ViewNotResolved
 
 namespace SORANO.WEB.Controllers
@@ -17,15 +21,20 @@ namespace SORANO.WEB.Controllers
     {
         protected readonly IAttachmentTypeService _attachmentTypeService;
         protected readonly IMemoryCache _memoryCache;
+        protected readonly IHostingEnvironment _environment;
 
         /// <summary>
         /// Controller to perform entities controllers' base functionality
         /// </summary>
         /// <param name="userService">Users' service</param>
-        public EntityBaseController(IUserService userService, IAttachmentTypeService attachmentTypeService, IMemoryCache memorycache) : base(userService)
+        /// <param name="environment"></param>
+        /// <param name="attachmentTypeService"></param>
+        /// <param name="memorycache"></param>
+        public EntityBaseController(IUserService userService, IHostingEnvironment environment, IAttachmentTypeService attachmentTypeService, IMemoryCache memorycache) : base(userService)
         {
             _attachmentTypeService = attachmentTypeService;
             _memoryCache = memorycache;
+            _environment = environment;
         }
 
         /// <summary>
@@ -101,22 +110,37 @@ namespace SORANO.WEB.Controllers
 
         protected async Task<List<SelectListItem>> GetAttachmentTypes()
         {
-            string attachmentTypesKey = "AttachmentTypesCache";
+            var attachmentTypesKey = "AttachmentTypesCache";
 
-            if (!_memoryCache.TryGetValue(attachmentTypesKey, out List<SelectListItem> attachmentTypeSelectItems))
+            if (_memoryCache.TryGetValue(attachmentTypesKey, out List<SelectListItem> attachmentTypeSelectItems))
             {
-                var attachmentTypes = await _attachmentTypeService.GetAllAsync();
-
-                attachmentTypeSelectItems = attachmentTypes.Select(a => new SelectListItem
-                {
-                    Text = a.Name,
-                    Value = a.ID.ToString()
-                }).ToList();
-
-                _memoryCache.Set(attachmentTypesKey, attachmentTypeSelectItems);
+                return attachmentTypeSelectItems;
             }
 
+            var attachmentTypes = await _attachmentTypeService.GetAllAsync();
+
+            attachmentTypeSelectItems = attachmentTypes.Select(a => new SelectListItem
+            {
+                Text = a.Name,
+                Value = a.ID.ToString()
+            }).ToList();
+
+            _memoryCache.Set(attachmentTypesKey, attachmentTypeSelectItems);
+
             return attachmentTypeSelectItems;
+        }
+
+        protected virtual async Task<string> Load(IFormFile file, string subfolder)
+        {
+            var extension = Path.GetExtension(file.FileName);
+            var path = "/attachments/" + subfolder + "/" + Guid.NewGuid() + extension;
+
+            using (var stream = new FileStream(_environment.WebRootPath + path, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return path;            
         }
     }
 }

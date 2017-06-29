@@ -74,6 +74,11 @@ namespace SORANO.BLL.Services
                 recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
+            foreach (var attachment in article.Attachments)
+            {
+                attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            }
+
             var saved = _unitOfWork.Get<Article>().Add(article);
 
             await _unitOfWork.SaveAsync();

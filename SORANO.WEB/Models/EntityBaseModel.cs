@@ -16,6 +16,9 @@ namespace SORANO.WEB.Models
         [Display(Name = "Вложения")]
         public virtual List<AttachmentModel> Attachments { get; set; } = new List<AttachmentModel>();
 
+        [Display(Name = "Основное изображение")]
+        public virtual AttachmentModel MainPicture { get; set; }
+
         [Display(Name = "Создание")]
         public virtual string Created { get; set; }
 

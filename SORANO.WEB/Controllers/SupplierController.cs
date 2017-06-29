@@ -6,6 +6,7 @@ using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.Supplier;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 
 namespace SORANO.WEB.Controllers
 {
@@ -15,9 +16,10 @@ namespace SORANO.WEB.Controllers
         private readonly ISupplierService _supplierService;
 
         public SupplierController(ISupplierService supplierService, 
-            IUserService userService, 
+            IUserService userService,
+            IHostingEnvironment environment,
             IAttachmentTypeService attachmentTypeService,
-            IMemoryCache memoryCache) : base(userService, attachmentTypeService, memoryCache)
+            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, memoryCache)
         {
             _supplierService = supplierService;
         }

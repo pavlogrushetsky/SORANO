@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -22,23 +20,23 @@ namespace SORANO.WEB.Controllers
     {
         private readonly IArticleService _articleService;
 
-        private readonly IHostingEnvironment _environment;
-
         /// <summary>
         /// Article controller
         /// </summary>
         /// <param name="articleService">Articles service</param>
         /// <param name="articleTypeService">Article types service</param>
         /// <param name="userService">Users service</param>
+        /// <param name="environment"></param>
+        /// <param name="attachmentTypeService"></param>
+        /// <param name="memoryCache"></param>
         public ArticleController(IArticleService articleService, 
             IArticleTypeService articleTypeService, 
             IUserService userService, 
             IHostingEnvironment environment,
             IAttachmentTypeService attachmentTypeService, 
-            IMemoryCache memoryCache) : base(userService, attachmentTypeService, memoryCache)
+            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, memoryCache)
         {
             _articleService = articleService;
-            _environment = environment;
         }
 
         #region GET Actions
@@ -46,13 +44,12 @@ namespace SORANO.WEB.Controllers
         /// <summary>
         /// Get Index view
         /// </summary>
-        /// <param name="withDeleted">Show deleted articles</param>
         /// <returns>Index view</returns>
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            bool showDeletedArticles = HttpContext.Session.GetBool("ShowDeletedArticles");
-            bool showDeletedArticleTypes = HttpContext.Session.GetBool("ShowDeletedArticleTypes");
+            var showDeletedArticles = HttpContext.Session.GetBool("ShowDeletedArticles");
+            var showDeletedArticleTypes = HttpContext.Session.GetBool("ShowDeletedArticleTypes");
 
             var articles = await _articleService.GetAllAsync(showDeletedArticles);
 
@@ -96,7 +93,6 @@ namespace SORANO.WEB.Controllers
         /// Get Update/Create view for specified article
         /// </summary>
         /// <param name="id">Article identifier</param>
-        /// <param name="returnUrl"></param>
         /// <returns>Update/Create view</returns>
         [HttpGet]
         public async Task<IActionResult> Update(int id)
@@ -116,7 +112,6 @@ namespace SORANO.WEB.Controllers
         /// Get Details view for specified article
         /// </summary>
         /// <param name="id">Article identifier</param>
-        /// <param name="returnUrl"></param>
         /// <returns>Details view</returns>
         [HttpGet]
         public async Task<IActionResult> Details(int id)
@@ -132,7 +127,6 @@ namespace SORANO.WEB.Controllers
         /// Get Delete view for specified article
         /// </summary>
         /// <param name="id">Article identifier</param>
-        /// <param name="returnUrl"></param>
         /// <returns>Delete view</returns>
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
@@ -152,7 +146,7 @@ namespace SORANO.WEB.Controllers
         /// Post article for redirection to article type selection view
         /// </summary>
         /// <param name="model">Article model</param>
-        /// <param name="return">Return url</param>
+        /// <param name="returnUrl"></param>
         /// <returns>Article type Select view</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -167,25 +161,31 @@ namespace SORANO.WEB.Controllers
         /// Post article for creation
         /// </summary>
         /// <param name="model">Article model</param>
+        /// <param name="mainPictureFile"></param>
         /// <returns>Index view</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ArticleModel model, IFormFile mainPictureFile)
-        {
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
+        {            
+            var attachmentTypes = await GetAttachmentTypes();
+            ViewBag.AttachmentTypes = attachmentTypes;
 
             return await TryGetActionResultAsync(async () =>
             {
                 if (mainPictureFile != null)
                 {
-                    var extension = Path.GetExtension(mainPictureFile.FileName);
-                    var path = "/attachments/temporary/" + Guid.NewGuid() + extension;
+                    var path = await Load(mainPictureFile, "articles");
 
-                    using (var stream = new FileStream(_environment.WebRootPath + path, FileMode.Create))
-                    {
-                        await mainPictureFile.CopyToAsync(stream);
-                    }
+                    ModelState.Keys.Where(k => k.StartsWith("MainPicture"))
+                        .ToList()
+                        .ForEach(k =>
+                        {
+                            ModelState.Remove(k);
+                        });
 
+                    var typeID = attachmentTypes.Single(i => i.Text.Equals("Основное изображение")).Value;
+
+                    model.MainPicture.TypeID = typeID;
                     model.MainPicture.FullPath = path;
                     model.MainPicture.Name = mainPictureFile.FileName;
                 }

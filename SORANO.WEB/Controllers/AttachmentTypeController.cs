@@ -6,6 +6,7 @@ using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.AttachmentType;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 
 namespace SORANO.WEB.Controllers
 {
@@ -13,8 +14,9 @@ namespace SORANO.WEB.Controllers
     public class AttachmentTypeController : EntityBaseController<AttachmentTypeModel>
     {
         public AttachmentTypeController(IAttachmentTypeService attachmentTypeService, 
-            IUserService userService, 
-            IMemoryCache memoryCache) : base(userService, attachmentTypeService, memoryCache)
+            IUserService userService,
+            IHostingEnvironment environment,
+            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, memoryCache)
         {
         }
 

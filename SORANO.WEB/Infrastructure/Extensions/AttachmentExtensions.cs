@@ -19,5 +19,16 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 Extension = Path.GetExtension(attachment.Name)
             };
         }
+
+        public static Attachment ToEntity(this AttachmentModel model)
+        {
+            return new Attachment
+            {
+                Name = model.Name,
+                FullPath = model.FullPath,
+                Description = model.Description,
+                AttachmentTypeID = int.Parse(model.TypeID)
+            };
+        }
     }
 }
