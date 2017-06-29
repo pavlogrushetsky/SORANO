@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\Recommendation\" />
+    <Folder Include="wwwroot\attachments\temporary\" />
   </ItemGroup>
 
 </Project>

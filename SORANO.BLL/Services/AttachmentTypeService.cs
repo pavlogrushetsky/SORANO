@@ -100,6 +100,7 @@ namespace SORANO.BLL.Services
 
             existentAttachmentType.Name = attachmentType.Name;
             existentAttachmentType.Comment = attachmentType.Comment;
+            existentAttachmentType.Extensions = attachmentType.Extensions;
 
             existentAttachmentType.UpdateModifiedFields(userId);
 

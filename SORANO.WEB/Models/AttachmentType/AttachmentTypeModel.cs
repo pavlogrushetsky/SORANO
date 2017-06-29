@@ -14,6 +14,10 @@ namespace SORANO.WEB.Models.AttachmentType
         [Display(Name = "Описание")]
         public string Comment { get; set; }
 
+        [MaxLength(1000, ErrorMessage = "Длина фильтра расширений не должна превышать 1000 символов")]
+        [Display(Name = "Расширения")]
+        public string Extensions { get; set; }
+
         [Display(Name = "Вложений")]
         public int AttachmentsCount { get; set; }
     }

@@ -42,15 +42,17 @@
                     <thead>
                         <tr role="row" id="search-row">
                             <th style="width: 5%" rowspan="1" colspan="1"></th>
-                            <th style="width: 25%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Название" /></th>
-                            <th style="width: 45%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Описание" /></th>
+                            <th style="width: 20%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Название" /></th>
+                            <th style="width: 30%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Описание" /></th>
+                            <th style="width: 20%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Расширения" /></th>
                             <th style="width: 15%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Вложений" /></th>
                             <th style="width: 10%" rowspan="1" colspan="1"></th>
                         </tr>
                         <tr role="row">
                             <th style="width: 5%">ID</th>
-                            <th style="width: 25%"><i class="fa fa-fw fa-paperclip" aria-hidden="true"></i>&nbsp;Название</th>
-                            <th style="width: 45%"><i class="fa fa-fw fa-align-justify" aria-hidden="true"></i>&nbsp;Описание</th>
+                            <th style="width: 20%"><i class="fa fa-fw fa-paperclip" aria-hidden="true"></i>&nbsp;Название</th>
+                            <th style="width: 30%"><i class="fa fa-fw fa-align-justify" aria-hidden="true"></i>&nbsp;Описание</th>
+                            <th style="width: 20%"><i class="fa fa-fw fa-filter" aria-hidden="true"></i>&nbsp;Расширения</th>
                             <th style="width: 15%"><i class="fa fa-fw fa-hashtag" aria-hidden="true"></i>&nbsp;Вложений</th>
                             <th style="width: 10%">Действия</th>
                         </tr>
@@ -62,6 +64,7 @@
                                 <td>@attachmentType.ID</td>
                                 <td>@attachmentType.Name</td>
                                 <td>@attachmentType.Comment</td>
+                                <td>@attachmentType.Extensions</td>
                                 <td><span class="badge">@attachmentType.AttachmentsCount</span></td>
                                 <td>
                                     @if (!attachmentType.IsDeleted)
@@ -113,7 +116,7 @@
             var table = $("#attachment-types-datatable").DataTable({
                 responsive: true,
                 "columnDefs": [
-                    { "orderable": false, "targets": 4 }
+                    { "orderable": false, "targets": 5 }
                 ],
                 "pagingType": "numbers",
                 "language": {

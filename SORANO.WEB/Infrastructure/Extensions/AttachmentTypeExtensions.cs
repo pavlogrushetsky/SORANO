@@ -13,6 +13,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 ID = attachmentType.ID,
                 Name = attachmentType.Name,
                 Comment = attachmentType.Comment,
+                Extensions = attachmentType.Extensions,
                 AttachmentsCount = attachmentType.Attachments.Count,
                 CanBeDeleted = !attachmentType.Attachments.Any() && !attachmentType.IsDeleted && !attachmentType.Name.Equals("Основное изображение"),
                 IsDeleted = attachmentType.IsDeleted
@@ -25,7 +26,8 @@ namespace SORANO.WEB.Infrastructure.Extensions
             {
                 ID = model.ID,
                 Name = model.Name,
-                Comment = model.Comment
+                Comment = model.Comment,
+                Extensions = model.Extensions
             };
         }
     }

@@ -53,6 +53,13 @@
                         <textarea class="form-control" style="resize: vertical;" rows="3" asp-for="Comment" placeholder="Коментарий"></textarea>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="control-label" asp-for="Extensions">Расширения:</label>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+                        <input class="form-control" type="text" asp-for="Extensions" placeholder="Расширения" />
+                    </div>
+                </div>
             }                
             <div class="form-group">                            
                 <a class="btn btn-default" asp-controller="AttachmentType" asp-action="Index">

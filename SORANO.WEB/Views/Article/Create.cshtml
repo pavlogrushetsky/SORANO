@@ -3,6 +3,7 @@
 @{
     var isEdit = ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"];
     var title = isEdit ? "Редактирование" : "Создание";
+    var hasMainPicture = !string.IsNullOrEmpty(Model.MainPicture.Name);
 }
 
 @{
@@ -36,6 +37,8 @@
     {
         <input type="hidden" asp-for="@Model.Attachments[i].ID" />
     }
+    @Html.HiddenFor(m => m.MainPicture.Name)
+    @Html.HiddenFor(m => m.MainPicture.FullPath)
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-12">
@@ -102,35 +105,52 @@
         <div class="form-group">
             <label class="control-label">Основное изображение:</label>
             <div class="input-group">
-                <img style='width:150px; height:200px; border: 2px solid #dce4ec; box-shadow: none; border-radius: 4px;' src="blank.gif" />
+                <img id="mainPicture_img" 
+                     style='width: 150px; height: 200px; border: 2px solid #dce4ec; box-shadow: none; border-radius: 4px; object-fit: contain; @(hasMainPicture ? "" : "display: none;")' 
+                     src="@(hasMainPicture ? Url.Content(Model.MainPicture.FullPath) : "#")"/>
+
+                   
+                <div id="mainPicture_info"
+                     style='width: 150px; height: 200px; border: 2px solid #dce4ec; box-shadow: none; border-radius: 4px; display: inline-block; text-align: center;@(hasMainPicture ? "display: none;" : "")'>                        
+                    <p class="text-info">
+                        <i class="fa fa-fw fa-info" aria-hidden="true"></i>
+                        Основное изображение отсутствует
+                    </p>
+                </div>              
                 <div class="btn-group-vertical" style="vertical-align: top; margin-left: 5px;">
-                    <label class="btn btn-default" style="border-top-right-radius: 4px; border-top-left-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 4px;">
+                    <label data-toggle="tooltip"
+                           data-placement="right"
+                           data-original-title="Выбрать файл изображения"
+                           class="btn btn-default"
+                           style="border-top-right-radius: 4px; border-top-left-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 4px;">
                         <i class="fa fa-paperclip"></i>
                         <input type="file"
                                style="display: none !important;"
-                               name="attachments"
-                               data-toggle="tooltip"
-                               data-placement="right"
-                               data-original-title="Выбрать файл" />
+                               name="mainPictureFile"
+                               onchange="previewMainPicture(this);"
+                               accept="image/*"/>
                     </label>
                     <button class="btn btn-default"
                             type="submit"
                             style="margin-top: 5px; border-top-right-radius: 4px; border-top-left-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 4px;"
                             data-toggle="tooltip"
                             data-placement="right"
-                            data-original-title="Назначить родительский тип"
+                            data-original-title="Выбрать изображение из существующих вложений"
                             title="">
                         <i class="fa fa-th-large"></i>
                     </button>
-                    <button class="btn btn-danger"
-                            type="submit"
-                            style="margin-top: 5px; border-top-right-radius: 4px; border-top-left-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 4px;"
-                            data-toggle="tooltip"
-                            data-placement="right"
-                            data-original-title="Назначить родительский тип"
-                            title="">
-                        <i class="fa fa-trash"></i>
-                    </button>
+                    @if (hasMainPicture)
+                    {
+                        <button class="btn btn-danger"
+                                type="submit"
+                                style="margin-top: 5px; border-top-right-radius: 4px; border-top-left-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 4px;"
+                                data-toggle="tooltip"
+                                data-placement="right"
+                                data-original-title="Удалить изображение"
+                                title="">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    }                    
                 </div>
             </div>
         </div>
@@ -307,15 +327,27 @@
             $("select.input-validation-error").closest(".form-group").addClass("has-error");
             $("span.field-validation-error").closest(".form-group").addClass("has-error");
 
-            $('input[type=file]').change(function () {
-                var id = $(this).attr('id');
-                var name = document.getElementById(id).files[0].name;
-                var matches = id.match(/\d+$/);
-                if (matches) {
-                    var number = matches[0];
-                    $('#attachment_name_' + number).val(name);
-                }
-            });
+            //$('input[type=file]').change(function () {
+            //    var id = $(this).attr('id');
+            //    var name = document.getElementById(id).files[0].name;
+            //    var matches = id.match(/\d+$/);
+            //    if (matches) {
+            //        var number = matches[0];
+            //        $('#attachment_name_' + number).val(name);
+            //    }
+            //});
         });
+
+        function previewMainPicture(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById("mainPicture_info").style.display = 'none';
+                    document.getElementById("mainPicture_img").style.display = 'inline-block';
+                    $('#mainPicture_img').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
     </script>
 }

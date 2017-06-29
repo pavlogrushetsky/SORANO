@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using SORANO.WEB.Models.ArticleType;
+using SORANO.WEB.Models.Attachment;
 
 namespace SORANO.WEB.Models.Article
 {
@@ -29,5 +30,8 @@ namespace SORANO.WEB.Models.Article
 
         [Display(Name = "Тип артикулов")]
         public ArticleTypeModel Type { get; set; }
+
+        [Display(Name = "Основное изображение")]
+        public AttachmentModel MainPicture { get; set; }
     }
 }

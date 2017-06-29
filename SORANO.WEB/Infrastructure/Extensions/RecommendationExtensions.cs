@@ -1,5 +1,4 @@
-﻿using System;
-using SORANO.CORE.StockEntities;
+﻿using SORANO.CORE.StockEntities;
 using SORANO.WEB.Models.Recommendation;
 
 namespace SORANO.WEB.Infrastructure.Extensions
@@ -25,14 +24,6 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 Value = string.IsNullOrEmpty(model.ValueString) ? (decimal?)null : decimal.Parse(model.ValueString),
                 Comment = model.Comment
             };
-        }
-
-        public static void FromModel(this Recommendation recommendation, RecommendationModel model)
-        {
-            recommendation.ID = model.ID;
-            recommendation.ParentEntityID = model.ParentID;
-            recommendation.Value = decimal.Parse(model.ValueString);
-            recommendation.Comment = model.Comment;
         }
     }
 }

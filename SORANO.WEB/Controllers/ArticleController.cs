@@ -1,12 +1,16 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.Article;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
+using SORANO.WEB.Models.Attachment;
 
 namespace SORANO.WEB.Controllers
 {
@@ -18,6 +22,8 @@ namespace SORANO.WEB.Controllers
     {
         private readonly IArticleService _articleService;
 
+        private readonly IHostingEnvironment _environment;
+
         /// <summary>
         /// Article controller
         /// </summary>
@@ -27,10 +33,12 @@ namespace SORANO.WEB.Controllers
         public ArticleController(IArticleService articleService, 
             IArticleTypeService articleTypeService, 
             IUserService userService, 
+            IHostingEnvironment environment,
             IAttachmentTypeService attachmentTypeService, 
             IMemoryCache memoryCache) : base(userService, attachmentTypeService, memoryCache)
         {
             _articleService = articleService;
+            _environment = environment;
         }
 
         #region GET Actions
@@ -74,7 +82,10 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var model = TempData.Get<ArticleModel>("ArticleModel") ?? new ArticleModel();
+            var model = TempData.Get<ArticleModel>("ArticleModel") ?? new ArticleModel
+            {
+                MainPicture = new AttachmentModel()
+            };
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
@@ -159,12 +170,26 @@ namespace SORANO.WEB.Controllers
         /// <returns>Index view</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ArticleModel model)
+        public async Task<IActionResult> Create(ArticleModel model, IFormFile mainPictureFile)
         {
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
             return await TryGetActionResultAsync(async () =>
             {
+                if (mainPictureFile != null)
+                {
+                    var extension = Path.GetExtension(mainPictureFile.FileName);
+                    var path = "/attachments/temporary/" + Guid.NewGuid() + extension;
+
+                    using (var stream = new FileStream(_environment.WebRootPath + path, FileMode.Create))
+                    {
+                        await mainPictureFile.CopyToAsync(stream);
+                    }
+
+                    model.MainPicture.FullPath = path;
+                    model.MainPicture.Name = mainPictureFile.FileName;
+                }
+
                 ModelState.Keys.Where(k => k.StartsWith("Type")).ToList().ForEach(k =>
                 {
                     ModelState.Remove(k);
