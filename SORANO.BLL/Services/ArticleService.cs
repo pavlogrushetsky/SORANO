@@ -136,6 +136,8 @@ namespace SORANO.BLL.Services
             // Update modified fields for existent article
             existentArticle.UpdateModifiedFields(userId);
 
+            UpdateAttachments(article, existentArticle, userId);
+
             UpdateRecommendations(article, existentArticle, userId);
 
             var updated = _unitOfWork.Get<Article>().Update(existentArticle);

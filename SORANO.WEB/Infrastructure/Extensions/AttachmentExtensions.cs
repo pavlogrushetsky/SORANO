@@ -24,6 +24,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
         {
             return new Attachment
             {
+                ID = model.ID,
                 Name = model.Name,
                 FullPath = model.FullPath,
                 Description = model.Description,

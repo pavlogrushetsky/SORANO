@@ -19,7 +19,7 @@ namespace SORANO.WEB.Components
         {
             var articleTypes = await _articleTypeService.GetAllAsync(withDeleted);
 
-            return View(articleTypes.ToList().ToTree());
+            return View(articleTypes.Select(t => t.ToModel()).ToList().ToTree());
         }
     }
 }

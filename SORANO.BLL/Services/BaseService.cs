@@ -53,5 +53,48 @@ namespace SORANO.BLL.Services
                     rec.UpdateModifiedFields(userId);
                 });
         }
+
+        protected void UpdateAttachments(StockEntity from, StockEntity to, int userId)
+        {
+            // Remove deleted attachments for existent entity
+            to.Attachments
+                .Where(a => !from.Attachments.Select(x => x.ID).Contains(a.ID))
+                .ToList()
+                .ForEach(a =>
+                {
+                    a.ParentEntities.Remove(to);
+                    a.UpdateModifiedFields(userId);
+                    _unitOfWork.Get<Attachment>().Update(a);
+                });
+
+            // Add newly created attachments to existent entity
+            from.Attachments
+                .Where(a => !to.Attachments.Select(x => x.ID).Contains(a.ID))
+                .ToList()
+                .ForEach(a =>
+                {
+                    a.ParentEntities.Add(to);
+                    a.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+                    to.Attachments.Add(a);
+                });
+
+            // Update existent attachments
+            from.Attachments
+                .Where(a => to.Attachments.Select(x => x.ID).Contains(a.ID))
+                .ToList()
+                .ForEach(a =>
+                {
+                    var att = to.Attachments.SingleOrDefault(x => x.ID == a.ID);
+                    if (att == null)
+                    {
+                        return;
+                    }
+                    att.Name = a.Name;
+                    att.Description = a.Description;
+                    att.FullPath = a.FullPath;
+                    att.AttachmentTypeID = a.AttachmentTypeID;
+                    att.UpdateModifiedFields(userId);
+                });
+        }
     }
 }

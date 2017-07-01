@@ -34,7 +34,7 @@ namespace SORANO.WEB.Infrastructure.TagHelpers
             if (CurrentElement != null && (type.ID == CurrentElement.ID || CurrentElement.ChildTypes.Select(e => e.ID).Contains(type.ID)))
             {
                 return;
-            }
+            }            
 
             html += "<li id='" + type.ID + "' class='" + (type.IsSelected ? "selected" : "") + (type.IsDeleted ? " deleted" : "") + "'" + "><span><i class='fa fa-tag'></i>" + type.Name;
 

@@ -38,9 +38,9 @@ namespace SORANO.WEB.Infrastructure.Extensions
             return model;
         }     
         
-        public static List<ArticleTypeModel> ToTree(this List<ArticleType> types)
+        public static List<ArticleTypeModel> ToTree(this List<ArticleTypeModel> types)
         {
-            var parents = types.Where(t => t.ParentTypeId == null).Select(t => t.ToModel()).ToList();
+            var parents = types.Where(t => t.ParentType == null).ToList();
 
             parents.ForEach(p =>
             {
@@ -50,9 +50,9 @@ namespace SORANO.WEB.Infrastructure.Extensions
             return parents;
         }
 
-        private static void FillChildren(this ArticleTypeModel parent, List<ArticleType> children)
+        private static void FillChildren(this ArticleTypeModel parent, List<ArticleTypeModel> children)
         {
-            parent.ChildTypes = children.Where(c => c.ParentTypeId == parent.ID).Select(c => c.ToModel()).ToList();
+            parent.ChildTypes = children.Where(c => c.ParentType?.ID == parent.ID).ToList();
 
             parent.ChildTypes.ToList().ForEach(c =>
             {

@@ -82,7 +82,8 @@
                 <input type="hidden" asp-for="Article.MainPicture.FullPath" />
                 <input type="hidden" asp-for="Article.MainPicture.TypeID" />
             }
-            <input type="hidden" asp-for="ReturnUrl" />         
+            <input type="hidden" asp-for="ReturnUrl" />
+            
             @for (var i = 0; i < Model.Types.Count; i++)
             {
                 @Html.HiddenFor(m => m.Types[i].ID)
@@ -96,7 +97,7 @@
                     <input class="form-control input-sm" style="font-weight: bold;" placeholder="Поиск типов артикулов" type="text" id="article-search"/>
                     <br/>
                     <div class="tree">
-                        <article-types-tree elements="@Model.Types" detailed="false" show-articles="false" current-element="@Model.ArticleType"></article-types-tree>
+                        <article-types-tree elements="@Model.Types.ToTree()" detailed="false" show-articles="false" current-element="@Model.ArticleType"></article-types-tree>
                     </div>
                 </div>
             }

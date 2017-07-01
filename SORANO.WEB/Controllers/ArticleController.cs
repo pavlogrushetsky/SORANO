@@ -172,16 +172,16 @@ namespace SORANO.WEB.Controllers
 
             return await TryGetActionResultAsync(async () =>
             {
+                ModelState.Keys.Where(k => k.StartsWith("MainPicture"))
+                    .ToList()
+                    .ForEach(k =>
+                    {
+                        ModelState.Remove(k);
+                    });
+
                 if (mainPictureFile != null)
                 {
-                    var path = await Load(mainPictureFile, "articles");
-
-                    ModelState.Keys.Where(k => k.StartsWith("MainPicture"))
-                        .ToList()
-                        .ForEach(k =>
-                        {
-                            ModelState.Remove(k);
-                        });
+                    var path = await Load(mainPictureFile, "articles");                    
 
                     var typeID = attachmentTypes.Single(i => i.Text.Equals("Основное изображение")).Value;
 
@@ -228,12 +228,31 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(ArticleModel model)
+        public async Task<IActionResult> Update(ArticleModel model, IFormFile mainPictureFile)
         {
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
+            var attachmentTypes = await GetAttachmentTypes();
+            ViewBag.AttachmentTypes = attachmentTypes;
 
             return await TryGetActionResultAsync(async () =>
             {
+                ModelState.Keys.Where(k => k.StartsWith("MainPicture"))
+                    .ToList()
+                    .ForEach(k =>
+                    {
+                        ModelState.Remove(k);
+                    });
+
+                if (mainPictureFile != null)
+                {
+                    var path = await Load(mainPictureFile, "articles");                    
+
+                    var typeID = attachmentTypes.Single(i => i.Text.Equals("Основное изображение")).Value;
+
+                    model.MainPicture.TypeID = typeID;
+                    model.MainPicture.FullPath = path;
+                    model.MainPicture.Name = mainPictureFile.FileName;
+                }
+
                 ModelState.Keys.Where(k => k.StartsWith("Type")).ToList().ForEach(k =>
                 {
                     ModelState.Remove(k);

@@ -37,6 +37,7 @@
     {
         <input type="hidden" asp-for="@Model.Attachments[i].ID" />
     }
+    @Html.HiddenFor(m => m.MainPicture.ID)
     @Html.HiddenFor(m => m.MainPicture.Name)
     @Html.HiddenFor(m => m.MainPicture.FullPath)
     @Html.HiddenFor(m => m.MainPicture.TypeID)
