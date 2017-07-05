@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.Article;
@@ -166,34 +168,25 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ArticleModel model, IFormFile mainPictureFile)
-        {            
-            var attachmentTypes = await GetAttachmentTypes();
-            ViewBag.AttachmentTypes = attachmentTypes;
+        {
+            var attachmentTypes = new List<SelectListItem>();
 
             return await TryGetActionResultAsync(async () =>
             {
-                ModelState.Keys.Where(k => k.StartsWith("MainPicture"))
-                    .ToList()
-                    .ForEach(k =>
-                    {
-                        ModelState.Remove(k);
-                    });
+                ModelState.RemoveFor("MainPicture");
+                attachmentTypes = await GetAttachmentTypes();
+                ViewBag.AttachmentTypes = attachmentTypes;
 
                 if (mainPictureFile != null)
                 {
-                    var path = await Load(mainPictureFile, "articles");                    
+                    var path = await Load(mainPictureFile, "articles");                                       
 
-                    var typeID = attachmentTypes.Single(i => i.Text.Equals("Основное изображение")).Value;
-
-                    model.MainPicture.TypeID = typeID;
+                    model.MainPicture.TypeID = await GetMainPictureTypeID();
                     model.MainPicture.FullPath = path;
                     model.MainPicture.Name = mainPictureFile.FileName;
                 }
 
-                ModelState.Keys.Where(k => k.StartsWith("Type")).ToList().ForEach(k =>
-                {
-                    ModelState.Remove(k);
-                });
+                ModelState.RemoveFor("Type");
 
                 if (model.Type == null || model.Type.ID <= 0)
                 {                   
@@ -219,8 +212,9 @@ namespace SORANO.WEB.Controllers
 
                 ModelState.AddModelError("", "Не удалось создать новый артикул.");
                 return View(model);
-            }, ex => 
+            }, ex =>
             {
+                ViewBag.AttachmentTypes = attachmentTypes;
                 ModelState.AddModelError("", ex);
                 return View(model);
             });
@@ -228,35 +222,53 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(ArticleModel model, IFormFile mainPictureFile)
+        public async Task<IActionResult> Update(ArticleModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            var attachmentTypes = await GetAttachmentTypes();
-            ViewBag.AttachmentTypes = attachmentTypes;
+            var attachmentTypes = new List<SelectListItem>();
 
             return await TryGetActionResultAsync(async () =>
             {
-                ModelState.Keys.Where(k => k.StartsWith("MainPicture"))
-                    .ToList()
-                    .ForEach(k =>
-                    {
-                        ModelState.Remove(k);
-                    });
+                ModelState.RemoveFor("MainPicture");
+                attachmentTypes = await GetAttachmentTypes();
+                ViewBag.AttachmentTypes = attachmentTypes;
 
                 if (mainPictureFile != null)
                 {
                     var path = await Load(mainPictureFile, "articles");                    
 
-                    var typeID = attachmentTypes.Single(i => i.Text.Equals("Основное изображение")).Value;
-
-                    model.MainPicture.TypeID = typeID;
+                    model.MainPicture.TypeID = await GetMainPictureTypeID();
                     model.MainPicture.FullPath = path;
                     model.MainPicture.Name = mainPictureFile.FileName;
                 }
 
-                ModelState.Keys.Where(k => k.StartsWith("Type")).ToList().ForEach(k =>
+                var attachmentCounter = 0;
+
+                if (attachments.Any())
                 {
-                    ModelState.Remove(k);
-                });
+                    foreach (var attachment in model.Attachments)
+                    {
+                        if (attachment.IsNew)
+                        {
+                            var newAttachment = attachments.Skip(attachmentCounter).Take(1).FirstOrDefault();
+                            if (newAttachment != null)
+                            {
+                                var path = await Load(newAttachment, "articles");
+                                model.Attachments[attachmentCounter].Name = newAttachment.FileName;
+                                model.Attachments[attachmentCounter].FullPath = path;
+                            }
+                            
+                        }
+
+                        attachmentCounter++;
+                    }
+                }
+
+                //foreach (var attachment in attachments)
+                //{
+                //    var path = await Load(attachment, "articles");
+                //}
+
+                ModelState.RemoveFor("Type");
 
                 if (!ModelState.IsValid)
                 {
@@ -281,6 +293,7 @@ namespace SORANO.WEB.Controllers
                 return View("Create", model);
             }, ex =>
             {
+                ViewBag.AttachmentTypes = attachmentTypes;
                 ModelState.AddModelError("", ex);
                 ViewData["IsEdit"] = true;
                 return View("Create", model);

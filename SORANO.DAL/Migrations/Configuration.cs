@@ -56,6 +56,8 @@ namespace SORANO.DAL.Migrations
                     Name = "user",
                     Description = "User"
                 });
+
+                context.SaveChanges();
             }
 
             if (!context.AttachmentTypes.Any(a => a.Name.Equals("Основное изображение")))
@@ -72,6 +74,8 @@ namespace SORANO.DAL.Migrations
                     ModifiedDate = DateTime.Now,
                     ModifiedBy = developer.ID
                 });
+
+                context.SaveChanges();
             }
 
             base.Seed(context);

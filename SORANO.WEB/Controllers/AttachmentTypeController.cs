@@ -77,6 +77,7 @@ namespace SORANO.WEB.Controllers
 
                 if (attachmentType != null)
                 {
+                    await CacheAttachmentTypes();
                     return RedirectToAction("Index", "AttachmentType");
                 }
 
@@ -109,6 +110,7 @@ namespace SORANO.WEB.Controllers
 
                 if (attachmentType != null)
                 {
+                    await CacheAttachmentTypes();
                     return RedirectToAction("Index", "AttachmentType");
                 }
 

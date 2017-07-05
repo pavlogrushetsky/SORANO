@@ -26,17 +26,6 @@ namespace SORANO.BLL.Services
                     _unitOfWork.Get<Recommendation>().Update(r);
                 });
 
-            // Add newly created recommendations to existent entity
-            from.Recommendations
-                .Where(r => !to.Recommendations.Select(x => x.ID).Contains(r.ID))
-                .ToList()
-                .ForEach(r =>
-                {
-                    r.ParentEntityID = to.ID;
-                    r.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-                    to.Recommendations.Add(r);
-                });
-
             // Update existent recommendations
             from.Recommendations
                 .Where(r => to.Recommendations.Select(x => x.ID).Contains(r.ID))
@@ -52,6 +41,17 @@ namespace SORANO.BLL.Services
                     rec.Value = r.Value;
                     rec.UpdateModifiedFields(userId);
                 });
+
+            // Add newly created recommendations to existent entity
+            from.Recommendations
+                .Where(r => !to.Recommendations.Select(x => x.ID).Contains(r.ID))
+                .ToList()
+                .ForEach(r =>
+                {
+                    r.ParentEntityID = to.ID;
+                    r.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+                    to.Recommendations.Add(r);
+                });           
         }
 
         protected void UpdateAttachments(StockEntity from, StockEntity to, int userId)
@@ -65,17 +65,6 @@ namespace SORANO.BLL.Services
                     a.ParentEntities.Remove(to);
                     a.UpdateModifiedFields(userId);
                     _unitOfWork.Get<Attachment>().Update(a);
-                });
-
-            // Add newly created attachments to existent entity
-            from.Attachments
-                .Where(a => !to.Attachments.Select(x => x.ID).Contains(a.ID))
-                .ToList()
-                .ForEach(a =>
-                {
-                    a.ParentEntities.Add(to);
-                    a.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-                    to.Attachments.Add(a);
                 });
 
             // Update existent attachments
@@ -95,6 +84,17 @@ namespace SORANO.BLL.Services
                     att.AttachmentTypeID = a.AttachmentTypeID;
                     att.UpdateModifiedFields(userId);
                 });
+
+            // Add newly created attachments to existent entity
+            from.Attachments
+                .Where(a => !to.Attachments.Select(x => x.ID).Contains(a.ID))
+                .ToList()
+                .ForEach(a =>
+                {
+                    a.ParentEntities.Add(to);
+                    a.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+                    to.Attachments.Add(a);
+                });            
         }
     }
 }

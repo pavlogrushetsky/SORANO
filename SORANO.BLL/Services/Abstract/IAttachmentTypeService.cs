@@ -8,6 +8,8 @@ namespace SORANO.BLL.Services.Abstract
     {
         Task<IEnumerable<AttachmentType>> GetAllAsync();
 
+        Task<int> GetMainPictureTypeIDAsync();
+
         Task<AttachmentType> GetAsync(int id);
 
         Task<AttachmentType> CreateAsync(AttachmentType attachmentType, int userId);

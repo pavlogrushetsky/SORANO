@@ -47,7 +47,10 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 Attachments = model.Attachments.Select(a => a.ToEntity()).ToList()
             };
 
-            article.Attachments.Add(model.MainPicture.ToEntity());
+            if (!string.IsNullOrEmpty(model.MainPicture?.Name))
+            {
+                article.Attachments.Add(model.MainPicture.ToEntity());
+            }            
 
             return article;
         }

@@ -22,6 +22,7 @@ namespace SORANO.WEB.Controllers
         protected readonly IAttachmentTypeService _attachmentTypeService;
         protected readonly IMemoryCache _memoryCache;
         protected readonly IHostingEnvironment _environment;
+        protected readonly string attachmentTypesKey = "AttachmentTypesCache";
 
         /// <summary>
         /// Controller to perform entities controllers' base functionality
@@ -87,9 +88,7 @@ namespace SORANO.WEB.Controllers
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
-            ViewData["IsEdit"] = isEdit;
-
-            
+            ViewData["IsEdit"] = isEdit;            
 
             return View("Create", entity);
         }
@@ -108,18 +107,35 @@ namespace SORANO.WEB.Controllers
             return View("Create", entity);
         }
 
-        protected async Task<List<SelectListItem>> GetAttachmentTypes()
+        [HttpPost]
+        public virtual async Task<IActionResult> DeleteMainPicture(T entity, bool isEdit)
         {
-            var attachmentTypesKey = "AttachmentTypesCache";
+            ModelState.Clear();
 
+            entity.MainPicture = new AttachmentModel();
+
+            ViewBag.AttachmentTypes = await GetAttachmentTypes();
+
+            ViewData["IsEdit"] = isEdit;
+
+            return View("Create", entity);
+        }
+
+        protected virtual async Task<List<SelectListItem>> GetAttachmentTypes()
+        {
             if (_memoryCache.TryGetValue(attachmentTypesKey, out List<SelectListItem> attachmentTypeSelectItems))
             {
                 return attachmentTypeSelectItems;
             }
 
+            return await CacheAttachmentTypes();
+        }
+
+        protected virtual async Task<List<SelectListItem>> CacheAttachmentTypes()
+        {
             var attachmentTypes = await _attachmentTypeService.GetAllAsync();
 
-            attachmentTypeSelectItems = attachmentTypes.Select(a => new SelectListItem
+            var attachmentTypeSelectItems = attachmentTypes.Where(t => !t.Name.Equals("Основное изображение")).Select(a => new SelectListItem
             {
                 Text = a.Name,
                 Value = a.ID.ToString()
@@ -130,17 +146,28 @@ namespace SORANO.WEB.Controllers
             return attachmentTypeSelectItems;
         }
 
+        protected virtual async Task<string> GetMainPictureTypeID()
+        {
+            var id = await _attachmentTypeService.GetMainPictureTypeIDAsync();
+
+            return id.ToString();
+        }
+
         protected virtual async Task<string> Load(IFormFile file, string subfolder)
         {
             var extension = Path.GetExtension(file.FileName);
-            var path = "/attachments/" + subfolder + "/" + Guid.NewGuid() + extension;
+            var filename = Guid.NewGuid() + extension;
+            var path = "/attachments/" + subfolder + "/";
+            var fullPath = _environment.WebRootPath + path;
 
-            using (var stream = new FileStream(_environment.WebRootPath + path, FileMode.Create))
+            Directory.CreateDirectory(fullPath);
+
+            using (var stream = new FileStream(fullPath + filename, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
 
-            return path;            
+            return path + filename;            
         }
     }
 }

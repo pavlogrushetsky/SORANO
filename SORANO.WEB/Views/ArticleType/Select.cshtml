@@ -81,6 +81,23 @@
                 <input type="hidden" asp-for="Article.MainPicture.Name" />
                 <input type="hidden" asp-for="Article.MainPicture.FullPath" />
                 <input type="hidden" asp-for="Article.MainPicture.TypeID" />
+
+                for (var i = 0; i < Model.Article.Recommendations.Count; i++)
+                {
+                    @Html.HiddenFor(m => m.Article.Recommendations[i].ID)
+                    @Html.HiddenFor(m => m.Article.Recommendations[i].ParentID)
+                    @Html.HiddenFor(m => m.Article.Recommendations[i].ValueString)
+                    @Html.HiddenFor(m => m.Article.Recommendations[i].Comment)
+                }
+
+                for (var i = 0; i < Model.Article.Attachments.Count; i++)
+                {
+                    @Html.HiddenFor(m => m.Article.Attachments[i].ID)
+                    @Html.HiddenFor(m => m.Article.Attachments[i].IsNew)
+                    @Html.HiddenFor(m => m.Article.Attachments[i].FullPath)
+                    @Html.HiddenFor(m => m.Article.Attachments[i].TypeID)
+                    @Html.HiddenFor(m => m.Article.Attachments[i].Name)
+                }
             }
             <input type="hidden" asp-for="ReturnUrl" />
             

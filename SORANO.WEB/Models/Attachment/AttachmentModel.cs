@@ -25,6 +25,8 @@ namespace SORANO.WEB.Models.Attachment
         public string TypeID { get; set; }
 
         [Display(Name = "Тип")]
-        public AttachmentTypeModel Type { get; set; }        
+        public AttachmentTypeModel Type { get; set; }    
+        
+        public bool IsNew { get; set; }
     }
 }

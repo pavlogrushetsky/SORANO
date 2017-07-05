@@ -126,5 +126,12 @@ namespace SORANO.BLL.Services
 
             await _unitOfWork.SaveAsync();
         }
+
+        public async Task<int> GetMainPictureTypeIDAsync()
+        {
+            var type = await _unitOfWork.Get<AttachmentType>().GetAsync(t => t.Name.Equals("Основное изображение"));
+
+            return type.ID;
+        }
     }
 }
