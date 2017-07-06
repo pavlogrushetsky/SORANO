@@ -20,7 +20,8 @@ namespace SORANO.WEB.Controllers
             IUserService userService,
             IHostingEnvironment environment,
             IAttachmentTypeService attachmentTypeService,
-            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, memoryCache)
+            IAttachmentService attachmentService,
+            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
         {
             _articleTypeService = articleTypeService;
         }

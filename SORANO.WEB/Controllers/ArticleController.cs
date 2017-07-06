@@ -30,13 +30,15 @@ namespace SORANO.WEB.Controllers
         /// <param name="userService">Users service</param>
         /// <param name="environment"></param>
         /// <param name="attachmentTypeService"></param>
+        /// <param name="attachmentService"></param>
         /// <param name="memoryCache"></param>
         public ArticleController(IArticleService articleService, 
             IArticleTypeService articleTypeService, 
             IUserService userService, 
             IHostingEnvironment environment,
-            IAttachmentTypeService attachmentTypeService, 
-            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, memoryCache)
+            IAttachmentTypeService attachmentTypeService,
+            IAttachmentService attachmentService,
+            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
         {
             _articleService = articleService;
         }
@@ -57,6 +59,8 @@ namespace SORANO.WEB.Controllers
 
             ViewBag.ShowDeletedArticles = showDeletedArticles;
             ViewBag.ShowDeletedArticleTypes = showDeletedArticleTypes;
+
+            await ClearAttachments();
 
             return View(articles.Select(a => a.ToModel()).ToList());
         }
@@ -149,13 +153,18 @@ namespace SORANO.WEB.Controllers
         /// </summary>
         /// <param name="model">Article model</param>
         /// <param name="returnUrl"></param>
+        /// <param name="mainPictureFile"></param>
+        /// <param name="attachments"></param>
         /// <returns>Article type Select view</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult SelectParentType(ArticleModel model, string returnUrl)
+        public async Task<IActionResult> SelectParentType(ArticleModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            TempData.Put("ArticleModel", model);
+            await LoadMainPicture(model, mainPictureFile);
+            await LoadAttachments(model, attachments);
 
+            TempData.Put("ArticleModel", model);
+            
             return RedirectToAction("Select", "ArticleType", new { returnUrl });
         }
 
@@ -164,10 +173,11 @@ namespace SORANO.WEB.Controllers
         /// </summary>
         /// <param name="model">Article model</param>
         /// <param name="mainPictureFile"></param>
+        /// <param name="attachments"></param>
         /// <returns>Index view</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ArticleModel model, IFormFile mainPictureFile)
+        public async Task<IActionResult> Create(ArticleModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             var attachmentTypes = new List<SelectListItem>();
 
@@ -177,14 +187,8 @@ namespace SORANO.WEB.Controllers
                 attachmentTypes = await GetAttachmentTypes();
                 ViewBag.AttachmentTypes = attachmentTypes;
 
-                if (mainPictureFile != null)
-                {
-                    var path = await Load(mainPictureFile, "articles");                                       
-
-                    model.MainPicture.TypeID = await GetMainPictureTypeID();
-                    model.MainPicture.FullPath = path;
-                    model.MainPicture.Name = mainPictureFile.FileName;
-                }
+                await LoadMainPicture(model, mainPictureFile);
+                await LoadAttachments(model, attachments);
 
                 ModelState.RemoveFor("Type");
 
@@ -232,41 +236,8 @@ namespace SORANO.WEB.Controllers
                 attachmentTypes = await GetAttachmentTypes();
                 ViewBag.AttachmentTypes = attachmentTypes;
 
-                if (mainPictureFile != null)
-                {
-                    var path = await Load(mainPictureFile, "articles");                    
-
-                    model.MainPicture.TypeID = await GetMainPictureTypeID();
-                    model.MainPicture.FullPath = path;
-                    model.MainPicture.Name = mainPictureFile.FileName;
-                }
-
-                var attachmentCounter = 0;
-
-                if (attachments.Any())
-                {
-                    foreach (var attachment in model.Attachments)
-                    {
-                        if (attachment.IsNew)
-                        {
-                            var newAttachment = attachments.Skip(attachmentCounter).Take(1).FirstOrDefault();
-                            if (newAttachment != null)
-                            {
-                                var path = await Load(newAttachment, "articles");
-                                model.Attachments[attachmentCounter].Name = newAttachment.FileName;
-                                model.Attachments[attachmentCounter].FullPath = path;
-                            }
-                            
-                        }
-
-                        attachmentCounter++;
-                    }
-                }
-
-                //foreach (var attachment in attachments)
-                //{
-                //    var path = await Load(attachment, "articles");
-                //}
+                await LoadMainPicture(model, mainPictureFile);
+                await LoadAttachments(model, attachments);
 
                 ModelState.RemoveFor("Type");
 
@@ -284,7 +255,7 @@ namespace SORANO.WEB.Controllers
                 article = await _articleService.UpdateAsync(article, currentUser.ID);
 
                 if (article != null)
-                {
+                {                    
                     return RedirectToAction("Index", "Article");
                 }
 

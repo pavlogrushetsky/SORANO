@@ -23,7 +23,8 @@ namespace SORANO.WEB.Controllers
             IHostingEnvironment environment,
             ILocationTypeService locationTypeService, 
             IAttachmentTypeService attachmentTypeService,
-            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, memoryCache)
+            IAttachmentService attachmentService,
+            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
         {
             _locationService = locationService;
             _locationTypeService = locationTypeService;

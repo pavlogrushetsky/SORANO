@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using SORANO.WEB.Infrastructure.Extensions;
 
 // ReSharper disable Mvc.ViewNotResolved
 
@@ -20,9 +21,11 @@ namespace SORANO.WEB.Controllers
     public class EntityBaseController<T> : BaseController where T : EntityBaseModel
     {
         protected readonly IAttachmentTypeService _attachmentTypeService;
+        protected readonly IAttachmentService _attachmentService;
         protected readonly IMemoryCache _memoryCache;
         protected readonly IHostingEnvironment _environment;
         protected readonly string attachmentTypesKey = "AttachmentTypesCache";
+        protected readonly string entityTypeName;
 
         /// <summary>
         /// Controller to perform entities controllers' base functionality
@@ -30,12 +33,15 @@ namespace SORANO.WEB.Controllers
         /// <param name="userService">Users' service</param>
         /// <param name="environment"></param>
         /// <param name="attachmentTypeService"></param>
+        /// <param name="attachmentService"></param>
         /// <param name="memorycache"></param>
-        public EntityBaseController(IUserService userService, IHostingEnvironment environment, IAttachmentTypeService attachmentTypeService, IMemoryCache memorycache) : base(userService)
+        public EntityBaseController(IUserService userService, IHostingEnvironment environment, IAttachmentTypeService attachmentTypeService, IAttachmentService attachmentService, IMemoryCache memorycache) : base(userService)
         {
             _attachmentTypeService = attachmentTypeService;
+            _attachmentService = attachmentService;
             _memoryCache = memorycache;
             _environment = environment;
+            entityTypeName = typeof(T).Name.ToLower().Replace("model", "");
         }
 
         /// <summary>
@@ -43,9 +49,11 @@ namespace SORANO.WEB.Controllers
         /// </summary>
         /// <param name="entity">Entity model</param>
         /// <param name="isEdit">Is editing</param>
+        /// <param name="mainPictureFile"></param>
+        /// <param name="attachments"></param>
         /// <returns>Create view</returns>
         [HttpPost]
-        public virtual async Task<IActionResult> AddRecommendation(T entity, bool isEdit)
+        public virtual async Task<IActionResult> AddRecommendation(T entity, bool isEdit, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             ModelState.Clear();
 
@@ -54,6 +62,9 @@ namespace SORANO.WEB.Controllers
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
             ViewData["IsEdit"] = isEdit;
+
+            await LoadMainPicture(entity, mainPictureFile);
+            await LoadAttachments(entity, attachments);
 
             return View("Create", entity);
         }
@@ -64,9 +75,11 @@ namespace SORANO.WEB.Controllers
         /// <param name="entity">Entity model</param>
         /// <param name="isEdit">Is editing</param>
         /// <param name="num">Relative position of the recommendation</param>
+        /// <param name="mainPictureFile"></param>
+        /// <param name="attachments"></param>
         /// <returns>Create view</returns>
         [HttpPost]
-        public virtual async Task<IActionResult> DeleteRecommendation(T entity, bool isEdit, int num)
+        public virtual async Task<IActionResult> DeleteRecommendation(T entity, bool isEdit, int num, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             ModelState.Clear();
 
@@ -76,11 +89,14 @@ namespace SORANO.WEB.Controllers
 
             ViewData["IsEdit"] = isEdit;
 
+            await LoadMainPicture(entity, mainPictureFile);
+            await LoadAttachments(entity, attachments);
+
             return View("Create", entity);
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> AddAttachment(T entity, bool isEdit, IFormFileCollection attachments)
+        public virtual async Task<IActionResult> AddAttachment(T entity, bool isEdit, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             ModelState.Clear();
 
@@ -88,13 +104,16 @@ namespace SORANO.WEB.Controllers
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
-            ViewData["IsEdit"] = isEdit;            
+            ViewData["IsEdit"] = isEdit;
+
+            await LoadMainPicture(entity, mainPictureFile);
+            await LoadAttachments(entity, attachments);
 
             return View("Create", entity);
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> DeleteAttachment(T entity, bool isEdit, int num)
+        public virtual async Task<IActionResult> DeleteAttachment(T entity, bool isEdit, int num, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             ModelState.Clear();
 
@@ -104,11 +123,14 @@ namespace SORANO.WEB.Controllers
 
             ViewData["IsEdit"] = isEdit;
 
+            await LoadMainPicture(entity, mainPictureFile);
+            await LoadAttachments(entity, attachments);
+
             return View("Create", entity);
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> DeleteMainPicture(T entity, bool isEdit)
+        public virtual async Task<IActionResult> DeleteMainPicture(T entity, bool isEdit, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             ModelState.Clear();
 
@@ -117,6 +139,9 @@ namespace SORANO.WEB.Controllers
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
             ViewData["IsEdit"] = isEdit;
+
+            await LoadMainPicture(entity, mainPictureFile);
+            await LoadAttachments(entity, attachments);
 
             return View("Create", entity);
         }
@@ -168,6 +193,76 @@ namespace SORANO.WEB.Controllers
             }
 
             return path + filename;            
+        }
+
+        protected virtual async Task LoadAttachments(T model, IFormFileCollection attachments)
+        {
+            var attachmentCounter = 0;
+
+            if (attachments.Any())
+            {
+                for (var i = 0; i < model.Attachments.Count; i++)
+                {
+                    if (!model.Attachments[i].IsNew)
+                    {
+                        continue;
+                    }
+
+                    var newAttachment = attachments.Skip(attachmentCounter).Take(1).FirstOrDefault();
+                    if (newAttachment != null)
+                    {
+                        var path = await Load(newAttachment, entityTypeName);
+                        model.Attachments[i].Name = newAttachment.FileName;
+                        model.Attachments[i].FullPath = path;
+
+                        ModelState.RemoveFor($"Attachments[{i}].FullPath");
+                    }
+
+                    attachmentCounter++;
+                }
+            }
+        }
+
+        protected virtual async Task LoadMainPicture(T model, IFormFile mainPicture)
+        {
+            if (mainPicture != null)
+            {
+                var path = await Load(mainPicture, entityTypeName);
+
+                model.MainPicture.TypeID = await GetMainPictureTypeID();
+                model.MainPicture.FullPath = path;
+                model.MainPicture.Name = mainPicture.FileName;
+            }
+        }
+
+        protected virtual async Task ClearAttachments()
+        {
+            var path = _environment.WebRootPath + "/attachments/" + entityTypeName + "/";
+            if (!Directory.Exists(path))
+            {
+                return;
+            }
+
+            var files = Directory.GetFiles(path);
+            var attachments = await _attachmentService.GetAllForAsync(entityTypeName);
+            var fileNames = attachments.Select(Path.GetFileName).ToList();
+
+            foreach (var file in files)
+            {
+                if (fileNames.Contains(Path.GetFileName(file)))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    System.IO.File.Delete(file);
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
         }
     }
 }

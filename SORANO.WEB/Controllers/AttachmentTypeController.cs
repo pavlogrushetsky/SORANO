@@ -16,7 +16,8 @@ namespace SORANO.WEB.Controllers
         public AttachmentTypeController(IAttachmentTypeService attachmentTypeService, 
             IUserService userService,
             IHostingEnvironment environment,
-            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, memoryCache)
+            IAttachmentService attachmentService,
+            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
         {
         }
 
