@@ -158,6 +158,24 @@
             <div class="panel panel-info">
                 <div class="panel-heading">
                     <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseAttachments">
+                            <span>
+                                <i class="fa fa-fw fa-paperclip" aria-hidden="true"></i>
+                                @Html.DisplayNameFor(m => m.Attachments)
+                                <span class="badge pull-right">@Model.Attachments.Count</span>
+                            </span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseAttachments" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        @Html.Partial("~/Views/Shared/_Attachments.cshtml", Model.Attachments)
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
                         <a data-toggle="collapse" data-parent="#accordion" href="#collapseDeliveries">
                             <span>
                                 <i class="fa fa-fw fa-cart-arrow-down" aria-hidden="true"></i>
@@ -212,7 +230,7 @@
             }
 
             var recommendationsTable = $("#recommendations-datatable").DataTable({
-                responsive: true,
+                responsive: true,                
                 "pagingType": "numbers",
                 "language": {
                     "lengthMenu": "Отобразить _MENU_ рекомендаций на странице",
@@ -232,6 +250,34 @@
                     recommendationsTable
                         .column( colIdx )
                         .search( this.value )
+                        .draw();
+                });
+            });
+
+            var attachmentsTable = $("#attachments-datatable").DataTable({
+                responsive: true,
+                "columnDefs": [
+                    { "orderable": false, "targets": 2 }
+                ],
+                "pagingType": "numbers",
+                "language": {
+                    "lengthMenu": "Отобразить _MENU_ вложений на странице",
+                    "zeroRecords": "Вложения отсутствуют",
+                    "info": "Отображение страницы _PAGE_ из _PAGES_",
+                    "infoEmpty": "Записи отсутствуют",
+                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                    "search": "Поиск"
+                },
+                "drawCallback": function () {
+                    $('.pagination').addClass('pagination-sm');
+                }
+            });
+
+            attachmentsTable.columns().eq(0).each(function (colIdx) {
+                $('input', $('#attachments-datatable th')[colIdx]).on('keyup change', function () {
+                    attachmentsTable
+                        .column(colIdx)
+                        .search(this.value)
                         .draw();
                 });
             });

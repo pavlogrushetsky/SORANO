@@ -2,7 +2,6 @@
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 using System.Collections.Generic;
-using System.Data.Objects;
 using System.Linq;
 using System.Threading.Tasks;
 

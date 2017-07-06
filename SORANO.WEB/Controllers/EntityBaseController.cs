@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using MimeTypes;
 using SORANO.WEB.Infrastructure.Extensions;
 
 // ReSharper disable Mvc.ViewNotResolved
@@ -144,6 +145,13 @@ namespace SORANO.WEB.Controllers
             await LoadAttachments(entity, attachments);
 
             return View("Create", entity);
+        }
+
+        public virtual FileResult DownloadFile(string path, string name)
+        {
+            var bytes = System.IO.File.ReadAllBytes(_environment.WebRootPath + path);
+
+            return File(bytes, MimeTypeMap.GetMimeType(Path.GetExtension(path)), name);
         }
 
         protected virtual async Task<List<SelectListItem>> GetAttachmentTypes()
