@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SORANO.WEB.Infrastructure.ValidationAttributes;
+using System.ComponentModel.DataAnnotations;
 
 namespace SORANO.WEB.Models.AttachmentType
 {
@@ -16,7 +17,10 @@ namespace SORANO.WEB.Models.AttachmentType
 
         [MaxLength(1000, ErrorMessage = "Длина фильтра расширений не должна превышать 1000 символов")]
         [Display(Name = "Расширения")]
+        [CommaSeparated(ErrorMessage = "Фильтр расширений должен отсутствовать или содержать список расширений, разделённых запятыми")]
         public string Extensions { get; set; }
+
+        public string MimeTypes { get; set; }
 
         [Display(Name = "Вложений")]
         public int AttachmentsCount { get; set; }

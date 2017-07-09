@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -10,6 +11,7 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.Article;
 using Microsoft.Extensions.Caching.Memory;
+using MimeTypes;
 using SORANO.WEB.Models.Attachment;
 
 namespace SORANO.WEB.Controllers
@@ -188,9 +190,21 @@ namespace SORANO.WEB.Controllers
                 ViewBag.AttachmentTypes = attachmentTypes;
 
                 await LoadMainPicture(model, mainPictureFile);
-                await LoadAttachments(model, attachments);
+                await LoadAttachments(model, attachments);                               
 
                 ModelState.RemoveFor("Type");
+
+                for (var i = 0; i < model.Attachments.Count; i++)
+                {
+                    var extensions = model.Attachments[i]
+                        .Type.MimeTypes.Split(',')
+                        .Select(MimeTypeMap.GetExtension);
+
+                    if (!extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
+                    {
+                        ModelState.AddModelError($"Attachments[{i}].Name", "Вложение не соответствует указанному типу");
+                    }
+                }
 
                 if (model.Type == null || model.Type.ID <= 0)
                 {                   
@@ -240,6 +254,18 @@ namespace SORANO.WEB.Controllers
                 await LoadAttachments(model, attachments);
 
                 ModelState.RemoveFor("Type");
+
+                for (var i = 0; i < model.Attachments.Count; i++)
+                {
+                    var extensions = model.Attachments[i]
+                        .Type.MimeTypes.Split(',')
+                        .Select(MimeTypeMap.GetExtension);
+
+                    if (!extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
+                    {
+                        ModelState.AddModelError($"Attachments[{i}].Name", "Вложение не соответствует указанному типу");
+                    }
+                }
 
                 if (!ModelState.IsValid)
                 {

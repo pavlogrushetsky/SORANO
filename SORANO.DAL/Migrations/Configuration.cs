@@ -68,7 +68,7 @@ namespace SORANO.DAL.Migrations
                 {
                     Name = "Основное изображение",
                     Comment = "Изображение для отображения на странице детальной информации",
-                    Extensions = "image/*",
+                    Extensions = "bmp,dwg,gif,ico,jpeg,jpg,pic,tif,tiff",
                     CreatedDate = DateTime.Now,
                     CreatedBy = developer.ID,
                     ModifiedDate = DateTime.Now,

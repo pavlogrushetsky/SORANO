@@ -64,7 +64,15 @@
                                 <td>@attachmentType.ID</td>
                                 <td>@attachmentType.Name</td>
                                 <td>@attachmentType.Comment</td>
-                                <td>@attachmentType.Extensions</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(attachmentType.Extensions))
+                                    {
+                                        foreach (var extension in attachmentType.Extensions.Split(','))
+                                        {
+                                            <span class="label label-default">@extension</span>
+                                        }
+                                    }                                    
+                                </td>
                                 <td><span class="badge">@attachmentType.AttachmentsCount</span></td>
                                 <td>
                                     @if (!attachmentType.IsDeleted)

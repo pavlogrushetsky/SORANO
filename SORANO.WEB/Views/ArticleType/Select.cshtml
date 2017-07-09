@@ -98,6 +98,8 @@
                     @Html.HiddenFor(m => m.Article.Attachments[i].FullPath)
                     @Html.HiddenFor(m => m.Article.Attachments[i].TypeID)
                     @Html.HiddenFor(m => m.Article.Attachments[i].Name)
+                    @Html.HiddenFor(m => m.Article.Attachments[i].Type.Name)
+                    @Html.HiddenFor(m => m.Article.Attachments[i].Type.MimeTypes)
                 }
             }
             <input type="hidden" asp-for="ReturnUrl" />

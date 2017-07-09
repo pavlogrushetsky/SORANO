@@ -38,6 +38,8 @@
         <input type="hidden" asp-for="@Model.Attachments[i].ID" />
         <input type="hidden" asp-for="@Model.Attachments[i].IsNew" />
         <input type="hidden" asp-for="@Model.Attachments[i].FullPath" />
+        <input type="hidden" asp-for="@Model.Attachments[i].Type.MimeTypes" />
+        <input type="hidden" asp-for="@Model.Attachments[i].Type.Name" />
     }
     @Html.HiddenFor(m => m.MainPicture.ID)
     @Html.HiddenFor(m => m.MainPicture.Name)
@@ -180,23 +182,24 @@
                                 <td style="width: 60%; padding: 2px;">
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="fa fa-file-image-o"></i></span>
-                                        <input class="form-control" type="text" id="attachment_name_@i" asp-for="@Model.Attachments[i].Name"/>
+                                        <input class="form-control attachments" type="text" id="attachment_name_@i" asp-for="@Model.Attachments[i].Name" />
                                         <span class="input-group-btn">
                                             <label class="btn btn-default">
                                                 <i class="fa fa-paperclip"></i>
                                                 <input type="file"
-                                                       style="display: none !important;"
-                                                       id="attachment_input_@i"
-                                                       name="attachments"
-                                                       data-toggle="tooltip"
-                                                       data-placement="right"
-                                                       data-original-title="Выбрать файл"/>
+                                                        style="display: none !important;"
+                                                        id="attachment_input_@i"
+                                                        name="attachments"
+                                                        accept="@Model.Attachments[i].Type?.MimeTypes"
+                                                        data-toggle="tooltip"
+                                                        data-placement="right"
+                                                        data-original-title="Выбрать файл" />
                                             </label>
                                         </span>
                                     </div>
                                 </td>
                                 <td style="width: 35%; padding: 2px;">
-                                    <select class="form-control" asp-for="@Model.Attachments[i].TypeID" asp-items="@ViewBag.AttachmentTypes"></select>
+                                    <select id="select_type_@i" onchange="getMimeType(@i);" class="form-control attachments" asp-for="@Model.Attachments[i].TypeID" asp-items="@ViewBag.AttachmentTypes"></select>
                                 </td>
                                 <td style="width: 5%; padding: 2px;">
                                     <button class="btn btn-danger"
@@ -329,7 +332,7 @@
 @section Scripts {
     <script type="text/javascript">
         $(document).ready(function () {
-            $("input.input-validation-error").not(".recommendations").closest(".form-group").addClass("has-error");
+            $("input.input-validation-error").not(".recommendations,.attachments").closest(".form-group").addClass("has-error");
             $("select.input-validation-error").closest(".form-group").addClass("has-error");
             $("span.field-validation-error").closest(".form-group").addClass("has-error");
 
@@ -354,6 +357,15 @@
                     $('#mainPicture_img').attr('src', e.target.result);
                 }
                 reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function getMimeType(num) {
+            var id = $('#select_type_' + num).val();
+            if (id) {
+                $.post("@Url.Action("GetMimeType", "Article")?id=" + id, function (mimeType) {
+                    $('#attachment_input_' + num).attr('accept', mimeType);
+                });
             }
         }
     </script>

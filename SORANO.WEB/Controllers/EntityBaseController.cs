@@ -99,11 +99,19 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         public virtual async Task<IActionResult> AddAttachment(T entity, bool isEdit, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            ModelState.Clear();
+            ModelState.Clear();                        
 
-            entity.Attachments.Add(new AttachmentModel());            
+            var attachmentTypes = await GetAttachmentTypes();
+            attachmentTypes[0].Selected = true;
+            ViewBag.AttachmentTypes = attachmentTypes;
 
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
+            var defaultType = await _attachmentTypeService.GetAsync(int.Parse(attachmentTypes[0].Value));
+
+            entity.Attachments.Add(new AttachmentModel
+            {
+                Type = defaultType.ToModel(),
+                TypeID = defaultType.ID.ToString()
+            });
 
             ViewData["IsEdit"] = isEdit;
 
@@ -111,6 +119,14 @@ namespace SORANO.WEB.Controllers
             await LoadAttachments(entity, attachments);
 
             return View("Create", entity);
+        }
+
+        [HttpPost]
+        public virtual async Task<string> GetMimeType(int id)
+        {
+            var type = await _attachmentTypeService.GetAsync(id);
+
+            return type.ToModel().MimeTypes;
         }
 
         [HttpPost]
@@ -220,10 +236,9 @@ namespace SORANO.WEB.Controllers
                     if (newAttachment != null)
                     {
                         var path = await Load(newAttachment, entityTypeName);
-                        model.Attachments[i].Name = newAttachment.FileName;
                         model.Attachments[i].FullPath = path;
 
-                        ModelState.RemoveFor($"Attachments[{i}].FullPath");
+                        ModelState.RemoveFor($"Attachments[{i}].FullPath");                       
                     }
 
                     attachmentCounter++;

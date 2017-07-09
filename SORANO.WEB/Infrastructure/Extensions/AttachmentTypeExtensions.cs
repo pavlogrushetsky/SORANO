@@ -1,6 +1,7 @@
 ﻿using SORANO.CORE.StockEntities;
 using SORANO.WEB.Models.AttachmentType;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace SORANO.WEB.Infrastructure.Extensions
 {
@@ -12,8 +13,9 @@ namespace SORANO.WEB.Infrastructure.Extensions
             {
                 ID = attachmentType.ID,
                 Name = attachmentType.Name,
-                Comment = attachmentType.Comment,
+                Comment = attachmentType.Comment,               
                 Extensions = attachmentType.Extensions,
+                MimeTypes = !string.IsNullOrEmpty(attachmentType.Extensions) ? string.Join(",", attachmentType.Extensions.Split(',').Select(MimeTypes.MimeTypeMap.GetMimeType)) : "",
                 AttachmentsCount = attachmentType.TypeAttachments.Count,
                 CanBeDeleted = !attachmentType.Attachments.Any() && !attachmentType.IsDeleted && !attachmentType.Name.Equals("Основное изображение"),
                 IsDeleted = attachmentType.IsDeleted
@@ -27,7 +29,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 ID = model.ID,
                 Name = model.Name,
                 Comment = model.Comment,
-                Extensions = model.Extensions
+                Extensions = Regex.Replace(model.Extensions.ToLower(), @"\s+", "")
             };
         }
     }
