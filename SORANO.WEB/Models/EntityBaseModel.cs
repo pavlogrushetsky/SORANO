@@ -5,7 +5,7 @@ using SORANO.WEB.Models.Attachment;
 
 namespace SORANO.WEB.Models
 {
-    public abstract class EntityBaseModel
+    public class EntityBaseModel
     {
         [Display(Name = "ID")]
         public virtual int ID { get; set; }

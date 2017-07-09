@@ -20,6 +20,7 @@
                 <td>@Model[i].Name</td>
                 <td>@Model[i].Type.Name</td>
                 <td>
+                    @* ReSharper disable once Mvc.ActionNotResolved *@
                     <a asp-action="DownloadFile"
                        asp-route-path="@Model[i].FullPath"
                        asp-route-name="@Model[i].Name"

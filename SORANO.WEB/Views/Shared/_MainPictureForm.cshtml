@@ -1,0 +1,59 @@
+﻿@model EntityBaseModel
+
+<div class="form-group">
+    <label class="control-label">Основное изображение:</label>
+    <div class="input-group">
+        <img id="mainPicture_img" 
+             style='width: 150px; height: 200px; border: 2px solid #dce4ec; box-shadow: none; border-radius: 4px; object-fit: contain; @(!string.IsNullOrEmpty(Model.MainPicture.Name) ? "" : "display: none;")' 
+             src="@(!string.IsNullOrEmpty(Model.MainPicture.Name) ? Url.Content(Model.MainPicture.FullPath) : "")"
+        />
+
+                   
+        <div id="mainPicture_info"
+             style='width: 150px; height: 200px; border: 2px solid #dce4ec; box-shadow: none; border-radius: 4px; display: inline-block; text-align: center;@(!string.IsNullOrEmpty(Model.MainPicture.Name) ? "display: none;" : "")'>                        
+            <p class="text-info">
+                <i class="fa fa-fw fa-info" aria-hidden="true"></i>
+                Основное изображение отсутствует
+            </p>
+        </div>              
+        <div class="btn-group-vertical" style="vertical-align: top; margin-left: 5px;">
+            <label data-toggle="tooltip"
+                   data-placement="right"
+                   data-original-title="Выбрать файл изображения"
+                   class="btn btn-default"
+                   style="border-top-right-radius: 4px; border-top-left-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 4px;">
+                <i class="fa fa-paperclip"></i>
+                <input type="file" 
+                       id="main_picture_input"
+                       style="display: none !important;"
+                       name="mainPictureFile"
+                       onchange="previewMainPicture(this);"
+                       accept="image/*"/>
+            </label>
+            <button class="btn btn-default"
+                    type="submit"
+                    style="margin-top: 5px; border-top-right-radius: 4px; border-top-left-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 4px;"
+                    data-toggle="tooltip"
+                    data-placement="right"
+                    data-original-title="Выбрать изображение из существующих вложений"
+                    title="">
+                <i class="fa fa-th-large"></i>
+            </button>
+            @* ReSharper disable once Mvc.ActionNotResolved *@
+            @if (!string.IsNullOrEmpty(Model.MainPicture.Name))
+            {
+                <button class="btn btn-danger"
+                        type="submit"
+                        asp-action="DeleteMainPicture"
+                        asp-route-isEdit="@(ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"])"
+                        style="margin-top: 5px; border-top-right-radius: 4px; border-top-left-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 4px;"
+                        data-toggle="tooltip"
+                        data-placement="right"
+                        data-original-title="Удалить изображение"
+                        title="">
+                    <i class="fa fa-trash"></i>
+                </button>
+            }                    
+        </div>
+    </div>
+</div>

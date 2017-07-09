@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.WEB.Models.Location;
 using Microsoft.Extensions.Caching.Memory;
+// ReSharper disable Mvc.ViewNotResolved
 
 namespace SORANO.WEB.Controllers
 {

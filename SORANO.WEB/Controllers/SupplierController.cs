@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections.Generic;
+using System.IO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Services.Abstract;
@@ -7,6 +9,10 @@ using SORANO.WEB.Models.Supplier;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using MimeTypes;
+using SORANO.WEB.Models.Attachment;
 
 namespace SORANO.WEB.Controllers
 {
@@ -36,6 +42,8 @@ namespace SORANO.WEB.Controllers
 
             ViewBag.ShowDeleted = showDeleted;
 
+            await ClearAttachments();
+
             return View(suppliers.Select(s => s.ToModel()).ToList());
         }
 
@@ -48,9 +56,16 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View(new SupplierModel());
+            var model = new SupplierModel
+            {
+                MainPicture = new AttachmentModel()
+            };
+
+            ViewBag.AttachmentTypes = await GetAttachmentTypes();
+
+            return View(model);
         }
 
         [HttpGet]
@@ -59,6 +74,8 @@ namespace SORANO.WEB.Controllers
             var supplier = await _supplierService.GetAsync(id);
 
             var model = supplier.ToModel();
+
+            ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
             ViewData["IsEdit"] = true;
 
@@ -87,11 +104,32 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SupplierModel model)
+        public async Task<IActionResult> Create(SupplierModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
+            var attachmentTypes = new List<SelectListItem>();
+
             // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
+                ModelState.RemoveFor("MainPicture");
+                attachmentTypes = await GetAttachmentTypes();
+                ViewBag.AttachmentTypes = attachmentTypes;
+
+                await LoadMainPicture(model, mainPictureFile);
+                await LoadAttachments(model, attachments);
+
+                for (var i = 0; i < model.Attachments.Count; i++)
+                {
+                    var extensions = model.Attachments[i]
+                        .Type.MimeTypes.Split(',')
+                        .Select(MimeTypeMap.GetExtension);
+
+                    if (!extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
+                    {
+                        ModelState.AddModelError($"Attachments[{i}].Name", "Вложение не соответствует указанному типу");
+                    }
+                }
+
                 // Check the model
                 if (!ModelState.IsValid)
                 {
@@ -119,6 +157,7 @@ namespace SORANO.WEB.Controllers
                 return View(model);
             }, ex =>
             {
+                ViewBag.AttachmentTypes = attachmentTypes;
                 ModelState.AddModelError("", ex);
                 return View(model);
             });
@@ -126,11 +165,32 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(SupplierModel model)
+        public async Task<IActionResult> Update(SupplierModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
+            var attachmentTypes = new List<SelectListItem>();
+
             // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
+                ModelState.RemoveFor("MainPicture");
+                attachmentTypes = await GetAttachmentTypes();
+                ViewBag.AttachmentTypes = attachmentTypes;
+
+                await LoadMainPicture(model, mainPictureFile);
+                await LoadAttachments(model, attachments);
+
+                for (var i = 0; i < model.Attachments.Count; i++)
+                {
+                    var extensions = model.Attachments[i]
+                        .Type.MimeTypes.Split(',')
+                        .Select(MimeTypeMap.GetExtension);
+
+                    if (!extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
+                    {
+                        ModelState.AddModelError($"Attachments[{i}].Name", "Вложение не соответствует указанному типу");
+                    }
+                }
+
                 // Check the model
                 if (!ModelState.IsValid)
                 {
@@ -160,6 +220,7 @@ namespace SORANO.WEB.Controllers
                 return View("Create", model);
             }, ex =>
             {
+                ViewBag.AttachmentTypes = attachmentTypes;
                 ModelState.AddModelError("", ex);
                 ViewData["IsEdit"] = true;
                 return View("Create", model);
