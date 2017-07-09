@@ -1,13 +1,19 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.Article;
 using SORANO.WEB.Models.ArticleType;
 using Microsoft.Extensions.Caching.Memory;
+using MimeTypes;
+using SORANO.WEB.Models.Attachment;
 
 namespace SORANO.WEB.Controllers
 {
@@ -37,9 +43,14 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var model = TempData.Get<ArticleTypeModel>("ArticleTypeModel") ?? new ArticleTypeModel();
+            var model = TempData.Get<ArticleTypeModel>("ArticleTypeModel") ?? new ArticleTypeModel
+            {
+                MainPicture = new AttachmentModel()
+            };
+
+            ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
             return View(model);
         }
@@ -48,6 +59,8 @@ namespace SORANO.WEB.Controllers
         public async Task<IActionResult> Brief(int id)
         {
             var type = await _articleTypeService.GetAsync(id);
+
+            await ClearAttachments();
 
             return PartialView("_Brief", type.ToModel());
         }
@@ -58,6 +71,8 @@ namespace SORANO.WEB.Controllers
             var articleType = await _articleTypeService.GetAsync(id);
 
             var model = TempData.Get<ArticleTypeModel>("ArticleTypeModel") ?? articleType.ToModel();
+
+            ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
             ViewData["IsEdit"] = true;
 
@@ -134,14 +149,37 @@ namespace SORANO.WEB.Controllers
         /// Create new article type
         /// </summary>
         /// <param name="model">Article type model</param>
+        /// <param name="mainPictureFile"></param>
+        /// <param name="attachments"></param>
         /// <returns>Action result</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ArticleTypeModel model)
+        public async Task<IActionResult> Create(ArticleTypeModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
+            var attachmentTypes = new List<SelectListItem>();
+
             // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
+                ModelState.RemoveFor("MainPicture");
+                attachmentTypes = await GetAttachmentTypes();
+                ViewBag.AttachmentTypes = attachmentTypes;
+
+                await LoadMainPicture(model, mainPictureFile);
+                await LoadAttachments(model, attachments);
+
+                for (var i = 0; i < model.Attachments.Count; i++)
+                {
+                    var extensions = model.Attachments[i]
+                        .Type.MimeTypes.Split(',')
+                        .Select(MimeTypeMap.GetExtension);
+
+                    if (!extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
+                    {
+                        ModelState.AddModelError($"Attachments[{i}].Name", "Вложение не соответствует указанному типу");
+                    }
+                }
+
                 // Check the model
                 if (!ModelState.IsValid)
                 {
@@ -167,8 +205,9 @@ namespace SORANO.WEB.Controllers
                 // If failed
                 ModelState.AddModelError("", "Не удалось создать новый тип артикулов.");
                 return View(model);
-            }, (ex) => 
+            }, ex => 
             {
+                ViewBag.AttachmentTypes = attachmentTypes;
                 ModelState.AddModelError("", ex);
                 return View(model);
             });            
@@ -176,11 +215,32 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(ArticleTypeModel model)
+        public async Task<IActionResult> Update(ArticleTypeModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
+            var attachmentTypes = new List<SelectListItem>();
+
             // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
+                ModelState.RemoveFor("MainPicture");
+                attachmentTypes = await GetAttachmentTypes();
+                ViewBag.AttachmentTypes = attachmentTypes;
+
+                await LoadMainPicture(model, mainPictureFile);
+                await LoadAttachments(model, attachments);
+
+                for (var i = 0; i < model.Attachments.Count; i++)
+                {
+                    var extensions = model.Attachments[i]
+                        .Type.MimeTypes.Split(',')
+                        .Select(MimeTypeMap.GetExtension);
+
+                    if (!extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
+                    {
+                        ModelState.AddModelError($"Attachments[{i}].Name", "Вложение не соответствует указанному типу");
+                    }
+                }
+
                 // Check the model
                 if (!ModelState.IsValid)
                 {
@@ -208,8 +268,9 @@ namespace SORANO.WEB.Controllers
                 ModelState.AddModelError("", "Не удалось обновить тип артикулов.");
                 ViewData["IsEdit"] = true;
                 return View("Create", model);
-            }, (ex) => 
+            }, ex => 
             {
+                ViewBag.AttachmentTypes = attachmentTypes;
                 ModelState.AddModelError("", ex);
                 ViewData["IsEdit"] = true;
                 return View("Create", model);
@@ -228,8 +289,11 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult SelectParentType(ArticleTypeModel model, string returnUrl)
+        public async Task<IActionResult> SelectParentType(ArticleTypeModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
+            await LoadMainPicture(model, mainPictureFile);
+            await LoadAttachments(model, attachments);
+
             TempData.Put("ArticleTypeModel", model);
 
             return RedirectToAction("Select", "ArticleType", new { returnUrl });

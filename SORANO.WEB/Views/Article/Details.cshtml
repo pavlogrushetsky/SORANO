@@ -28,7 +28,7 @@
                 <img style='width: 150px; height: 200px; border: 2px solid #dce4ec; box-shadow: none; border-radius: 4px; object-fit: contain; margin-right:10px;'
                      src="@Url.Content(Model.MainPicture.FullPath)" />
             }
-        </div>       
+        </div>      
         <div style="float:left;">
             <dl class="dl-horizontal">
                 <dt>
@@ -135,7 +135,7 @@
             </dl>
         </div>
     </div>
-    <div class="row">
+    <div class="row" style="margin-top:10px;">
         <div class="panel-group" id="accordion">
             <div class="panel panel-info">
                 <div class="panel-heading">
@@ -151,7 +151,7 @@
                 </div>
                 <div id="collapseRecommendations" class="panel-collapse collapse in">
                     <div class="panel-body">
-                        @Html.Partial("~/Views/Shared/_Recommendations.cshtml", Model.Recommendations)
+                        @Html.Partial("~/Views/Shared/_RecommendationsDetails.cshtml", Model.Recommendations)
                     </div>
                 </div>
             </div>

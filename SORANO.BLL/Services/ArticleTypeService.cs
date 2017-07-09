@@ -79,6 +79,11 @@ namespace SORANO.BLL.Services
                 recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
+            foreach (var attachment in articleType.Attachments)
+            {
+                attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            }
+
             var saved = _unitOfWork.Get<ArticleType>().Add(articleType);
 
             await _unitOfWork.SaveAsync();
@@ -131,6 +136,8 @@ namespace SORANO.BLL.Services
 
             // Update modified fields for existent article type
             existentArticleType.UpdateModifiedFields(userId);
+
+            UpdateAttachments(articleType, existentArticleType, userId);
 
             UpdateRecommendations(articleType, existentArticleType, userId);
 

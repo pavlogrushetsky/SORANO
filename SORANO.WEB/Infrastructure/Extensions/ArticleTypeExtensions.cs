@@ -2,6 +2,7 @@
 using SORANO.CORE.StockEntities;
 using SORANO.WEB.Models.ArticleType;
 using System.Collections.Generic;
+using SORANO.WEB.Models.Attachment;
 
 namespace SORANO.WEB.Infrastructure.Extensions
 {
@@ -16,6 +17,9 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 Description = type.Description,
                 CanBeDeleted = type.Articles.All(a => a.IsDeleted) && !type.IsDeleted,      
                 IsDeleted = type.IsDeleted,
+                Recommendations = type.Recommendations?.Where(r => !r.IsDeleted).Select(r => r.ToModel()).ToList(),
+                MainPicture = type.Attachments?.SingleOrDefault(a => !a.IsDeleted && a.Type.Name.Equals("Основное изображение"))?.ToModel() ?? new AttachmentModel(),
+                Attachments = type.Attachments?.Where(a => !a.IsDeleted && !a.Type.Name.Equals("Основное изображение")).Select(a => a.ToModel()).ToList(),
                 Created = type.CreatedDate.ToString("dd.MM.yyyy"),
                 Modified = type.ModifiedDate.ToString("dd.MM.yyyy"),
                 Deleted = type.DeletedDate?.ToString("dd.MM.yyyy"),
@@ -23,8 +27,6 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 ModifiedBy = type.ModifiedByUser?.Login,
                 DeletedBy = type.DeletedByUser?.Login
             };
-
-            model.Recommendations = type.Recommendations?.Where(r => !r.IsDeleted).Select(r => r.ToModel()).ToList();
 
             if (!deep)
             {
@@ -62,14 +64,22 @@ namespace SORANO.WEB.Infrastructure.Extensions
 
         public static ArticleType ToEntity(this ArticleTypeModel model)
         {
-            return new ArticleType
+            var articleType = new ArticleType
             {
                 ID = model.ID,
                 Name = model.Name,
                 Description = model.Description,
                 ParentTypeId = model.ParentType != null && model.ParentType.ID > 0 ? (int?)model.ParentType.ID : null,
-                Recommendations = model.Recommendations.Select(r => r.ToEntity()).ToList()
+                Recommendations = model.Recommendations.Select(r => r.ToEntity()).ToList(),
+                Attachments = model.Attachments.Select(a => a.ToEntity()).ToList()
             };
+
+            if (!string.IsNullOrEmpty(model.MainPicture?.Name))
+            {
+                articleType.Attachments.Add(model.MainPicture.ToEntity());
+            }
+
+            return articleType;
         }
     }
 }
