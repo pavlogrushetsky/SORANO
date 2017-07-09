@@ -147,6 +147,17 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> SelectMainPicture(T model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        {
+            await LoadMainPicture(model, mainPictureFile);
+            await LoadAttachments(model, attachments);
+
+            _memoryCache.Set(typeof(T).Name, model);
+
+            return RedirectToAction("SelectMainPicture", "Attachment", new { model.ID, returnUrl });
+        }
+
+        [HttpPost]
         public virtual async Task<IActionResult> DeleteMainPicture(T entity, bool isEdit, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             ModelState.Clear();
