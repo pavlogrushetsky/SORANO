@@ -1,1 +1,46 @@
-﻿@model List<AttachmentModel>
+﻿@model SelectMainPictureModel
+
+@{
+    ViewBag.Title = "SORANO - Выбор изображения";
+    ViewBag.Header = "Выбор";
+    ViewBag.Description = "изображения из существующих вложений";
+    ViewBag.Icon = "fa fa-th-large";
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li class="active">Выбор изображения</li>
+    </ul>
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        @if (!Model.Pictures.Any())
+        {
+            <p class="text-info">
+                <i class="fa fa-fw fa-info" aria-hidden="true"></i>
+                Изображения отсутствуют
+            </p>
+        }
+        <form asp-controller="Attachment"
+              asp-action=""
+              method="post">
+            <input type="hidden" asp-for="ReturnUrl" />
+            <input type="hidden" asp-for="SelectedID" />
+            @if (Model.Pictures.Any())
+            {
+                <div class="form-group">
+                    @for (var i = 0; i < Model.Pictures.Count; i++)
+                    {
+  
+                    }
+                </div>
+            }
+            <div class="form-group">
+                <button type="submit" class="btn btn-default" asp-action="Cancel">Отмена</button>
+                <button type="submit" class="btn btn-primary" asp-action="Select">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>

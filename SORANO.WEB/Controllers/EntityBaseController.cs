@@ -152,7 +152,7 @@ namespace SORANO.WEB.Controllers
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
 
-            _memoryCache.Set(typeof(T).Name, model);
+            _memoryCache.Set("ForMainPictureSelection", model);
 
             return RedirectToAction("SelectMainPicture", "Attachment", new { model.ID, returnUrl });
         }
@@ -297,6 +297,32 @@ namespace SORANO.WEB.Controllers
                     // ignored
                 }
             }
+        }
+
+        protected virtual T CopyMainPicture(T cachedModel)
+        {
+            var mainPicture = cachedModel.MainPicture;
+
+            if (string.IsNullOrEmpty(mainPicture?.FullPath) || System.IO.File.Exists(mainPicture.FullPath))
+            {
+                return cachedModel;
+            }
+
+            var filename = Guid.NewGuid() + Path.GetExtension(mainPicture.FullPath);
+            var fullPath = _environment.WebRootPath + "/attachments/" + entityTypeName + "/";
+
+            Directory.CreateDirectory(fullPath);
+            
+            System.IO.File.Copy(mainPicture.FullPath, fullPath + filename);
+
+            cachedModel.MainPicture = new AttachmentModel
+            {
+                TypeID = mainPicture.TypeID,
+                Name = mainPicture.Name,
+                FullPath = fullPath + filename
+            };
+
+            return cachedModel;
         }
     }
 }

@@ -26,7 +26,9 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var attachmentTypes = await _attachmentTypeService.GetAllAsync();
+            await CacheAttachmentTypes();
+
+            var attachmentTypes = await _attachmentTypeService.GetAllAsync();          
 
             return View(attachmentTypes.Select(a => a.ToModel()).ToList());
         }
@@ -77,8 +79,7 @@ namespace SORANO.WEB.Controllers
                 attachmentType = await _attachmentTypeService.CreateAsync(attachmentType, currentUser.ID);
 
                 if (attachmentType != null)
-                {
-                    await CacheAttachmentTypes();
+                {                    
                     return RedirectToAction("Index", "AttachmentType");
                 }
 
@@ -111,7 +112,6 @@ namespace SORANO.WEB.Controllers
 
                 if (attachmentType != null)
                 {
-                    await CacheAttachmentTypes();
                     return RedirectToAction("Index", "AttachmentType");
                 }
 

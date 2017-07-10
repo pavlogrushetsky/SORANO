@@ -87,11 +87,23 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var model = TempData.Get<ArticleModel>("ArticleModel") ?? new ArticleModel
-            {
-                MainPicture = new AttachmentModel()
-            };
+            ArticleModel model;
 
+            if (_memoryCache.TryGetValue("ForMainPictureSelection", out ArticleModel cachedModel)
+                && _memoryCache.TryGetValue("MainPictureSelected", out bool selected)
+                && selected)
+            {
+                _memoryCache.Set("MainPictureSelected", false);                
+                model = CopyMainPicture(cachedModel);
+            }
+            else
+            {
+                model = TempData.Get<ArticleModel>("ArticleModel") ?? new ArticleModel
+                {
+                    MainPicture = new AttachmentModel()
+                };
+            }
+            
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
             return View(model);
@@ -105,9 +117,24 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            var article = await _articleService.GetAsync(id);
+            ArticleModel model;
 
-            var model = TempData.Get<ArticleModel>("ArticleModel") ?? article.ToModel();
+            if (_memoryCache.TryGetValue("ForMainPictureSelection", out ArticleModel cachedModel)
+                && _memoryCache.TryGetValue("MainPictureSelected", out bool selected)
+                && selected 
+                && cachedModel.ID == id)
+            {
+                _memoryCache.Set("MainPictureSelected", false);
+                model = CopyMainPicture(cachedModel);
+            }
+            else
+            {
+                var article = await _articleService.GetAsync(id);
+
+                model = TempData.Get<ArticleModel>("ArticleModel") ?? article.ToModel();
+            }
+
+                
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
