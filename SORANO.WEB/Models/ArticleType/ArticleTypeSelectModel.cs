@@ -4,7 +4,7 @@ namespace SORANO.WEB.Models.ArticleType
 {
     public class ArticleTypeSelectModel
     {
-        public List<ArticleTypeModel> Types { get; set; }
+        public List<ArticleTypeModel> Types { get; set; } = new List<ArticleTypeModel>();
 
         public ArticleTypeModel CurrentType { get; set; }
 
