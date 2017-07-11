@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using SORANO.WEB.Models.Article;
 
 namespace SORANO.WEB.Models.ArticleType
 {
@@ -7,9 +6,7 @@ namespace SORANO.WEB.Models.ArticleType
     {
         public List<ArticleTypeModel> Types { get; set; }
 
-        public ArticleTypeModel ArticleType { get; set; }
-
-        public ArticleModel Article { get; set; }
+        public ArticleTypeModel CurrentType { get; set; }
 
         public string ReturnUrl { get; set; }
     }

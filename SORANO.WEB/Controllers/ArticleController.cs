@@ -183,9 +183,9 @@ namespace SORANO.WEB.Controllers
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
 
-            TempData.Put("ArticleModel", model);
-            
-            return RedirectToAction("Select", "ArticleType", new { returnUrl });
+            _memoryCache.Set(_cachedModelKey, model);
+
+            return RedirectToAction("Select", "ArticleType", new { model.Type?.ID, returnUrl });
         }
 
         /// <summary>

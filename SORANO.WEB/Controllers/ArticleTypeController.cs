@@ -9,10 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
-using SORANO.WEB.Models.Article;
 using SORANO.WEB.Models.ArticleType;
 using Microsoft.Extensions.Caching.Memory;
 using MimeTypes;
+using SORANO.WEB.Models;
+using SORANO.WEB.Models.Article;
 using SORANO.WEB.Models.Attachment;
 
 namespace SORANO.WEB.Controllers
@@ -45,10 +46,19 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var model = TempData.Get<ArticleTypeModel>("ArticleTypeModel") ?? new ArticleTypeModel
+            ArticleTypeModel model;
+
+            if (TryGetCached(out ArticleTypeModel cachedModel))
             {
-                MainPicture = new AttachmentModel()
-            };
+                model = cachedModel;
+            }
+            else
+            {
+                model = new ArticleTypeModel
+                {
+                    MainPicture = new AttachmentModel()
+                };
+            }
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
@@ -68,9 +78,18 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            var articleType = await _articleTypeService.GetAsync(id);
+            ArticleTypeModel model;
 
-            var model = TempData.Get<ArticleTypeModel>("ArticleTypeModel") ?? articleType.ToModel();
+            if (TryGetCached(out ArticleTypeModel cachedModel) && cachedModel.ID == id)
+            {
+                model = cachedModel;
+            }
+            else
+            {
+                var articleType = await _articleTypeService.GetAsync(id);
+
+                model = articleType.ToModel();
+            }
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
@@ -80,19 +99,11 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Select(string returnUrl)
+        public async Task<IActionResult> Select(int? selectedId, string returnUrl, int? currentTypeId)
         {
             if (string.IsNullOrEmpty(returnUrl))
             {
                 return BadRequest();
-            }
-
-            var typeModel = TempData.Get<ArticleTypeModel>("ArticleTypeModel");
-            var articleModel = TempData.Get<ArticleModel>("ArticleModel");
-
-            if (typeModel == null && articleModel == null)
-            {
-                return Redirect(returnUrl);
             }
 
             var types = await _articleTypeService.GetAllAsync(false);
@@ -100,27 +111,22 @@ namespace SORANO.WEB.Controllers
             var model = new ArticleTypeSelectModel
             {
                 Types = types.Select(t => t.ToModel()).ToList(),
-                ArticleType = typeModel,
-                Article = articleModel,
                 ReturnUrl = returnUrl
             };
 
-            if (typeModel != null)
+            if (selectedId.HasValue)
             {
-                model.Types.Where(t => t.ID == typeModel.ParentType?.ID)
-                    .ToList()
-                    .ForEach(t =>
-                    {
-                        t.IsSelected = true;
-                    });
-            }
-            else
-            {
-                model.Types.Where(t => t.ID == articleModel.Type?.ID).ToList().ForEach(t =>
+                var selectedType = model.Types.FirstOrDefault(t => t.ID == selectedId);
+                if (selectedType != null)
                 {
-                    t.IsSelected = true;
-                });
-            }           
+                    selectedType.IsSelected = true;
+                }
+            }
+
+            if (currentTypeId.HasValue)
+            {
+                model.CurrentType = model.Types.FirstOrDefault(t => t.ID == currentTypeId);
+            }
 
             return View(model);
         }
@@ -294,31 +300,42 @@ namespace SORANO.WEB.Controllers
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
 
-            TempData.Put("ArticleTypeModel", model);
+            _memoryCache.Set(_cachedModelKey, model);
 
-            return RedirectToAction("Select", "ArticleType", new { returnUrl });
+            return RedirectToAction("Select", "ArticleType", new { selectedId = model.ParentType?.ID, returnUrl, model.ID });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Select(ArticleTypeSelectModel model)
         {
-            var typeModel = model.ArticleType;
-            var articleModel = model.Article;
-
             var selectedType = model.Types.SingleOrDefault(t => t.IsSelected);
 
-            if (typeModel != null)
+            if (selectedType != null)
             {
-                typeModel.ParentType = selectedType;
-
-                TempData.Put("ArticleTypeModel", typeModel);
+                if (_memoryCache.TryGetValue(_cachedModelKey, out EntityBaseModel cachedModel))
+                {
+                    if (cachedModel is ArticleModel)
+                    {
+                        ((ArticleModel) cachedModel).Type = selectedType;
+                        _memoryCache.Set(_cachedModelKey, cachedModel);
+                        Session.SetBool(_isCachedModelValid, true);
+                    }
+                    else if (cachedModel is ArticleTypeModel)
+                    {
+                        ((ArticleTypeModel) cachedModel).ParentType = selectedType;
+                        _memoryCache.Set(_cachedModelKey, cachedModel);
+                        Session.SetBool(_isCachedModelValid, true);
+                    }
+                }
+                else
+                {
+                    return BadRequest();
+                }
             }
             else
             {
-                articleModel.Type = selectedType;
-
-                TempData.Put("ArticleModel", articleModel);
+                Session.SetBool(_isCachedModelValid, true);
             }
             
             return Redirect(model.ReturnUrl);
@@ -328,15 +345,7 @@ namespace SORANO.WEB.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Cancel(ArticleTypeSelectModel model)
         {
-            if (model.Article != null)
-            {
-                TempData.Put("ArticleModel", model.Article);
-            }
-
-            if (model.ArticleType != null)
-            {
-                TempData.Put("ArticleTypeModel", model.ArticleType);
-            }          
+            Session.SetBool(_isCachedModelValid, true);
 
             return Redirect(model.ReturnUrl);
         }

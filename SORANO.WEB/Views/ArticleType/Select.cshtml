@@ -10,17 +10,6 @@
 @section Breadcrumb {
     <ul class="breadcrumb">
         <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
-        <li><a asp-controller="Article" asp-action="Index">Артикулы</a></li>
-        <li>
-            @if (Model.ArticleType != null)
-            {
-                <a asp-controller="ArticleType" asp-action="Create">Создание типа артикулов</a>
-            }
-            else
-            {
-                <a asp-controller="Article" asp-action="Create">Создание артикула</a>
-            }
-        </li>
         <li class="active">Назначение родительского типа</li>
     </ul>
 }
@@ -45,65 +34,7 @@
               asp-action=""
               method="post"
               asp-antiforgery="true">
-            @if (Model.ArticleType != null)
-            {
-                <input type="hidden" asp-for="ArticleType.ID"/>
-                <input type="hidden" asp-for="ArticleType.Name"/>
-                <input type="hidden" asp-for="ArticleType.Description"/>
-
-                for (int i = 0; i < Model.ArticleType.Recommendations.Count; i++)
-                {
-                    @Html.HiddenFor(m => m.ArticleType.Recommendations[i].ID)
-                    @Html.HiddenFor(m => m.ArticleType.Recommendations[i].ParentID)
-                    @Html.HiddenFor(m => m.ArticleType.Recommendations[i].ValueString)
-                    @Html.HiddenFor(m => m.ArticleType.Recommendations[i].Comment)
-                }
-
-                if (Model.ArticleType.ParentType != null)
-                {
-                    <input type="hidden" asp-for="ArticleType.ParentType.ID"/>
-                    <input type="hidden" asp-for="ArticleType.ParentType.Name"/>
-                    <input type="hidden" asp-for="ArticleType.ParentType.Description"/>
-                }
-            }
-            @if (Model.Article != null)
-            {
-                <input type="hidden" asp-for="Article.ID" />
-                <input type="hidden" asp-for="Article.Name" />
-                <input type="hidden" asp-for="Article.Description" />
-                <input type="hidden" asp-for="Article.Producer" />
-                <input type="hidden" asp-for="Article.Code" />
-                <input type="hidden" asp-for="Article.Barcode" />
-
-                <input type="hidden" asp-for="Article.Type.ID"/>
-                <input type="hidden" asp-for="Article.Type.Name" />
-
-                <input type="hidden" asp-for="Article.MainPicture.ID" />
-                <input type="hidden" asp-for="Article.MainPicture.Name" />
-                <input type="hidden" asp-for="Article.MainPicture.FullPath" />
-                <input type="hidden" asp-for="Article.MainPicture.TypeID" />
-
-                for (var i = 0; i < Model.Article.Recommendations.Count; i++)
-                {
-                    @Html.HiddenFor(m => m.Article.Recommendations[i].ID)
-                    @Html.HiddenFor(m => m.Article.Recommendations[i].ParentID)
-                    @Html.HiddenFor(m => m.Article.Recommendations[i].ValueString)
-                    @Html.HiddenFor(m => m.Article.Recommendations[i].Comment)
-                }
-
-                for (var i = 0; i < Model.Article.Attachments.Count; i++)
-                {
-                    @Html.HiddenFor(m => m.Article.Attachments[i].ID)
-                    @Html.HiddenFor(m => m.Article.Attachments[i].IsNew)
-                    @Html.HiddenFor(m => m.Article.Attachments[i].FullPath)
-                    @Html.HiddenFor(m => m.Article.Attachments[i].TypeID)
-                    @Html.HiddenFor(m => m.Article.Attachments[i].Name)
-                    @Html.HiddenFor(m => m.Article.Attachments[i].Type.Name)
-                    @Html.HiddenFor(m => m.Article.Attachments[i].Type.MimeTypes)
-                }
-            }
-            <input type="hidden" asp-for="ReturnUrl" />
-            
+            <input type="hidden" asp-for="ReturnUrl" />            
             @for (var i = 0; i < Model.Types.Count; i++)
             {
                 @Html.HiddenFor(m => m.Types[i].ID)
@@ -117,7 +48,7 @@
                     <input class="form-control input-sm" style="font-weight: bold;" placeholder="Поиск типов артикулов" type="text" id="article-search"/>
                     <br/>
                     <div class="tree">
-                        <article-types-tree elements="@Model.Types.ToTree()" detailed="false" show-articles="false" current-element="@Model.ArticleType"></article-types-tree>
+                        <article-types-tree elements="@Model.Types.ToTree()" detailed="false" show-articles="false" current-element="@Model.CurrentType"></article-types-tree>
                     </div>
                 </div>
             }
