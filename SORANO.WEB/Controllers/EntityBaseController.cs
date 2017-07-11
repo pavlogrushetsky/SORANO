@@ -25,8 +25,8 @@ namespace SORANO.WEB.Controllers
         protected readonly IAttachmentService _attachmentService;
         protected readonly IMemoryCache _memoryCache;
         protected readonly IHostingEnvironment _environment;
-        protected readonly string attachmentTypesKey = "AttachmentTypesCache";
-        protected readonly string entityTypeName;
+        private readonly string _attachmentTypesKey = "AttachmentTypesCache";       
+        private readonly string _entityTypeName;
 
         /// <summary>
         /// Controller to perform entities controllers' base functionality
@@ -42,7 +42,30 @@ namespace SORANO.WEB.Controllers
             _attachmentService = attachmentService;
             _memoryCache = memorycache;
             _environment = environment;
-            entityTypeName = typeof(T).Name.ToLower().Replace("model", "");
+            _entityTypeName = typeof(T).Name.ToLower().Replace("model", "");
+        }        
+
+        /// <summary>
+        /// Tries to get cached model from memory cache
+        /// </summary>
+        /// <param name="model">Cached model</param>
+        /// <returns>True if succeeded</returns>
+        protected bool TryGetCached(out T model)
+        {
+            if (_memoryCache.TryGetValue(_cachedModelKey, out EntityBaseModel cachedModel))
+            {
+                _memoryCache.Remove(_cachedModelKey);
+
+                if (cachedModel is T && Session.GetBool(_isCachedModelValid))
+                {
+                    Session.SetBool(_isCachedModelValid, false);
+                    model = cachedModel as T;
+                    return true;
+                }
+            }
+
+            model = null;
+            return false;
         }
 
         /// <summary>
@@ -152,7 +175,7 @@ namespace SORANO.WEB.Controllers
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
 
-            _memoryCache.Set("ForMainPictureSelection", model);
+            _memoryCache.Set(_cachedModelKey, model);
 
             return RedirectToAction("SelectMainPicture", "Attachment", new { model.ID, returnUrl });
         }
@@ -183,7 +206,7 @@ namespace SORANO.WEB.Controllers
 
         protected virtual async Task<List<SelectListItem>> GetAttachmentTypes()
         {
-            if (_memoryCache.TryGetValue(attachmentTypesKey, out List<SelectListItem> attachmentTypeSelectItems))
+            if (_memoryCache.TryGetValue(_attachmentTypesKey, out List<SelectListItem> attachmentTypeSelectItems))
             {
                 return attachmentTypeSelectItems;
             }
@@ -201,7 +224,7 @@ namespace SORANO.WEB.Controllers
                 Value = a.ID.ToString()
             }).ToList();
 
-            _memoryCache.Set(attachmentTypesKey, attachmentTypeSelectItems);
+            _memoryCache.Set(_attachmentTypesKey, attachmentTypeSelectItems);
 
             return attachmentTypeSelectItems;
         }
@@ -246,7 +269,7 @@ namespace SORANO.WEB.Controllers
                     var newAttachment = attachments.Skip(attachmentCounter).Take(1).FirstOrDefault();
                     if (newAttachment != null)
                     {
-                        var path = await Load(newAttachment, entityTypeName);
+                        var path = await Load(newAttachment, _entityTypeName);
                         model.Attachments[i].FullPath = path;
 
                         ModelState.RemoveFor($"Attachments[{i}].FullPath");                       
@@ -261,7 +284,7 @@ namespace SORANO.WEB.Controllers
         {
             if (mainPicture != null)
             {
-                var path = await Load(mainPicture, entityTypeName);
+                var path = await Load(mainPicture, _entityTypeName);
 
                 model.MainPicture.TypeID = await GetMainPictureTypeID();
                 model.MainPicture.FullPath = path;
@@ -271,14 +294,14 @@ namespace SORANO.WEB.Controllers
 
         protected virtual async Task ClearAttachments()
         {
-            var path = _environment.WebRootPath + "/attachments/" + entityTypeName + "/";
+            var path = _environment.WebRootPath + "/attachments/" + _entityTypeName + "/";
             if (!Directory.Exists(path))
             {
                 return;
             }
 
             var files = Directory.GetFiles(path);
-            var attachments = await _attachmentService.GetAllForAsync(entityTypeName);
+            var attachments = await _attachmentService.GetAllForAsync(_entityTypeName);
             var fileNames = attachments.Select(Path.GetFileName).ToList();
 
             foreach (var file in files)
@@ -309,7 +332,7 @@ namespace SORANO.WEB.Controllers
             }
 
             var filename = Guid.NewGuid() + Path.GetExtension(mainPicture.FullPath);
-            var fullPath = _environment.WebRootPath + "/attachments/" + entityTypeName + "/";
+            var fullPath = _environment.WebRootPath + "/attachments/" + _entityTypeName + "/";
 
             Directory.CreateDirectory(fullPath);
             

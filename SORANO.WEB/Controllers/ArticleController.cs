@@ -54,8 +54,8 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var showDeletedArticles = HttpContext.Session.GetBool("ShowDeletedArticles");
-            var showDeletedArticleTypes = HttpContext.Session.GetBool("ShowDeletedArticleTypes");
+            var showDeletedArticles = Session.GetBool("ShowDeletedArticles");
+            var showDeletedArticleTypes = Session.GetBool("ShowDeletedArticleTypes");
 
             var articles = await _articleService.GetAllAsync(showDeletedArticles);
 
@@ -75,7 +75,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public IActionResult ShowDeleted(bool show)
         {
-            HttpContext.Session.SetBool("ShowDeletedArticles", show);
+            Session.SetBool("ShowDeletedArticles", show);
 
             return RedirectToAction("Index");
         }
@@ -89,16 +89,13 @@ namespace SORANO.WEB.Controllers
         {
             ArticleModel model;
 
-            if (_memoryCache.TryGetValue("ForMainPictureSelection", out ArticleModel cachedModel)
-                && _memoryCache.TryGetValue("MainPictureSelected", out bool selected)
-                && selected)
+            if (TryGetCached(out ArticleModel cachedModel))
             {
-                _memoryCache.Set("MainPictureSelected", false);                
-                model = CopyMainPicture(cachedModel);
+                model = cachedModel;
             }
             else
             {
-                model = TempData.Get<ArticleModel>("ArticleModel") ?? new ArticleModel
+                model = new ArticleModel
                 {
                     MainPicture = new AttachmentModel()
                 };
@@ -119,22 +116,16 @@ namespace SORANO.WEB.Controllers
         {
             ArticleModel model;
 
-            if (_memoryCache.TryGetValue("ForMainPictureSelection", out ArticleModel cachedModel)
-                && _memoryCache.TryGetValue("MainPictureSelected", out bool selected)
-                && selected 
-                && cachedModel.ID == id)
+            if (TryGetCached(out ArticleModel cachedModel) && cachedModel.ID == id)
             {
-                _memoryCache.Set("MainPictureSelected", false);
-                model = CopyMainPicture(cachedModel);
+                model = cachedModel;
             }
             else
             {
                 var article = await _articleService.GetAsync(id);
 
-                model = TempData.Get<ArticleModel>("ArticleModel") ?? article.ToModel();
-            }
-
-                
+                model = article.ToModel();
+            }                
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
 

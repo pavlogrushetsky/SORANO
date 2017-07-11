@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.AccountEntities;
@@ -14,6 +15,9 @@ namespace SORANO.WEB.Controllers
     {
         protected readonly IUserService _userService;
 
+        protected readonly string _cachedModelKey = "CachedModel";
+        protected readonly string _isCachedModelValid = "CachedIsValid";
+
         /// <summary>
         /// Controller to perform controllers' base functionality
         /// </summary>
@@ -22,6 +26,11 @@ namespace SORANO.WEB.Controllers
         {
             _userService = userService;
         }
+
+        /// <summary>
+        /// Context session
+        /// </summary>
+        protected ISession Session => HttpContext.Session;
 
         /// <summary>
         /// Get currently logged in user

@@ -47,11 +47,11 @@ namespace SORANO.WEB.Controllers
         {
             if (model.SelectedID > 0)
             {
-                if (_memoryCache.TryGetValue("ForMainPictureSelection", out EntityBaseModel cachedModel))
+                if (_memoryCache.TryGetValue(_cachedModelKey, out EntityBaseModel cachedModel))
                 {
                     cachedModel.MainPicture = model.Pictures.Single(p => p.ID == model.SelectedID);
-                    _memoryCache.Set("ForMainPictureSelection", cachedModel);
-                    _memoryCache.Set("MainPictureSelected", true);
+                    _memoryCache.Set(_cachedModelKey, cachedModel);
+                    Session.SetBool(_isCachedModelValid, true);
                 }
                 else
                 {
@@ -60,7 +60,7 @@ namespace SORANO.WEB.Controllers
             }
             else
             {
-                _memoryCache.Set("MainPictureSelected", true);
+                Session.SetBool(_isCachedModelValid, true);
             }
 
             return Redirect(model.ReturnUrl);
@@ -70,7 +70,7 @@ namespace SORANO.WEB.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Cancel(SelectMainPictureModel model)
         {
-            _memoryCache.Set("MainPictureSelected", true);
+            Session.SetBool(_isCachedModelValid, true);
 
             return Redirect(model.ReturnUrl);
         }

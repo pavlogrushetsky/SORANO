@@ -7,15 +7,14 @@ namespace SORANO.WEB.Infrastructure.Extensions
     {
         public static bool GetBool(this ISession session, string key)
         {
-            if (session.Keys.Contains(key))
+            if (!session.Keys.Contains(key))
             {
-                bool value;
-                bool.TryParse(session.GetString(key), out value);
-
-                return value;
+                return false;
             }
 
-            return false;
+            bool.TryParse(session.GetString(key), out bool value);
+
+            return value;
         }
 
         public static void SetBool(this ISession session, string key, bool value)
