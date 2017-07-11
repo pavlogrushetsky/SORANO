@@ -26,14 +26,14 @@ namespace SORANO.BLL.Services
             })).Select(a => a.FullPath);
         }
 
-        public async Task<IEnumerable<Attachment>> GetPicturesForAsync(int id)
+        public async Task<IEnumerable<Attachment>> GetPicturesExceptAsync(int currentMainPictureId)
         {
             var attachments = await _unitOfWork.Get<Attachment>().GetAllAsync();
 
             var extensions = "bmp,dwg,gif,ico,jpeg,jpg,pic,tif,tiff".Split(',');
-
-            return attachments.Where(a => a.ParentEntities.Any(p => p.ID == id) &&
-                                          extensions.Contains(Path.GetExtension(a.FullPath)));
+            
+            return attachments.Where(a => a.ID != currentMainPictureId &&
+                                          extensions.Any(e => e.Equals(Path.GetExtension(a.FullPath)?.TrimStart('.'))));
         }
     }
 }

@@ -23,14 +23,14 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SelectMainPicture(int id, string returnUrl)
+        public async Task<IActionResult> SelectMainPicture(int currentMainPictureId, string returnUrl)
         {
             if (string.IsNullOrEmpty(returnUrl))
             {
                 return BadRequest();
             }
 
-            var attachments = await _attachmentService.GetPicturesForAsync(id);
+            var attachments = await _attachmentService.GetPicturesExceptAsync(currentMainPictureId);
 
             var model = new SelectMainPictureModel
             {

@@ -177,7 +177,7 @@ namespace SORANO.WEB.Controllers
 
             _memoryCache.Set(_cachedModelKey, model);
 
-            return RedirectToAction("SelectMainPicture", "Attachment", new { model.ID, returnUrl });
+            return RedirectToAction("SelectMainPicture", "Attachment", new { currentMainPictureId = model.MainPicture.ID, returnUrl });
         }
 
         [HttpPost]

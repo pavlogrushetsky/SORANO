@@ -8,6 +8,6 @@ namespace SORANO.BLL.Services.Abstract
     {
         Task<IEnumerable<string>> GetAllForAsync(string type);
 
-        Task<IEnumerable<Attachment>> GetPicturesForAsync(int id);
+        Task<IEnumerable<Attachment>> GetPicturesExceptAsync(int currentMainPictureId);
     }
 }
