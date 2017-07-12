@@ -4,7 +4,6 @@ using SORANO.DAL.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 using System.IO;
 
 namespace SORANO.BLL.Services
@@ -26,14 +25,23 @@ namespace SORANO.BLL.Services
             })).Select(a => a.FullPath);
         }
 
+        public async Task<bool> HasMainPictureAsync(int id, int mainPictureId)
+        {
+            var existentMainPicture = await _unitOfWork.Get<Attachment>()
+                .GetAsync(a => a.Type.Name.Equals("Основное изображение") &&
+                               a.ParentEntities.Select(p => p.ID).Contains(id));
+
+            return existentMainPicture != null && existentMainPicture.ID == mainPictureId;
+        }
+
         public async Task<IEnumerable<Attachment>> GetPicturesExceptAsync(int currentMainPictureId)
         {
             var attachments = await _unitOfWork.Get<Attachment>().GetAllAsync();
 
-            var extensions = "bmp,dwg,gif,ico,jpeg,jpg,pic,tif,tiff".Split(',');
-            
+            var extensions = "png,bmp,dwg,gif,ico,jpeg,jpg,pic,tif,tiff".Split(',');
+
             return attachments.Where(a => a.ID != currentMainPictureId &&
-                                          extensions.Any(e => e.Equals(Path.GetExtension(a.FullPath)?.TrimStart('.'))));
+                                          extensions.Contains(Path.GetExtension(a.FullPath)?.TrimStart('.')));
         }
     }
 }

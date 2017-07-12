@@ -63,8 +63,7 @@ namespace SORANO.BLL.Services
                 .ForEach(a =>
                 {
                     a.ParentEntities.Remove(to);
-                    a.UpdateModifiedFields(userId);
-                    _unitOfWork.Get<Attachment>().Update(a);
+                    _unitOfWork.Get<Attachment>().Delete(a);
                 });
 
             // Update existent attachments

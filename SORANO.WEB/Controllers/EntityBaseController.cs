@@ -68,6 +68,43 @@ namespace SORANO.WEB.Controllers
             return false;
         }
 
+        protected virtual async Task CopyMainPicture(T cachedModel)
+        {
+            var hasThisMainPicture = true;
+
+            if (cachedModel.MainPicture.ID > 0)
+            {
+                hasThisMainPicture = await _attachmentService.HasMainPictureAsync(cachedModel.ID, cachedModel.MainPicture.ID);
+            }
+                                
+            if (hasThisMainPicture)
+            {
+                return;
+            }
+
+            var mainPicture = cachedModel.MainPicture;
+
+            if (string.IsNullOrEmpty(mainPicture.FullPath) || !System.IO.File.Exists(_environment.WebRootPath + mainPicture.FullPath))
+            {
+                return;
+            }
+            
+            var filename = Guid.NewGuid() + Path.GetExtension(mainPicture.FullPath);
+            var path = "/attachments/" + _entityTypeName + "/";
+            var fullPath = _environment.WebRootPath + path;
+
+            Directory.CreateDirectory(fullPath);
+
+            System.IO.File.Copy(_environment.WebRootPath + mainPicture.FullPath, fullPath + filename);
+
+            cachedModel.MainPicture = new AttachmentModel
+            {
+                TypeID = mainPicture.TypeID,
+                Name = mainPicture.Name,
+                FullPath = path + filename
+            };
+        }
+
         /// <summary>
         /// Post entity model to add recommendation
         /// </summary>
@@ -320,32 +357,6 @@ namespace SORANO.WEB.Controllers
                     // ignored
                 }
             }
-        }
-
-        protected virtual T CopyMainPicture(T cachedModel)
-        {
-            var mainPicture = cachedModel.MainPicture;
-
-            if (string.IsNullOrEmpty(mainPicture?.FullPath) || System.IO.File.Exists(mainPicture.FullPath))
-            {
-                return cachedModel;
-            }
-
-            var filename = Guid.NewGuid() + Path.GetExtension(mainPicture.FullPath);
-            var fullPath = _environment.WebRootPath + "/attachments/" + _entityTypeName + "/";
-
-            Directory.CreateDirectory(fullPath);
-            
-            System.IO.File.Copy(mainPicture.FullPath, fullPath + filename);
-
-            cachedModel.MainPicture = new AttachmentModel
-            {
-                TypeID = mainPicture.TypeID,
-                Name = mainPicture.Name,
-                FullPath = fullPath + filename
-            };
-
-            return cachedModel;
-        }
+        }     
     }
 }

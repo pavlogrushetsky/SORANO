@@ -92,7 +92,7 @@ namespace SORANO.WEB.Controllers
             if (TryGetCached(out ArticleModel cachedModel))
             {
                 model = cachedModel;
-                //CopyMainPicture(model);
+                await CopyMainPicture(model);
             }
             else
             {
@@ -120,7 +120,7 @@ namespace SORANO.WEB.Controllers
             if (TryGetCached(out ArticleModel cachedModel) && cachedModel.ID == id)
             {
                 model = cachedModel;
-                //CopyMainPicture(model);
+                await CopyMainPicture(model);
             }
             else
             {
