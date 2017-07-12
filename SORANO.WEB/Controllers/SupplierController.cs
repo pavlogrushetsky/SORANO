@@ -36,7 +36,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            bool showDeleted = HttpContext.Session.GetBool("ShowDeletedSuppliers");
+            bool showDeleted = Session.GetBool("ShowDeletedSuppliers");
 
             var suppliers = await _supplierService.GetAllAsync(showDeleted);
 
@@ -50,7 +50,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public IActionResult ShowDeleted(bool show)
         {
-            HttpContext.Session.SetBool("ShowDeletedSuppliers", show);
+            Session.SetBool("ShowDeletedSuppliers", show);
 
             return RedirectToAction("Index");
         }
@@ -58,10 +58,20 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var model = new SupplierModel
+            SupplierModel model;
+
+            if (TryGetCached(out SupplierModel cachedModel))
             {
-                MainPicture = new AttachmentModel()
-            };
+                model = cachedModel;
+                await CopyMainPicture(model);
+            }
+            else
+            {
+                model = new SupplierModel
+                {
+                    MainPicture = new AttachmentModel()
+                };
+            }
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
@@ -70,10 +80,21 @@ namespace SORANO.WEB.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Update(int id)
-        {
-            var supplier = await _supplierService.GetAsync(id);
+        {            
+            SupplierModel model;
 
-            var model = supplier.ToModel();
+            if (TryGetCached(out SupplierModel cachedModel) && cachedModel.ID == id)
+            {
+                model = cachedModel;
+                await CopyMainPicture(model);
+            }
+            else
+            {
+                var supplier = await _supplierService.GetAsync(id);
+
+                model = supplier.ToModel();
+            }
+
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
 

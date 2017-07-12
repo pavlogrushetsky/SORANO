@@ -146,9 +146,7 @@ namespace SORANO.WEB.Controllers
         {
             var article = await _articleService.GetAsync(id);
 
-            var model = article.ToModel();
-
-            return View(model);
+            return View(article.ToModel());
         }
 
         /// <summary>
@@ -161,9 +159,7 @@ namespace SORANO.WEB.Controllers
         {
             var article = await _articleService.GetAsync(id);
 
-            var model = article.ToModel();
-
-            return View(model);
+            return View(article.ToModel());
         }        
 
         #endregion

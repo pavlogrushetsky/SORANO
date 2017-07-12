@@ -38,7 +38,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public IActionResult ShowDeleted(bool show)
         {
-            HttpContext.Session.SetBool("ShowDeletedArticleTypes", show);
+            Session.SetBool("ShowDeletedArticleTypes", show);
 
             return RedirectToAction("Index", "Article");
         }
@@ -51,6 +51,7 @@ namespace SORANO.WEB.Controllers
             if (TryGetCached(out ArticleTypeModel cachedModel))
             {
                 model = cachedModel;
+                await CopyMainPicture(model);
             }
             else
             {
@@ -83,6 +84,7 @@ namespace SORANO.WEB.Controllers
             if (TryGetCached(out ArticleTypeModel cachedModel) && cachedModel.ID == id)
             {
                 model = cachedModel;
+                await CopyMainPicture(model);
             }
             else
             {
