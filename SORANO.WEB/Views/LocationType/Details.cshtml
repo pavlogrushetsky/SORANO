@@ -17,72 +17,114 @@
 
 <div class="col-lg-12">
     <div class="row">
-        <dl class="dl-horizontal">
-            <dt>
-                @Html.DisplayNameFor(model => model.ID)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.ID)
-            </dd>
-            <dt>
-                @Html.DisplayNameFor(model => model.Name)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.Name)
-            </dd>
-            @if (!string.IsNullOrEmpty(Model.Description))
+        <div style="float:left;">
+            @if (Model.MainPicture?.FullPath != null)
             {
-                <dt>
-                    @Html.DisplayNameFor(model => model.Description)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.Description)
-                </dd>
-            }          
-            <dt>
-                @Html.DisplayNameFor(model => model.Created)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.Created)               
-            </dd> 
-            <dd>
-                @Html.DisplayFor(model => model.CreatedBy)
-            </dd>
-            <dt>
-                @Html.DisplayNameFor(model => model.Modified)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.Modified)                
-            </dd>
-            <dd>
-                @Html.DisplayFor(model => model.ModifiedBy)
-            </dd>
-            @if (Model.Recommendations.Any())
-            {
-                <dt>
-                    @Html.DisplayNameFor(model => model.Recommendations)
-                </dt>
-                <dd>
-                    <table class="table table-striped">
-                        <tr>
-                            <th>Текст</th>
-                            <th>Значение</th>
-                        </tr>
-                        @foreach (var recommendation in Model.Recommendations)
-                        {
-                            <tr>
-                                <td>
-                                    @Html.DisplayFor(modelItem => recommendation.Comment)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => recommendation.ValueString)
-                                </td>
-                            </tr>
-                        }
-                    </table>
-                </dd>
+                <img style='width: 150px; height: 200px; border: 2px solid #dce4ec; box-shadow: none; border-radius: 4px; object-fit: contain; margin-right:10px;'
+                     src="@Url.Content(Model.MainPicture.FullPath)" />
             }
-        </dl>
+        </div> 
+        <div style="float: left;">
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.ID)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ID)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Name)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Description)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => model.Description)
+                    </dd>
+                }
+                <dt>
+                    @Html.DisplayNameFor(model => model.Created)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Created)
+                </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.CreatedBy)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Modified)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Modified)
+                </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.ModifiedBy)
+                </dd>
+                @if (Model.IsDeleted)
+                {
+                    <dt>
+                        @Html.DisplayNameFor(model => model.IsDeleted)
+                    </dt>
+                    <dd>
+                        <span class="label label-danger">Удалён</span>
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Deleted)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => model.Deleted)
+                    </dd>
+                    <dd>
+                        @Html.DisplayFor(model => model.DeletedBy)
+                    </dd>
+                }
+            </dl>
+        </div>
+    </div>
+    <div class="row" style="margin-top:10px;">
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseRecommendations">
+                            <span>
+                                <i class="fa fa-fw fa-comments" aria-hidden="true"></i>
+                                @Html.DisplayNameFor(m => m.Recommendations)
+                                <span class="badge pull-right">@Model.Recommendations.Count</span>
+                            </span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseRecommendations" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                        @Html.Partial("~/Views/Shared/_RecommendationsDetails.cshtml", Model.Recommendations)
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseAttachments">
+                            <span>
+                                <i class="fa fa-fw fa-paperclip" aria-hidden="true"></i>
+                                @Html.DisplayNameFor(m => m.Attachments)
+                                <span class="badge pull-right">@Model.Attachments.Count</span>
+                            </span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseAttachments" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        @Html.Partial("~/Views/Shared/_AttachmentsDetails.cshtml", Model.Attachments)
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="row">
         <a class="btn btn-default" asp-controller="Location" asp-action="Index">
@@ -91,3 +133,86 @@
         </a>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/lib/datatables.net-responsive-bs/js/responsive.bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#accordion').on('shown.bs.collapse', function () {
+                var active = $("#accordion .in").attr('id');
+                localStorage.setItem('location-types-details-active-panel', active);
+                localStorage.removeItem('location-types-details-all-collapsed');
+            });
+            $('#accordion').on('hidden.bs.collapse', function () {
+                localStorage.setItem('location-types-details-all-collapsed', true);
+                localStorage.removeItem('location-types-details-active-panel');
+            });
+
+            var lastPanel = localStorage.getItem('location-types-details-active-panel');
+            var allCollapsed = localStorage.getItem('location-types-details-all-collapsed');
+            if (lastPanel) {
+                $("#accordion .panel-collapse").removeClass('in');
+                $("#" + lastPanel).addClass("in");
+            }
+            if (allCollapsed) {
+                $("#accordion .panel-collapse").removeClass('in');
+            }
+
+            var recommendationsTable = $("#recommendations-datatable").DataTable({
+                responsive: true,
+                "pagingType": "numbers",
+                "language": {
+                    "lengthMenu": "Отобразить _MENU_ рекомендаций на странице",
+                    "zeroRecords": "Рекомендации отсутствуют",
+                    "info": "Отображение страницы _PAGE_ из _PAGES_",
+                    "infoEmpty": "Записи отсутствуют",
+                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                    "search": "Поиск"
+                },
+                "drawCallback": function () {
+                    $('.pagination').addClass('pagination-sm');
+                }
+            });
+
+            recommendationsTable.columns().eq( 0 ).each( function ( colIdx ) {
+                $( 'input', $('#recommendations-datatable th')[colIdx] ).on( 'keyup change', function () {
+                    recommendationsTable
+                        .column( colIdx )
+                        .search( this.value )
+                        .draw();
+                });
+            });
+
+            var attachmentsTable = $("#attachments-datatable").DataTable({
+                responsive: true,
+                "columnDefs": [
+                    { "orderable": false, "targets": 2 }
+                ],
+                "pagingType": "numbers",
+                "language": {
+                    "lengthMenu": "Отобразить _MENU_ вложений на странице",
+                    "zeroRecords": "Вложения отсутствуют",
+                    "info": "Отображение страницы _PAGE_ из _PAGES_",
+                    "infoEmpty": "Записи отсутствуют",
+                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                    "search": "Поиск"
+                },
+                "drawCallback": function () {
+                    $('.pagination').addClass('pagination-sm');
+                }
+            });
+
+            attachmentsTable.columns().eq(0).each(function (colIdx) {
+                $('input', $('#attachments-datatable th')[colIdx]).on('keyup change', function () {
+                    attachmentsTable
+                        .column(colIdx)
+                        .search(this.value)
+                        .draw();
+                });
+            });
+        });
+    </script>
+}

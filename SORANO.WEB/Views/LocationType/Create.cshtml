@@ -22,13 +22,26 @@
 
 <form asp-action="@(isEdit ? "Update" : "Create")"
       asp-controller="LocationType"
-      method="post">
+      method="post"
+      enctype="multipart/form-data">
     <input type="hidden" asp-for="ID" />
     @for (var i = 0; i < Model.Recommendations.Count; i++)
     {
         <input type="hidden" asp-for="@Model.Recommendations[i].ID" />
         <input type="hidden" asp-for="@Model.Recommendations[i].ParentID" />
     }
+    @for (int i = 0; i < Model.Attachments.Count; i++)
+    {
+        <input type="hidden" asp-for="@Model.Attachments[i].ID" />
+        <input type="hidden" asp-for="@Model.Attachments[i].IsNew" />
+        <input type="hidden" asp-for="@Model.Attachments[i].FullPath" />
+        <input type="hidden" asp-for="@Model.Attachments[i].Type.MimeTypes" />
+        <input type="hidden" asp-for="@Model.Attachments[i].Type.Name" />
+    }
+    @Html.HiddenFor(m => m.MainPicture.ID)
+    @Html.HiddenFor(m => m.MainPicture.Name)
+    @Html.HiddenFor(m => m.MainPicture.FullPath)
+    @Html.HiddenFor(m => m.MainPicture.TypeID)
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-12">
@@ -48,70 +61,9 @@
             </div>            
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12">
-            <div class="form-group">
-                <label class="control-label" asp-for="Name">Рекомендации:</label>
-                <div id="recommendations">
-                    <table class="table table-responsive" style="width: 100%; margin-bottom: 2px;">
-                        @if (Model.Recommendations.Any())
-                        {
-                            <thead>
-                                <tr>
-                                    <th style="width: 70%"><i class="fa fa-fw fa-comment" aria-hidden="true"></i>Текст</th>
-                                    <th style="width: 25%"><i class="fa fa-fw fa-hashtag" aria-hidden="true"></i>Значение</th>
-                                    <th style="width: 5%"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (var i = 0; i < Model.Recommendations.Count; i++)
-                                {
-                                    <tr>
-                                        <td style="padding: 2px;"><textarea style="resize: vertical;" class="form-control recommendations" rows="1" asp-for="@Model.Recommendations[i].Comment"></textarea></td>
-                                        <td style="padding: 2px;"><input class="form-control recommendations" type="text" asp-for="@Model.Recommendations[i].ValueString" /></td>
-                                        <td style="padding: 2px;">
-                                            <button class="btn btn-danger"
-                                                    type="submit"
-                                                    asp-action="DeleteRecommendation"
-                                                    asp-route-isEdit="@isEdit"
-                                                    asp-route-num="@i"
-                                                    data-toggle="tooltip"
-                                                    data-placement="right"
-                                                    data-original-title="Удалить рекомендацию"
-                                                    title="">
-                                                <i class="fa fa-trash" aria-hidden="true"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        }
-                        <tfoot>
-                            <tr>
-                                <td colspan="2" style="padding: 2px; vertical-align: middle;">
-                                    @if (!Model.Recommendations.Any())
-                                    {
-                                        <p class="text-info">
-                                            <i class="fa fa-fw fa-info" aria-hidden="true"></i>
-                                            Рекомендации отсутствуют
-                                        </p>
-                                    }
-                                </td>
-                                <td style="padding: 2px;">
-                                    <button class="btn btn-success pull-right"
-                                            type="submit"
-                                            asp-action="AddRecommendation"
-                                            asp-route-isEdit="@isEdit"
-                                            data-toggle="tooltip"
-                                            data-placement="right"
-                                            data-original-title="Добавить рекомендацию"
-                                            title="">
-                                        <i class="fa fa-plus" aria-hidden="true"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
+            @Html.Partial("~/Views/Shared/_MainPictureForm.cshtml", Model)
+            @Html.Partial("~/Views/Shared/_AttachmentsForm.cshtml", Model)
+            @Html.Partial("~/Views/Shared/_RecommendationsForm.cshtml", Model)
         </div>
     </div>
     <div class="row">
@@ -133,8 +85,40 @@
 @section Scripts {
     <script type="text/javascript">
         $(document).ready(function () {
-            $("input.input-validation-error").not(".recommendations").closest(".form-group").addClass("has-error");
+            $("input.input-validation-error").not(".recommendations,.attachments").closest(".form-group").addClass("has-error");
             $("select.input-validation-error").closest(".form-group").addClass("has-error");
+
+            $('input[type=file]').not('#main_picture_input').change(function () {
+                var id = $(this).attr('id');
+                var name = document.getElementById(id).files[0].name;
+                var matches = id.match(/\d+$/);
+                if (matches) {
+                    var number = matches[0];
+                    $('#attachment_name_' + number).val(name);
+                    $('#Attachments_' + number + '__IsNew').val(true);
+                }
+            });
         });
+
+        function previewMainPicture(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById("mainPicture_info").style.display = 'none';
+                    document.getElementById("mainPicture_img").style.display = 'inline-block';
+                    $('#mainPicture_img').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function getMimeType(num) {
+            var id = $('#select_type_' + num).val();
+            if (id) {
+                $.post("@Url.Action("GetMimeType", "Article")?id=" + id, function (mimeType) {
+                    $('#attachment_input_' + num).attr('accept', mimeType);
+                });
+            }
+        }
     </script>
 }

@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Services.Abstract;
@@ -6,6 +9,10 @@ using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.LocationType;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using MimeTypes;
+using SORANO.WEB.Models.Attachment;
 
 namespace SORANO.WEB.Controllers
 {
@@ -27,17 +34,58 @@ namespace SORANO.WEB.Controllers
         #region GET Actions
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View(new LocationTypeModel());
+            await ClearAttachments();
+
+            LocationTypeModel model;
+
+            if (TryGetCached(out LocationTypeModel cachedModel))
+            {
+                model = cachedModel;
+                await CopyMainPicture(model);
+            }
+            else
+            {
+                model = new LocationTypeModel
+                {
+                    MainPicture = new AttachmentModel()
+                };
+            }
+
+            ViewBag.AttachmentTypes = await GetAttachmentTypes();
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult ShowDeleted(bool show)
+        {
+            Session.SetBool("ShowDeletedLocationTypes", show);
+
+            return RedirectToAction("Index", "Location");
         }
 
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            var locationType = await _locationTypeService.GetAsync(id);
+            await ClearAttachments();
 
-            var model = locationType.ToModel();
+            LocationTypeModel model;
+
+            if (TryGetCached(out LocationTypeModel cachedModel) && cachedModel.ID == id)
+            {
+                model = cachedModel;
+                await CopyMainPicture(model);
+            }
+            else
+            {
+                var locationType = await _locationTypeService.GetAsync(id);
+
+                model = locationType.ToModel();
+            }
+
+            ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
             ViewData["IsEdit"] = true;
 
@@ -47,6 +95,8 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
+            await ClearAttachments();
+
             var locationType = await _locationTypeService.GetAsync(id);
 
             return View(locationType.ToModel());
@@ -55,6 +105,8 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
+            await ClearAttachments();
+
             var locationType = await _locationTypeService.GetIncludeAllAsync(id);
 
             return View(locationType.ToModel());
@@ -66,11 +118,32 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(LocationTypeModel model)
+        public async Task<IActionResult> Create(LocationTypeModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
+            var attachmentTypes = new List<SelectListItem>();
+
             // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
+                ModelState.RemoveFor("MainPicture");
+                attachmentTypes = await GetAttachmentTypes();
+                ViewBag.AttachmentTypes = attachmentTypes;
+
+                await LoadMainPicture(model, mainPictureFile);
+                await LoadAttachments(model, attachments);
+
+                for (var i = 0; i < model.Attachments.Count; i++)
+                {
+                    var extensions = model.Attachments[i]
+                        .Type.MimeTypes.Split(',')
+                        .Select(MimeTypeMap.GetExtension);
+
+                    if (!extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
+                    {
+                        ModelState.AddModelError($"Attachments[{i}].Name", "Вложение не соответствует указанному типу");
+                    }
+                }
+
                 // Check the model
                 if (!ModelState.IsValid)
                 {
@@ -98,6 +171,7 @@ namespace SORANO.WEB.Controllers
                 return View(model);
             }, ex =>
             {
+                ViewBag.AttachmentTypes = attachmentTypes;
                 ModelState.AddModelError("", ex);
                 return View(model);
             });
@@ -105,11 +179,32 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(LocationTypeModel model)
+        public async Task<IActionResult> Update(LocationTypeModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
+            var attachmentTypes = new List<SelectListItem>();
+
             // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
+                ModelState.RemoveFor("MainPicture");
+                attachmentTypes = await GetAttachmentTypes();
+                ViewBag.AttachmentTypes = attachmentTypes;
+
+                await LoadMainPicture(model, mainPictureFile);
+                await LoadAttachments(model, attachments);
+
+                for (var i = 0; i < model.Attachments.Count; i++)
+                {
+                    var extensions = model.Attachments[i]
+                        .Type.MimeTypes.Split(',')
+                        .Select(MimeTypeMap.GetExtension);
+
+                    if (!extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
+                    {
+                        ModelState.AddModelError($"Attachments[{i}].Name", "Вложение не соответствует указанному типу");
+                    }
+                }
+
                 // Check the model
                 if (!ModelState.IsValid)
                 {
@@ -139,6 +234,7 @@ namespace SORANO.WEB.Controllers
                 return View("Create", model);
             }, ex =>
             {
+                ViewBag.AttachmentTypes = attachmentTypes;
                 ModelState.AddModelError("", ex);
                 ViewData["IsEdit"] = true;
                 return View("Create", model);

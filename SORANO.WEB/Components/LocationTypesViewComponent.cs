@@ -15,9 +15,9 @@ namespace SORANO.WEB.Components
             _locationTypeService = locationTypeService;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync()
+        public async Task<IViewComponentResult> InvokeAsync(bool withDeleted = false)
         {
-            var locationTypes = await _locationTypeService.GetAllAsync();
+            var locationTypes = await _locationTypeService.GetAllAsync(withDeleted);
 
             return View(locationTypes.Select(t => t.ToModel()).ToList());
         }

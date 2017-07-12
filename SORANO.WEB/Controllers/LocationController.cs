@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
@@ -9,6 +10,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.WEB.Models.Location;
 using Microsoft.Extensions.Caching.Memory;
+using SORANO.WEB.Models.Attachment;
+using Microsoft.AspNetCore.Http;
+using MimeTypes;
+
 // ReSharper disable Mvc.ViewNotResolved
 
 namespace SORANO.WEB.Controllers
@@ -36,53 +41,68 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var locations = await _locationService.GetAllAsync();
+            var showDeletedLocations = Session.GetBool("ShowDeletedLocations");
+            var showDeletedLocationTypes = Session.GetBool("ShowDeletedLocationTypes");
+
+            var locations = await _locationService.GetAllAsync(showDeletedLocations);
+
+            ViewBag.ShowDeletedLocations = showDeletedLocations;
+            ViewBag.ShowDeletedLocationTypes = showDeletedLocationTypes;
+
+            await ClearAttachments();
 
             return View(locations.Select(l => l.ToModel()).ToList());
         }
 
         [HttpGet]
+        public IActionResult ShowDeleted(bool show)
+        {
+            Session.SetBool("ShowDeletedLocations", show);
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var types = await _locationTypeService.GetAllAsync();
+            LocationModel model;
 
-            var locationTypes = new List<SelectListItem>
+            if (TryGetCached(out LocationModel cachedModel))
             {
-                new SelectListItem
+                model = cachedModel;
+                await CopyMainPicture(model);
+            }
+            else
+            {
+                model = new LocationModel
                 {
-                    Value = "0",
-                    Text = "-- Тип места --"
-                }
-            };
+                    MainPicture = new AttachmentModel()
+                };
+            }
 
-            locationTypes.AddRange(types.Select(l => new SelectListItem
-            {
-                Value = l.ID.ToString(),
-                Text = l.Name
-            }));
+            ViewBag.LocationTypes = await GetLocationTypes();
 
-            ViewBag.LocationTypes = locationTypes;
-
-            return View(new LocationModel());
+            return View(model);
         }
 
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            var location = await _locationService.GetAsync(id);
+            LocationModel model;
 
-            var model = location.ToModel();
-
-            var types = await _locationTypeService.GetAllAsync();
-
-            var locationTypes = types.Select(t => new SelectListItem
+            if (TryGetCached(out LocationModel cachedModel) && cachedModel.ID == id)
             {
-                Value = t.ID.ToString(),
-                Text = t.Name,
-                Selected = t.ID == location.TypeID
-            });
+                model = cachedModel;
+                await CopyMainPicture(model);
+            }
+            else
+            {
+                var location = await _locationService.GetAsync(id);
 
-            ViewBag.LocationTypes = locationTypes;
+                model = location.ToModel();
+            }            
+
+            ViewBag.LocationTypes = await GetLocationTypes();
 
             ViewData["IsEdit"] = true;
 
@@ -111,32 +131,36 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(LocationModel model)
+        public async Task<IActionResult> Create(LocationModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
+            var attachmentTypes = new List<SelectListItem>();
+            var locationTypes = new List<SelectListItem>();
+
             // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
-                var types = await _locationTypeService.GetAllAsync();
+                ModelState.RemoveFor("MainPicture");
+                attachmentTypes = await GetAttachmentTypes();
+                locationTypes = await GetLocationTypes();
+                ViewBag.AttachmentTypes = attachmentTypes;
+                ViewBag.LocationTypes = locationTypes;
 
-                var LocationTypes = new List<SelectListItem>
+                await LoadMainPicture(model, mainPictureFile);
+                await LoadAttachments(model, attachments);
+
+                for (var i = 0; i < model.Attachments.Count; i++)
                 {
-                    new SelectListItem
+                    var extensions = model.Attachments[i]
+                        .Type.MimeTypes.Split(',')
+                        .Select(MimeTypeMap.GetExtension);
+
+                    if (!extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
                     {
-                        Value = "0",
-                        Text = "-- Тип места --"
+                        ModelState.AddModelError($"Attachments[{i}].Name", "Вложение не соответствует указанному типу");
                     }
-                };
+                }                                
 
-                LocationTypes.AddRange(types.Select(l => new SelectListItem
-                {
-                    Value = l.ID.ToString(),
-                    Text = l.Name
-                }));
-
-                ViewBag.LocationTypes = LocationTypes;
-
-                int typeId;
-                int.TryParse(model.TypeID, out typeId);
+                int.TryParse(model.TypeID, out int typeId);
 
                 if (typeId <= 0)
                 {
@@ -170,6 +194,8 @@ namespace SORANO.WEB.Controllers
                 return View(model);
             }, ex =>
             {
+                ViewBag.AttachmentTypes = attachmentTypes;
+                ViewBag.LocationTypes = locationTypes;
                 ModelState.AddModelError("", ex);
                 return View(model);
             });
@@ -177,23 +203,35 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(LocationModel model)
+        public async Task<IActionResult> Update(LocationModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
+            var attachmentTypes = new List<SelectListItem>();
+            var locationTypes = new List<SelectListItem>();
+
             // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
-                var types = await _locationTypeService.GetAllAsync();
+                ModelState.RemoveFor("MainPicture");
+                attachmentTypes = await GetAttachmentTypes();
+                ViewBag.AttachmentTypes = attachmentTypes;
+                ViewBag.LocationTypes = await GetLocationTypes();
 
-                var locationTypes = types.Select(t => new SelectListItem
+                await LoadMainPicture(model, mainPictureFile);
+                await LoadAttachments(model, attachments);
+
+                for (var i = 0; i < model.Attachments.Count; i++)
                 {
-                    Value = t.ID.ToString(),
-                    Text = t.Name
-                });
+                    var extensions = model.Attachments[i]
+                        .Type.MimeTypes.Split(',')
+                        .Select(MimeTypeMap.GetExtension);
 
-                ViewBag.LocationTypes = locationTypes;
+                    if (!extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
+                    {
+                        ModelState.AddModelError($"Attachments[{i}].Name", "Вложение не соответствует указанному типу");
+                    }
+                }
 
-                int typeId;
-                int.TryParse(model.TypeID, out typeId);
+                int.TryParse(model.TypeID, out int typeId);
 
                 if (typeId <= 0)
                 {
@@ -229,6 +267,8 @@ namespace SORANO.WEB.Controllers
                 return View(model);
             }, ex =>
             {
+                ViewBag.AttachmentTypes = attachmentTypes;
+                ViewBag.LocationTypes = locationTypes;
                 ModelState.AddModelError("", ex);
                 ViewData["IsEdit"] = true;
                 return View(model);
@@ -249,5 +289,27 @@ namespace SORANO.WEB.Controllers
         }
 
         #endregion
+
+        private async Task<List<SelectListItem>> GetLocationTypes()
+        {
+            var types = await _locationTypeService.GetAllAsync(false);
+
+            var locationTypes = new List<SelectListItem>
+            {
+                new SelectListItem
+                {
+                    Value = "0",
+                    Text = "-- Тип места --"
+                }
+            };
+
+            locationTypes.AddRange(types.Select(l => new SelectListItem
+            {
+                Value = l.ID.ToString(),
+                Text = l.Name
+            }));
+
+            return locationTypes;
+        }
     }
 }

@@ -48,6 +48,17 @@
                            title="">
                             <i class="fa fa-plus" aria-hidden="true"></i>
                         </a>
+                        <a class="btn btn-default btn-xs pull-right"
+                           style="margin-right: 5px;"
+                           asp-controller="Location"
+                           asp-action="ShowDeleted"
+                           asp-route-show=@(ViewBag.ShowDeletedLocations ? "false" : "true")
+                           data-toggle="tooltip"
+                           data-placement="right"
+                           data-original-title=@(ViewBag.ShowDeletedLocations ? "Скрыть удалённые места" : "Отобразить удалённые места")
+                           title="">
+                            <i class="fa @(ViewBag.ShowDeletedLocations ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
+                        </a>
                         <div class="clearfix"></div>
                     </div>
                     <div class="panel-body">
@@ -137,10 +148,21 @@
                            title="">
                             <i class="fa fa-plus" aria-hidden="true"></i>
                         </a>
+                        <a class="btn btn-default btn-xs pull-right"
+                           style="margin-right: 5px;"
+                           asp-controller="LocationType"
+                           asp-action="ShowDeleted"
+                           asp-route-show=@(ViewBag.ShowDeletedLocationTypes ? "false" : "true")
+                           data-toggle="tooltip"
+                           data-placement="right"
+                           data-original-title=@(ViewBag.ShowDeletedLocationTypes ? "Скрыть удалённые типы мест" : "Отобразить удалённые типы мест")
+                           title="">
+                            <i class="fa @(ViewBag.ShowDeletedLocationTypes ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
+                        </a>
                         <div class="clearfix"></div>
                     </div>
                     <div class="panel-body">
-                        @await Component.InvokeAsync("LocationTypes")
+                        @await Component.InvokeAsync("LocationTypes", new { withDeleted = ViewBag.ShowDeletedLocationTypes })
                     </div>
                 </div>
             </div>

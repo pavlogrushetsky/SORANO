@@ -6,7 +6,7 @@ namespace SORANO.BLL.Services.Abstract
 {
     public interface ILocationService
     {
-        Task<IEnumerable<Location>> GetAllAsync();
+        Task<IEnumerable<Location>> GetAllAsync(bool withDeleted);
 
         Task<Location> CreateAsync(Location location, int userId);
 

@@ -288,11 +288,14 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(ArticleTypeModel model)
         {
-            var currentUser = await GetCurrentUser();
+            return await TryGetActionResultAsync(async () =>
+            {
+                var currentUser = await GetCurrentUser();
 
-            await _articleTypeService.DeleteAsync(model.ID, currentUser.ID);
+                await _articleTypeService.DeleteAsync(model.ID, currentUser.ID);
 
-            return RedirectToAction("Index", "Article");
+                return RedirectToAction("Index", "Article");
+            }, ex => RedirectToAction("Index", "Article"));
         }
 
         [HttpPost]

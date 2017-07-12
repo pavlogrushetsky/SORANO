@@ -18,9 +18,21 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<IEnumerable<LocationType>> GetAllAsync()
+        public async Task<IEnumerable<LocationType>> GetAllAsync(bool withDeleted)
         {
-            return await _unitOfWork.Get<LocationType>().GetAllAsync();
+            var locationTypes = await _unitOfWork.Get<LocationType>().GetAllAsync();
+
+            if (!withDeleted)
+            {
+                var filtered = locationTypes.Where(t => !t.IsDeleted).ToList();
+                filtered.ForEach(t =>
+                {
+                    t.Locations = t.Locations.Where(c => !c.IsDeleted).ToList();
+                });
+                return filtered;
+            }
+
+            return locationTypes;
         }
 
         public async Task<LocationType> GetAsync(int id)
@@ -72,6 +84,11 @@ namespace SORANO.BLL.Services
             foreach (var recommendation in locationType.Recommendations)
             {
                 recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            }
+
+            foreach (var attachment in locationType.Attachments)
+            {
+                attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
             var saved = _unitOfWork.Get<LocationType>().Add(locationType);
@@ -128,6 +145,8 @@ namespace SORANO.BLL.Services
             existentLocationType.UpdateModifiedFields(userId);
 
             UpdateRecommendations(locationType, existentLocationType, userId);
+
+            UpdateAttachments(locationType, existentLocationType, userId);
 
             var updated = _unitOfWork.Get<LocationType>().Update(existentLocationType);
 
