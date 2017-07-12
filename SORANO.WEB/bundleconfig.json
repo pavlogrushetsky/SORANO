@@ -4,17 +4,49 @@
     "inputFiles": [
       "wwwroot/css/site.css"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/site.min.js",
+    "inputFiles": [
+      "wwwroot/js/site.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/articleCreate.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/articleCreate.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/articleDetails.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/articleDetails.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/articleIndex.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/articleIndex.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
   }
-  //},
-    //{
-    //  "outputFileName": "wwwroot/js/site.min.js",
-    //  "inputFiles": [
-    //    "wwwroot/js/site.js"
-    //  ],
-    //  "minify": {
-    //    "enabled": true,
-    //    "renameLocals": true
-    //  },
-    //  "sourceMap": false
-    //}
 ]

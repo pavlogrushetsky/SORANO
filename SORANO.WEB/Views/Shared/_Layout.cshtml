@@ -7,8 +7,13 @@
     <title>@ViewBag.Title</title>
     <link rel="stylesheet" href="~/lib/bootswatch-dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css" />    
-    @RenderSection("Styles", false)
-    <link rel="stylesheet" href="~/css/site.css" />
+    <environment names="Development">
+        <link rel="stylesheet" href="~/css/site.css" />
+    </environment>
+    <environment names="Staging,Production">
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+    </environment>
+    @RenderSection("Styles", false)    
 </head>
 <body>
     <nav class="navbar navbar-default navbar-fixed-top">
@@ -83,11 +88,12 @@
     </div>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootswatch-dist/js/bootstrap.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $("[data-toggle=tooltip]").tooltip();
-        });
-    </script>
+    <environment names="Development">
+        <script src="js/site.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="js/site.min.js" asp-append-version="true"></script>
+    </environment>
     @RenderSection("Scripts", false)
 </body>
 </html>
