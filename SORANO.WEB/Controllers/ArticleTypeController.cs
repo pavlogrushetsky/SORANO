@@ -179,10 +179,10 @@ namespace SORANO.WEB.Controllers
                 for (var i = 0; i < model.Attachments.Count; i++)
                 {
                     var extensions = model.Attachments[i]
-                        .Type.MimeTypes.Split(',')
+                        .Type.MimeTypes?.Split(',')
                         .Select(MimeTypeMap.GetExtension);
 
-                    if (!extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
+                    if (extensions != null && !extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
                     {
                         ModelState.AddModelError($"Attachments[{i}].Name", "Вложение не соответствует указанному типу");
                     }
@@ -240,10 +240,10 @@ namespace SORANO.WEB.Controllers
                 for (var i = 0; i < model.Attachments.Count; i++)
                 {
                     var extensions = model.Attachments[i]
-                        .Type.MimeTypes.Split(',')
+                        .Type.MimeTypes?.Split(',')
                         .Select(MimeTypeMap.GetExtension);
 
-                    if (!extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
+                    if (extensions != null && !extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
                     {
                         ModelState.AddModelError($"Attachments[{i}].Name", "Вложение не соответствует указанному типу");
                     }
