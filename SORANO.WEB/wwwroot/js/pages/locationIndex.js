@@ -8,6 +8,11 @@
         $('[href="' + lastTab + '"]').tab('show');
     }
 
+    initLocationsDataTable();
+    initLocationTypesDataTable();
+});
+
+function initLocationsDataTable() {
     var locationsTable = $("#locations-datatable").DataTable({
         responsive: true,
         "columnDefs": [
@@ -21,6 +26,9 @@
             "infoEmpty": "Записи отсутствуют",
             "infoFiltered": "(Отфильтровано из _MAX_ записей)",
             "search": "Поиск"
+        },
+        "drawCallback": function () {
+            $('.pagination').addClass('pagination-sm');
         }
     });
 
@@ -32,7 +40,9 @@
                 .draw();
         });
     });
+}
 
+function initLocationTypesDataTable() {
     var locationTypesTable = $("#location-types-datatable").DataTable({
         responsive: true,
         "columnDefs": [
@@ -46,6 +56,9 @@
             "infoEmpty": "Записи отсутствуют",
             "infoFiltered": "(Отфильтровано из _MAX_ записей)",
             "search": "Поиск"
+        },
+        "drawCallback": function () {
+            $('.pagination').addClass('pagination-sm');
         }
     });
 
@@ -57,6 +70,4 @@
                 .draw();
         });
     });
-
-    $('.pagination').addClass('pagination-sm');
-});
+}

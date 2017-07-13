@@ -38,7 +38,6 @@
     <Content Include="wwwroot\js\pages\articleTypeDetails.js" />
     <Content Include="wwwroot\js\pages\articleTypeSelect.js" />
     <Content Include="wwwroot\js\pages\attachmentSelectMainPicture.js" />
-    <Content Include="wwwroot\js\pages\attachmentTypeCreate.js" />
     <Content Include="wwwroot\js\pages\attachmentTypeIndex.js" />
     <Content Include="wwwroot\js\pages\locationCreate.js" />
     <Content Include="wwwroot\js\pages\locationDetails.js" />

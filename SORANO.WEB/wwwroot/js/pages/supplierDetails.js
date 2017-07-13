@@ -19,56 +19,6 @@
         $("#accordion .panel-collapse").removeClass('in');
     }
 
-    var recommendationsTable = $("#recommendations-datatable").DataTable({
-        responsive: true,
-        "pagingType": "numbers",
-        "language": {
-            "lengthMenu": "Отобразить _MENU_ рекомендаций на странице",
-            "zeroRecords": "Рекомендации отсутствуют",
-            "info": "Отображение страницы _PAGE_ из _PAGES_",
-            "infoEmpty": "Записи отсутствуют",
-            "infoFiltered": "(Отфильтровано из _MAX_ записей)",
-            "search": "Поиск"
-        },
-        "drawCallback": function () {
-            $('.pagination').addClass('pagination-sm');
-        }
-    });
-
-    recommendationsTable.columns().eq(0).each(function (colIdx) {
-        $('input', $('#recommendations-datatable th')[colIdx]).on('keyup change', function () {
-            recommendationsTable
-                .column(colIdx)
-                .search(this.value)
-                .draw();
-        });
-    });
-
-    var attachmentsTable = $("#attachments-datatable").DataTable({
-        responsive: true,
-        "columnDefs": [
-            { "orderable": false, "targets": 2 }
-        ],
-        "pagingType": "numbers",
-        "language": {
-            "lengthMenu": "Отобразить _MENU_ вложений на странице",
-            "zeroRecords": "Вложения отсутствуют",
-            "info": "Отображение страницы _PAGE_ из _PAGES_",
-            "infoEmpty": "Записи отсутствуют",
-            "infoFiltered": "(Отфильтровано из _MAX_ записей)",
-            "search": "Поиск"
-        },
-        "drawCallback": function () {
-            $('.pagination').addClass('pagination-sm');
-        }
-    });
-
-    attachmentsTable.columns().eq(0).each(function (colIdx) {
-        $('input', $('#attachments-datatable th')[colIdx]).on('keyup change', function () {
-            attachmentsTable
-                .column(colIdx)
-                .search(this.value)
-                .draw();
-        });
-    });
+    initRecomendationsDataTable();
+    initAttachmentsDataTable();
 });

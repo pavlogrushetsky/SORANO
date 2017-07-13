@@ -1,4 +1,9 @@
 ﻿$(document).ready(function () {
+    initSalesDataTable();
+    initActivitiesDataTable();
+});
+
+function initSalesDataTable() {
     var salesTable = $("#sales-datatable").DataTable({
         responsive: true,
         "pagingType": "numbers",
@@ -9,6 +14,9 @@
             "infoEmpty": "Записи отсутствуют",
             "infoFiltered": "(Отфильтровано из _MAX_ записей)",
             "search": "Поиск"
+        },
+        "drawCallback": function () {
+            $('.pagination').addClass('pagination-sm');
         }
     });
 
@@ -20,7 +28,9 @@
                 .draw();
         });
     });
+}
 
+function initActivitiesDataTable() {
     var activitiesTable = $("#activities-datatable").DataTable({
         responsive: true,
         "pagingType": "numbers",
@@ -31,6 +41,9 @@
             "infoEmpty": "Записи отсутствуют",
             "infoFiltered": "(Отфильтровано из _MAX_ записей)",
             "search": "Поиск"
+        },
+        "drawCallback": function () {
+            $('.pagination').addClass('pagination-sm');
         }
     });
 
@@ -42,6 +55,4 @@
                 .draw();
         });
     });
-
-    $('.pagination').first().addClass('pagination-sm');
-});
+}

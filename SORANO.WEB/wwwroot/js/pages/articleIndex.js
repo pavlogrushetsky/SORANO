@@ -31,6 +31,10 @@
         });
     });
 
+    initArticlesDataTable();
+});
+
+function initArticlesDataTable() {
     var table = $("#article-datatable").DataTable({
         responsive: true,
         "columnDefs": [
@@ -59,4 +63,4 @@
                     .draw();
             });
     });
-});
+}

@@ -1,4 +1,8 @@
 ﻿$(document).ready(function () {
+    initAttachmentTypesDataTable();
+});
+
+function initAttachmentTypesDataTable() {
     var table = $("#attachment-types-datatable").DataTable({
         responsive: true,
         "columnDefs": [
@@ -26,4 +30,4 @@
                 .draw();
         });
     });
-});
+}

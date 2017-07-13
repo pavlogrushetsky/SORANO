@@ -94,17 +94,6 @@
     "sourceMap": false
   },
   {
-    "outputFileName": "wwwroot/js/pages/attachmentTypeCreate.min.js",
-    "inputFiles": [
-      "wwwroot/js/pages/attachmentTypeCreate.js"
-    ],
-    "minify": {
-      "enabled": true,
-      "renameLocals": true
-    },
-    "sourceMap": false
-  },
-  {
     "outputFileName": "wwwroot/js/pages/attachmentTypeIndex.min.js",
     "inputFiles": [
       "wwwroot/js/pages/attachmentTypeIndex.js"
@@ -196,17 +185,6 @@
     "outputFileName": "wwwroot/js/pages/supplierIndex.min.js",
     "inputFiles": [
       "wwwroot/js/pages/supplierIndex.js"
-    ],
-    "minify": {
-      "enabled": true,
-      "renameLocals": true
-    },
-    "sourceMap": false
-  },
-  {
-    "outputFileName": "wwwroot/js/pages/userCreate.min.js",
-    "inputFiles": [
-      "wwwroot/js/pages/userCreate.js"
     ],
     "minify": {
       "enabled": true,

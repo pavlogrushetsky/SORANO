@@ -1,4 +1,8 @@
 ﻿$(document).ready(function () {
+    initUsersDataTable();
+});
+
+function initUsersDataTable() {
     var table = $("#users-datatable").DataTable({
         responsive: true,
         "columnDefs": [
@@ -13,6 +17,9 @@
             "infoEmpty": "Записи отсутствуют",
             "infoFiltered": "(Отфильтровано из _MAX_ записей)",
             "search": "Поиск"
+        },
+        "drawCallback": function () {
+            $('.pagination').addClass('pagination-sm');
         }
     });
 
@@ -24,6 +31,4 @@
                 .draw();
         });
     });
-
-    $('.pagination').first().addClass('pagination-sm');
-});
+}

@@ -1,4 +1,8 @@
 ﻿$(document).ready(function () {
+    initSuppliersDataTable();
+});
+
+function initSuppliersDataTable() {
     var table = $("#suppliers-datatable").DataTable({
         responsive: true,
         "columnDefs": [
@@ -18,12 +22,12 @@
         }
     });
 
-    table.columns().eq( 0 ).each( function ( colIdx ) {
-        $('input', $('#suppliers-datatable th')[colIdx] ).on( 'keyup change', function () {
+    table.columns().eq(0).each(function (colIdx) {
+        $('input', $('#suppliers-datatable th')[colIdx]).on('keyup change', function () {
             table
-                .column( colIdx )
-                .search( this.value )
+                .column(colIdx)
+                .search(this.value)
                 .draw();
         });
     });
-});
+}
