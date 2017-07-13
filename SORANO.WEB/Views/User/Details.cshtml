@@ -161,57 +161,14 @@
 </div>
 
 @section Scripts {
-<script src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="~/lib/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-<script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
-<script src="~/lib/datatables.net-responsive-bs/js/responsive.bootstrap.min.js"></script>
-<script type="text/javascript">
-        $(document).ready(function () {
-            var salesTable = $("#sales-datatable").DataTable({
-                responsive: true,
-                "pagingType": "numbers",
-                "language": {
-                    "lengthMenu": "Отобразить _MENU_ продаж на странице",
-                    "zeroRecords": "Продажи отсутствуют",
-                    "info": "Отображение страницы _PAGE_ из _PAGES_",
-                    "infoEmpty": "Записи отсутствуют",
-                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
-                    "search": "Поиск"
-                }
-            });
-
-            salesTable.columns().eq( 0 ).each( function ( colIdx ) {
-                $( 'input', $('th')[colIdx] ).on( 'keyup change', function () {
-                    salesTable
-                        .column( colIdx )
-                        .search( this.value )
-                        .draw();
-                });
-            });
-
-            var activitiesTable = $("#activities-datatable").DataTable({
-                responsive: true,
-                "pagingType": "numbers",
-                "language": {
-                    "lengthMenu": "Отобразить _MENU_ действий на странице",
-                    "zeroRecords": "Действия отсутствуют",
-                    "info": "Отображение страницы _PAGE_ из _PAGES_",
-                    "infoEmpty": "Записи отсутствуют",
-                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
-                    "search": "Поиск"
-                }
-            });
-
-            activitiesTable.columns().eq(0).each(function (colIdx) {
-                $('input', $('th')[colIdx]).on('keyup change', function () {
-                    activitiesTable
-                        .column(colIdx)
-                        .search(this.value)
-                        .draw();
-                });
-            });
-
-            $('.pagination').first().addClass('pagination-sm');
-        });
-</script>
+    <script src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/lib/datatables.net-responsive-bs/js/responsive.bootstrap.min.js"></script>
+    <environment names="Development">
+        <script src="js/pages/userDetails.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="js/pages/userDetails.min.js" asp-append-version="true"></script>
+    </environment>
 }

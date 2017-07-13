@@ -79,10 +79,10 @@
 </div>
 
 @section Scripts {
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("input.input-validation-error").not(".recommendations").closest(".form-group").addClass("has-error");
-            $("select.input-validation-error").closest(".form-group").addClass("has-error");
-        });
-    </script>
+    <environment names="Development">
+        <script src="js/pages/attachmentTypeCreate.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="js/pages/attachmentTypeCreate.min.js" asp-append-version="true"></script>
+    </environment>
 }

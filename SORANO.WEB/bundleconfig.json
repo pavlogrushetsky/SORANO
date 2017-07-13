@@ -48,5 +48,192 @@
       "renameLocals": true
     },
     "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/articleTypeCreate.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/articleTypeCreate.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/articleTypeDetails.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/articleTypeDetails.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/articleTypeSelect.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/articleTypeSelect.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/attachmentSelectMainPicture.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/attachmentSelectMainPicture.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/attachmentTypeCreate.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/attachmentTypeCreate.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/attachmentTypeIndex.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/attachmentTypeIndex.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/locationCreate.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/locationCreate.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/locationDetails.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/locationDetails.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/locationIndex.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/locationIndex.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/locationTypeCreate.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/locationTypeCreate.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/locationTypeDetails.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/locationTypeDetails.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/supplierCreate.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/supplierCreate.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/supplierDetails.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/supplierDetails.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/supplierIndex.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/supplierIndex.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/userCreate.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/userCreate.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/userDetails.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/userDetails.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/userList.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/userList.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
   }
 ]

@@ -132,35 +132,10 @@
     <script src="~/lib/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
     <script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
     <script src="~/lib/datatables.net-responsive-bs/js/responsive.bootstrap.min.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            var table = $("#suppliers-datatable").DataTable({
-                responsive: true,
-                "columnDefs": [
-                    { "orderable": false, "targets": 3 }
-                ],
-                "pagingType": "numbers",
-                "language": {
-                    "lengthMenu": "Отобразить _MENU_ поставщиков на странице",
-                    "zeroRecords": "Поставщики отсутствуют",
-                    "info": "Отображение страницы _PAGE_ из _PAGES_",
-                    "infoEmpty": "Записи отсутствуют",
-                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
-                    "search": "Поиск"
-                },
-                "drawCallback": function () {
-                    $('.pagination').addClass('pagination-sm');
-                }
-            });
-
-            table.columns().eq( 0 ).each( function ( colIdx ) {
-                $('input', $('#suppliers-datatable th')[colIdx] ).on( 'keyup change', function () {
-                    table
-                        .column( colIdx )
-                        .search( this.value )
-                        .draw();
-                });
-            });
-        });
-    </script>
+    <environment names="Development">
+        <script src="js/pages/supplierIndex.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="js/pages/supplierIndex.min.js" asp-append-version="true"></script>
+    </environment>
 }
