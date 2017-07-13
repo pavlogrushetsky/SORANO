@@ -6,15 +6,28 @@ using SORANO.WEB.Models.Account;
 
 namespace SORANO.WEB.Components
 {
+    /// <summary>
+    /// View component for rendering login view
+    /// </summary>
     public class AccountViewComponent : ViewComponent
     {
         private readonly IUserService _userService;
 
+        /// <summary>
+        /// /// <summary>
+        /// View component for rendering Login view
+        /// </summary>
+        /// </summary>
+        /// <param name="userService">User service</param>
         public AccountViewComponent(IUserService userService)
         {
             _userService = userService;
         }
 
+        /// <summary>
+        /// Invoke component asynchronously
+        /// </summary>
+        /// <returns>Component's default view</returns>
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var login = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
