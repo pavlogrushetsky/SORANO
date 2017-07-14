@@ -5,6 +5,7 @@
     $("span.field-validation-error").closest(".form-group").addClass("has-error");
 
     $('input[type=file]').not('#main_picture_input').change(function () {
+        debugger;
         var id = $(this).attr('id');
         var name = document.getElementById(id).files[0].name;
         var matches = id.match(/\d+$/);

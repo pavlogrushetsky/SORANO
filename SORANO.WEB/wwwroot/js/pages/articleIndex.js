@@ -23,7 +23,7 @@
         e.stopPropagation();
     });
     $('.tree li > a').on('click', function () {
-        var url = '@Url.Action("Brief", "ArticleType")';
+        var url = 'ArticleType/Brief';
         var id = $(this).parent().attr('id');
         $.get(url, { id: id }, function (data) {
             $('#details').html(data);

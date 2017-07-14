@@ -25,7 +25,8 @@ namespace SORANO.WEB.Controllers
         protected readonly IAttachmentService _attachmentService;
         protected readonly IMemoryCache _memoryCache;
         protected readonly IHostingEnvironment _environment;
-        private readonly string _attachmentTypesKey = "AttachmentTypesCache";       
+        private readonly string _attachmentTypesKey = "AttachmentTypesCache";
+        protected readonly string _locationTypesKey = "LocationTypesCache";
         private readonly string _entityTypeName;
 
         /// <summary>
@@ -99,7 +100,7 @@ namespace SORANO.WEB.Controllers
 
             cachedModel.MainPicture = new AttachmentModel
             {
-                TypeID = mainPicture.TypeID,
+                TypeID = await GetMainPictureTypeID(),
                 Name = mainPicture.Name,
                 FullPath = path + filename
             };
@@ -121,6 +122,7 @@ namespace SORANO.WEB.Controllers
             entity.Recommendations.Add(new RecommendationModel());
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
+            ViewBag.LocationTypes = GetLocationTypes();
 
             ViewData["IsEdit"] = isEdit;
 
@@ -147,6 +149,7 @@ namespace SORANO.WEB.Controllers
             entity.Recommendations.RemoveAt(num);
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
+            ViewBag.LocationTypes = GetLocationTypes();
 
             ViewData["IsEdit"] = isEdit;
 
@@ -164,6 +167,7 @@ namespace SORANO.WEB.Controllers
             var attachmentTypes = await GetAttachmentTypes();
             attachmentTypes[0].Selected = true;
             ViewBag.AttachmentTypes = attachmentTypes;
+            ViewBag.LocationTypes = GetLocationTypes();
 
             var defaultType = await _attachmentTypeService.GetAsync(int.Parse(attachmentTypes[0].Value));
 
@@ -197,6 +201,7 @@ namespace SORANO.WEB.Controllers
             entity.Attachments.RemoveAt(num);
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
+            ViewBag.LocationTypes = GetLocationTypes();
 
             ViewData["IsEdit"] = isEdit;
 
@@ -225,6 +230,7 @@ namespace SORANO.WEB.Controllers
             entity.MainPicture = new AttachmentModel();
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
+            ViewBag.LocationTypes = GetLocationTypes();
 
             ViewData["IsEdit"] = isEdit;
 
@@ -249,6 +255,16 @@ namespace SORANO.WEB.Controllers
             }
 
             return await CacheAttachmentTypes();
+        }
+
+        private List<SelectListItem> GetLocationTypes()
+        {
+            if (_memoryCache.TryGetValue(_locationTypesKey, out List<SelectListItem> locationTypeSelectItems))
+            {
+                return locationTypeSelectItems;
+            }
+
+            return null;
         }
 
         protected virtual async Task<List<SelectListItem>> CacheAttachmentTypes()
@@ -308,6 +324,7 @@ namespace SORANO.WEB.Controllers
                     {
                         var path = await Load(newAttachment, _entityTypeName);
                         model.Attachments[i].FullPath = path;
+                        model.Attachments[i].IsNew = false;
 
                         ModelState.RemoveFor($"Attachments[{i}].FullPath");                       
                     }

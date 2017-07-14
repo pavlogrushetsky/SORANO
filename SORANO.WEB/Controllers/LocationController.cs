@@ -311,6 +311,8 @@ namespace SORANO.WEB.Controllers
                 Text = l.Name
             }));
 
+            _memoryCache.Set(_locationTypesKey, locationTypes);
+
             return locationTypes;
         }
     }
