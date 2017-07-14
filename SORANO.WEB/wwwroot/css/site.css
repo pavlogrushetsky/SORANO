@@ -25,6 +25,27 @@
     background-color: transparent;
 }
 
+.tab-pane .panel {
+    border-radius: 0;
+}
+
+    .tab-pane .panel .panel-heading {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+
+.panel-heading a:nth-child(2) {
+    margin-right: 5px;
+}
+
+.search-row .input-sm {
+    width: 100%;
+}
+
+table {
+    width: 100%;
+}
+
 .tree {
     min-height: 20px;
     margin-bottom: 20px;
