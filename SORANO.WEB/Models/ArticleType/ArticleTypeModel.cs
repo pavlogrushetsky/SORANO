@@ -26,5 +26,7 @@ namespace SORANO.WEB.Models.ArticleType
         public IList<ArticleModel> Articles { get; set; } = new List<ArticleModel>();
 
         public bool IsSelected { get; set; }
+
+        public string ReturnUrl { get; set; }
     }
 }

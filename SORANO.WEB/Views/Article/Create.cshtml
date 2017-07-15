@@ -3,6 +3,7 @@
 @{
     var isEdit = ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"];
     var title = isEdit ? "Редактирование" : "Создание";
+    var returnUrl = isEdit ? Url.Action("Update", "Article") : Url.Action("Create", "Article");
 }
 
 @{
@@ -88,18 +89,28 @@
                     <span class="input-group-addon"><i class="fa fa-tags"></i></span>
                     <div class="form-control">
                         <span>@Model.Type?.Name</span>
-                    </div>
+                    </div>                    
                     <span class="input-group-btn">
                         <button class="btn btn-default"
                                 type="submit"
                                 asp-action="SelectParentType"
-                                asp-route-returnUrl="@(isEdit ? Url.Action("Update", "Article") : Url.Action("Create", "Article"))"                  
+                                asp-route-returnUrl="@returnUrl"                  
                                 data-toggle="tooltip"
-                                data-placement="right"
+                                data-placement="bottom"
                                 data-original-title="Назначить родительский тип"
                                 title="">
                             <i class="fa fa-pencil"></i>
-                        </button>                       
+                        </button>  
+                        <button class="btn btn-success"
+                                type="submit"
+                                asp-action="CreateParentType"
+                                asp-route-returnUrl="@returnUrl"
+                                data-toggle="tooltip"
+                                data-placement="right"
+                                data-original-title="Создать родительский тип"
+                                title="">
+                            <i class="fa fa-plus"></i>
+                        </button>
                     </span>
                     <span asp-validation-for="Type" class="validation-for"></span>
                 </div>

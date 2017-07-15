@@ -44,7 +44,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(string returnUrl)
         {
             ArticleTypeModel model;
 
@@ -60,6 +60,8 @@ namespace SORANO.WEB.Controllers
                     MainPicture = new AttachmentModel()
                 };
             }
+
+            model.ReturnUrl = returnUrl;
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
@@ -207,7 +209,32 @@ namespace SORANO.WEB.Controllers
                 // If succeeded
                 if (articleType != null)
                 {
-                    return RedirectToAction("Index", "Article");
+                    if (string.IsNullOrEmpty(model.ReturnUrl))
+                    {
+                        return RedirectToAction("Index", "Article");
+                    }
+
+                    if (_memoryCache.TryGetValue(_cachedModelKey, out EntityBaseModel cachedModel))
+                    {
+                        if (cachedModel is ArticleModel)
+                        {
+                            ((ArticleModel)cachedModel).Type = articleType.ToModel();
+                            _memoryCache.Set(_cachedModelKey, cachedModel);
+                            Session.SetBool(_isCachedModelValid, true);
+                        }
+                        else if (cachedModel is ArticleTypeModel)
+                        {
+                            ((ArticleTypeModel)cachedModel).ParentType = articleType.ToModel();
+                            _memoryCache.Set(_cachedModelKey, cachedModel);
+                            Session.SetBool(_isCachedModelValid, true);
+                        }
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
+
+                    return Redirect(model.ReturnUrl);
                 }
 
                 // If failed
@@ -348,8 +375,22 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Cancel(ArticleTypeSelectModel model)
+        public IActionResult CancelSelect(ArticleTypeSelectModel model)
         {
+            Session.SetBool(_isCachedModelValid, true);
+
+            return Redirect(model.ReturnUrl);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Cancel(ArticleTypeModel model)
+        {
+            if (string.IsNullOrEmpty(model.ReturnUrl))
+            {
+                RedirectToAction("Index", "Article");
+            }
+
             Session.SetBool(_isCachedModelValid, true);
 
             return Redirect(model.ReturnUrl);

@@ -186,6 +186,18 @@ namespace SORANO.WEB.Controllers
             return RedirectToAction("Select", "ArticleType", new { model.Type?.ID, returnUrl });
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateParentType(ArticleModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        {
+            await LoadMainPicture(model, mainPictureFile);
+            await LoadAttachments(model, attachments);
+
+            _memoryCache.Set(_cachedModelKey, model);
+
+            return RedirectToAction("Create", "ArticleType", new { returnUrl });
+        }
+
         /// <summary>
         /// Post article for creation
         /// </summary>

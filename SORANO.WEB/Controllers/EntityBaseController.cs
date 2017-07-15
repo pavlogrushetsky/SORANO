@@ -55,8 +55,6 @@ namespace SORANO.WEB.Controllers
         {
             if (_memoryCache.TryGetValue(_cachedModelKey, out EntityBaseModel cachedModel))
             {
-                _memoryCache.Remove(_cachedModelKey);
-
                 if (cachedModel is T && Session.GetBool(_isCachedModelValid))
                 {
                     Session.SetBool(_isCachedModelValid, false);

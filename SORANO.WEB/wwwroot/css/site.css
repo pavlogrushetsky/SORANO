@@ -42,7 +42,12 @@ textarea {
     margin-right: 5px;
 }
 
-.input-group-btn .btn {
+.input-group-btn > .btn:first-of-type {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.input-group-btn > .btn {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
