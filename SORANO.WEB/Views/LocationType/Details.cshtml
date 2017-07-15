@@ -20,8 +20,7 @@
         <div style="float:left;">
             @if (Model.MainPicture?.FullPath != null)
             {
-                <img style='width: 150px; height: 200px; border: 2px solid #dce4ec; box-shadow: none; border-radius: 4px; object-fit: contain; margin-right:10px;'
-                     src="@Url.Content(Model.MainPicture.FullPath)" />
+                <img src="@Url.Content(Model.MainPicture.FullPath)" />
             }
         </div> 
         <div style="float: left;">
