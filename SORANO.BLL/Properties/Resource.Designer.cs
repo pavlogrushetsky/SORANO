@@ -178,6 +178,42 @@ namespace SORANO.BLL.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Клиент не может быть удалён..
+        /// </summary>
+        internal static string ClientCannotBeDeletedException {
+            get {
+                return ResourceManager.GetString("ClientCannotBeDeletedException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Клиент не может быть null..
+        /// </summary>
+        internal static string ClientCannotBeNullException {
+            get {
+                return ResourceManager.GetString("ClientCannotBeNullException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Недопустимое значение идентификатора клиента..
+        /// </summary>
+        internal static string ClientInvalidIdentifierException {
+            get {
+                return ResourceManager.GetString("ClientInvalidIdentifierException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Клиент не найден..
+        /// </summary>
+        internal static string ClientNotFoundException {
+            get {
+                return ResourceManager.GetString("ClientNotFoundException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Место не может быть удалено..
         /// </summary>
         internal static string LocationCannotBeDeletedException {

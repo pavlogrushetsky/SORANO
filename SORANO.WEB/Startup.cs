@@ -52,6 +52,7 @@ namespace SORANO.WEB
             services.AddTransient<ILocationTypeService, LocationTypeService>();
             services.AddTransient<IAttachmentTypeService, AttachmentTypeService>();
             services.AddTransient<IAttachmentService, AttachmentService>();
+            services.AddTransient<IClientService, ClientService>();
 
             services.AddMemoryCache();
         }

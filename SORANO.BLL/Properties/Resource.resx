@@ -204,4 +204,16 @@
   <data name="AttachmentTypeWithSameNameException" xml:space="preserve">
     <value>Тип вложений с таким названием уже существует.</value>
   </data>
+  <data name="ClientCannotBeDeletedException" xml:space="preserve">
+    <value>Клиент не может быть удалён.</value>
+  </data>
+  <data name="ClientCannotBeNullException" xml:space="preserve">
+    <value>Клиент не может быть null.</value>
+  </data>
+  <data name="ClientInvalidIdentifierException" xml:space="preserve">
+    <value>Недопустимое значение идентификатора клиента.</value>
+  </data>
+  <data name="ClientNotFoundException" xml:space="preserve">
+    <value>Клиент не найден.</value>
+  </data>
 </root>

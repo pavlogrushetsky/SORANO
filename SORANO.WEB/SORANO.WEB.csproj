@@ -39,13 +39,31 @@
     <Content Include="wwwroot\js\pages\articleTypeSelect.js" />
     <Content Include="wwwroot\js\pages\attachmentSelectMainPicture.js" />
     <Content Include="wwwroot\js\pages\attachmentTypeIndex.js" />
+    <Content Include="wwwroot\js\pages\clientCreate.min.js" />
+    <Content Include="wwwroot\js\pages\clientDetails.js" />
+    <Content Include="wwwroot\js\pages\clientDetails.min.js" />
+    <Content Include="wwwroot\js\pages\clientIndex.js" />
+    <Content Include="wwwroot\js\pages\clientIndex.min.js" />
     <Content Include="wwwroot\js\pages\locationCreate.js" />
     <Content Include="wwwroot\js\pages\locationDetails.js" />
     <Content Include="wwwroot\js\pages\locationIndex.js" />
     <Content Include="wwwroot\js\pages\locationTypeCreate.js" />
     <Content Include="wwwroot\js\pages\locationTypeDetails.js" />
+    <Content Include="wwwroot\js\pages\clientCreate.js" />
+    <Content Include="wwwroot\js\pages\supplierCreate - Copy.min.js">
+      <DependentUpon>supplierCreate - Copy.js</DependentUpon>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Include="wwwroot\js\pages\supplierCreate.js" />
+    <Content Include="wwwroot\js\pages\supplierDetails - Copy.js" />
+    <Content Include="wwwroot\js\pages\supplierDetails - Copy.min.js">
+      <DependentUpon>supplierDetails - Copy.js</DependentUpon>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Include="wwwroot\js\pages\supplierDetails.js" />
+    <Content Include="wwwroot\js\pages\supplierIndex - Copy.js">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Include="wwwroot\js\pages\supplierIndex.js" />
     <Content Include="wwwroot\js\pages\userDetails.js" />
     <Content Include="wwwroot\js\pages\userList.js" />
@@ -69,6 +87,7 @@
     <ProjectReference Include="..\SORANO.DAL\SORANO.DAL.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Models\Client\" />
     <Folder Include="Models\Recommendation\" />
     <Folder Include="wwwroot\attachments\" />
   </ItemGroup>

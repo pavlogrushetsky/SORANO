@@ -1,0 +1,106 @@
+﻿@model ClientModel
+
+@{
+    var isEdit = ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"];
+    var title = isEdit ? "Редактирование" : "Создание";
+}
+
+@{
+    ViewBag.Title = "SORANO - " + title + " клиента";
+    ViewBag.Header = title;
+    ViewBag.Description = " клиента";
+    ViewBag.Icon = "fa fa-address-book";
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li><a asp-controller="Client" asp-action="Index">Клиенты</a></li>
+        <li class="active">@title клиента</li>
+    </ul>
+}
+
+<form asp-action="@(isEdit ? "Update" : "Create")"
+      asp-controller="Client"
+      method="post"
+      enctype="multipart/form-data">
+    <input type="hidden" asp-for="ID" />
+    @for (var i = 0; i < Model.Recommendations.Count; i++)
+    {
+        <input type="hidden" asp-for="@Model.Recommendations[i].ID" />
+        <input type="hidden" asp-for="@Model.Recommendations[i].ParentID" />
+    }
+    @for (int i = 0; i < Model.Attachments.Count; i++)
+    {
+        <input type="hidden" asp-for="@Model.Attachments[i].ID" />
+        <input type="hidden" asp-for="@Model.Attachments[i].IsNew" />
+        <input type="hidden" asp-for="@Model.Attachments[i].FullPath" />
+        <input type="hidden" asp-for="@Model.Attachments[i].Type.MimeTypes" />
+        <input type="hidden" asp-for="@Model.Attachments[i].Type.Name" />
+    }
+    @Html.HiddenFor(m => m.MainPicture.ID)
+    @Html.HiddenFor(m => m.MainPicture.Name)
+    @Html.HiddenFor(m => m.MainPicture.FullPath)
+    @Html.HiddenFor(m => m.MainPicture.TypeID)
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12">
+            <div class="form-group">
+                <label class="control-label" asp-for="Name">Имя:</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-address-card"></i></span>
+                    <input class="form-control" type="text" asp-for="Name" placeholder="Имя" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="Description">Описание:</label>
+                <div class="input-group">
+                    <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-align-justify"></i></span>
+                    <textarea class="form-control" rows="3" asp-for="Description" placeholder="Описание"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="PhoneNumber">Номер телефона:</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-phone"></i></span>
+                    <input class="form-control" type="text" asp-for="PhoneNumber" placeholder="Номер телефона" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="CardNumber">Номер карты:</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-credit-card"></i></span>
+                    <input class="form-control" type="text" asp-for="CardNumber" placeholder="Номер карты" />
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12">
+            @Html.Partial("~/Views/Shared/_MainPictureForm.cshtml", Model)
+            @Html.Partial("~/Views/Shared/_AttachmentsForm.cshtml", Model)
+            @Html.Partial("~/Views/Shared/_RecommendationsForm.cshtml", Model)
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group">
+                <a class="btn btn-default" asp-controller="Client" asp-action="Index">
+                    <i class="fa fa-close"></i>
+                    Отмена
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-check"></i>
+                    Сохранить
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <environment names="Development">
+        <script src="~/js/pages/clientCreate.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/js/pages/clientCreate.min.js" asp-append-version="true"></script>
+    </environment>
+}

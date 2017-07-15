@@ -213,5 +213,38 @@
       "renameLocals": true
     },
     "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/clientIndex.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/clientIndex.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/clientCreate.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/clientCreate.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/clientDetails.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/clientDetails.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
   }
 ]
