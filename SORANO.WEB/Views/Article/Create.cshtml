@@ -58,7 +58,7 @@
                 <label class="control-label" asp-for="Description">Описание:</label>
                 <div class="input-group">
                     <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-align-justify"></i></span>
-                    <textarea class="form-control" style="resize: vertical;" rows="3" asp-for="Description" placeholder="Описание"></textarea>
+                    <textarea class="form-control" rows="3" asp-for="Description" placeholder="Описание"></textarea>
                 </div>
             </div>
             <div class="form-group">
@@ -93,8 +93,7 @@
                         <button class="btn btn-default"
                                 type="submit"
                                 asp-action="SelectParentType"
-                                asp-route-returnUrl="@(isEdit ? Url.Action("Update", "Article") : Url.Action("Create", "Article"))"
-                                style="border-top-left-radius: 0; border-bottom-left-radius: 0;"
+                                asp-route-returnUrl="@(isEdit ? Url.Action("Update", "Article") : Url.Action("Create", "Article"))"                  
                                 data-toggle="tooltip"
                                 data-placement="right"
                                 data-original-title="Назначить родительский тип"
@@ -102,7 +101,7 @@
                             <i class="fa fa-pencil"></i>
                         </button>                       
                     </span>
-                    <span asp-validation-for="Type" style="display: none;"></span>
+                    <span asp-validation-for="Type" class="validation-for"></span>
                 </div>
             </div>
         </div>

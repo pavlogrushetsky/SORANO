@@ -25,6 +25,10 @@
     background-color: transparent;
 }
 
+textarea {
+    resize: vertical;
+}
+
 .tab-pane .panel {
     border-radius: 0;
 }
@@ -34,8 +38,17 @@
         border-top-right-radius: 0;
     }
 
-.panel-heading a:nth-child(2) {
+.panel-heading a:nth-of-type(2) {
     margin-right: 5px;
+}
+
+.input-group-btn .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.validation-for {
+    display: none;
 }
 
 .search-row .input-sm {
@@ -131,11 +144,11 @@ table {
     }
 
     .tree .fa-lg {
-        vertical-align: 0%;
+        vertical-align: 0;
     }
 
 @media screen and (max-width: 767px) {
-    .table-responsive { border: 0px; }
+    .table-responsive { border: 0; }
 }
 
 textarea.form-control.recommendations.input-validation-error {
