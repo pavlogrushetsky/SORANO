@@ -27,6 +27,6 @@ namespace SORANO.WEB.Models.ArticleType
 
         public bool IsSelected { get; set; }
 
-        public string ReturnUrl { get; set; }
+        public string ReturnPath { get; set; }
     }
 }

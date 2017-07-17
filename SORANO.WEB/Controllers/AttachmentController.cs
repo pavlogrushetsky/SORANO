@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
+using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models;
 using SORANO.WEB.Models.Attachment;
@@ -47,11 +48,11 @@ namespace SORANO.WEB.Controllers
         {
             if (model.SelectedID > 0)
             {
-                if (_memoryCache.TryGetValue(_cachedModelKey, out EntityBaseModel cachedModel))
+                if (_memoryCache.TryGetValue(CacheKeys.SelectMainPictureCacheKey, out EntityBaseModel cachedModel))
                 {
                     cachedModel.MainPicture = model.Pictures.Single(p => p.ID == model.SelectedID);
-                    _memoryCache.Set(_cachedModelKey, cachedModel);
-                    Session.SetBool(_isCachedModelValid, true);
+                    _memoryCache.Set(CacheKeys.SelectMainPictureCacheKey, cachedModel);
+                    Session.SetBool(CacheKeys.SelectMainPictureCacheValidKey, true);
                 }
                 else
                 {
@@ -60,7 +61,7 @@ namespace SORANO.WEB.Controllers
             }
             else
             {
-                Session.SetBool(_isCachedModelValid, true);
+                Session.SetBool(CacheKeys.SelectMainPictureCacheValidKey, true);
             }
 
             return Redirect(model.ReturnUrl);
@@ -70,7 +71,7 @@ namespace SORANO.WEB.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Cancel(SelectMainPictureModel model)
         {
-            Session.SetBool(_isCachedModelValid, true);
+            Session.SetBool(CacheKeys.SelectMainPictureCacheValidKey, true);
 
             return Redirect(model.ReturnUrl);
         }

@@ -15,9 +15,6 @@ namespace SORANO.WEB.Controllers
     {
         protected readonly IUserService _userService;
 
-        protected readonly string _cachedModelKey = "CachedModel";
-        protected readonly string _isCachedModelValid = "CachedIsValid";
-
         /// <summary>
         /// Controller to perform controllers' base functionality
         /// </summary>

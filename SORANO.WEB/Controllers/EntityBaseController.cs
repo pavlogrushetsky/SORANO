@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using MimeTypes;
+using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Extensions;
 
 // ReSharper disable Mvc.ViewNotResolved
@@ -25,8 +26,6 @@ namespace SORANO.WEB.Controllers
         protected readonly IAttachmentService _attachmentService;
         protected readonly IMemoryCache _memoryCache;
         protected readonly IHostingEnvironment _environment;
-        private readonly string _attachmentTypesKey = "AttachmentTypesCache";
-        protected readonly string _locationTypesKey = "LocationTypesCache";
         private readonly string _entityTypeName;
 
         /// <summary>
@@ -44,20 +43,24 @@ namespace SORANO.WEB.Controllers
             _memoryCache = memorycache;
             _environment = environment;
             _entityTypeName = typeof(T).Name.ToLower().Replace("model", "");
-        }        
+        }
 
         /// <summary>
         /// Tries to get cached model from memory cache
         /// </summary>
         /// <param name="model">Cached model</param>
+        /// <param name="key"></param>
+        /// <param name="validKey"></param>
         /// <returns>True if succeeded</returns>
-        protected bool TryGetCached(out T model)
+        protected bool TryGetCached(out T model, string key, string validKey)
         {
-            if (_memoryCache.TryGetValue(_cachedModelKey, out EntityBaseModel cachedModel))
+            if (_memoryCache.TryGetValue(key, out EntityBaseModel cachedModel))
             {
-                if (cachedModel is T && Session.GetBool(_isCachedModelValid))
+                _memoryCache.Remove(key);
+
+                if (cachedModel is T && Session.GetBool(validKey))
                 {
-                    Session.SetBool(_isCachedModelValid, false);
+                    Session.SetBool(validKey, false);
                     model = cachedModel as T;
                     return true;
                 }
@@ -215,7 +218,7 @@ namespace SORANO.WEB.Controllers
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
 
-            _memoryCache.Set(_cachedModelKey, model);
+            _memoryCache.Set(CacheKeys.SelectMainPictureCacheKey, model);
 
             return RedirectToAction("SelectMainPicture", "Attachment", new { currentMainPictureId = model.MainPicture.ID, returnUrl });
         }
@@ -247,7 +250,7 @@ namespace SORANO.WEB.Controllers
 
         protected virtual async Task<List<SelectListItem>> GetAttachmentTypes()
         {
-            if (_memoryCache.TryGetValue(_attachmentTypesKey, out List<SelectListItem> attachmentTypeSelectItems))
+            if (_memoryCache.TryGetValue(CacheKeys.AttachmentTypesCacheKey, out List<SelectListItem> attachmentTypeSelectItems))
             {
                 return attachmentTypeSelectItems;
             }
@@ -257,7 +260,7 @@ namespace SORANO.WEB.Controllers
 
         private List<SelectListItem> GetLocationTypes()
         {
-            if (_memoryCache.TryGetValue(_locationTypesKey, out List<SelectListItem> locationTypeSelectItems))
+            if (_memoryCache.TryGetValue(CacheKeys.LocationTypesCacheKey, out List<SelectListItem> locationTypeSelectItems))
             {
                 return locationTypeSelectItems;
             }
@@ -275,7 +278,7 @@ namespace SORANO.WEB.Controllers
                 Value = a.ID.ToString()
             }).ToList();
 
-            _memoryCache.Set(_attachmentTypesKey, attachmentTypeSelectItems);
+            _memoryCache.Set(CacheKeys.AttachmentTypesCacheKey, attachmentTypeSelectItems);
 
             return attachmentTypeSelectItems;
         }

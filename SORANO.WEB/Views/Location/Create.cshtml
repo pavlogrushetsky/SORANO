@@ -3,6 +3,7 @@
 @{
     var isEdit = ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"];
     var title = isEdit ? "Редактирование" : "Создание";
+    var returnUrl = isEdit ? Url.Action("Update", "Location") : Url.Action("Create", "Location");
 }
 
 @{
@@ -64,6 +65,18 @@
                 <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-map-signs"></i></span>
                     <select class="form-control" asp-for="TypeID" asp-items="@ViewBag.LocationTypes"></select>
+                    <span class="input-group-btn">
+                        <button class="btn btn-success"
+                                type="submit"
+                                asp-action="CreateType"
+                                asp-route-returnUrl="@returnUrl"
+                                data-toggle="tooltip"
+                                data-placement="right"
+                                data-original-title="Создать родительский тип"
+                                title="">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </span>
                 </div>
             </div>
         </div>

@@ -13,6 +13,7 @@ using Microsoft.Extensions.Caching.Memory;
 using SORANO.WEB.Models.Attachment;
 using Microsoft.AspNetCore.Http;
 using MimeTypes;
+using SORANO.WEB.Infrastructure;
 
 // ReSharper disable Mvc.ViewNotResolved
 
@@ -64,13 +65,17 @@ namespace SORANO.WEB.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Create()
-        {
+        {           
             LocationModel model;
 
-            if (TryGetCached(out LocationModel cachedModel))
+            if (TryGetCached(out LocationModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
             {
-                model = cachedModel;
+                model = cachedForSelectMainPicture;
                 await CopyMainPicture(model);
+            }
+            else if (TryGetCached(out LocationModel cachedForCreateType, CacheKeys.CreateLocationTypeCacheKey, CacheKeys.CreateLocationTypeCacheValidKey))
+            {
+                model = cachedForCreateType;
             }
             else
             {
@@ -88,13 +93,17 @@ namespace SORANO.WEB.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Update(int id)
-        {
+        {            
             LocationModel model;
 
-            if (TryGetCached(out LocationModel cachedModel) && cachedModel.ID == id)
+            if (TryGetCached(out LocationModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedForSelectMainPicture.ID == id)
             {
-                model = cachedModel;
+                model = cachedForSelectMainPicture;
                 await CopyMainPicture(model);
+            }
+            else if (TryGetCached(out LocationModel cachedForCreateType, CacheKeys.CreateLocationTypeCacheKey, CacheKeys.CreateLocationTypeCacheValidKey) && cachedForCreateType.ID == id)
+            {
+                model = cachedForCreateType;
             }
             else
             {
@@ -290,6 +299,18 @@ namespace SORANO.WEB.Controllers
             }, ex => RedirectToAction("Index", "Location"));
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateType(LocationModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        {
+            await LoadMainPicture(model, mainPictureFile);
+            await LoadAttachments(model, attachments);
+
+            _memoryCache.Set(CacheKeys.CreateLocationTypeCacheKey, model);
+
+            return RedirectToAction("Create", "LocationType", new { returnUrl });
+        }
+
         #endregion
 
         private async Task<List<SelectListItem>> GetLocationTypes()
@@ -311,7 +332,7 @@ namespace SORANO.WEB.Controllers
                 Text = l.Name
             }));
 
-            _memoryCache.Set(_locationTypesKey, locationTypes);
+            _memoryCache.Set(CacheKeys.LocationTypesCacheKey, locationTypes);
 
             return locationTypes;
         }

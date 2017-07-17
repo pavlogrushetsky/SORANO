@@ -12,7 +12,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MimeTypes;
+using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Models.Attachment;
+using SORANO.WEB.Models.Location;
 
 namespace SORANO.WEB.Controllers
 {
@@ -34,22 +36,23 @@ namespace SORANO.WEB.Controllers
         #region GET Actions
 
         [HttpGet]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(string returnUrl)
         {
             await ClearAttachments();
 
             LocationTypeModel model;
 
-            if (TryGetCached(out LocationTypeModel cachedModel))
+            if (TryGetCached(out LocationTypeModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
             {
-                model = cachedModel;
+                model = cachedForSelectMainPicture;
                 await CopyMainPicture(model);
             }
             else
             {
                 model = new LocationTypeModel
                 {
-                    MainPicture = new AttachmentModel()
+                    MainPicture = new AttachmentModel(),
+                    ReturnPath = returnUrl
                 };
             }
 
@@ -73,7 +76,7 @@ namespace SORANO.WEB.Controllers
 
             LocationTypeModel model;
 
-            if (TryGetCached(out LocationTypeModel cachedModel) && cachedModel.ID == id)
+            if (TryGetCached(out LocationTypeModel cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedModel.ID == id)
             {
                 model = cachedModel;
                 await CopyMainPicture(model);
@@ -163,7 +166,23 @@ namespace SORANO.WEB.Controllers
                 // If succeeded
                 if (locationType != null)
                 {
-                    return RedirectToAction("Index", "Location");
+                    if (string.IsNullOrEmpty(model.ReturnPath))
+                    {
+                        return RedirectToAction("Index", "Location");
+                    }
+
+                    if (_memoryCache.TryGetValue(CacheKeys.CreateLocationTypeCacheKey, out LocationModel cachedLocation))
+                    {
+                        cachedLocation.Type = locationType.ToModel();
+                        _memoryCache.Set(CacheKeys.CreateLocationTypeCacheKey, cachedLocation);
+                        Session.SetBool(CacheKeys.CreateLocationTypeCacheValidKey, true);
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
+
+                    return Redirect(model.ReturnPath);
                 }
 
                 // If failed
@@ -252,6 +271,23 @@ namespace SORANO.WEB.Controllers
 
                 return RedirectToAction("Index", "Location");
             }, ex => RedirectToAction("Index", "Location"));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Cancel(LocationTypeModel model)
+        {
+            if (string.IsNullOrEmpty(model.ReturnPath))
+            {
+                return RedirectToAction("Index", "Location");
+            }
+
+            if (_memoryCache.TryGetValue(CacheKeys.CreateLocationTypeCacheKey, out LocationModel _))
+            {
+                Session.SetBool(CacheKeys.CreateLocationTypeCacheValidKey, true);
+            }
+
+            return Redirect(model.ReturnPath);
         }
 
         #endregion

@@ -3,6 +3,7 @@
 @{
     var isEdit = ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"];
     var title = isEdit ? "Редактирование" : "Создание";
+    var returnUrl = isEdit ? Url.Action("Update", "ArticleType") : Url.Action("Create", "ArticleType");
 }
 
 @{
@@ -24,7 +25,7 @@
       asp-controller="ArticleType"
       method="post"
       enctype="multipart/form-data">
-    <input type="hidden" asp-for="ReturnUrl" />
+    <input type="hidden" asp-for="ReturnPath" />
     @if (Model.ParentType != null)
     {
         <input type="hidden" asp-for="ParentType.ID"/>
@@ -76,13 +77,13 @@
                         <button class="btn btn-default"
                                 type="submit"
                                 asp-action="SelectParentType"
-                                asp-route-returnUrl="@(isEdit ? Url.Action("Update", "ArticleType") : Url.Action("Create", "ArticleType"))"
+                                asp-route-returnUrl="@returnUrl"
                                 data-toggle="tooltip"
-                                data-placement="right"
+                                data-placement="bottom"
                                 data-original-title="Назначить родительский тип"
                                 title="">
                             <i class="fa fa-pencil"></i>
-                        </button>
+                        </button>    
                     </span>
                 </div>
             </div>
@@ -96,10 +97,10 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="form-group">
-                <a class="btn btn-default" asp-action="Cancel">
+                <button type="submit" class="btn btn-default" asp-action="Cancel">
                     <i class="fa fa-close"></i>
                     Отмена
-                </a>
+                </button>
                 <button type="submit" class="btn btn-primary">
                     <i class="fa fa-check"></i>
                     Сохранить

@@ -12,7 +12,7 @@ using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.ArticleType;
 using Microsoft.Extensions.Caching.Memory;
 using MimeTypes;
-using SORANO.WEB.Models;
+using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Models.Article;
 using SORANO.WEB.Models.Attachment;
 
@@ -48,20 +48,23 @@ namespace SORANO.WEB.Controllers
         {
             ArticleTypeModel model;
 
-            if (TryGetCached(out ArticleTypeModel cachedModel))
+            if (TryGetCached(out ArticleTypeModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
             {
-                model = cachedModel;
+                model = cachedForSelectMainPicture;
                 await CopyMainPicture(model);
+            }
+            else if (TryGetCached(out ArticleTypeModel cachedForSelectParentType, CacheKeys.SelectParentArticleTypeCacheKey, CacheKeys.SelectParentArticleTypeCacheValidKey))
+            {
+                model = cachedForSelectParentType;
             }
             else
             {
                 model = new ArticleTypeModel
                 {
-                    MainPicture = new AttachmentModel()
+                    MainPicture = new AttachmentModel(),
+                    ReturnPath = returnUrl                    
                 };
             }
-
-            model.ReturnUrl = returnUrl;
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
@@ -83,10 +86,14 @@ namespace SORANO.WEB.Controllers
         {
             ArticleTypeModel model;
 
-            if (TryGetCached(out ArticleTypeModel cachedModel) && cachedModel.ID == id)
+            if (TryGetCached(out ArticleTypeModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedForSelectMainPicture.ID == id)
             {
-                model = cachedModel;
+                model = cachedForSelectMainPicture;
                 await CopyMainPicture(model);
+            }
+            else if (TryGetCached(out ArticleTypeModel cachedForSelectParentType, CacheKeys.SelectParentArticleTypeCacheKey, CacheKeys.SelectParentArticleTypeCacheValidKey) && cachedForSelectParentType.ID == id)
+            {
+                model = cachedForSelectParentType;
             }
             else
             {
@@ -209,32 +216,23 @@ namespace SORANO.WEB.Controllers
                 // If succeeded
                 if (articleType != null)
                 {
-                    if (string.IsNullOrEmpty(model.ReturnUrl))
+                    if (string.IsNullOrEmpty(model.ReturnPath))
                     {
                         return RedirectToAction("Index", "Article");
                     }
 
-                    if (_memoryCache.TryGetValue(_cachedModelKey, out EntityBaseModel cachedModel))
+                    if (_memoryCache.TryGetValue(CacheKeys.CreateArticleTypeCacheKey, out ArticleModel cachedArticle))
                     {
-                        if (cachedModel is ArticleModel)
-                        {
-                            ((ArticleModel)cachedModel).Type = articleType.ToModel();
-                            _memoryCache.Set(_cachedModelKey, cachedModel);
-                            Session.SetBool(_isCachedModelValid, true);
-                        }
-                        else if (cachedModel is ArticleTypeModel)
-                        {
-                            ((ArticleTypeModel)cachedModel).ParentType = articleType.ToModel();
-                            _memoryCache.Set(_cachedModelKey, cachedModel);
-                            Session.SetBool(_isCachedModelValid, true);
-                        }
+                        cachedArticle.Type = articleType.ToModel();
+                        _memoryCache.Set(CacheKeys.CreateArticleTypeCacheKey, cachedArticle);
+                        Session.SetBool(CacheKeys.CreateArticleTypeCacheValidKey, true);
                     }
                     else
                     {
                         return BadRequest();
                     }
 
-                    return Redirect(model.ReturnUrl);
+                    return Redirect(model.ReturnPath);
                 }
 
                 // If failed
@@ -332,7 +330,7 @@ namespace SORANO.WEB.Controllers
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
 
-            _memoryCache.Set(_cachedModelKey, model);
+            _memoryCache.Set(CacheKeys.SelectParentArticleTypeCacheKey, model);
 
             return RedirectToAction("Select", "ArticleType", new { selectedId = model.ParentType?.ID, returnUrl, model.ID });
         }
@@ -343,31 +341,29 @@ namespace SORANO.WEB.Controllers
         {
             var selectedType = model.Types.SingleOrDefault(t => t.IsSelected);
 
-            if (selectedType != null)
+            if (_memoryCache.TryGetValue(CacheKeys.SelectArticleTypeCacheKey, out ArticleModel cachedArticle))
             {
-                if (_memoryCache.TryGetValue(_cachedModelKey, out EntityBaseModel cachedModel))
+                if (selectedType != null)
                 {
-                    if (cachedModel is ArticleModel)
-                    {
-                        ((ArticleModel) cachedModel).Type = selectedType;
-                        _memoryCache.Set(_cachedModelKey, cachedModel);
-                        Session.SetBool(_isCachedModelValid, true);
-                    }
-                    else if (cachedModel is ArticleTypeModel)
-                    {
-                        ((ArticleTypeModel) cachedModel).ParentType = selectedType;
-                        _memoryCache.Set(_cachedModelKey, cachedModel);
-                        Session.SetBool(_isCachedModelValid, true);
-                    }
+                    cachedArticle.Type = selectedType;
+                    _memoryCache.Set(CacheKeys.SelectArticleTypeCacheKey, cachedArticle);
                 }
-                else
+
+                Session.SetBool(CacheKeys.SelectArticleTypeCacheValidKey, true);                    
+            }
+            else if (_memoryCache.TryGetValue(CacheKeys.SelectParentArticleTypeCacheKey, out ArticleTypeModel cachedArticleType))
+            {
+                if (selectedType != null)
                 {
-                    return BadRequest();
+                    cachedArticleType.ParentType = selectedType;
+                    _memoryCache.Set(CacheKeys.SelectParentArticleTypeCacheKey, cachedArticleType);
                 }
+
+                Session.SetBool(CacheKeys.SelectParentArticleTypeCacheValidKey, true);                   
             }
             else
             {
-                Session.SetBool(_isCachedModelValid, true);
+                return BadRequest();
             }
             
             return Redirect(model.ReturnUrl);
@@ -377,7 +373,14 @@ namespace SORANO.WEB.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult CancelSelect(ArticleTypeSelectModel model)
         {
-            Session.SetBool(_isCachedModelValid, true);
+            if (_memoryCache.TryGetValue(CacheKeys.SelectArticleTypeCacheKey, out ArticleModel _))
+            {
+                Session.SetBool(CacheKeys.SelectArticleTypeCacheValidKey, true);
+            }
+            else if (_memoryCache.TryGetValue(CacheKeys.SelectParentArticleTypeCacheKey, out ArticleTypeModel _))
+            {
+                Session.SetBool(CacheKeys.SelectParentArticleTypeCacheValidKey, true);
+            }
 
             return Redirect(model.ReturnUrl);
         }
@@ -386,14 +389,17 @@ namespace SORANO.WEB.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Cancel(ArticleTypeModel model)
         {
-            if (string.IsNullOrEmpty(model.ReturnUrl))
+            if (string.IsNullOrEmpty(model.ReturnPath))
             {
-                RedirectToAction("Index", "Article");
+                return RedirectToAction("Index", "Article");
             }
 
-            Session.SetBool(_isCachedModelValid, true);
+            if (_memoryCache.TryGetValue(CacheKeys.CreateArticleTypeCacheKey, out ArticleModel _))
+            {
+                Session.SetBool(CacheKeys.CreateArticleTypeCacheValidKey, true);
+            }
 
-            return Redirect(model.ReturnUrl);
+            return Redirect(model.ReturnPath);
         }
 
         #endregion        

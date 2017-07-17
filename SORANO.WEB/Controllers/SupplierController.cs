@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MimeTypes;
+using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Models.Attachment;
 
 namespace SORANO.WEB.Controllers
@@ -60,7 +61,7 @@ namespace SORANO.WEB.Controllers
         {
             SupplierModel model;
 
-            if (TryGetCached(out SupplierModel cachedModel))
+            if (TryGetCached(out SupplierModel cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
             {
                 model = cachedModel;
                 await CopyMainPicture(model);
@@ -83,7 +84,7 @@ namespace SORANO.WEB.Controllers
         {            
             SupplierModel model;
 
-            if (TryGetCached(out SupplierModel cachedModel) && cachedModel.ID == id)
+            if (TryGetCached(out SupplierModel cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedModel.ID == id)
             {
                 model = cachedModel;
                 await CopyMainPicture(model);

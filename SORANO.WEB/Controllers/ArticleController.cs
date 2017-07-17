@@ -12,6 +12,7 @@ using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models.Article;
 using Microsoft.Extensions.Caching.Memory;
 using MimeTypes;
+using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Models.Attachment;
 
 namespace SORANO.WEB.Controllers
@@ -89,10 +90,18 @@ namespace SORANO.WEB.Controllers
         {
             ArticleModel model;
 
-            if (TryGetCached(out ArticleModel cachedModel))
+            if (TryGetCached(out ArticleModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
             {
-                model = cachedModel;
+                model = cachedForSelectMainPicture;
                 await CopyMainPicture(model);
+            }
+            else if (TryGetCached(out ArticleModel cachedForSelectType, CacheKeys.SelectArticleTypeCacheKey, CacheKeys.SelectArticleTypeCacheValidKey))
+            {
+                model = cachedForSelectType;
+            }
+            else if (TryGetCached(out ArticleModel cachedForCreateType, CacheKeys.CreateArticleTypeCacheKey, CacheKeys.CreateArticleTypeCacheValidKey))
+            {
+                model = cachedForCreateType;
             }
             else
             {
@@ -117,10 +126,18 @@ namespace SORANO.WEB.Controllers
         {
             ArticleModel model;
 
-            if (TryGetCached(out ArticleModel cachedModel) && cachedModel.ID == id)
+            if (TryGetCached(out ArticleModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedForSelectMainPicture.ID == id)
             {
-                model = cachedModel;
+                model = cachedForSelectMainPicture;
                 await CopyMainPicture(model);
+            }
+            else if (TryGetCached(out ArticleModel cachedForSelectType, CacheKeys.SelectArticleTypeCacheKey, CacheKeys.SelectArticleTypeCacheValidKey) && cachedForSelectType.ID == id)
+            {
+                model = cachedForSelectType;
+            }
+            else if (TryGetCached(out ArticleModel cachedForCreateType, CacheKeys.CreateArticleTypeCacheKey, CacheKeys.CreateArticleTypeCacheValidKey) && cachedForCreateType.ID == id)
+            {
+                model = cachedForCreateType;
             }
             else
             {
@@ -181,7 +198,7 @@ namespace SORANO.WEB.Controllers
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
 
-            _memoryCache.Set(_cachedModelKey, model);
+            _memoryCache.Set(CacheKeys.SelectArticleTypeCacheKey, model);
 
             return RedirectToAction("Select", "ArticleType", new { model.Type?.ID, returnUrl });
         }
@@ -193,7 +210,7 @@ namespace SORANO.WEB.Controllers
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
 
-            _memoryCache.Set(_cachedModelKey, model);
+            _memoryCache.Set(CacheKeys.CreateArticleTypeCacheKey, model);
 
             return RedirectToAction("Create", "ArticleType", new { returnUrl });
         }
