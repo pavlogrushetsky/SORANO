@@ -44,6 +44,7 @@
     <Content Include="wwwroot\js\pages\clientDetails.min.js" />
     <Content Include="wwwroot\js\pages\clientIndex.js" />
     <Content Include="wwwroot\js\pages\clientIndex.min.js" />
+    <Content Include="wwwroot\js\pages\deliveryIndex.js" />
     <Content Include="wwwroot\js\pages\locationCreate.js" />
     <Content Include="wwwroot\js\pages\locationDetails.js" />
     <Content Include="wwwroot\js\pages\locationIndex.js" />

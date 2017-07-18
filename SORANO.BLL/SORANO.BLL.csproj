@@ -57,6 +57,7 @@
     <Compile Include="Services\Abstract\ILocationTypeService.cs" />
     <Compile Include="Services\Abstract\IRoleService.cs" />
     <Compile Include="Services\Abstract\IClientService.cs" />
+    <Compile Include="Services\Abstract\IDeliveryService.cs" />
     <Compile Include="Services\Abstract\ISupplierService.cs" />
     <Compile Include="Services\Abstract\IUserService.cs" />
     <Compile Include="Services\ArticleService.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="Services\AttachmentService.cs" />
     <Compile Include="Services\AttachmentTypeService.cs" />
     <Compile Include="Services\BaseService.cs" />
+    <Compile Include="Services\DeliveryService.cs" />
     <Compile Include="Services\LocationService.cs" />
     <Compile Include="Services\LocationTypeService.cs" />
     <Compile Include="Services\RoleService.cs" />

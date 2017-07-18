@@ -53,6 +53,7 @@ namespace SORANO.WEB
             services.AddTransient<IAttachmentTypeService, AttachmentTypeService>();
             services.AddTransient<IAttachmentService, AttachmentService>();
             services.AddTransient<IClientService, ClientService>();
+            services.AddTransient<IDeliveryService, DeliveryService>();
 
             services.AddMemoryCache();
         }
