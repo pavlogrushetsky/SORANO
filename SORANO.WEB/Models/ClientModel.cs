@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SORANO.WEB.Models.Client
+namespace SORANO.WEB.Models
 {
     public class ClientModel : EntityBaseModel
     {

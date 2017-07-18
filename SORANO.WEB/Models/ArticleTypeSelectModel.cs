@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SORANO.WEB.Models.ArticleType
+namespace SORANO.WEB.Models
 {
     public class ArticleTypeSelectModel
     {

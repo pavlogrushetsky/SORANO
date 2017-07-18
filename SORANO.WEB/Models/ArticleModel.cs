@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using SORANO.WEB.Models.ArticleType;
-using SORANO.WEB.Models.Attachment;
 
-namespace SORANO.WEB.Models.Article
+namespace SORANO.WEB.Models
 {
     public class ArticleModel : EntityBaseModel
     {     

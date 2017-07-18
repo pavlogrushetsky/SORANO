@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using SORANO.WEB.Models.Article;
 
-namespace SORANO.WEB.Models.ArticleType
+namespace SORANO.WEB.Models
 {
     public class ArticleTypeModel : EntityBaseModel
     {

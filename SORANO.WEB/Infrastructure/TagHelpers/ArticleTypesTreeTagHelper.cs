@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using SORANO.WEB.Models.ArticleType;
+using SORANO.WEB.Models;
 
 namespace SORANO.WEB.Infrastructure.TagHelpers
 {  

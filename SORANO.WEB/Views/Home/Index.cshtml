@@ -9,3 +9,102 @@
         <li class="active">@ViewBag.Header</li>
     </ul>
 }
+
+<div class="row">
+    <div class="col-lg-3 col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-cart-arrow-down fa-4x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge" style="font-size: 30px;">26</div>
+                        <div>Поставок</div>
+                    </div>
+                </div>
+            </div>
+            <a asp-controller="Delivery" asp-action="Index" style="color: #2c3e50;">
+                <div class="panel-footer">
+                    <span class="pull-left">Просмотреть детали</span>
+                    <span class="pull-right">
+                        <i class="fa fa-arrow-circle-right"></i>
+                    </span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-truck fa-4x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge" style="font-size: 30px;">15</div>
+                        <div>Поставщиков</div>
+                    </div>
+                </div>
+            </div>
+            <a asp-controller="Supplier" asp-action="Index" style="color: #2c3e50;">
+                <div class="panel-footer">
+                    <span class="pull-left">Просмотреть детали</span>
+                    <span class="pull-right">
+                        <i class="fa fa-arrow-circle-right"></i>
+                    </span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-barcode fa-4x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge" style="font-size: 30px;">26</div>
+                        <div>Артикулов</div>
+                    </div>
+                </div>
+            </div>
+            <a asp-controller="Article" asp-action="Index" style="color: #2c3e50;">
+                <div class="panel-footer">
+                    <span class="pull-left">Просмотреть детали</span>
+                    <span class="pull-right">
+                        <i class="fa fa-arrow-circle-right"></i>
+                    </span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-address-card-o fa-4x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge" style="font-size: 30px;">26</div>
+                        <div>Клиентов</div>
+                    </div>
+                </div>
+            </div>
+            <a asp-controller="Client" asp-action="Index" style="color: #2c3e50;">
+                <div class="panel-footer">
+                    <span class="pull-left">Просмотреть детали</span>
+                    <span class="pull-right">
+                        <i class="fa fa-arrow-circle-right"></i>
+                    </span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>

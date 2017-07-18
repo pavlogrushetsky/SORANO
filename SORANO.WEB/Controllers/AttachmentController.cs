@@ -7,7 +7,6 @@ using Microsoft.Extensions.Caching.Memory;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models;
-using SORANO.WEB.Models.Attachment;
 
 namespace SORANO.WEB.Controllers
 {

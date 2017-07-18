@@ -1,4 +1,4 @@
-﻿namespace SORANO.WEB.Models.User
+﻿namespace SORANO.WEB.Models
 {
     public class UserSaleModel
     {

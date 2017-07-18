@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
-using SORANO.WEB.Models.Account;
+using SORANO.WEB.Models;
 
 namespace SORANO.WEB.Components
 {

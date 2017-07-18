@@ -1,7 +1,6 @@
 ﻿using SORANO.CORE.StockEntities;
-using SORANO.WEB.Models.LocationType;
 using System.Linq;
-using SORANO.WEB.Models.Attachment;
+using SORANO.WEB.Models;
 
 namespace SORANO.WEB.Infrastructure.Extensions
 {

@@ -30,31 +30,27 @@
 
             <div class="collapse navbar-collapse" id="navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-controller="Home" asp-action="Index"><i class="fa fa-home" aria-hidden="true"></i>&nbsp;Главная <span class="sr-only">(current)</span></a></li>
-                    <li><a asp-controller="Article" asp-action="Index"><i class="fa fa-barcode" aria-hidden="true"></i>&nbsp;Артикулы</a></li>
-                    <li><a asp-controller="Supplier" asp-action="Index"><i class="fa fa-truck" aria-hidden="true"></i>&nbsp;Поставщики</a></li>
-                    <li><a asp-controller="Client" asp-action="Index"><i class="fa fa-address-book" aria-hidden="true"></i>&nbsp;Клиенты</a></li>
-                    <li><a asp-controller="Location" asp-action="Index"><i class="fa fa-map-marker" aria-hidden="true"></i>&nbsp;Места</a></li>
+                    <li><a asp-controller="Home" asp-action="Index"><i class="fa fa-fw fa-home" aria-hidden="true"></i>&nbsp;Главная <span class="sr-only">(current)</span></a></li>                                        
+                    <li><a asp-controller="Delivery" asp-action="Index"><i class="fa fa-fw fa-cart-arrow-down" aria-hidden="true"></i>&nbsp;Поставки</a></li>                                        
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-cog" aria-hidden="true"></i>&nbsp;Управление <span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-fw fa-cog" aria-hidden="true"></i>&nbsp;Управление <span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a asp-controller="AttachmentType" asp-action="Index"><i class="fa fa-paperclip" aria-hidden="true"></i>&nbsp;Типы вложений</a></li>
-                            <li><a href="#">Another action</a></li>
-                            <li><a href="#">Something else here</a></li>
+                            <li><a asp-controller="Article" asp-action="Index"><i class="fa fa-fw fa-barcode" aria-hidden="true"></i>&nbsp;Артикулы и типы артикулов</a></li>
+                            <li><a asp-controller="Supplier" asp-action="Index"><i class="fa fa-fw fa-truck" aria-hidden="true"></i>&nbsp;Поставщики</a></li>
+                            <li><a asp-controller="Client" asp-action="Index"><i class="fa fa-fw fa-address-book" aria-hidden="true"></i>&nbsp;Клиенты</a></li>
+                            <li><a asp-controller="Location" asp-action="Index"><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i>&nbsp;Места и типы мест</a></li>
+                            <li><a asp-controller="AttachmentType" asp-action="Index"><i class="fa fa-fw fa-paperclip" aria-hidden="true"></i>&nbsp;Типы вложений</a></li>
                             <li class="divider"></li>
-                            <li><a href="#">Separated link</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#">One more separated link</a></li>
+                            @if (User.IsInRole("administrator") || User.IsInRole("developer"))
+                            {
+                                <li>
+                                    <a asp-controller="User" asp-action="List"><i class="fa fa-fw fa-users" aria-hidden="true"></i>&nbsp;Пользователи</a>
+                                </li>
+                            }
                         </ul>
                     </li>
                 </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    @if (User.IsInRole("administrator") || User.IsInRole("developer"))
-                    {
-                        <li>
-                            <a asp-controller="User" asp-action="List"><i class="fa fa-users" aria-hidden="true"></i>&nbsp;Пользователи</a>
-                        </li>
-                    }
+                <ul class="nav navbar-nav navbar-right">                    
                     @await Component.InvokeAsync("Account")
                 </ul>
             </div>           

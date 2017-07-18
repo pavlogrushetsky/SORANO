@@ -9,11 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
-using SORANO.WEB.Models.Article;
 using Microsoft.Extensions.Caching.Memory;
 using MimeTypes;
 using SORANO.WEB.Infrastructure;
-using SORANO.WEB.Models.Attachment;
+using SORANO.WEB.Models;
 
 namespace SORANO.WEB.Controllers
 {

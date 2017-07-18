@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SORANO.WEB.Models.Attachment
+namespace SORANO.WEB.Models
 {
     public class SelectMainPictureModel
     {

@@ -1,5 +1,5 @@
 ﻿using SORANO.CORE.StockEntities;
-using SORANO.WEB.Models.User;
+using SORANO.WEB.Models;
 
 namespace SORANO.WEB.Infrastructure.Extensions
 {

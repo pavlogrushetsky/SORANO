@@ -8,12 +8,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using SORANO.WEB.Models.Location;
 using Microsoft.Extensions.Caching.Memory;
-using SORANO.WEB.Models.Attachment;
 using Microsoft.AspNetCore.Http;
 using MimeTypes;
 using SORANO.WEB.Infrastructure;
+using SORANO.WEB.Models;
 
 // ReSharper disable Mvc.ViewNotResolved
 

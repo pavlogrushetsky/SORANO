@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using SORANO.WEB.Models.Recommendation;
-using SORANO.WEB.Models.Attachment;
 
 namespace SORANO.WEB.Models
 {

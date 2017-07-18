@@ -75,8 +75,6 @@
     <ProjectReference Include="..\SORANO.DAL\SORANO.DAL.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Models\Client\" />
-    <Folder Include="Models\Recommendation\" />
     <Folder Include="wwwroot\attachments\" />
   </ItemGroup>
 

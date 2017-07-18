@@ -1,7 +1,7 @@
 ﻿using SORANO.CORE.StockEntities;
-using SORANO.WEB.Models.AttachmentType;
 using System.Linq;
 using System.Text.RegularExpressions;
+using SORANO.WEB.Models;
 
 namespace SORANO.WEB.Infrastructure.Extensions
 {

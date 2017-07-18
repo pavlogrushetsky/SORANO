@@ -1,7 +1,6 @@
-﻿using SORANO.WEB.Models.AttachmentType;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace SORANO.WEB.Models.Attachment
+namespace SORANO.WEB.Models
 {
     public class AttachmentModel : EntityBaseModel
     {

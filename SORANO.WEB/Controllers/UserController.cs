@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
-using SORANO.WEB.Models.User;
 using SORANO.WEB.Infrastructure.Extensions;
+using SORANO.WEB.Models;
 
 namespace SORANO.WEB.Controllers
 {

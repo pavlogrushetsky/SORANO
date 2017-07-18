@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
-using SORANO.WEB.Models.Supplier;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
@@ -13,7 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MimeTypes;
 using SORANO.WEB.Infrastructure;
-using SORANO.WEB.Models.Attachment;
+using SORANO.WEB.Models;
 
 namespace SORANO.WEB.Controllers
 {

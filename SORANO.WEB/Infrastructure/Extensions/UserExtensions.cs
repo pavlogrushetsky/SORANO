@@ -1,6 +1,6 @@
 ﻿using SORANO.CORE.AccountEntities;
-using SORANO.WEB.Models.User;
 using System.Linq;
+using SORANO.WEB.Models;
 
 namespace SORANO.WEB.Infrastructure.Extensions
 {

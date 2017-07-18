@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SORANO.WEB.Models.Supplier
+namespace SORANO.WEB.Models
 {
     public class SupplierModel : EntityBaseModel
     {

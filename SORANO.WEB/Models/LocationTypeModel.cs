@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using SORANO.WEB.Models.Location;
 
-namespace SORANO.WEB.Models.LocationType
+namespace SORANO.WEB.Models
 {
     public class LocationTypeModel : EntityBaseModel
     {

@@ -1,7 +1,6 @@
-﻿using SORANO.WEB.Models.LocationType;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace SORANO.WEB.Models.Location
+namespace SORANO.WEB.Models
 {
     public class LocationModel : EntityBaseModel
     {

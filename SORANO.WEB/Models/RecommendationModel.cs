@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SORANO.WEB.Models.Recommendation
+namespace SORANO.WEB.Models
 {
     public class RecommendationModel
     {

@@ -1,7 +1,7 @@
-﻿using SORANO.WEB.Infrastructure.ValidationAttributes;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using SORANO.WEB.Infrastructure.ValidationAttributes;
 
-namespace SORANO.WEB.Models.AttachmentType
+namespace SORANO.WEB.Models
 {
     public class AttachmentTypeModel : EntityBaseModel
     {

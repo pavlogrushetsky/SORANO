@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SORANO.WEB.Models.User
+namespace SORANO.WEB.Models
 {
     public class UserActivityModel
     {

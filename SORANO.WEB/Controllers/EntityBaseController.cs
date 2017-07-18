@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Models;
-using SORANO.WEB.Models.Attachment;
-using SORANO.WEB.Models.Recommendation;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

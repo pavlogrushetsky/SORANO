@@ -1,8 +1,7 @@
 ﻿using System.Linq;
 using SORANO.CORE.StockEntities;
-using SORANO.WEB.Models.ArticleType;
 using System.Collections.Generic;
-using SORANO.WEB.Models.Attachment;
+using SORANO.WEB.Models;
 
 namespace SORANO.WEB.Infrastructure.Extensions
 {
