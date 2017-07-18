@@ -174,6 +174,7 @@ namespace SORANO.WEB.Controllers
                     if (_memoryCache.TryGetValue(CacheKeys.CreateLocationTypeCacheKey, out LocationModel cachedLocation))
                     {
                         cachedLocation.Type = locationType.ToModel();
+                        cachedLocation.TypeID = locationType.ID.ToString();
                         _memoryCache.Set(CacheKeys.CreateLocationTypeCacheKey, cachedLocation);
                         Session.SetBool(CacheKeys.CreateLocationTypeCacheValidKey, true);
                     }
