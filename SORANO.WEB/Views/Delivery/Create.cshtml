@@ -1,1 +1,117 @@
-﻿
+﻿@model DeliveryModel
+
+@{
+    var isEdit = ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"];
+    var title = isEdit ? "Редактирование" : "Создание";
+    var returnUrl = isEdit ? Url.Action("Update", "Delivery") : Url.Action("Create", "Delivery");
+}
+
+@{
+    ViewBag.Title = "SORANO - " + title + " накладной";
+    ViewBag.Header = title;
+    ViewBag.Description = " накладной";
+    ViewBag.Icon = "fa fa-caret-arrow-down";
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li><a asp-controller="Delivery" asp-action="Index">Поставки</a></li>
+        <li class="active">@title накладной</li>
+    </ul>
+}
+
+<form asp-action="@(isEdit ? "Update" : "Create")"
+      asp-controller="Delivery"
+      method="post"
+      enctype="multipart/form-data">
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-6">
+            <div class="form-group">
+                <label class="control-label" asp-for="Name">Номер накладной:</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-cart-arrow-down"></i></span>
+                    <input class="form-control" type="text" asp-for="BillNumber" placeholder="Номер накладной" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="SupplierID">Поставщик:</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-truck"></i></span>
+                    <select class="form-control" asp-for="SupplierID" asp-items="@ViewBag.Suppliers"></select>
+                    <span class="input-group-btn">
+                        <button class="btn btn-success"
+                                type="submit"
+                                asp-action="CreateSupplier"
+                                asp-route-returnUrl="@returnUrl"
+                                data-toggle="tooltip"
+                                data-placement="right"
+                                data-original-title="Создать поставщика"
+                                title="">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="LocationID">Место доставки:</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-map-marker"></i></span>
+                    <select class="form-control" asp-for="LocationID" asp-items="@ViewBag.Locations"></select>
+                    <span class="input-group-btn">
+                        <button class="btn btn-success"
+                                type="submit"
+                                asp-action="CreateLocation"
+                                asp-route-returnUrl="@returnUrl"
+                                data-toggle="tooltip"
+                                data-placement="right"
+                                data-original-title="Создать место"
+                                title="">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12">
+            @Html.Partial("~/Views/Shared/_MainPictureForm.cshtml", Model)
+            @Html.Partial("~/Views/Shared/_AttachmentsForm.cshtml", Model)
+            @Html.Partial("~/Views/Shared/_RecommendationsForm.cshtml", Model)
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group">
+                <label class="control-label">Позиции поставки:</label>
+                <div id="deliveryItems">
+                    <table class="table table-responsive" style="width: 100%; margin-bottom: 2px;">
+                        
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group">
+                <a class="btn btn-default" asp-controller="Delivery" asp-action="Index">
+                    <i class="fa fa-close"></i>
+                    Отмена
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-check"></i>
+                    Сохранить
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <environment names="Development">
+        <script src="~/js/pages/deliveryCreate.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/js/pages/deliveryCreate.min.js" asp-append-version="true"></script>
+    </environment>
+}

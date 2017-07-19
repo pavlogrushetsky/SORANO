@@ -20,8 +20,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 TotalDiscountPrice = delivery.TotalDiscountedPrice.ToString("0.##"),
                 Status = delivery.IsSubmitted,
                 Supplier = delivery.Supplier?.ToModel(),
-                SupplierID = delivery.SupplierID.ToString(),
-                DeliveryItemsCount = delivery.Items.Count
+                SupplierID = delivery.SupplierID.ToString()
             };
         }
     }

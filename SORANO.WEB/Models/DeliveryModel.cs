@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SORANO.WEB.Models
 {
@@ -41,6 +42,8 @@ namespace SORANO.WEB.Models
         public string SupplierID { get; set; }
 
         [Display(Name = "Единиц поставки")]
-        public int DeliveryItemsCount { get; set; }
+        public int DeliveryItemsCount => DeliveryItems.Count;
+
+        public List<DeliveryItemModel> DeliveryItems { get; set; } = new List<DeliveryItemModel>();
     }
 }
