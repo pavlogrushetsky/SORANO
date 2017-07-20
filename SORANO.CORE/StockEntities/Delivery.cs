@@ -14,6 +14,11 @@ namespace SORANO.CORE.StockEntities
         public int SupplierID { get; set; }
 
         /// <summary>
+        /// Unique identifier of the delivery location
+        /// </summary>
+        public int LocationID { get; set; }
+
+        /// <summary>
         /// Number of the bill
         /// </summary>
         public string BillNumber { get; set; }
@@ -67,5 +72,10 @@ namespace SORANO.CORE.StockEntities
         /// Delivery items of the delivery
         /// </summary>
         public virtual ICollection<DeliveryItem> Items { get; set; } = new HashSet<DeliveryItem>();
+
+        /// <summary>
+        /// Location of the delivery
+        /// </summary>
+        public virtual Location DeliveryLocation { get; set; }
     }
 }

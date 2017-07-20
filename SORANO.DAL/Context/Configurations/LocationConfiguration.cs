@@ -28,6 +28,10 @@ namespace SORANO.DAL.Context.Configurations
                 .WithRequired(s => s.Location)
                 .HasForeignKey(s => s.LocationID);
 
+            HasMany(l => l.Deliveries)
+                .WithRequired(d => d.DeliveryLocation)
+                .HasForeignKey(d => d.LocationID);
+
             ToTable("Locations");
         }
     }

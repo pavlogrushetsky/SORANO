@@ -8,6 +8,8 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 
 namespace SORANO.WEB.Controllers
 {
@@ -15,15 +17,24 @@ namespace SORANO.WEB.Controllers
     public class DeliveryController : EntityBaseController<DeliveryModel>
     {
         private readonly IDeliveryService _deliveryService;
+        private readonly ISupplierService _supplierService;
+        private readonly IArticleService _articleService;
+        private readonly ILocationService _locationService;
 
         public DeliveryController(IUserService userService,
             IHostingEnvironment hostingEnvironment,
             IAttachmentTypeService attachmentTypeService,
             IAttachmentService attachmentService,
             IMemoryCache memoryCache, 
-            IDeliveryService deliveryService) : base(userService, hostingEnvironment, attachmentTypeService, attachmentService, memoryCache)
+            IDeliveryService deliveryService,
+            ISupplierService supplierService,
+            IArticleService articleService,
+            ILocationService locationService) : base(userService, hostingEnvironment, attachmentTypeService, attachmentService, memoryCache)
         {
             _deliveryService = deliveryService;
+            _supplierService = supplierService;
+            _articleService = articleService;
+            _locationService = locationService;
         }
 
         #region GET Actions
@@ -70,6 +81,10 @@ namespace SORANO.WEB.Controllers
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
+            ViewBag.Suppliers = await GetSuppliers();
+            ViewBag.Locations = await GetLocations();
+            ViewBag.Articles = await GetArticles();
+
             return View(model);
         }
 
@@ -93,6 +108,10 @@ namespace SORANO.WEB.Controllers
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
+            ViewBag.Suppliers = await GetSuppliers();
+            ViewBag.Locations = await GetLocations();
+            ViewBag.Articles = await GetArticles();
+
             ViewData["IsEdit"] = true;
 
             return View("Create", model);
@@ -115,5 +134,77 @@ namespace SORANO.WEB.Controllers
         }
 
         #endregion        
+
+        private async Task<List<SelectListItem>> GetSuppliers()
+        {
+            var suppliers = await _supplierService.GetAllAsync(false);
+
+            var supplierItems = new List<SelectListItem>
+            {
+                new SelectListItem
+                {
+                    Value = "0",
+                    Text = "-- Поставщик --"
+                }
+            };
+
+            supplierItems.AddRange(suppliers.Select(s => new SelectListItem
+            {
+                Value = s.ID.ToString(),
+                Text = s.Name
+            }));
+
+            _memoryCache.Set(CacheKeys.SuppliersCacheKey, supplierItems);
+
+            return supplierItems;
+        }
+
+        private async Task<List<SelectListItem>> GetLocations()
+        {
+            var locations = await _locationService.GetAllAsync(false);
+
+            var locationItems = new List<SelectListItem>
+            {
+                new SelectListItem
+                {
+                    Value = "0",
+                    Text = "-- Место поставки --"
+                }
+            };
+
+            locationItems.AddRange(locations.Select(l => new SelectListItem
+            {
+                Value = l.ID.ToString(),
+                Text = l.Name
+            }));
+
+            _memoryCache.Set(CacheKeys.LocationsCacheKey, locationItems);
+
+            return locationItems;
+        }
+
+        private async Task<List<SelectListItem>> GetArticles()
+        {
+            var articles = await _articleService.GetAllAsync(false);
+
+            var articleItems = new List<SelectListItem>
+            {
+                new SelectListItem
+                {
+                    Value = "0",
+                    Text = "-- Артикул --"
+                }
+            };
+
+            articleItems.AddRange(articles.Select(l => new SelectListItem
+            {
+                Value = l.ID.ToString(),
+                Text = l.Name
+            }));
+
+            _memoryCache.Set(CacheKeys.ArticlesCacheKey, articleItems);
+
+            return articleItems;
+        }
     }
 }

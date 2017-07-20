@@ -122,6 +122,9 @@ namespace SORANO.WEB.Controllers
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
             ViewBag.LocationTypes = GetLocationTypes();
+            ViewBag.Articles = GetArticles();
+            ViewBag.Suppliers = GetSuppliers();
+            ViewBag.Locations = GetLocations();
 
             ViewData["IsEdit"] = isEdit;
 
@@ -149,6 +152,9 @@ namespace SORANO.WEB.Controllers
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
             ViewBag.LocationTypes = GetLocationTypes();
+            ViewBag.Articles = GetArticles();
+            ViewBag.Suppliers = GetSuppliers();
+            ViewBag.Locations = GetLocations();
 
             ViewData["IsEdit"] = isEdit;
 
@@ -167,6 +173,9 @@ namespace SORANO.WEB.Controllers
             attachmentTypes[0].Selected = true;
             ViewBag.AttachmentTypes = attachmentTypes;
             ViewBag.LocationTypes = GetLocationTypes();
+            ViewBag.Articles = GetArticles();
+            ViewBag.Suppliers = GetSuppliers();
+            ViewBag.Locations = GetLocations();
 
             var defaultType = await _attachmentTypeService.GetAsync(int.Parse(attachmentTypes[0].Value));
 
@@ -201,6 +210,9 @@ namespace SORANO.WEB.Controllers
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
             ViewBag.LocationTypes = GetLocationTypes();
+            ViewBag.Articles = GetArticles();
+            ViewBag.Suppliers = GetSuppliers();
+            ViewBag.Locations = GetLocations();
 
             ViewData["IsEdit"] = isEdit;
 
@@ -230,6 +242,9 @@ namespace SORANO.WEB.Controllers
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
             ViewBag.LocationTypes = GetLocationTypes();
+            ViewBag.Articles = GetArticles();
+            ViewBag.Suppliers = GetSuppliers();
+            ViewBag.Locations = GetLocations();
 
             ViewData["IsEdit"] = isEdit;
 
@@ -261,6 +276,36 @@ namespace SORANO.WEB.Controllers
             if (_memoryCache.TryGetValue(CacheKeys.LocationTypesCacheKey, out List<SelectListItem> locationTypeSelectItems))
             {
                 return locationTypeSelectItems;
+            }
+
+            return null;
+        }
+
+        private List<SelectListItem> GetSuppliers()
+        {
+            if (_memoryCache.TryGetValue(CacheKeys.SuppliersCacheKey, out List<SelectListItem> supplierSelectItems))
+            {
+                return supplierSelectItems;
+            }
+
+            return null;
+        }
+
+        private List<SelectListItem> GetLocations()
+        {
+            if (_memoryCache.TryGetValue(CacheKeys.LocationsCacheKey, out List<SelectListItem> locationSelectItems))
+            {
+                return locationSelectItems;
+            }
+
+            return null;
+        }
+
+        private List<SelectListItem> GetArticles()
+        {
+            if (_memoryCache.TryGetValue(CacheKeys.ArticlesCacheKey, out List<SelectListItem> articleSelectItems))
+            {
+                return articleSelectItems;
             }
 
             return null;

@@ -41,6 +41,12 @@ namespace SORANO.WEB.Models
         [Display(Name = "Поставщик")]
         public string SupplierID { get; set; }
 
+        [Display(Name = "Место поставки")]
+        public string LocationID { get; set; }
+
+        [Display(Name = "Место поставки")]
+        public LocationModel Location { get; set; }
+
         [Display(Name = "Единиц поставки")]
         public int DeliveryItemsCount => DeliveryItems.Count;
 

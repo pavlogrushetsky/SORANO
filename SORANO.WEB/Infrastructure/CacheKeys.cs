@@ -25,5 +25,11 @@
         public static readonly string AttachmentTypesCacheKey = "AttachmentTypesCache";
 
         public static readonly string LocationTypesCacheKey = "LocationTypesCache";
+
+        public static readonly string ArticlesCacheKey = "ArticlesCache";
+
+        public static readonly string LocationsCacheKey = "LocationsCache";
+
+        public static readonly string SuppliersCacheKey = "SuppliersCache";
     }
 }

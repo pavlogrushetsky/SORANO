@@ -10,7 +10,7 @@
     ViewBag.Title = "SORANO - " + title + " накладной";
     ViewBag.Header = title;
     ViewBag.Description = " накладной";
-    ViewBag.Icon = "fa fa-caret-arrow-down";
+    ViewBag.Icon = "fa fa-cart-arrow-down";
 }
 
 @section Breadcrumb {
@@ -28,16 +28,16 @@
     <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-6">
             <div class="form-group">
-                <label class="control-label" asp-for="Name">Номер накладной:</label>
+                <label class="control-label" asp-for="BillNumber">Номер накладной:</label>
                 <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-cart-arrow-down"></i></span>
+                    <span class="input-group-addon"><i class="fa fa-fw fa-cart-arrow-down"></i></span>
                     <input class="form-control" type="text" asp-for="BillNumber" placeholder="Номер накладной" />
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="SupplierID">Поставщик:</label>
                 <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-truck"></i></span>
+                    <span class="input-group-addon"><i class="fa fa-fw fa-truck"></i></span>
                     <select class="form-control" asp-for="SupplierID" asp-items="@ViewBag.Suppliers"></select>
                     <span class="input-group-btn">
                         <button class="btn btn-success"
@@ -54,9 +54,9 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label" asp-for="LocationID">Место доставки:</label>
+                <label class="control-label" asp-for="LocationID">Место поставки:</label>
                 <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-map-marker"></i></span>
+                    <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
                     <select class="form-control" asp-for="LocationID" asp-items="@ViewBag.Locations"></select>
                     <span class="input-group-btn">
                         <button class="btn btn-success"
@@ -83,9 +83,32 @@
         <div class="col-lg-12">
             <div class="form-group">
                 <label class="control-label">Позиции поставки:</label>
-                <div id="deliveryItems">
+                <div id="deliveryItems">                    
                     <table class="table table-responsive" style="width: 100%; margin-bottom: 2px;">
-                        
+                        @if (Model.DeliveryItems.Any())
+                        {
+                            <thead>
+                                <tr>
+                                    <th style="width: 5%"><i class="fa fa-fw fa-hashtag" aria-hidden="true"></i>№</th>
+                                    <th style="width: 30%"><i class="fa fa-fw fa-barcode" aria-hidden="true"></i>Артикул</th>
+                                    <th style="width: 15%"><i class="fa fa-fw fa-shopping-cart" aria-hidden="true"></i>Товар</th>
+                                    <th style="width: 10%"><i class="fa fa-fw fa-inbox" aria-hidden="true"></i>Количество, шт.</th>
+                                    <th style="width: 10%"><i class="fa fa-fw fa-money" aria-hidden="true"></i>Цена</th>
+                                    <th style="width: 10%"><i class="fa fa-fw fa-money" aria-hidden="true"></i>Сумма без скидки</th>
+                                    <th style="width: 10%"><i class="fa fa-fw fa-percent" aria-hidden="true"></i>Скидка</th>
+                                    <th style="width: 10%"><i class="fa fa-fw fa-money" aria-hidden="true"></i>Сумма</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (var i = 0; i < Model.DeliveryItems.Count; i++)
+                                {
+                                    <tr>
+
+                                    </tr>
+                                }
+                            </tbody>
+                        }
+
                     </table>
                 </div>
             </div>

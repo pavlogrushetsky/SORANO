@@ -1,5 +1,6 @@
 ﻿using SORANO.CORE.StockEntities;
 using SORANO.WEB.Models;
+using System.Linq;
 
 namespace SORANO.WEB.Infrastructure.Extensions
 {
@@ -20,7 +21,10 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 TotalDiscountPrice = delivery.TotalDiscountedPrice.ToString("0.##"),
                 Status = delivery.IsSubmitted,
                 Supplier = delivery.Supplier?.ToModel(),
-                SupplierID = delivery.SupplierID.ToString()
+                SupplierID = delivery.SupplierID.ToString(),
+                Location = delivery.DeliveryLocation.ToModel(),
+                LocationID = delivery.DeliveryLocation.ID.ToString(),
+                DeliveryItems = delivery.Items.Select(i => i.ToModel()).ToList()
             };
         }
     }
