@@ -56,7 +56,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(string returnUrl)
         {
             SupplierModel model;
 
@@ -69,7 +69,8 @@ namespace SORANO.WEB.Controllers
             {
                 model = new SupplierModel
                 {
-                    MainPicture = new AttachmentModel()
+                    MainPicture = new AttachmentModel(),
+                    ReturnPath = returnUrl
                 };
             }
 
@@ -170,7 +171,24 @@ namespace SORANO.WEB.Controllers
                 // If succeeded
                 if (supplier != null)
                 {
-                    return RedirectToAction("Index", "Supplier");
+                    if (string.IsNullOrEmpty(model.ReturnPath))
+                    {
+                        return RedirectToAction("Index", "Supplier");
+                    }
+
+                    if (_memoryCache.TryGetValue(CacheKeys.CreateSupplierCacheKey, out DeliveryModel cachedDelivery))
+                    {
+                        cachedDelivery.Supplier = supplier.ToModel();
+                        cachedDelivery.SupplierID = supplier.ID.ToString();
+                        _memoryCache.Set(CacheKeys.CreateSupplierCacheKey, cachedDelivery);
+                        Session.SetBool(CacheKeys.CreateSupplierCacheValidKey, true);
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
+
+                    return Redirect(model.ReturnPath);
                 }
 
                 // If failed
@@ -259,6 +277,23 @@ namespace SORANO.WEB.Controllers
 
                 return RedirectToAction("Index", "Supplier");
             }, ex => RedirectToAction("Index", "Supplier"));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Cancel(SupplierModel model)
+        {
+            if (string.IsNullOrEmpty(model.ReturnPath))
+            {
+                return RedirectToAction("Index", "Supplier");
+            }
+
+            if (_memoryCache.TryGetValue(CacheKeys.CreateSupplierCacheKey, out DeliveryModel _))
+            {
+                Session.SetBool(CacheKeys.CreateSupplierCacheValidKey, true);
+            }
+
+            return Redirect(model.ReturnPath);
         }
 
         #endregion

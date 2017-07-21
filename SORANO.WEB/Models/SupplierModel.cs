@@ -13,5 +13,7 @@ namespace SORANO.WEB.Models
         [Display(Name = "Описание")]
         [MaxLength(1000, ErrorMessage = "Длина описания не должна превышать 1000 символов")]
         public string Description { get; set; }
+
+        public string ReturnPath { get; set; }
     }
 }

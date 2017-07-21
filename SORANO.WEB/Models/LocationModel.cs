@@ -19,5 +19,7 @@ namespace SORANO.WEB.Models
 
         [Display(Name = "Тип")]
         public LocationTypeModel Type { get; set; }
+
+        public string ReturnPath { get; set; }
     }
 }

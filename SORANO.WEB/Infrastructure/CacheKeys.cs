@@ -31,5 +31,13 @@
         public static readonly string LocationsCacheKey = "LocationsCache";
 
         public static readonly string SuppliersCacheKey = "SuppliersCache";
+
+        public static readonly string CreateLocationCacheKey = "CreateLocationCache";
+
+        public static readonly string CreateLocationCacheValidKey = "CreateLocationCacheValid";
+
+        public static readonly string CreateSupplierCacheKey = "CreateSupplierCache";
+
+        public static readonly string CreateSupplierCacheValidKey = "CreateSupplierValidCache";
     }
 }

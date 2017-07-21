@@ -63,7 +63,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(string returnUrl)
         {           
             LocationModel model;
 
@@ -80,7 +80,8 @@ namespace SORANO.WEB.Controllers
             {
                 model = new LocationModel
                 {
-                    MainPicture = new AttachmentModel()
+                    MainPicture = new AttachmentModel(),
+                    ReturnPath = returnUrl
                 };
             }
 
@@ -196,7 +197,24 @@ namespace SORANO.WEB.Controllers
                 // If succeeded
                 if (location != null)
                 {
-                    return RedirectToAction("Index", "Location");
+                    if (string.IsNullOrEmpty(model.ReturnPath))
+                    {
+                        return RedirectToAction("Index", "Location");
+                    }
+
+                    if (_memoryCache.TryGetValue(CacheKeys.CreateLocationCacheKey, out DeliveryModel cachedDelivery))
+                    {
+                        cachedDelivery.Location = location.ToModel();
+                        cachedDelivery.LocationID = location.ID.ToString();
+                        _memoryCache.Set(CacheKeys.CreateLocationCacheKey, cachedDelivery);
+                        Session.SetBool(CacheKeys.CreateLocationCacheValidKey, true);
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
+
+                    return Redirect(model.ReturnPath);
                 }
 
                 // If failed
@@ -308,6 +326,23 @@ namespace SORANO.WEB.Controllers
             _memoryCache.Set(CacheKeys.CreateLocationTypeCacheKey, model);
 
             return RedirectToAction("Create", "LocationType", new { returnUrl });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Cancel(LocationModel model)
+        {
+            if (string.IsNullOrEmpty(model.ReturnPath))
+            {
+                return RedirectToAction("Index", "Location");
+            }
+
+            if (_memoryCache.TryGetValue(CacheKeys.CreateLocationCacheKey, out DeliveryModel _))
+            {
+                Session.SetBool(CacheKeys.CreateLocationCacheValidKey, true);
+            }
+
+            return Redirect(model.ReturnPath);
         }
 
         #endregion

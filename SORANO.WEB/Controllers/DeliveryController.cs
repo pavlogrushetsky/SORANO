@@ -10,6 +10,7 @@ using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 
 namespace SORANO.WEB.Controllers
 {
@@ -66,10 +67,18 @@ namespace SORANO.WEB.Controllers
         {
             DeliveryModel model;
 
-            if (TryGetCached(out DeliveryModel cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
+            if (TryGetCached(out DeliveryModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
             {
-                model = cachedModel;
+                model = cachedForSelectMainPicture;
                 await CopyMainPicture(model);
+            }
+            else if (TryGetCached(out DeliveryModel cachedForCreateSupplier, CacheKeys.CreateSupplierCacheKey, CacheKeys.CreateSupplierCacheValidKey))
+            {
+                model = cachedForCreateSupplier;
+            }
+            else if (TryGetCached(out DeliveryModel cachedForCreateLocation, CacheKeys.CreateLocationCacheKey, CacheKeys.CreateLocationCacheValidKey))
+            {
+                model = cachedForCreateLocation;
             }
             else
             {
@@ -93,10 +102,18 @@ namespace SORANO.WEB.Controllers
         {
             DeliveryModel model;
 
-            if (TryGetCached(out DeliveryModel cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedModel.ID == id)
+            if (TryGetCached(out DeliveryModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
             {
-                model = cachedModel;
+                model = cachedForSelectMainPicture;
                 await CopyMainPicture(model);
+            }
+            else if (TryGetCached(out DeliveryModel cachedForCreateSupplier, CacheKeys.CreateSupplierCacheKey, CacheKeys.CreateSupplierCacheValidKey))
+            {
+                model = cachedForCreateSupplier;
+            }
+            else if (TryGetCached(out DeliveryModel cachedForCreateLocation, CacheKeys.CreateLocationCacheKey, CacheKeys.CreateLocationCacheValidKey))
+            {
+                model = cachedForCreateLocation;
             }
             else
             {
@@ -133,7 +150,35 @@ namespace SORANO.WEB.Controllers
             return View(delivery.ToModel());
         }
 
-        #endregion        
+        #endregion
+
+        #region POST Actions
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateLocation(DeliveryModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        {
+            await LoadMainPicture(model, mainPictureFile);
+            await LoadAttachments(model, attachments);
+
+            _memoryCache.Set(CacheKeys.CreateLocationCacheKey, model);
+
+            return RedirectToAction("Create", "Location", new { returnUrl });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateSupplier(DeliveryModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        {
+            await LoadMainPicture(model, mainPictureFile);
+            await LoadAttachments(model, attachments);
+
+            _memoryCache.Set(CacheKeys.CreateSupplierCacheKey, model);
+
+            return RedirectToAction("Create", "Supplier", new { returnUrl });
+        }
+
+        #endregion
 
         private async Task<List<SelectListItem>> GetSuppliers()
         {
