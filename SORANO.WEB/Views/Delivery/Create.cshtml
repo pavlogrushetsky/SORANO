@@ -25,13 +25,30 @@
       asp-controller="Delivery"
       method="post"
       enctype="multipart/form-data">
+    @for (var i = 0; i < Model.Recommendations.Count; i++)
+    {
+        <input type="hidden" asp-for="@Model.Recommendations[i].ID" />
+        <input type="hidden" asp-for="@Model.Recommendations[i].ParentID" />
+    }
+    @for (int i = 0; i < Model.Attachments.Count; i++)
+    {
+        @Html.HiddenFor(m => m.Attachments[i].ID)
+        @Html.HiddenFor(m => m.Attachments[i].IsNew)
+        @Html.HiddenFor(m => m.Attachments[i].FullPath)
+        @Html.HiddenFor(m => m.Attachments[i].Type.MimeTypes)
+        @Html.HiddenFor(m => m.Attachments[i].Type.Name)
+    }
+    @Html.HiddenFor(m => m.MainPicture.ID)
+    @Html.HiddenFor(m => m.MainPicture.Name)
+    @Html.HiddenFor(m => m.MainPicture.FullPath)
+    @Html.HiddenFor(m => m.MainPicture.TypeID)
     <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-6">
             <div class="form-group">
                 <label class="control-label" asp-for="BillNumber">Номер накладной:</label>
                 <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-fw fa-cart-arrow-down"></i></span>
-                    <input class="form-control" type="text" asp-for="BillNumber" placeholder="Номер накладной" />
+                    <input class="form-control" type="text" asp-for="BillNumber" placeholder="Номер накладной"/>
                 </div>
             </div>
             <div class="form-group">
@@ -80,35 +97,109 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-12">
+        <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="form-group">
                 <label class="control-label">Позиции поставки:</label>
-                <div id="deliveryItems">                    
+                <div id="deliveryItems">
                     <table class="table table-responsive" style="width: 100%; margin-bottom: 2px;">
                         @if (Model.DeliveryItems.Any())
                         {
                             <thead>
-                                <tr>
-                                    <th style="width: 5%"><i class="fa fa-fw fa-hashtag" aria-hidden="true"></i>№</th>
-                                    <th style="width: 30%"><i class="fa fa-fw fa-barcode" aria-hidden="true"></i>Артикул</th>
-                                    <th style="width: 15%"><i class="fa fa-fw fa-shopping-cart" aria-hidden="true"></i>Товар</th>
-                                    <th style="width: 10%"><i class="fa fa-fw fa-inbox" aria-hidden="true"></i>Количество, шт.</th>
-                                    <th style="width: 10%"><i class="fa fa-fw fa-money" aria-hidden="true"></i>Цена</th>
-                                    <th style="width: 10%"><i class="fa fa-fw fa-money" aria-hidden="true"></i>Сумма без скидки</th>
-                                    <th style="width: 10%"><i class="fa fa-fw fa-percent" aria-hidden="true"></i>Скидка</th>
-                                    <th style="width: 10%"><i class="fa fa-fw fa-money" aria-hidden="true"></i>Сумма</th>
-                                </tr>
+                            <tr>
+                                <th style="width: 5%">№</th>
+                                <th style="width: 20%"><i class="fa fa-fw fa-barcode" aria-hidden="true"></i>Артикул</th>
+                                <th style="width: 25%"><i class="fa fa-fw fa-shopping-cart" aria-hidden="true"></i>Товар</th>
+                                <th style="width: 9%">Кол-во, шт.</th>
+                                <th style="width: 9%">Цена</th>
+                                <th style="width: 9%">Без скидки</th>
+                                <th style="width: 9%">Скидка</th>
+                                <th style="width: 9%">Сумма</th>
+                                <th style="width: 5%"></th>
+                            </tr>
                             </thead>
                             <tbody>
-                                @for (var i = 0; i < Model.DeliveryItems.Count; i++)
-                                {
-                                    <tr>
-
-                                    </tr>
-                                }
+                            @for (var i = 0; i < Model.DeliveryItems.Count; i++)
+                            {
+                                <tr>
+                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text" /></td>
+                                    <td style="padding: 2px;">
+                                        <div class="input-group">
+                                            <select class="form-control deliveries" asp-for="@Model.DeliveryItems[i].ArticleID" asp-items="@ViewBag.Articles"></select>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-success"
+                                                        type="submit"
+                                                        asp-action="CreateArticle"
+                                                        asp-route-returnUrl="@returnUrl"
+                                                        data-toggle="tooltip"
+                                                        data-placement="right"
+                                                        data-original-title="Создать артикул"
+                                                        title="">
+                                                    <i class="fa fa-plus"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td style="padding: 2px;">
+                                        <textarea style="resize: vertical;" class="form-control deliveries" rows="1"></textarea>
+                                    </td>
+                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text"  /></td>
+                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text" /></td>
+                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text" /></td>
+                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text" /></td>
+                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text" /></td>
+                                    <td style="padding: 2px;">
+                                        <button class="btn btn-danger pull-right"
+                                                type="submit"
+                                                asp-action="DeleteDeliveryItem"
+                                                asp-route-isEdit="@(ViewData.ContainsKey("IsEdit") && (bool) ViewData["IsEdit"])"
+                                                asp-route-num="@i"
+                                                data-toggle="tooltip"
+                                                data-placement="right"
+                                                data-original-title="Удалить позицию"
+                                                title="">
+                                            <i class="fa fa-trash" aria-hidden="true"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 2px;"></td>
+                                    <td style="padding: 2px;"></td>
+                                    <td style="padding: 2px;"></td>
+                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text" /></td>
+                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text" /></td>
+                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text" /></td>
+                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text" /></td>
+                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text" /></td>
+                                    <td style="padding: 2px;"></td>
+                                </tr>
+                            }
                             </tbody>
                         }
-
+                        <tfoot>
+                        <tr>
+                            <td colspan="8" style="padding: 2px; vertical-align: middle;">
+                                @if (!Model.DeliveryItems.Any())
+                                {
+                                    <p class="text-info">
+                                        <i class="fa fa-fw fa-info" aria-hidden="true"></i>
+                                        Позиции поставки отсутствуют
+                                    </p>
+                                }
+                            </td>
+                            <td style="padding: 2px;">
+                                <button class="btn btn-success pull-right"
+                                        type="submit"
+                                        asp-action="AddDeliveryItem"
+                                        asp-route-isEdit="@(ViewData.ContainsKey("IsEdit") && (bool) ViewData["IsEdit"])"
+                                        data-toggle="tooltip"
+                                        data-placement="right"
+                                        data-original-title="Добавить позицию"
+                                        title="">
+                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>

@@ -178,6 +178,48 @@ namespace SORANO.WEB.Controllers
             return RedirectToAction("Create", "Supplier", new { returnUrl });
         }
 
+        [HttpPost]
+        public virtual async Task<IActionResult> AddDeliveryItem(DeliveryModel delivery, bool isEdit, IFormFile mainPictureFile, IFormFileCollection attachments)
+        {
+            ModelState.Clear();
+
+            delivery.DeliveryItems.Add(new DeliveryItemModel());
+
+            ViewBag.AttachmentTypes = await GetAttachmentTypes();
+
+            ViewBag.Articles = await GetArticles();
+            ViewBag.Suppliers = await GetSuppliers();
+            ViewBag.Locations = await GetLocations();
+
+            ViewData["IsEdit"] = isEdit;
+
+            await LoadMainPicture(delivery, mainPictureFile);
+            await LoadAttachments(delivery, attachments);
+
+            return View("Create", delivery);
+        }
+
+        [HttpPost]
+        public virtual async Task<IActionResult> DeleteDeliveryItem(DeliveryModel delivery, bool isEdit, int num, IFormFile mainPictureFile, IFormFileCollection attachments)
+        {
+            ModelState.Clear();
+
+            delivery.DeliveryItems.RemoveAt(num);
+
+            ViewBag.AttachmentTypes = await GetAttachmentTypes();
+
+            ViewBag.Articles = await GetArticles();
+            ViewBag.Suppliers = await GetSuppliers();
+            ViewBag.Locations = await GetLocations();
+
+            ViewData["IsEdit"] = isEdit;
+
+            await LoadMainPicture(delivery, mainPictureFile);
+            await LoadAttachments(delivery, attachments);
+
+            return View("Create", delivery);
+        }
+
         #endregion
 
         private async Task<List<SelectListItem>> GetSuppliers()
