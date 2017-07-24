@@ -13,6 +13,10 @@
     ViewBag.Icon = "fa fa-cart-arrow-down";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/lib/bootstrap-select/dist/css/bootstrap-select.min.css" />
+}
+
 @section Breadcrumb {
     <ul class="breadcrumb">
         <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
@@ -122,10 +126,10 @@
                             @for (var i = 0; i < Model.DeliveryItems.Count; i++)
                             {
                                 <tr>
-                                    <td style="padding: 0; padding-right: 5px;padding-bottom: 5px;">1</td>
+                                    <td style="padding: 0; padding-right: 5px;padding-bottom: 5px; text-align: center; vertical-align: middle;">@(i + 1)</td>
                                     <td style="padding: 0; padding-right: 5px;padding-bottom: 5px;">
                                         <div class="input-group input-group-sm">
-                                            <select class="form-control input-sm deliveries" asp-for="@Model.DeliveryItems[i].ArticleID" asp-items="@ViewBag.Articles"></select>
+                                            <select class="form-control input-sm deliveries selectpicker" data-live-search="true" asp-for="@Model.DeliveryItems[i].ArticleID" asp-items="@ViewBag.Articles"></select>
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default btn-sm"
                                                         type="submit"
@@ -141,15 +145,23 @@
                                         </div>
                                     </td>
                                     <td style="padding: 0; padding-right: 5px;padding-bottom: 5px;">
-                                        <textarea style="resize: vertical;" class="form-control input-sm deliveries" rows="1"></textarea>
+                                        <input class="form-control input-sm deliveries" type="text" disabled="">
                                     </td>
-                                    <td style="padding: 0;padding-right: 5px;padding-bottom: 5px;"><input class="form-control input-sm deliveries" type="text"  /></td>
-                                    <td style="padding: 0;padding-right: 5px;padding-bottom: 5px;"><input class="form-control input-sm deliveries" type="text" /></td>
-                                    <td style="padding: 0;padding-right: 5px;padding-bottom: 5px;"><input class="form-control input-sm deliveries" type="text" /></td>
-                                    <td style="padding: 0;padding-right: 5px;padding-bottom: 5px;"><input class="form-control input-sm deliveries" type="text" /></td>
+                                    <td style="padding: 0; padding-right: 5px; padding-bottom: 5px;">
+                                        <input class="form-control input-sm deliveries" asp-for="@Model.DeliveryItems[i].Quantity" type="number" min="1" max="1000000"/>
+                                    </td>
+                                    <td style="padding: 0; padding-right: 5px; padding-bottom: 5px;">
+                                        <input class="form-control input-sm deliveries" type="text"/>
+                                    </td>
+                                    <td style="padding: 0; padding-right: 5px; padding-bottom: 5px;">
+                                        <input class="form-control input-sm deliveries" type="text" disabled="">
+                                    </td>
+                                    <td style="padding: 0; padding-right: 5px; padding-bottom: 5px;">
+                                        <input class="form-control input-sm deliveries" type="text"/>
+                                    </td>
                                     <td style="padding: 0;padding-right: 5px;padding-bottom: 5px;">
                                         <div class="input-group input-group-sm">
-                                            <input class="form-control input-sm deliveries" type="text" />
+                                            <input class="form-control input-sm deliveries" type="text" disabled="">
                                             <span class="input-group-btn">
                                                 <button class="btn btn-danger btn-sm"
                                                         type="submit"
@@ -217,6 +229,7 @@
 </form>
 
 @section Scripts {
+    <script src="~/lib/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
     <environment names="Development">
         <script src="~/js/pages/deliveryCreate.js"></script>
     </environment>

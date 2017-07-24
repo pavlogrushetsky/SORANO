@@ -183,7 +183,10 @@ namespace SORANO.WEB.Controllers
         {
             ModelState.Clear();
 
-            delivery.DeliveryItems.Add(new DeliveryItemModel());
+            delivery.DeliveryItems.Add(new DeliveryItemModel
+            {
+                Quantity = 1
+            });
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
@@ -286,7 +289,7 @@ namespace SORANO.WEB.Controllers
             articleItems.AddRange(articles.Select(l => new SelectListItem
             {
                 Value = l.ID.ToString(),
-                Text = l.Name
+                Text = l.Code
             }));
 
             _memoryCache.Set(CacheKeys.ArticlesCacheKey, articleItems);
