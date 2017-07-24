@@ -4,7 +4,7 @@
     ViewBag.Title = "SORANO - Типы вложений";
     ViewBag.Header = "Типы";
     ViewBag.Description = "вложений";
-    ViewBag.Icon = "fa fa-paperclip";
+    ViewBag.Icon = "fa fa-fw fa-paperclip";
 }
 
 @section Styles {
@@ -33,7 +33,7 @@
                    data-placement="right"
                    data-original-title="Добавить тип вложения"
                    title="">
-                    <i class="fa fa-plus" aria-hidden="true"></i>
+                    <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
                 </a>
                 <div class="clearfix"></div>
             </div>
@@ -87,7 +87,7 @@
                                                data-placement="bottom"
                                                data-original-title="Редактировать свойства типа вложений"
                                                title="">
-                                                <i class="fa fa-pencil-square" aria-hidden="true"></i>
+                                                <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
                                             </a>
                                         }
                                         if (attachmentType.CanBeDeleted)
@@ -100,7 +100,7 @@
                                                asp-controller="AttachmentType"
                                                asp-action="Delete"
                                                asp-route-id="@attachmentType.ID">
-                                                <i class="fa fa-trash" aria-hidden="true"></i>
+                                                <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
                                             </a>
                                         }
                                     }                                                                    

@@ -66,12 +66,12 @@ table {
 
 img, div.main-picture-info {
     width: 150px;
-    height: 200px;
+    height: 185px;
     border: 2px solid #dce4ec;
     box-shadow: none;
     border-radius: 4px;
     object-fit: contain;
-    margin-right: 10px;
+    margin-right: 5px;
     margin-bottom: 10px;
 }
 
@@ -86,7 +86,6 @@ div.main-picture-info {
 
 .btn-group-vertical {
     vertical-align: top;
-    margin-left: 5px;
 }
 
     .btn-group-vertical > .btn:not(:first-child) {

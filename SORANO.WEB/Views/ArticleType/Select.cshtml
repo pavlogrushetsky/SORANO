@@ -4,7 +4,7 @@
     ViewBag.Title = "SORANO - Назначение родительского типа артикулов";
     ViewBag.Header = "Назначение";
     ViewBag.Description = "родительского типа артикулов";
-    ViewBag.Icon = "fa fa-tags";
+    ViewBag.Icon = "fa fa-fw fa-tags";
 }
 
 @section Breadcrumb {
@@ -53,8 +53,8 @@
                 </div>
             }
             <div class="form-group">
-                <button type="submit" class="btn btn-default" asp-action="CancelSelect">Отмена</button>
-                <button type="submit" class="btn btn-primary" asp-action="Select">Сохранить</button>
+                <button type="submit" class="btn btn-default btn-sm" asp-action="CancelSelect">Отмена</button>
+                <button type="submit" class="btn btn-primary btn-sm" asp-action="Select">Сохранить</button>
             </div>
         </form>
     </div>

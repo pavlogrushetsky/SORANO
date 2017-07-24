@@ -7,8 +7,8 @@
 }
 
 <div class="form-group">
-    <label class="control-label">Основное изображение:</label>
-    <div class="input-group">
+    <label class="control-label">Изображение:</label>
+    <div class="input-group input-group-sm">
         <img id="mainPicture_img" 
              data-toggle="tooltip"
              data-placement="right"
@@ -23,12 +23,12 @@
                 Основное изображение отсутствует
             </p>
         </div>              
-        <div class="btn-group-vertical">
+        <div class="btn-group-vertical btn-group-sm">
             <label data-toggle="tooltip"
                    data-placement="right"
                    data-original-title="Выбрать файл изображения"
-                   class="btn btn-default">
-                <i class="fa fa-paperclip"></i>
+                   class="btn btn-default btn-sm">
+                <i class="fa fa-fw fa-paperclip"></i>
                 <input type="file" 
                        id="main_picture_input"
                        style="display: none !important;"
@@ -37,7 +37,7 @@
                        accept="image/*"/>
             </label>
             @* ReSharper disable once Mvc.ActionNotResolved *@
-            <button class="btn btn-default"
+            <button class="btn btn-default btn-sm"
                     type="submit"
                     asp-action="SelectMainPicture"
                     asp-route-returnUrl="@(isEdit ? Url.Action("Update", controllerName) : Url.Action("Create", controllerName))"
@@ -45,12 +45,12 @@
                     data-placement="right"
                     data-original-title="Выбрать изображение из существующих вложений"
                     title="">
-                <i class="fa fa-th-large"></i>
+                <i class="fa fa-fw fa-th-large"></i>
             </button>
             @* ReSharper disable once Mvc.ActionNotResolved *@
             @if (!string.IsNullOrEmpty(Model.MainPicture.Name))
             {
-                <button class="btn btn-danger"
+                <button class="btn btn-danger btn-sm"
                         type="submit"
                         asp-action="DeleteMainPicture"
                         asp-route-isEdit="@isEdit"

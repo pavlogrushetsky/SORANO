@@ -4,7 +4,7 @@
     ViewBag.Title = "SORANO - Клиенты";
     ViewBag.Header = "Список";
     ViewBag.Description = "клиентов";
-    ViewBag.Icon = "fa fa-address-book";
+    ViewBag.Icon = "fa fa-fw fa-address-book";
 }
 
 @section Styles {
@@ -32,7 +32,7 @@
                    data-placement="right"
                    data-original-title="Добавить клиента"
                    title="">
-                    <i class="fa fa-plus" aria-hidden="true"></i>
+                    <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
                 </a>
                 <a class="btn btn-default btn-xs pull-right"
                    asp-controller="Client"
@@ -42,7 +42,7 @@
                    data-placement="right"
                    data-original-title=@(ViewBag.ShowDeleted ? "Скрыть удалённых клиентов" : "Отобразить удалённые клиенты")
                    title="">
-                    <i class="fa @(ViewBag.ShowDeleted ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
+                    <i class="fa fa-fw @(ViewBag.ShowDeleted ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
                 </a>
                 <div class="clearfix"></div>
             </div>
@@ -94,7 +94,7 @@
                                        data-placement="bottom"
                                        data-original-title="Просмотреть информацию о клиенте"
                                        title="">
-                                        <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                        <i class="fa fa-fw fa-info-circle" aria-hidden="true"></i>
                                     </a>
                                     @if (!client.IsDeleted)
                                     {
@@ -106,7 +106,7 @@
                                            data-placement="bottom"
                                            data-original-title="Редактировать свойства клиента"
                                            title="">
-                                            <i class="fa fa-pencil-square" aria-hidden="true"></i>
+                                            <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
                                         </a>
                                         if (client.CanBeDeleted)
                                         {
@@ -118,7 +118,7 @@
                                                asp-controller="Client"
                                                asp-action="Delete"
                                                asp-route-id="@client.ID">
-                                                <i class="fa fa-trash" aria-hidden="true"></i>
+                                                <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
                                             </a>
                                         }
                                     }                                    

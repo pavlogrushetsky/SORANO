@@ -4,7 +4,7 @@
     ViewBag.Title = "SORANO - Пользователи";
     ViewBag.Header = "Список";
     ViewBag.Description = "всех пользователей";
-    ViewBag.Icon = "fa fa-users";
+    ViewBag.Icon = "fa fa-fw fa-users";
 }
 
 @section Styles {
@@ -32,7 +32,7 @@
                    data-placement="right"
                    data-original-title="Добавить пользователя"
                    title="">
-                    <i class="fa fa-user-plus"></i>
+                    <i class="fa fa-fw fa-user-plus"></i>
                 </a>
                 <div class="clearfix"></div>
             </div>
@@ -42,18 +42,18 @@
                     <tr role="row" class="search-row">
                         <th style="width: 5%" rowspan="1" colspan="1"></th>
                         <th style="width: 27%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Логин"/></th>
-                        <th style="width: 32%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Описание" /></th>
+                        <th style="width: 29%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Описание" /></th>
                         <th style="width: 12%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Роли" /></th>
                         <th style="width: 12%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Статус" /></th>
-                        <th style="width: 12%" rowspan="1" colspan="1"></th>
+                        <th style="width: 15%" rowspan="1" colspan="1"></th>
                     </tr>
                     <tr role="row">
                         <th style="width: 5%">ID</th>
                         <th style="width: 27%"><i class="fa fa-fw fa-user" aria-hidden="true"></i>&nbsp;Логин</th>
-                        <th style="width: 32%"><i class="fa fa-fw fa-align-justify" aria-hidden="true"></i>&nbsp;Описание</th>
+                        <th style="width: 29%"><i class="fa fa-fw fa-align-justify" aria-hidden="true"></i>&nbsp;Описание</th>
                         <th style="width: 12%"><i class="fa fa-fw fa-vcard" aria-hidden="true"></i>&nbsp;Роли</th>
                         <th style="width: 12%"><i class="fa fa-fw fa-lock" aria-hidden="true"></i>&nbsp;Статус</th>
-                        <th style="width: 12%">Действия</th>
+                        <th style="width: 15%">Действия</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -93,7 +93,7 @@
                                    data-placement="bottom"
                                    data-original-title="Просмотреть информацию о пользователе"
                                    title="">
-                                    <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                    <i class="fa fa-fw fa-info-circle" aria-hidden="true"></i>
                                 </a>
                                 <a asp-controller="User" 
                                    asp-action="Update"
@@ -103,28 +103,34 @@
                                    data-placement="bottom"
                                    data-original-title="Редактировать свойства пользователя"
                                    title="">
-                                    <i class="fa fa-pencil-square" aria-hidden="true"></i>
+                                    <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
                                 </a>
-                                <a asp-controller="User"
-                                   asp-action="Block"
-                                   asp-route-id="@user.ID"
-                                   class="btn btn-xs btn@(user.IsBlocked ? "-success" : "-warning") @((!user.IsBlocked && user.CanBeBlocked) || user.IsBlocked ? "" : "disabled")" 
-                                   data-toggle="tooltip"
-                                   data-placement="bottom"
-                                   data-original-title="@(user.IsBlocked ? "Разблокировать пользователя" : "Заблокировать пользователя")"
-                                   title="">
-                                    <i class="fa fa@(user.IsBlocked ? "-unlock-alt" : "-lock")" aria-hidden="true"></i>
-                                </a>
-                                <a class="btn btn-xs btn-danger @(user.CanBeDeleted ? "" : "disabled")" 
-                                   data-toggle="tooltip"
-                                   data-placement="bottom"
-                                   data-original-title="Удалить пользователя"
-                                   title="" 
-                                   asp-controller="User" 
-                                   asp-action="Delete" 
-                                   asp-route-id="@user.ID">
-                                    <i class="fa fa-trash" aria-hidden="true"></i>
-                                </a>
+                                @if (!user.IsBlocked && user.CanBeBlocked || user.IsBlocked)
+                                {
+                                    <a asp-controller="User"
+                                       asp-action="Block"
+                                       asp-route-id="@user.ID"
+                                       class="btn btn-xs btn@(user.IsBlocked ? "-success" : "-warning")" 
+                                       data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       data-original-title="@(user.IsBlocked ? "Разблокировать пользователя" : "Заблокировать пользователя")"
+                                       title="">
+                                        <i class="fa fa-fw fa@(user.IsBlocked ? "-unlock-alt" : "-lock")" aria-hidden="true"></i>
+                                    </a>
+                                }
+                                @if (user.CanBeDeleted)
+                                {
+                                    <a class="btn btn-xs btn-danger" 
+                                       data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       data-original-title="Удалить пользователя"
+                                       title="" 
+                                       asp-controller="User" 
+                                       asp-action="Delete" 
+                                       asp-route-id="@user.ID">
+                                        <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
+                                    </a>
+                                }
                             </td>
                         </tr>
                     }

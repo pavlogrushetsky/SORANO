@@ -10,7 +10,7 @@
     ViewBag.Title = "SORANO - " + title + " места";
     ViewBag.Header = title;
     ViewBag.Description = " места";
-    ViewBag.Icon = "fa fa-map-marker";
+    ViewBag.Icon = "fa fa-fw fa-map-marker";
 }
 
 @section Breadcrumb {
@@ -46,30 +46,33 @@
     @Html.HiddenFor(m => m.MainPicture.TypeID)
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="row">
-        <div class="col-lg-6 col-md-6 col-sm-12">
+        <div class="col-lg-3 col-md-12 col-sm-12">
+            @Html.Partial("~/Views/Shared/_MainPictureForm.cshtml", Model)
+        </div>
+        <div class="col-lg-4 col-md-12 col-sm-12">
             <div class="form-group">
                 <label class="control-label" asp-for="Name">Название:</label>
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-map-marker"></i></span>
-                    <input class="form-control" type="text" asp-for="Name" placeholder="Название" />
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
+                    <input class="form-control input-sm" type="text" asp-for="Name" placeholder="Название"/>
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="Comment">Коментарий:</label>
-                <div class="input-group">
-                    <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-commenting"></i></span>
-                    <textarea class="form-control" rows="3" asp-for="Comment" placeholder="Коментарий"></textarea>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-commenting"></i></span>
+                    <textarea class="form-control input-sm" rows="3" asp-for="Comment" placeholder="Коментарий"></textarea>
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="TypeID">Тип:</label>
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-map-signs"></i></span>
-                    <select class="form-control" asp-for="TypeID" asp-items="@ViewBag.LocationTypes"></select>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-map-signs"></i></span>
+                    <select class="form-control input-sm" asp-for="TypeID" asp-items="@ViewBag.LocationTypes"></select>
                     @if (string.IsNullOrEmpty(Model.ReturnPath))
                     {
                         <span class="input-group-btn">
-                            <button class="btn btn-success"
+                            <button class="btn btn-default btn-sm"
                                     type="submit"
                                     asp-action="CreateType"
                                     asp-route-returnUrl="@returnUrl"
@@ -77,28 +80,27 @@
                                     data-placement="right"
                                     data-original-title="Создать родительский тип"
                                     title="">
-                                <i class="fa fa-plus"></i>
+                                <i class="fa fa-fw fa-plus"></i>
                             </button>
                         </span>
-                    }                    
+                    }
                 </div>
             </div>
         </div>
-        <div class="col-lg-6 col-md-6 col-sm-12">
-            @Html.Partial("~/Views/Shared/_MainPictureForm.cshtml", Model)
+        <div class="col-lg-5 col-md-12 col-sm-12">
             @Html.Partial("~/Views/Shared/_AttachmentsForm.cshtml", Model)
             @Html.Partial("~/Views/Shared/_RecommendationsForm.cshtml", Model)
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-12">
+        <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="form-group">
-                <button class="btn btn-default" asp-action="Cancel">
-                    <i class="fa fa-close"></i>
+                <button class="btn btn-default btn-sm" asp-action="Cancel">
+                    <i class="fa fa-fw fa-close"></i>
                     Отмена
                 </button>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa fa-check"></i>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="fa fa-fw fa-check"></i>
                     Сохранить
                 </button>
             </div>

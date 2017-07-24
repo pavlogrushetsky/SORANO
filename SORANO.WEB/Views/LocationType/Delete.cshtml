@@ -4,7 +4,7 @@
     ViewBag.Title = "SORANO - Удаление типа мест";
     ViewBag.Header = "Удаление";
     ViewBag.Description = "типа мест";
-    ViewBag.Icon = "fa fa-trash";
+    ViewBag.Icon = "fa fa-fw fa-trash";
 }
 
 @section Breadcrumb {
@@ -43,12 +43,12 @@
         <form asp-action="Delete">
             <input type="hidden" asp-for="ID" />
             <div class="form-group">
-                <a class="btn btn-default" asp-controller="Location" asp-action="Index">
-                    <i class="fa fa-close"></i>
+                <a class="btn btn-default btn-sm" asp-controller="Location" asp-action="Index">
+                    <i class="fa fa-fw fa-close"></i>
                     Отмена
                 </a>
-                <button type="submit" class="btn btn-danger @(Model.CanBeDeleted ? "" : "disabled")">
-                    <i class="fa fa-trash"></i>
+                <button type="submit" class="btn btn-danger btn-sm @(Model.CanBeDeleted ? "" : "disabled")">
+                    <i class="fa fa-fw fa-trash"></i>
                     Удалить
                 </button>
             </div>

@@ -43,21 +43,24 @@
     @Html.HiddenFor(m => m.MainPicture.FullPath)
     @Html.HiddenFor(m => m.MainPicture.TypeID)
     <div class="row">
-        <div class="col-lg-6 col-md-6 col-sm-6">
+        <div class="col-lg-3 col-md-12 col-sm-12">
+            @Html.Partial("~/Views/Shared/_MainPictureForm.cshtml", Model)
+        </div>
+        <div class="col-lg-4 col-md-12 col-sm-12">
             <div class="form-group">
                 <label class="control-label" asp-for="BillNumber">Номер накладной:</label>
-                <div class="input-group">
+                <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-cart-arrow-down"></i></span>
-                    <input class="form-control" type="text" asp-for="BillNumber" placeholder="Номер накладной"/>
+                    <input class="form-control input-sm" type="text" asp-for="BillNumber" placeholder="Номер накладной"/>
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="SupplierID">Поставщик:</label>
-                <div class="input-group">
+                <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-truck"></i></span>
-                    <select class="form-control" asp-for="SupplierID" asp-items="@ViewBag.Suppliers"></select>
+                    <select class="form-control input-sm" asp-for="SupplierID" asp-items="@ViewBag.Suppliers"></select>
                     <span class="input-group-btn">
-                        <button class="btn btn-success"
+                        <button class="btn btn-default btn-sm"
                                 type="submit"
                                 asp-action="CreateSupplier"
                                 asp-route-returnUrl="@returnUrl"
@@ -65,18 +68,18 @@
                                 data-placement="right"
                                 data-original-title="Создать поставщика"
                                 title="">
-                            <i class="fa fa-plus"></i>
+                            <i class="fa fa-fw fa-plus"></i>
                         </button>
                     </span>
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="LocationID">Место поставки:</label>
-                <div class="input-group">
+                <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
-                    <select class="form-control" asp-for="LocationID" asp-items="@ViewBag.Locations"></select>
+                    <select class="form-control input-sm" asp-for="LocationID" asp-items="@ViewBag.Locations"></select>
                     <span class="input-group-btn">
-                        <button class="btn btn-success"
+                        <button class="btn btn-default btn-sm"
                                 type="submit"
                                 asp-action="CreateLocation"
                                 asp-route-returnUrl="@returnUrl"
@@ -84,24 +87,23 @@
                                 data-placement="right"
                                 data-original-title="Создать место"
                                 title="">
-                            <i class="fa fa-plus"></i>
+                            <i class="fa fa-fw fa-plus"></i>
                         </button>
                     </span>
                 </div>
             </div>
         </div>
-        <div class="col-lg-6 col-md-6 col-sm-12">
-            @Html.Partial("~/Views/Shared/_MainPictureForm.cshtml", Model)
+        <div class="col-lg-5 col-md-12 col-sm-12">
             @Html.Partial("~/Views/Shared/_AttachmentsForm.cshtml", Model)
             @Html.Partial("~/Views/Shared/_RecommendationsForm.cshtml", Model)
         </div>
     </div>
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12">
-            <div class="form-group">
+            <div class="form-group well well-sm">
                 <label class="control-label">Позиции поставки:</label>
                 <div id="deliveryItems">
-                    <table class="table table-responsive" style="width: 100%; margin-bottom: 2px;">
+                    <table class="table table-responsive" style="width: 100%; margin-bottom: 0;">
                         @if (Model.DeliveryItems.Any())
                         {
                             <thead>
@@ -113,20 +115,19 @@
                                 <th style="width: 9%">Цена</th>
                                 <th style="width: 9%">Без скидки</th>
                                 <th style="width: 9%">Скидка</th>
-                                <th style="width: 9%">Сумма</th>
-                                <th style="width: 5%"></th>
+                                <th style="width: 14%">Сумма</th>
                             </tr>
                             </thead>
                             <tbody>
                             @for (var i = 0; i < Model.DeliveryItems.Count; i++)
                             {
                                 <tr>
-                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text" /></td>
-                                    <td style="padding: 2px;">
-                                        <div class="input-group">
-                                            <select class="form-control deliveries" asp-for="@Model.DeliveryItems[i].ArticleID" asp-items="@ViewBag.Articles"></select>
+                                    <td style="padding: 0; padding-right: 5px;padding-bottom: 5px;">1</td>
+                                    <td style="padding: 0; padding-right: 5px;padding-bottom: 5px;">
+                                        <div class="input-group input-group-sm">
+                                            <select class="form-control input-sm deliveries" asp-for="@Model.DeliveryItems[i].ArticleID" asp-items="@ViewBag.Articles"></select>
                                             <span class="input-group-btn">
-                                                <button class="btn btn-success"
+                                                <button class="btn btn-default btn-sm"
                                                         type="submit"
                                                         asp-action="CreateArticle"
                                                         asp-route-returnUrl="@returnUrl"
@@ -134,60 +135,54 @@
                                                         data-placement="right"
                                                         data-original-title="Создать артикул"
                                                         title="">
-                                                    <i class="fa fa-plus"></i>
+                                                    <i class="fa fa-fw fa-plus"></i>
                                                 </button>
                                             </span>
                                         </div>
                                     </td>
-                                    <td style="padding: 2px;">
-                                        <textarea style="resize: vertical;" class="form-control deliveries" rows="1"></textarea>
+                                    <td style="padding: 0; padding-right: 5px;padding-bottom: 5px;">
+                                        <textarea style="resize: vertical;" class="form-control input-sm deliveries" rows="1"></textarea>
                                     </td>
-                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text"  /></td>
-                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text" /></td>
-                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text" /></td>
-                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text" /></td>
-                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text" /></td>
-                                    <td style="padding: 2px;">
-                                        <button class="btn btn-danger pull-right"
-                                                type="submit"
-                                                asp-action="DeleteDeliveryItem"
-                                                asp-route-isEdit="@(ViewData.ContainsKey("IsEdit") && (bool) ViewData["IsEdit"])"
-                                                asp-route-num="@i"
-                                                data-toggle="tooltip"
-                                                data-placement="right"
-                                                data-original-title="Удалить позицию"
-                                                title="">
-                                            <i class="fa fa-trash" aria-hidden="true"></i>
-                                        </button>
+                                    <td style="padding: 0;padding-right: 5px;padding-bottom: 5px;"><input class="form-control input-sm deliveries" type="text"  /></td>
+                                    <td style="padding: 0;padding-right: 5px;padding-bottom: 5px;"><input class="form-control input-sm deliveries" type="text" /></td>
+                                    <td style="padding: 0;padding-right: 5px;padding-bottom: 5px;"><input class="form-control input-sm deliveries" type="text" /></td>
+                                    <td style="padding: 0;padding-right: 5px;padding-bottom: 5px;"><input class="form-control input-sm deliveries" type="text" /></td>
+                                    <td style="padding: 0;padding-right: 5px;padding-bottom: 5px;">
+                                        <div class="input-group input-group-sm">
+                                            <input class="form-control input-sm deliveries" type="text" />
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-danger btn-sm"
+                                                        type="submit"
+                                                        asp-action="DeleteDeliveryItem"
+                                                        asp-route-isEdit="@(ViewData.ContainsKey("IsEdit") && (bool) ViewData["IsEdit"])"
+                                                        asp-route-num="@i"
+                                                        data-toggle="tooltip"
+                                                        data-placement="right"
+                                                        data-original-title="Удалить позицию"
+                                                        title="">
+                                                    <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
+                                                </button>
+                                            </span>
+                                        </div>
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 2px;"></td>
-                                    <td style="padding: 2px;"></td>
-                                    <td style="padding: 2px;"></td>
-                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text" /></td>
-                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text" /></td>
-                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text" /></td>
-                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text" /></td>
-                                    <td style="padding: 2px;"><input class="form-control deliveries" type="text" /></td>
-                                    <td style="padding: 2px;"></td>
-                                </tr>
+                                </tr>                                
                             }
+                            <tr>
+                                <td style="padding: 2px;"></td>
+                                <td style="padding: 2px;"></td>
+                                <td style="padding: 2px;"></td>
+                                <td style="padding: 2px;"></td>
+                                <td style="padding: 2px;">Всего:</td>
+                                <td style="padding: 2px;">538,37</td>
+                                <td style="padding: 2px;">94,38</td>
+                                <td style="padding: 2px;">443,99</td>
+                            </tr>
                             </tbody>
                         }
                         <tfoot>
                         <tr>
-                            <td colspan="8" style="padding: 2px; vertical-align: middle;">
-                                @if (!Model.DeliveryItems.Any())
-                                {
-                                    <p class="text-info">
-                                        <i class="fa fa-fw fa-info" aria-hidden="true"></i>
-                                        Позиции поставки отсутствуют
-                                    </p>
-                                }
-                            </td>
-                            <td style="padding: 2px;">
-                                <button class="btn btn-success pull-right"
+                            <td style="padding: 0;">
+                                <button class="btn btn-default btn-sm"
                                         type="submit"
                                         asp-action="AddDeliveryItem"
                                         asp-route-isEdit="@(ViewData.ContainsKey("IsEdit") && (bool) ViewData["IsEdit"])"
@@ -195,7 +190,7 @@
                                         data-placement="right"
                                         data-original-title="Добавить позицию"
                                         title="">
-                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                    <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
                                 </button>
                             </td>
                         </tr>
@@ -208,12 +203,12 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="form-group">
-                <a class="btn btn-default" asp-controller="Delivery" asp-action="Index">
-                    <i class="fa fa-close"></i>
+                <a class="btn btn-default btn-sm" asp-controller="Delivery" asp-action="Index">
+                    <i class="fa fa-fw fa-close"></i>
                     Отмена
                 </a>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa fa-check"></i>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="fa fa-fw fa-check"></i>
                     Сохранить
                 </button>
             </div>

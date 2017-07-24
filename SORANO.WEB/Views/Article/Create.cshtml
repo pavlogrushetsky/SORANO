@@ -47,61 +47,64 @@
     @Html.HiddenFor(m => m.MainPicture.TypeID)
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="row">
-        <div class="col-lg-6 col-md-6 col-sm-12">
+        <div class="col-lg-3 col-md-12 col-sm-12">
+            @Html.Partial("~/Views/Shared/_MainPictureForm.cshtml", Model)
+        </div>
+        <div class="col-lg-4 col-md-12 col-sm-12">
             <div class="form-group">
                 <label class="control-label" asp-for="Name">Название:</label>
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
-                    <input class="form-control" type="text" asp-for="Name" placeholder="Название" />
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-barcode"></i></span>
+                    <input class="form-control input-sm" type="text" asp-for="Name" placeholder="Название"/>
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="Description">Описание:</label>
-                <div class="input-group">
-                    <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-align-justify"></i></span>
-                    <textarea class="form-control" rows="3" asp-for="Description" placeholder="Описание"></textarea>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-align-justify"></i></span>
+                    <textarea class="form-control input-sm" rows="3" asp-for="Description" placeholder="Описание"></textarea>
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="Producer">Производитель:</label>
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-suitcase"></i></span>
-                    <input class="form-control" type="text" asp-for="Producer" placeholder="Производитель" />
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-suitcase"></i></span>
+                    <input class="form-control input-sm" type="text" asp-for="Producer" placeholder="Производитель"/>
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="Code">Код:</label>
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
-                    <input class="form-control" type="text" asp-for="Code" placeholder="Код" />
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-barcode"></i></span>
+                    <input class="form-control input-sm" type="text" asp-for="Code" placeholder="Код"/>
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="Barcode">Штрих-код:</label>
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
-                    <input class="form-control" type="text" asp-for="Barcode" placeholder="Штрих-код" />
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-barcode"></i></span>
+                    <input class="form-control input-sm" type="text" asp-for="Barcode" placeholder="Штрих-код"/>
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label">Родительский тип:</label>
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-tags"></i></span>
-                    <div class="form-control">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-tags"></i></span>
+                    <div class="form-control input-sm">
                         <span>@Model.Type?.Name</span>
-                    </div>                    
+                    </div>
                     <span class="input-group-btn">
-                        <button class="btn btn-default"
+                        <button class="btn btn-default btn-sm"
                                 type="submit"
                                 asp-action="SelectParentType"
-                                asp-route-returnUrl="@returnUrl"                  
+                                asp-route-returnUrl="@returnUrl"
                                 data-toggle="tooltip"
                                 data-placement="bottom"
                                 data-original-title="Назначить родительский тип"
                                 title="">
-                            <i class="fa fa-pencil"></i>
-                        </button>  
-                        <button class="btn btn-success"
+                            <i class="fa fa-fw fa-pencil"></i>
+                        </button>
+                        <button class="btn btn-default btn-sm"
                                 type="submit"
                                 asp-action="CreateParentType"
                                 asp-route-returnUrl="@returnUrl"
@@ -109,28 +112,27 @@
                                 data-placement="right"
                                 data-original-title="Создать родительский тип"
                                 title="">
-                            <i class="fa fa-plus"></i>
+                            <i class="fa fa-fw fa-plus"></i>
                         </button>
                     </span>
                     <span asp-validation-for="Type" class="validation-for"></span>
                 </div>
             </div>
         </div>
-    <div class="col-lg-6 col-md-6 col-sm-12">
-        @Html.Partial("~/Views/Shared/_MainPictureForm.cshtml", Model)
-        @Html.Partial("~/Views/Shared/_AttachmentsForm.cshtml", Model)
-        @Html.Partial("~/Views/Shared/_RecommendationsForm.cshtml", Model)
-    </div>
+        <div class="col-lg-5 col-md-12 col-sm-12">
+            @Html.Partial("~/Views/Shared/_AttachmentsForm.cshtml", Model)
+            @Html.Partial("~/Views/Shared/_RecommendationsForm.cshtml", Model)
+        </div>
     </div>
     <div class="row">
-        <div class="col-lg-12">
+        <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="form-group">
-                <a class="btn btn-default" asp-controller="Article" asp-action="Index">
-                    <i class="fa fa-close"></i>
+                <a class="btn btn-default btn-sm" asp-controller="Article" asp-action="Index">
+                    <i class="fa fa-fw fa-close"></i>
                     Отмена
                 </a>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa fa-check"></i>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="fa fa-fw fa-check"></i>
                     Сохранить
                 </button>
             </div>

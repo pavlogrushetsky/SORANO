@@ -4,7 +4,7 @@
     ViewBag.Title = "SORANO - Поставщики";
     ViewBag.Header = "Список";
     ViewBag.Description = "поставщиков";
-    ViewBag.Icon = "fa fa-truck";
+    ViewBag.Icon = "fa fa-fw fa-truck";
 }
 
 @section Styles {
@@ -32,7 +32,7 @@
                    data-placement="right"
                    data-original-title="Добавить поставщика"
                    title="">
-                    <i class="fa fa-plus" aria-hidden="true"></i>
+                    <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
                 </a>
                 <a class="btn btn-default btn-xs pull-right"
                    asp-controller="Supplier"
@@ -42,7 +42,7 @@
                    data-placement="right"
                    data-original-title=@(ViewBag.ShowDeleted ? "Скрыть удалённых поставщиков" : "Отобразить удалённые поставщики")
                    title="">
-                    <i class="fa @(ViewBag.ShowDeleted ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
+                    <i class="fa fa-fw @(ViewBag.ShowDeleted ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
                 </a>
                 <div class="clearfix"></div>
             </div>
@@ -88,7 +88,7 @@
                                        data-placement="bottom"
                                        data-original-title="Просмотреть информацию о поставщике"
                                        title="">
-                                        <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                        <i class="fa fa-fw fa-info-circle" aria-hidden="true"></i>
                                     </a>
                                     @if (!supplier.IsDeleted)
                                     {
@@ -100,7 +100,7 @@
                                            data-placement="bottom"
                                            data-original-title="Редактировать свойства поставщика"
                                            title="">
-                                            <i class="fa fa-pencil-square" aria-hidden="true"></i>
+                                            <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
                                         </a>
                                         if (supplier.CanBeDeleted)
                                         {
@@ -112,7 +112,7 @@
                                                asp-controller="Supplier"
                                                asp-action="Delete"
                                                asp-route-id="@supplier.ID">
-                                                <i class="fa fa-trash" aria-hidden="true"></i>
+                                                <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
                                             </a>
                                         }
                                     }                                    

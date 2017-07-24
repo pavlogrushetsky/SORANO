@@ -4,7 +4,7 @@
     ViewBag.Title = "SORANO - " + (Model.IsBlocked ? "Разблокирование" : "Блокирование") + " пользователя";
     ViewBag.Header = Model.IsBlocked ? "Разблокирование" : "Блокирование";
     ViewBag.Description = "пользователя";
-    ViewBag.Icon = Model.IsBlocked ? "fa fa-unlock" : "fa fa-lock";
+    ViewBag.Icon = Model.IsBlocked ? "fa fa-fw fa-unlock" : "fa fa-fw fa-lock";
 }
 
 @section Breadcrumb {
@@ -53,12 +53,12 @@
         <form asp-action="Block">
             <input type="hidden" asp-for="ID" />
             <div class="form-group">
-                <a class="btn btn-default" asp-controller="User" asp-action="List">
-                    <i class="fa fa-close"></i>
+                <a class="btn btn-default btn-sm" asp-controller="User" asp-action="List">
+                    <i class="fa fa-fw fa-close"></i>
                     Отмена
                 </a>
-                <button type="submit" class="btn btn@(Model.IsBlocked ? "-success" : "-warning") @((!Model.IsBlocked && Model.CanBeBlocked) || Model.IsBlocked ? "" : "disabled")">
-                    <i class="fa @(Model.IsBlocked ? "fa-unlock" : "fa-lock")"></i>
+                <button type="submit" class="btn btn-sm btn@(Model.IsBlocked ? "-success" : "-warning") @((!Model.IsBlocked && Model.CanBeBlocked) || Model.IsBlocked ? "" : "disabled")">
+                    <i class="fa fa-fw @(Model.IsBlocked ? "fa-unlock" : "fa-lock")"></i>
                     @(Model.IsBlocked ? "Разблокировать" : "Заблокировать")
                 </button>
             </div>

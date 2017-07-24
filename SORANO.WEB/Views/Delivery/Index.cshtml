@@ -32,7 +32,7 @@
                    data-placement="right"
                    data-original-title="Добавить накладную"
                    title="">
-                    <i class="fa fa-plus" aria-hidden="true"></i>
+                    <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
                 </a>
                 <a class="btn btn-default btn-xs pull-right"
                    asp-controller="Delivery"
@@ -42,7 +42,7 @@
                    data-placement="right"
                    data-original-title=@(ViewBag.ShowDeleted ? "Скрыть удалённые накладные" : "Отобразить удалённые накладные")
                    title="">
-                    <i class="fa @(ViewBag.ShowDeleted ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
+                    <i class="fa fa-fw @(ViewBag.ShowDeleted ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
                 </a>
                 <div class="clearfix"></div>
             </div>

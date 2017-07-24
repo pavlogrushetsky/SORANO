@@ -3,35 +3,38 @@
 <div class="form-group">
     <label class="control-label">Рекомендации:</label>
     <div id="recommendations">
-        <table class="table table-responsive" style="width: 100%; margin-bottom: 2px;">
+        <table class="table table-responsive" style="width: 100%; margin-bottom: 0;">
             @if (Model.Recommendations.Any())
             {
-                <thead>
-                <tr>
-                    <th style="width: 70%"><i class="fa fa-fw fa-comment" aria-hidden="true"></i>Текст</th>
-                    <th style="width: 25%"><i class="fa fa-fw fa-hashtag" aria-hidden="true"></i>Значение</th>
-                    <th style="width: 5%"></th>
-                </tr>
-                </thead>
                 <tbody>
                 @for (var i = 0; i < Model.Recommendations.Count; i++)
                 {
                     <tr>
-                        <td style="padding: 2px;"><textarea style="resize: vertical;" class="form-control recommendations" rows="1" asp-for="@Model.Recommendations[i].Comment"></textarea></td>
-                        <td style="padding: 2px;"><input class="form-control recommendations" type="text" asp-for="@Model.Recommendations[i].ValueString"/></td>
-                        <td style="padding: 2px;">
-                            @* ReSharper disable once Mvc.ActionNotResolved *@
-                            <button class="btn btn-danger"
-                                    type="submit"
-                                    asp-action="DeleteRecommendation"
-                                    asp-route-isEdit="@(ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"])"
-                                    asp-route-num="@i"
-                                    data-toggle="tooltip"
-                                    data-placement="right"
-                                    data-original-title="Удалить рекомендацию"
-                                    title="">
-                                <i class="fa fa-trash" aria-hidden="true"></i>
-                            </button>
+                        <td style="padding: 0; width: 60%; padding-right: 5px; padding-bottom: 5px;">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-comment"></i></span>
+                                <textarea style="resize: vertical;" class="form-control input-sm recommendations" rows="1" asp-for="@Model.Recommendations[i].Comment"></textarea>
+                            </div>
+                            
+                        </td>
+                        <td style="padding: 0; width: 40%; padding-bottom: 5px;">
+                            <div class="input-group input-group-sm">
+                                <input class="form-control input-sm recommendations" type="text" asp-for="@Model.Recommendations[i].ValueString" />
+                                <span class="input-group-btn">
+                                    @* ReSharper disable once Mvc.ActionNotResolved *@
+                                    <button class="btn btn-danger btn-sm"
+                                            type="submit"
+                                            asp-action="DeleteRecommendation"
+                                            asp-route-isEdit="@(ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"])"
+                                            asp-route-num="@i"
+                                            data-toggle="tooltip"
+                                            data-placement="right"
+                                            data-original-title="Удалить рекомендацию"
+                                            title="">
+                                        <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
+                                    </button>
+                            </span>
+                            </div>                            
                         </td>
                     </tr>
                 }
@@ -39,18 +42,9 @@
             }
             <tfoot>
             <tr>
-                <td colspan="2" style="padding: 2px; vertical-align: middle;">
-                    @if (!Model.Recommendations.Any())
-                    {
-                        <p class="text-info">
-                            <i class="fa fa-fw fa-info" aria-hidden="true"></i>
-                            Рекомендации отсутствуют
-                        </p>
-                    }
-                </td>
-                <td style="padding: 2px;">
+                <td style="padding: 0;">
                     @* ReSharper disable once Mvc.ActionNotResolved *@
-                    <button class="btn btn-success pull-right"
+                    <button class="btn btn-default btn-sm"
                             type="submit"
                             asp-action="AddRecommendation"
                             asp-route-isEdit="@(ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"])"
@@ -58,7 +52,7 @@
                             data-placement="right"
                             data-original-title="Добавить рекомендацию"
                             title="">
-                        <i class="fa fa-plus" aria-hidden="true"></i>
+                        <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
                     </button>
                 </td>
             </tr>

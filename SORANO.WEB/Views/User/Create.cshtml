@@ -9,7 +9,7 @@
     ViewBag.Title = "SORANO - " + title + " пользователя";
     ViewBag.Header = title;
     ViewBag.Description = "пользователя";
-    ViewBag.Icon = "fa " + (isEdit ? "fa-pencil-square" : "fa-user-plus");
+    ViewBag.Icon = "fa fa-fw " + (isEdit ? "fa-pencil-square" : "fa-user-plus");
 }
 
 @section Breadcrumb {
@@ -21,7 +21,7 @@
 }
 
 <div class="row">
-    <div class="col-lg-6 col-md-6 col-sm-12">
+    <div class="col-lg-4 col-md-12 col-sm-12">
         <div class="row" style="margin-left: 0;">
             @if (isEdit && !Model.CanBeModified)
             {
@@ -42,9 +42,9 @@
                 {
                     <div class="form-group">
                         <label class="control-label" asp-for="Login">Логин:</label>
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="fa fa-user-circle-o"></i></span>
-                            <input class="form-control" type="text" asp-for="Login" placeholder="Логин"/>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"><i class="fa fa-fw fa-user-circle-o"></i></span>
+                            <input class="form-control input-sm" type="text" asp-for="Login" placeholder="Логин"/>
                         </div>
                     </div>
                 }
@@ -58,18 +58,18 @@
                 }
                 <div class="form-group">
                     <label class="control-label" asp-for="Description">Описание:</label>
-                    <div class="input-group">
-                        <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-align-justify"></i></span>
-                        <textarea class="form-control" rows="3" asp-for="Description" placeholder="Описание"></textarea>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-align-justify"></i></span>
+                        <textarea class="form-control input-sm" rows="3" asp-for="Description" placeholder="Описание"></textarea>
                     </div>
                 </div>
                 @if (!isEdit)
                 {
                     <div class="form-group">
                         <label class="control-label" asp-for="Password">Пароль:</label>
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="fa fa-key"></i></span>
-                            <input class="form-control" type="password" asp-for="Password" placeholder="Новый пароль"/>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
+                            <input class="form-control input-sm" type="password" asp-for="Password" placeholder="Новый пароль"/>
                         </div>
                     </div>
                 }
@@ -77,16 +77,16 @@
                 {
                     <div class="form-group">
                         <label class="control-label" asp-for="NewPassword">Новый пароль:</label>
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="fa fa-key"></i></span>
-                            <input class="form-control" type="password" asp-for="NewPassword" placeholder="Новый пароль" />
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
+                            <input class="form-control input-sm" type="password" asp-for="NewPassword" placeholder="Новый пароль" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="control-label" asp-for="RepeatPassword">Новый пароль:</label>
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="fa fa-key"></i></span>
-                            <input class="form-control" type="password" asp-for="RepeatPassword" placeholder="Повторите новый пароль" />
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
+                            <input class="form-control input-sm" type="password" asp-for="RepeatPassword" placeholder="Повторите новый пароль" />
                         </div>
                     </div>
                 }
@@ -94,19 +94,19 @@
                 {
                     <div class="form-group">
                         <label class="control-label">Роли:</label>
-                        <div class="input-group">
-                            <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-vcard"></i></span>
-                            <select class="form-control" asp-for="RoleIDs" asp-items="@ViewBag.Roles"></select>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-vcard"></i></span>
+                            <select class="form-control input-sm" asp-for="RoleIDs" asp-items="@ViewBag.Roles"></select>
                         </div>
                     </div>
                 }                
                 <div class="form-group">
-                    <a class="btn btn-default" asp-controller="User" asp-action="List">
-                        <i class="fa fa-close"></i>
+                    <a class="btn btn-default btn-sm" asp-controller="User" asp-action="List">
+                        <i class="fa fa-fw fa-close"></i>
                         Отмена
                     </a>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fa fa-check"></i>
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="fa fa-fw fa-check"></i>
                         Сохранить
                     </button>
                 </div>

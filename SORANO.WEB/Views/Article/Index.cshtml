@@ -46,7 +46,7 @@
                            data-placement="right"
                            data-original-title="Добавить артикул"
                            title="">
-                            <i class="fa fa-plus" aria-hidden="true"></i>
+                            <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
                         </a>
                         <a class="btn btn-default btn-xs pull-right"
                            asp-controller="Article"
@@ -56,7 +56,7 @@
                            data-placement="right"
                            data-original-title=@(ViewBag.ShowDeletedArticles ? "Скрыть удалённые артикулы" : "Отобразить удалённые артикулы")
                            title="">
-                            <i class="fa @(ViewBag.ShowDeletedArticles ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
+                            <i class="fa fa-fw @(ViewBag.ShowDeletedArticles ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
                         </a>
                         <div class="clearfix"></div>
                     </div>
@@ -118,7 +118,7 @@
                                                data-placement="bottom"
                                                data-original-title="Просмотреть информацию об артикуле"
                                                title="">
-                                                <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                                <i class="fa fa-fw fa-info-circle" aria-hidden="true"></i>
                                             </a>                                            
                                             @if (!Model[i].IsDeleted)
                                             {
@@ -130,7 +130,7 @@
                                                    data-placement="bottom"
                                                    data-original-title="Редактировать свойства артикула"
                                                    title="">
-                                                    <i class="fa fa-pencil-square" aria-hidden="true"></i>
+                                                    <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
                                                 </a>
                                                 <a asp-controller="Article"
                                                    asp-action="Delete"
@@ -140,7 +140,7 @@
                                                    data-placement="bottom"
                                                    data-original-title="Удалить артикул"
                                                    title="Удалить артикул">
-                                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                                    <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
                                                 </a>
                                             }                                            
                                         </td>
@@ -161,7 +161,7 @@
                            data-placement="right"
                            data-original-title="Добавить тип артикулов"
                            title="">
-                            <i class="fa fa-plus" aria-hidden="true"></i>
+                            <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
                         </a>
                         <a class="btn btn-default btn-xs pull-right"
                            asp-controller="ArticleType"
@@ -171,7 +171,7 @@
                            data-placement="right"
                            data-original-title=@(ViewBag.ShowDeletedArticleTypes ? "Скрыть удалённые типы артикулов" : "Отобразить удалённые типы артикулов")
                            title="">
-                            <i class="fa @(ViewBag.ShowDeletedArticleTypes ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
+                            <i class="fa fa-fw @(ViewBag.ShowDeletedArticleTypes ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
                         </a>
                         <div class="clearfix"></div>
                     </div>

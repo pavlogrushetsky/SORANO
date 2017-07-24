@@ -4,7 +4,7 @@
     ViewBag.Title = "SORANO - Выбор изображения";
     ViewBag.Header = "Выбор";
     ViewBag.Description = "изображения из существующих вложений";
-    ViewBag.Icon = "fa fa-th-large";
+    ViewBag.Icon = "fa fa-fw fa-th-large";
 }
 
 @section Breadcrumb {
@@ -42,8 +42,8 @@
                 </div>
             }
             <div class="form-group">
-                <button type="submit" class="btn btn-default" asp-action="Cancel">Отмена</button>
-                <button type="submit" class="btn btn-primary" asp-action="Select">Сохранить</button>
+                <button type="submit" class="btn btn-default btn-sm" asp-action="Cancel">Отмена</button>
+                <button type="submit" class="btn btn-primary btn-sm" asp-action="Select">Сохранить</button>
             </div>
         </form>
     </div>

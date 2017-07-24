@@ -9,7 +9,7 @@
     ViewBag.Title = "SORANO - " + title + " клиента";
     ViewBag.Header = title;
     ViewBag.Description = " клиента";
-    ViewBag.Icon = "fa fa-address-book";
+    ViewBag.Icon = "fa fa-fw fa-address-book";
 }
 
 @section Breadcrumb {
@@ -44,51 +44,53 @@
     @Html.HiddenFor(m => m.MainPicture.TypeID)
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="row">
-        <div class="col-lg-6 col-md-6 col-sm-12">
+        <div class="col-lg-3 col-md-12 col-sm-12">
+            @Html.Partial("~/Views/Shared/_MainPictureForm.cshtml", Model)
+        </div>
+        <div class="col-lg-4 col-md-12 col-sm-12">
             <div class="form-group">
                 <label class="control-label" asp-for="Name">Имя:</label>
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-address-card"></i></span>
-                    <input class="form-control" type="text" asp-for="Name" placeholder="Имя" />
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-address-card"></i></span>
+                    <input class="form-control input-sm" type="text" asp-for="Name" placeholder="Имя"/>
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="Description">Описание:</label>
-                <div class="input-group">
-                    <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-align-justify"></i></span>
-                    <textarea class="form-control" rows="3" asp-for="Description" placeholder="Описание"></textarea>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-align-justify"></i></span>
+                    <textarea class="form-control input-sm" rows="3" asp-for="Description" placeholder="Описание"></textarea>
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="PhoneNumber">Номер телефона:</label>
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-phone"></i></span>
-                    <input class="form-control" type="text" asp-for="PhoneNumber" placeholder="Номер телефона" />
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-phone"></i></span>
+                    <input class="form-control input-sm" type="text" asp-for="PhoneNumber" placeholder="Номер телефона"/>
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="CardNumber">Номер карты:</label>
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-credit-card"></i></span>
-                    <input class="form-control" type="text" asp-for="CardNumber" placeholder="Номер карты" />
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-credit-card"></i></span>
+                    <input class="form-control input-sm" type="text" asp-for="CardNumber" placeholder="Номер карты"/>
                 </div>
             </div>
         </div>
-        <div class="col-lg-6 col-md-6 col-sm-12">
-            @Html.Partial("~/Views/Shared/_MainPictureForm.cshtml", Model)
+        <div class="col-lg-5 col-md-12 col-sm-12">
             @Html.Partial("~/Views/Shared/_AttachmentsForm.cshtml", Model)
             @Html.Partial("~/Views/Shared/_RecommendationsForm.cshtml", Model)
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-12">
+        <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="form-group">
-                <a class="btn btn-default" asp-controller="Client" asp-action="Index">
-                    <i class="fa fa-close"></i>
+                <a class="btn btn-default btn-sm" asp-controller="Client" asp-action="Index">
+                    <i class="fa fa-fw fa-close"></i>
                     Отмена
                 </a>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa fa-check"></i>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="fa fa-fw fa-check"></i>
                     Сохранить
                 </button>
             </div>
