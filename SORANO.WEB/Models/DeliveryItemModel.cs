@@ -1,4 +1,6 @@
-﻿namespace SORANO.WEB.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SORANO.WEB.Models
 {
     public class DeliveryItemModel : EntityBaseModel
     {
@@ -8,13 +10,17 @@
 
         public int Quantity { get; set; }
 
-        public string UnitPrice { get; set; }
+        [DisplayFormat(DataFormatString = "{0:F}", ApplyFormatInEditMode = true)]
+        public decimal UnitPrice { get; set; }
 
-        public string GrossPrice { get; set; }
+        [DisplayFormat(DataFormatString = "{0:F}", ApplyFormatInEditMode = true)]
+        public decimal GrossPrice { get; set; }
 
-        public string Discount { get; set; }
+        [DisplayFormat(DataFormatString = "{0:F}", ApplyFormatInEditMode = true)]
+        public decimal Discount { get; set; }
 
-        public string DiscountPrice { get; set; }
+        [DisplayFormat(DataFormatString = "{0:F}", ApplyFormatInEditMode = true)]
+        public decimal DiscountPrice { get; set; }
 
         public DeliveryModel Delivery { get; set; }
 

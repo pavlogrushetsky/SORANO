@@ -14,7 +14,8 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/lib/bootstrap-select/dist/css/bootstrap-select.min.css" />
+    <link rel="stylesheet" href="~/lib/select2/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="~/lib/select2-bootstrap-theme/dist/select2-bootstrap.min.css" />
 }
 
 @section Breadcrumb {
@@ -46,6 +47,10 @@
     @Html.HiddenFor(m => m.MainPicture.Name)
     @Html.HiddenFor(m => m.MainPicture.FullPath)
     @Html.HiddenFor(m => m.MainPicture.TypeID)
+
+    @Html.HiddenFor(m => m.TotalGrossPrice)
+    @Html.HiddenFor(m => m.TotalDiscount)
+    @Html.HiddenFor(m => m.TotalDiscountPrice)
     <div class="row">
         <div class="col-lg-3 col-md-12 col-sm-12">
             @Html.Partial("~/Views/Shared/_MainPictureForm.cshtml", Model)
@@ -129,7 +134,7 @@
                                     <td style="padding: 0; padding-right: 5px;padding-bottom: 5px; text-align: center; vertical-align: middle;">@(i + 1)</td>
                                     <td style="padding: 0; padding-right: 5px;padding-bottom: 5px;">
                                         <div class="input-group input-group-sm">
-                                            <select class="form-control input-sm deliveries selectpicker" data-live-search="true" asp-for="@Model.DeliveryItems[i].ArticleID" asp-items="@ViewBag.Articles"></select>
+                                            <select class="form-control input-sm deliveries article-select" asp-for="@Model.DeliveryItems[i].ArticleID" asp-items="@ViewBag.Articles"></select>
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default btn-sm"
                                                         type="submit"
@@ -145,23 +150,38 @@
                                         </div>
                                     </td>
                                     <td style="padding: 0; padding-right: 5px;padding-bottom: 5px;">
-                                        <input class="form-control input-sm deliveries" type="text" disabled="">
+                                        <input class="form-control input-sm deliveries" 
+                                               type="text" 
+                                               readonly="readonly">
                                     </td>
                                     <td style="padding: 0; padding-right: 5px; padding-bottom: 5px;">
-                                        <input class="form-control input-sm deliveries" asp-for="@Model.DeliveryItems[i].Quantity" type="number" min="1" max="1000000"/>
+                                        <input class="form-control input-sm deliveries delivery_item_quantity" 
+                                               id="delivery_item_quantity_@i"
+                                               asp-for="@Model.DeliveryItems[i].Quantity" 
+                                               type="number" min="1" max="1000000"/>
                                     </td>
                                     <td style="padding: 0; padding-right: 5px; padding-bottom: 5px;">
-                                        <input class="form-control input-sm deliveries" type="text"/>
+                                        <input class="form-control input-sm deliveries delivery_item_unitprice" 
+                                               id="delivery_item_unitprice_@i"
+                                               asp-for="@Model.DeliveryItems[i].UnitPrice" 
+                                               type="number" min="0.00" step="0.01"/>
                                     </td>
                                     <td style="padding: 0; padding-right: 5px; padding-bottom: 5px;">
-                                        <input class="form-control input-sm deliveries" type="text" disabled="">
+                                        <input class="form-control input-sm deliveries delivery_item_grossprice"
+                                               asp-for="@Model.DeliveryItems[i].GrossPrice" 
+                                               readonly="readonly">
                                     </td>
                                     <td style="padding: 0; padding-right: 5px; padding-bottom: 5px;">
-                                        <input class="form-control input-sm deliveries" type="text"/>
+                                        <input class="form-control input-sm deliveries delivery_item_discount" 
+                                               id="delivery_item_discount_@i"
+                                               asp-for="@Model.DeliveryItems[i].Discount" 
+                                               type="number" min="0.00" step="0.01"/>
                                     </td>
                                     <td style="padding: 0;padding-right: 5px;padding-bottom: 5px;">
                                         <div class="input-group input-group-sm">
-                                            <input class="form-control input-sm deliveries" type="text" disabled="">
+                                            <input class="form-control input-sm deliveries delivery_item_discountprice" 
+                                                   asp-for="@Model.DeliveryItems[i].DiscountPrice" 
+                                                   readonly="readonly">
                                             <span class="input-group-btn">
                                                 <button class="btn btn-danger btn-sm"
                                                         type="submit"
@@ -185,9 +205,9 @@
                                 <td style="padding: 2px;"></td>
                                 <td style="padding: 2px;"></td>
                                 <td style="padding: 2px;">Всего:</td>
-                                <td style="padding: 2px;">538,37</td>
-                                <td style="padding: 2px;">94,38</td>
-                                <td style="padding: 2px;">443,99</td>
+                                <td style="padding: 2px;" id="delivery_totalgrossprice">@Model.TotalGrossPrice</td>
+                                <td style="padding: 2px;" id="delivery_totaldiscount">@Model.TotalDiscount</td>
+                                <td style="padding: 2px;" id="delivery_totaldiscountprice">@Model.TotalDiscountPrice</td>
                             </tr>
                             </tbody>
                         }
@@ -229,7 +249,7 @@
 </form>
 
 @section Scripts {
-    <script src="~/lib/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+    <script src="~/lib/select2/dist/js/select2.full.min.js"></script>
     <environment names="Development">
         <script src="~/js/pages/deliveryCreate.js"></script>
     </environment>

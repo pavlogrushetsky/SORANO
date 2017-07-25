@@ -13,10 +13,10 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 DeliveryID = item.DeliveryID,
                 ArticleID = item.ArticleID,
                 Quantity = item.Quantity,
-                UnitPrice = item.UnitPrice.ToString("0.##"),
-                GrossPrice = item.GrossPrice.ToString("0.##"),
-                Discount = item.Discount.ToString("0.##"),
-                DiscountPrice = item.DiscountedPrice.ToString("0.##"),
+                UnitPrice = item.UnitPrice,
+                GrossPrice = item.GrossPrice,
+                Discount = item.Discount,
+                DiscountPrice = item.DiscountedPrice,
                 Delivery = item.Delivery?.ToModel(),
                 Article = item.Article?.ToModel()
             };
