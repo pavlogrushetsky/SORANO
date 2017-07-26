@@ -39,5 +39,9 @@
         public static readonly string CreateSupplierCacheKey = "CreateSupplierCache";
 
         public static readonly string CreateSupplierCacheValidKey = "CreateSupplierValidCache";
+
+        public static readonly string CreateArticleCacheKey = "CreateArticleCache";
+
+        public static readonly string CreateArticleCacheValidKey = "CreateArticleValidCache";
     }
 }

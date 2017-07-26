@@ -26,6 +26,7 @@
       method="post"
       enctype="multipart/form-data">
     <input type="hidden" asp-for="ID"/>
+    <input type="hidden" asp-for="ReturnPath" />
     <input type="hidden" asp-for="Type.ID"/>
     <input type="hidden" asp-for="Type.Name" />
     @for (var i = 0; i < Model.Recommendations.Count; i++)
@@ -104,16 +105,19 @@
                                 title="">
                             <i class="fa fa-fw fa-pencil"></i>
                         </button>
-                        <button class="btn btn-default btn-sm"
-                                type="submit"
-                                asp-action="CreateParentType"
-                                asp-route-returnUrl="@returnUrl"
-                                data-toggle="tooltip"
-                                data-placement="right"
-                                data-original-title="Создать родительский тип"
-                                title="">
-                            <i class="fa fa-fw fa-plus"></i>
-                        </button>
+                        @if (string.IsNullOrEmpty(Model.ReturnPath))
+                        {
+                            <button class="btn btn-default btn-sm"
+                                    type="submit"
+                                    asp-action="CreateParentType"
+                                    asp-route-returnUrl="@returnUrl"
+                                    data-toggle="tooltip"
+                                    data-placement="right"
+                                    data-original-title="Создать родительский тип"
+                                    title="">
+                                <i class="fa fa-fw fa-plus"></i>
+                            </button>
+                        }                        
                     </span>
                     <span asp-validation-for="Type" class="validation-for"></span>
                 </div>
@@ -127,10 +131,10 @@
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="form-group">
-                <a class="btn btn-default btn-sm" asp-controller="Article" asp-action="Index">
+                <button class="btn btn-default btn-sm" asp-action="Cancel">
                     <i class="fa fa-fw fa-close"></i>
                     Отмена
-                </a>
+                </button>
                 <button type="submit" class="btn btn-primary btn-sm">
                     <i class="fa fa-fw fa-check"></i>
                     Сохранить

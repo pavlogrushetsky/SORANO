@@ -85,7 +85,7 @@ namespace SORANO.WEB.Controllers
         /// </summary>
         /// <returns>Create view</returns>
         [HttpGet]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(string returnUrl)
         {
             ArticleModel model;
 
@@ -106,7 +106,8 @@ namespace SORANO.WEB.Controllers
             {
                 model = new ArticleModel
                 {
-                    MainPicture = new AttachmentModel()
+                    MainPicture = new AttachmentModel(),
+                    ReturnPath = returnUrl
                 };
             }
             
@@ -269,7 +270,24 @@ namespace SORANO.WEB.Controllers
 
                 if (article != null)
                 {
-                    return RedirectToAction("Index", "Article");
+                    if (string.IsNullOrEmpty(model.ReturnPath))
+                    {
+                        return RedirectToAction("Index", "Article");
+                    }
+
+                    if (_memoryCache.TryGetValue(CacheKeys.CreateArticleCacheKey, out DeliveryModel cachedDelivery))
+                    {
+                        cachedDelivery.DeliveryItems[cachedDelivery.CurrentItemNumber].Article = model;
+                        cachedDelivery.DeliveryItems[cachedDelivery.CurrentItemNumber].ArticleID = article.ID;
+                        _memoryCache.Set(CacheKeys.CreateArticleCacheKey, cachedDelivery);
+                        Session.SetBool(CacheKeys.CreateArticleCacheValidKey, true);
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
+
+                    return Redirect(model.ReturnPath);
                 }
 
                 ModelState.AddModelError("", "Не удалось создать новый артикул.");
@@ -352,7 +370,24 @@ namespace SORANO.WEB.Controllers
 
                 return RedirectToAction("Index", "Article");
             }, ex => RedirectToAction("Index", "Article"));            
-        }        
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Cancel(ArticleModel model)
+        {
+            if (string.IsNullOrEmpty(model.ReturnPath))
+            {
+                return RedirectToAction("Index", "Article");
+            }
+
+            if (_memoryCache.TryGetValue(CacheKeys.CreateArticleCacheKey, out DeliveryModel _))
+            {
+                Session.SetBool(CacheKeys.CreateArticleCacheValidKey, true);
+            }
+
+            return Redirect(model.ReturnPath);
+        }
 
         #endregion
     }

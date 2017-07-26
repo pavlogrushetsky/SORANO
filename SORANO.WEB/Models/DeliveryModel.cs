@@ -56,5 +56,7 @@ namespace SORANO.WEB.Models
         public int DeliveryItemsCount => DeliveryItems.Count;
 
         public List<DeliveryItemModel> DeliveryItems { get; set; } = new List<DeliveryItemModel>();
+
+        public int CurrentItemNumber { get; set; }
     }
 }

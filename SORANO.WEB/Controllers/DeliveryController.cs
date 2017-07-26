@@ -80,6 +80,10 @@ namespace SORANO.WEB.Controllers
             {
                 model = cachedForCreateLocation;
             }
+            else if (TryGetCached(out DeliveryModel cachedForCreateArticle, CacheKeys.CreateArticleCacheKey, CacheKeys.CreateArticleCacheValidKey))
+            {
+                model = cachedForCreateArticle;
+            }
             else
             {
                 model = new DeliveryModel
@@ -176,6 +180,20 @@ namespace SORANO.WEB.Controllers
             _memoryCache.Set(CacheKeys.CreateSupplierCacheKey, model);
 
             return RedirectToAction("Create", "Supplier", new { returnUrl });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateArticle(DeliveryModel model, int num, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        {
+            await LoadMainPicture(model, mainPictureFile);
+            await LoadAttachments(model, attachments);
+
+            model.CurrentItemNumber = num;
+
+            _memoryCache.Set(CacheKeys.CreateArticleCacheKey, model);
+
+            return RedirectToAction("Create", "Article", new { returnUrl });
         }
 
         [HttpPost]

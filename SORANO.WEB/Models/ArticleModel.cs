@@ -28,5 +28,7 @@ namespace SORANO.WEB.Models
 
         [Display(Name = "Тип артикулов")]
         public ArticleTypeModel Type { get; set; }       
+
+        public string ReturnPath { get; set; }
     }
 }
