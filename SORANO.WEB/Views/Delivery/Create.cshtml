@@ -134,7 +134,10 @@
                                     <td style="padding: 0; padding-right: 5px;padding-bottom: 5px; text-align: center; vertical-align: middle;">@(i + 1)</td>
                                     <td style="padding: 0; padding-right: 5px;padding-bottom: 5px;">
                                         <div class="input-group input-group-sm">
-                                            <select class="form-control input-sm deliveries article-select" asp-for="@Model.DeliveryItems[i].ArticleID" asp-items="@ViewBag.Articles"></select>
+                                            <select class="form-control input-sm deliveries article-select" 
+                                                    id="article_select_@i"
+                                                    asp-for="@Model.DeliveryItems[i].ArticleID" 
+                                                    asp-items="@ViewBag.Articles"></select>
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default btn-sm"
                                                         type="submit"
@@ -150,7 +153,9 @@
                                         </div>
                                     </td>
                                     <td style="padding: 0; padding-right: 5px;padding-bottom: 5px;">
-                                        <input class="form-control input-sm deliveries" 
+                                        <input class="form-control input-sm deliveries"
+                                               id="delivery_item_article_name_@i"
+                                               asp-for="@Model.DeliveryItems[i].Article.Name"
                                                type="text" 
                                                readonly="readonly">
                                     </td>

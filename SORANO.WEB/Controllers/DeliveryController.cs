@@ -223,6 +223,19 @@ namespace SORANO.WEB.Controllers
             return View("Create", delivery);
         }
 
+        [HttpPost]
+        public virtual async Task<string> GetArticleName(int id)
+        {
+            if (id <= 0)
+            {
+                return string.Empty;
+            }
+
+            var article = await _articleService.GetAsync(id);
+
+            return article.Name;
+        }
+
         #endregion
 
         private async Task<List<SelectListItem>> GetSuppliers()

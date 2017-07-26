@@ -73,6 +73,19 @@
             }
         });
 
+    $('.article-select').on('change',
+        function() {
+            var id = $(this).attr('id');
+            var articleId = $(this).val();
+            var matches = id.match(/\d+$/);
+            if (matches) {
+                var number = matches[0];
+                $.post('GetArticleName?id=' + articleId, function (name) {
+                    $('#delivery_item_article_name_' + number).val(name);
+                });
+            }
+        });
+
     updateTotalGrossPrice();
     updateTotalDiscount();
     updateTotalDiscountPrice();
