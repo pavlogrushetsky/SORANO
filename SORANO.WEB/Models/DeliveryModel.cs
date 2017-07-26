@@ -58,5 +58,7 @@ namespace SORANO.WEB.Models
         public List<DeliveryItemModel> DeliveryItems { get; set; } = new List<DeliveryItemModel>();
 
         public int CurrentItemNumber { get; set; }
+
+        public int SelectedCurrency { get; set; }
     }
 }

@@ -8,6 +8,25 @@
         }
     });
 
+    $('input[type=radio][name=select_currency]').change(function() {
+        var value = $(this).val();
+        if (value === '0') {
+            $('#DollarRate').val('');
+            $('#EuroRate').val('');
+            $('#DollarRate').prop('readonly', true);
+            $('#EuroRate').prop('readonly', true);            
+        } else if (value === '1') {
+            $('#DollarRate').prop('readonly', false);
+            $('#EuroRate').val('');
+            $('#EuroRate').prop('readonly', true);
+        } else if (value === '2') {
+            $('#EuroRate').prop('readonly', false);
+            $('#DollarRate').val('');
+            $('#DollarRate').prop('readonly', true);
+        }
+        $('#SelectedCurrency').val(value);
+    });
+
     $('.delivery_item_quantity').bind('keyup mouseup',
         function() {
             var id = $(this).attr('id');
@@ -86,10 +105,39 @@
             }
         });
 
+    updateCurrencyRates();
+
     updateTotalGrossPrice();
     updateTotalDiscount();
     updateTotalDiscountPrice();
 });
+
+function updateCurrencyRates() {
+    var value = $('#SelectedCurrency').val();
+    if (value === '0') {
+        $('#DollarRate').val('');
+        $('#EuroRate').val('');
+        $('#DollarRate').prop('readonly', true);
+        $('#EuroRate').prop('readonly', true);
+        $('#select_currency_uah').prop('checked', true);
+        $('#select_currency_usd').prop('checked', false);
+        $('#select_currency_eur').prop('checked', false);
+    } else if (value === '1') {
+        $('#DollarRate').prop('readonly', false);
+        $('#EuroRate').val('');
+        $('#EuroRate').prop('readonly', true);
+        $('#select_currency_uah').prop('checked', false);
+        $('#select_currency_usd').prop('checked', true);
+        $('#select_currency_eur').prop('checked', false);
+    } else if (value === '2') {
+        $('#EuroRate').prop('readonly', false);
+        $('#DollarRate').val('');
+        $('#DollarRate').prop('readonly', true);
+        $('#select_currency_uah').prop('checked', false);
+        $('#select_currency_usd').prop('checked', false);
+        $('#select_currency_eur').prop('checked', true);
+    }
+}
 
 function updateTotalGrossPrice() {
     var totalGrossPrice = 0;

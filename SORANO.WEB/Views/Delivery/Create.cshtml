@@ -50,7 +50,9 @@
 
     @Html.HiddenFor(m => m.TotalGrossPrice)
     @Html.HiddenFor(m => m.TotalDiscount)
-    @Html.HiddenFor(m => m.TotalDiscountPrice)
+    @Html.HiddenFor(m => m.TotalDiscountPrice) 
+    
+    @Html.HiddenFor(m => m.SelectedCurrency)
     <div class="row">
         <div class="col-lg-3 col-md-12 col-sm-12">
             @Html.Partial("~/Views/Shared/_MainPictureForm.cshtml", Model)
@@ -100,6 +102,42 @@
                         </button>
                     </span>
                 </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Валюта:</label>
+                <table class="table table-responsive" style="width: 100%; margin-bottom: 0;">
+                    <tbody>
+                    <tr>
+                        <td style="width: 33%; padding: 0; padding-right: 5px;">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon">
+                                    <input type="radio" name="select_currency" id="select_currency_uah" value="0" style="margin-right: 1px;"/>
+                                    <span style="font-weight: bold;">&#8372;</span>
+                                </span>
+                                <input type="text" readonly="readonly" class="form-control input-sm" />
+                            </div>
+                        </td>
+                        <td style="width: 33%; padding: 0; padding-right: 5px;">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon">
+                                    <input type="radio" name="select_currency" id="select_currency_usd" value="1"/>
+                                    <i class="fa fa-usd"></i>
+                                </span>
+                                <input type="number" readonly="readonly" step="0.01" min="0.0" asp-for="DollarRate" class="form-control input-sm" />
+                            </div>
+                        </td>
+                        <td style="width: 33%; padding: 0; padding-right: 5px;">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon">
+                                    <input type="radio" name="select_currency" id="select_currency_eur" value="2" />
+                                    <i class="fa fa-eur"></i>
+                                </span>
+                                <input type="number" readonly="readonly" step="0.01" min="0.0" asp-for="EuroRate" class="form-control input-sm" />
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
         <div class="col-lg-5 col-md-12 col-sm-12">
