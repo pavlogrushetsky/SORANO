@@ -10,7 +10,9 @@ using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.AspNetCore.Http;
+using MimeTypes;
 
 namespace SORANO.WEB.Controllers
 {
@@ -239,6 +241,99 @@ namespace SORANO.WEB.Controllers
             await LoadAttachments(delivery, attachments);
 
             return View("Create", delivery);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(DeliveryModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        {
+            var articles = new List<SelectListItem>();
+            var suppliers = new List<SelectListItem>();
+            var locations = new List<SelectListItem>();
+
+            return await TryGetActionResultAsync(async () =>
+            {
+                ModelState.RemoveFor("MainPicture");
+
+                articles = await GetArticles();
+                suppliers = await GetSuppliers();
+                locations = await GetLocations();
+
+                ViewBag.Articles = articles;
+                ViewBag.Suppliers = suppliers;
+                ViewBag.Locations = locations;
+
+                await LoadMainPicture(model, mainPictureFile);
+                await LoadAttachments(model, attachments);
+
+                for (var i = 0; i < model.Attachments.Count; i++)
+                {
+                    var extensions = model.Attachments[i]
+                        .Type.MimeTypes?.Split(',')
+                        .Select(MimeTypeMap.GetExtension);
+
+                    if (extensions != null && !extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
+                    {
+                        ModelState.AddModelError($"Attachments[{i}].Name", "Вложение не соответствует указанному типу");
+                    }
+                }
+
+                if (model.SelectedCurrency == 1 && (!model.DollarRate.HasValue || model.DollarRate <= 0.0M))
+                {
+                    ModelState.AddModelError("DollarRate", "Необходимо указать курс доллара");
+                }
+
+                if (model.SelectedCurrency == 2 && (!model.EuroRate.HasValue || model.EuroRate <= 0.0M))
+                {
+                    ModelState.AddModelError("EuroRate", "Необходимо указать курс евро");
+                }
+
+                if (model.TotalGrossPrice != model.DeliveryItems.Sum(i => i.GrossPrice * i.Quantity))
+                {
+                    ModelState.AddModelError("", "Общая сумма некорректна");
+                }
+
+                if (model.TotalDiscount != model.DeliveryItems.Sum(i => i.Discount))
+                {
+                    ModelState.AddModelError("", "Общая сумма скидки некорректна");
+                }
+
+                if (model.TotalDiscountPrice != model.TotalGrossPrice - model.TotalDiscount)
+                {
+                    ModelState.AddModelError("", "Общая сумма с учётом скидки некорректна");
+                }
+
+                // TODO Validation
+
+                if (!ModelState.IsValid)
+                {
+                    ModelState.RemoveDuplicateErrorMessages();
+                    return View(model);
+                }
+
+                var delivery = model.ToEntity();
+
+                var currentUser = await GetCurrentUser();
+
+                delivery = await _deliveryService.CreateAsync(delivery, currentUser.ID);
+
+                if (delivery != null)
+                {
+                    return RedirectToAction("Index", "Delivery");
+                }
+
+                ModelState.AddModelError("", "Не удалось создать накладную.");
+                return View(model);
+            }, ex =>
+            {
+                ViewBag.Articles = articles;
+                ViewBag.Suppliers = suppliers;
+                ViewBag.Locations = locations;
+
+                ModelState.AddModelError("", ex);
+
+                return View(model);
+            });
         }
 
         #endregion

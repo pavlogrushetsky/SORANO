@@ -214,6 +214,24 @@ namespace SORANO.BLL.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Поставка не может быть null..
+        /// </summary>
+        internal static string DeliveryCannotBeNullException {
+            get {
+                return ResourceManager.GetString("DeliveryCannotBeNullException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Недопустимое значение идентификатора поставки..
+        /// </summary>
+        internal static string DeliveryInvalidIdentifierException {
+            get {
+                return ResourceManager.GetString("DeliveryInvalidIdentifierException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Место не может быть удалено..
         /// </summary>
         internal static string LocationCannotBeDeletedException {

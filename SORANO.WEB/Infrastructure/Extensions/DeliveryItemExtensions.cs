@@ -21,5 +21,21 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 Article = item.Article?.ToModel()
             };
         }
+
+        public static DeliveryItem ToEntity(this DeliveryItemModel model)
+        {
+            var deliveryItem = new DeliveryItem
+            {
+                ID = model.ID,
+                UnitPrice = model.UnitPrice,
+                GrossPrice = model.GrossPrice,
+                Discount = model.Discount,
+                DiscountedPrice = model.DiscountPrice,
+                ArticleID = model.ArticleID,
+                Quantity = model.Quantity
+            };
+
+            return deliveryItem;
+        }
     }
 }

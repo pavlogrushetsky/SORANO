@@ -9,5 +9,7 @@ namespace SORANO.BLL.Services.Abstract
         Task<IEnumerable<Delivery>> GetAllAsync(bool withDeleted);
 
         Task<Delivery> GetIncludeAllAsync(int id);
+
+        Task<Delivery> CreateAsync(Delivery delivery, int userId);
     }
 }

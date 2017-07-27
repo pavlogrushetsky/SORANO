@@ -216,4 +216,10 @@
   <data name="ClientNotFoundException" xml:space="preserve">
     <value>Клиент не найден.</value>
   </data>
+  <data name="DeliveryCannotBeNullException" xml:space="preserve">
+    <value>Поставка не может быть null.</value>
+  </data>
+  <data name="DeliveryInvalidIdentifierException" xml:space="preserve">
+    <value>Недопустимое значение идентификатора поставки.</value>
+  </data>
 </root>

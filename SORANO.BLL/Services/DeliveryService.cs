@@ -1,9 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
+using SORANO.BLL.Properties;
+using SORANO.CORE.AccountEntities;
+using System.Data;
+using SORANO.BLL.Helpers;
 
 namespace SORANO.BLL.Services
 {
@@ -11,6 +16,52 @@ namespace SORANO.BLL.Services
     {
         public DeliveryService(IUnitOfWork unitOfWork) : base(unitOfWork)
         {            
+        }
+
+        public async Task<Delivery> CreateAsync(Delivery delivery, int userId)
+        {
+            if (delivery == null)
+            {
+                throw new ArgumentNullException(nameof(delivery), Resource.DeliveryCannotBeNullException);
+            }
+
+            if (delivery.ID != 0)
+            {
+                throw new ArgumentException(Resource.DeliveryInvalidIdentifierException, nameof(delivery.ID));
+            }
+
+            var user = await _unitOfWork.Get<User>().GetAsync(s => s.ID == userId);
+
+            if (user == null)
+            {
+                throw new ObjectNotFoundException(Resource.UserNotFoundException);
+            }
+
+            delivery.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+
+            var supplier = await _unitOfWork.Get<Supplier>().GetAsync(s => s.ID == delivery.SupplierID);
+
+            supplier.UpdateModifiedFields(userId);
+
+            var location = await _unitOfWork.Get<Location>().GetAsync(l => l.ID == delivery.LocationID);
+
+            location.UpdateModifiedFields(userId);
+
+            foreach (var recommendation in location.Recommendations)
+            {
+                recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            }
+
+            foreach (var attachment in location.Attachments)
+            {
+                attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            }
+
+            var saved = _unitOfWork.Get<Delivery>().Add(delivery);
+
+            await _unitOfWork.SaveAsync();
+
+            return saved;
         }
 
         public async Task<IEnumerable<Delivery>> GetAllAsync(bool withDeleted)

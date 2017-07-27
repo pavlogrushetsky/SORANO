@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SORANO.WEB.Models
@@ -7,15 +8,17 @@ namespace SORANO.WEB.Models
     {
         [Display(Name = "Номер накладной")]
         [Required(ErrorMessage = "Необходимо указать номер накладной")]
-        [MaxLength(200, ErrorMessage = "Длина номера накладной не должна превышать 200 символов")]
+        [MaxLength(100, ErrorMessage = "Длина номера накладной не должна превышать 100 символов")]
         public string BillNumber { get; set; }
 
         [Display(Name = "Дата поставки")]
         [Required(ErrorMessage = "Необходимо указать дату поставки")]
-        public string DeliveryDate { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime DeliveryDate { get; set; }
 
         [Display(Name = "Дата оплаты")]
-        public string PaymentDate { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? PaymentDate { get; set; }
 
         [Display(Name = "Курс доллара США")]
         [DisplayFormat(DataFormatString = "{0:F}", ApplyFormatInEditMode = true)]
@@ -44,9 +47,11 @@ namespace SORANO.WEB.Models
         public SupplierModel Supplier { get; set; }
 
         [Display(Name = "Поставщик")]
+        [Required(ErrorMessage = "Необходимо указать поставщика")]
         public string SupplierID { get; set; }
 
         [Display(Name = "Место поставки")]
+        [Required(ErrorMessage = "Необходимо указать место поставки")]
         public string LocationID { get; set; }
 
         [Display(Name = "Место поставки")]
