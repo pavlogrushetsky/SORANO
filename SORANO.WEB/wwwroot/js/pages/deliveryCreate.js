@@ -1,10 +1,64 @@
 ﻿$(document).ready(function () {
     $.fn.select2.defaults.set('theme', 'bootstrap');
-    $('.article-select').select2({
+    $('.select-article').select2({
         "language": {
             "noResults": function() {
                 return "Артикулы не найдены";
             }
+        }
+    });
+
+    $('#pick-delivery-date').datetimepicker({
+        locale: 'ru',
+        format: 'DD.MM.YYYY',
+        showTodayButton: true,
+        showClear: true,
+        showClose: true,
+        icons: {
+            clear: 'fa fa-trash',
+            close: 'fa fa-times',
+            today: 'fa fa-calendar-check-o'
+        },
+        tooltips: {
+            today: 'Текущая дата',
+            clear: 'Очистить выбор',
+            close: 'Закрыть окно',
+            nextMonth: 'Следующий месяц',
+            prevMonth: 'Предыдущий месяц',
+            selectMonth: 'Выбрать месяц',
+            selectYear: 'Выбрать год',
+            selectDecade: 'Выбрать десятилетие',
+            nextYear: 'Следующий год',
+            nextDecade: 'Следующее десятилетие',
+            prevYear: 'Предыдущий год',
+            prevDecade: 'Предыдущее десятилетие'
+        }
+    });
+
+    $('#pick-payment-date').datetimepicker({
+        locale: 'ru',
+        format: 'DD.MM.YYYY',
+        showTodayButton: true,
+        showClear: true,
+        showClose: true,
+        icons: {
+            clear: 'fa fa-trash',
+            close: 'fa fa-times',
+            today: 'fa fa-calendar-check-o'
+        },
+        tooltips: {
+            today: 'Текущая дата',
+            clear: 'Очистить выбор',
+            close: 'Закрыть окно',
+            nextMonth: 'Следующий месяц',
+            prevMonth: 'Предыдущий месяц',
+            selectMonth: 'Выбрать месяц',
+            selectYear: 'Выбрать год',
+            selectDecade: 'Выбрать десятилетие',
+            nextYear: 'Следующий год',
+            nextDecade: 'Следующее десятилетие',
+            prevYear: 'Предыдущий год',
+            prevDecade: 'Предыдущее десятилетие'
         }
     });
 
@@ -89,19 +143,6 @@
                         updateTotalDiscountPrice();
                     }
                 }
-            }
-        });
-
-    $('.article-select').on('change',
-        function() {
-            var id = $(this).attr('id');
-            var articleId = $(this).val();
-            var matches = id.match(/\d+$/);
-            if (matches) {
-                var number = matches[0];
-                $.post('GetArticleName?id=' + articleId, function (name) {
-                    $('#delivery_item_article_name_' + number).val(name);
-                });
             }
         });
 

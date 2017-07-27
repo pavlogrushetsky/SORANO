@@ -303,9 +303,9 @@ namespace SORANO.WEB.Controllers
 
         private List<SelectListItem> GetArticles()
         {
-            if (_memoryCache.TryGetValue(CacheKeys.ArticlesCacheKey, out List<SelectListItem> articleSelectItems))
+            if (_memoryCache.TryGetValue(CacheKeys.ArticlesCacheKey, out List<SelectListItem> articleCodesSelectItems))
             {
-                return articleSelectItems;
+                return articleCodesSelectItems;
             }
 
             return null;

@@ -241,19 +241,6 @@ namespace SORANO.WEB.Controllers
             return View("Create", delivery);
         }
 
-        [HttpPost]
-        public virtual async Task<string> GetArticleName(int id)
-        {
-            if (id <= 0)
-            {
-                return string.Empty;
-            }
-
-            var article = await _articleService.GetAsync(id);
-
-            return article.Name;
-        }
-
         #endregion
 
         private async Task<List<SelectListItem>> GetSuppliers()
@@ -313,19 +300,19 @@ namespace SORANO.WEB.Controllers
                 new SelectListItem
                 {
                     Value = "0",
-                    Text = "-- Артикул --"
+                    Text = "-- Товар --"
                 }
             };
 
             articleItems.AddRange(articles.Select(l => new SelectListItem
             {
                 Value = l.ID.ToString(),
-                Text = l.Code
-            }));
+                Text = $"{l.Code} \u2022 {l.Barcode} \u2022 {l.Name}"
+            }));            
 
             _memoryCache.Set(CacheKeys.ArticlesCacheKey, articleItems);
 
             return articleItems;
-        }
+        }        
     }
 }

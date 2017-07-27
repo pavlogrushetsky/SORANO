@@ -16,6 +16,7 @@
 @section Styles {
     <link rel="stylesheet" href="~/lib/select2/dist/css/select2.min.css" />
     <link rel="stylesheet" href="~/lib/select2-bootstrap-theme/dist/select2-bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
 }
 
 @section Breadcrumb {
@@ -104,6 +105,24 @@
                 </div>
             </div>
             <div class="form-group">
+                <label class="control-label" asp-for="DeliveryDate">Дата поставки:</label>
+                <div class="input-group input-group-sm date" id="pick-delivery-date">
+                    <input class="form-control input-sm" type="text" asp-for="DeliveryDate" placeholder="Дата поставки" />
+                    <span class="input-group-addon">
+                        <span class="fa fa-fw fa-calendar"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="PaymentDate">Дата оплаты:</label>
+                <div class="input-group input-group-sm date" id="pick-payment-date">
+                    <input class="form-control input-sm" type="text" asp-for="PaymentDate" placeholder="Дата оплаты" />
+                    <span class="input-group-addon">
+                        <span class="fa fa-fw fa-calendar"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
                 <label class="control-label">Валюта:</label>
                 <table class="table table-responsive" style="width: 100%; margin-bottom: 0;">
                     <tbody>
@@ -156,13 +175,12 @@
                             <thead>
                             <tr>
                                 <th style="width: 5%">№</th>
-                                <th style="width: 20%"><i class="fa fa-fw fa-barcode" aria-hidden="true"></i>Артикул</th>
-                                <th style="width: 25%"><i class="fa fa-fw fa-shopping-cart" aria-hidden="true"></i>Товар</th>
-                                <th style="width: 9%">Кол-во, шт.</th>
-                                <th style="width: 9%">Цена</th>
-                                <th style="width: 9%">Без скидки</th>
-                                <th style="width: 9%">Скидка</th>
-                                <th style="width: 14%">Сумма</th>
+                                <th style="width: 43%"><i class="fa fa-fw fa-shopping-cart" aria-hidden="true"></i>Товар</th>
+                                <th style="width: 10%">Кол-во, шт.</th>
+                                <th style="width: 10%">Цена</th>
+                                <th style="width: 10%">Без скидки</th>
+                                <th style="width: 10%">Скидка</th>
+                                <th style="width: 12%">Сумма</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -170,12 +188,12 @@
                             {
                                 <tr>
                                     <td style="padding: 0; padding-right: 5px;padding-bottom: 5px; text-align: center; vertical-align: middle;">@(i + 1)</td>
-                                    <td style="padding: 0; padding-right: 5px;padding-bottom: 5px;">
+                                    <td style="padding: 0; padding-right: 5px; padding-bottom: 5px;">
                                         <div class="input-group input-group-sm">
-                                            <select class="form-control input-sm deliveries article-select" 
-                                                    id="article_select_@i"
-                                                    asp-for="@Model.DeliveryItems[i].ArticleID" 
-                                                    asp-items="@ViewBag.Articles"></select>
+                                            <select class="form-control input-sm deliveries select-article"
+                                                    asp-for="@Model.DeliveryItems[i].ArticleID"
+                                                    asp-items="@ViewBag.Articles">                                            
+                                            </select>
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default btn-sm"
                                                         type="submit"
@@ -189,14 +207,7 @@
                                                     <i class="fa fa-fw fa-plus"></i>
                                                 </button>
                                             </span>
-                                        </div>
-                                    </td>
-                                    <td style="padding: 0; padding-right: 5px;padding-bottom: 5px;">
-                                        <input class="form-control input-sm deliveries"
-                                               id="delivery_item_article_name_@i"
-                                               asp-for="@Model.DeliveryItems[i].Article.Name"
-                                               type="text" 
-                                               readonly="readonly">
+                                        </div>                                        
                                     </td>
                                     <td style="padding: 0; padding-right: 5px; padding-bottom: 5px;">
                                         <input class="form-control input-sm deliveries delivery_item_quantity" 
@@ -247,7 +258,6 @@
                                 <td style="padding: 2px;"></td>
                                 <td style="padding: 2px;"></td>
                                 <td style="padding: 2px;"></td>
-                                <td style="padding: 2px;"></td>
                                 <td style="padding: 2px;">Всего:</td>
                                 <td style="padding: 2px;" id="delivery_totalgrossprice">@Model.TotalGrossPrice</td>
                                 <td style="padding: 2px;" id="delivery_totaldiscount">@Model.TotalDiscount</td>
@@ -294,6 +304,8 @@
 
 @section Scripts {
     <script src="~/lib/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/lib/moment/min/moment-with-locales.min.js"></script>
+    <script src="~/lib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
     <environment names="Development">
         <script src="~/js/pages/deliveryCreate.js"></script>
     </environment>
