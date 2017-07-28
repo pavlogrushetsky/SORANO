@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SORANO.WEB.Models
@@ -13,12 +12,11 @@ namespace SORANO.WEB.Models
 
         [Display(Name = "Дата поставки")]
         [Required(ErrorMessage = "Необходимо указать дату поставки")]
-        [DataType(DataType.Date)]
-        public DateTime DeliveryDate { get; set; }
+        public string DeliveryDate { get; set; }
 
         [Display(Name = "Дата оплаты")]
         [DataType(DataType.Date)]
-        public DateTime? PaymentDate { get; set; }
+        public string PaymentDate { get; set; }
 
         [Display(Name = "Курс доллара США")]
         [DisplayFormat(DataFormatString = "{0:F}", ApplyFormatInEditMode = true)]
@@ -47,12 +45,12 @@ namespace SORANO.WEB.Models
         public SupplierModel Supplier { get; set; }
 
         [Display(Name = "Поставщик")]
-        [Required(ErrorMessage = "Необходимо указать поставщика")]
-        public string SupplierID { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Необходимо указать поставщика")]
+        public int SupplierID { get; set; }
 
         [Display(Name = "Место поставки")]
-        [Required(ErrorMessage = "Необходимо указать место поставки")]
-        public string LocationID { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Необходимо указать место поставки")]
+        public int LocationID { get; set; }
 
         [Display(Name = "Место поставки")]
         public LocationModel Location { get; set; }
@@ -65,5 +63,7 @@ namespace SORANO.WEB.Models
         public int CurrentItemNumber { get; set; }
 
         public int SelectedCurrency { get; set; }
+
+        public bool CanBeUpdated { get; set; }
     }
 }

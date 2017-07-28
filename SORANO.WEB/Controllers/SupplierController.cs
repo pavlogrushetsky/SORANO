@@ -179,7 +179,7 @@ namespace SORANO.WEB.Controllers
                     if (_memoryCache.TryGetValue(CacheKeys.CreateSupplierCacheKey, out DeliveryModel cachedDelivery))
                     {
                         cachedDelivery.Supplier = supplier.ToModel();
-                        cachedDelivery.SupplierID = supplier.ID.ToString();
+                        cachedDelivery.SupplierID = supplier.ID;
                         _memoryCache.Set(CacheKeys.CreateSupplierCacheKey, cachedDelivery);
                         Session.SetBool(CacheKeys.CreateSupplierCacheValidKey, true);
                     }

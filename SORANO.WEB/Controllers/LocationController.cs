@@ -205,7 +205,7 @@ namespace SORANO.WEB.Controllers
                     if (_memoryCache.TryGetValue(CacheKeys.CreateLocationCacheKey, out DeliveryModel cachedDelivery))
                     {
                         cachedDelivery.Location = location.ToModel();
-                        cachedDelivery.LocationID = location.ID.ToString();
+                        cachedDelivery.LocationID = location.ID;
                         _memoryCache.Set(CacheKeys.CreateLocationCacheKey, cachedDelivery);
                         Session.SetBool(CacheKeys.CreateLocationCacheValidKey, true);
                     }

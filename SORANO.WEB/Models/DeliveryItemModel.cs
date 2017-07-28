@@ -9,6 +9,7 @@ namespace SORANO.WEB.Models
         public int DeliveryID { get; set; }
 
         [Display(Name = "Артикул")]
+        [Range(1, int.MaxValue, ErrorMessage = "Необходимо указать артикул")]
         public int ArticleID { get; set; }
 
         [Display(Name = "Количество, шт.")]

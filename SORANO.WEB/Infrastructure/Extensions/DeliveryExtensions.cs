@@ -1,4 +1,6 @@
-﻿using SORANO.CORE.StockEntities;
+﻿using System;
+using System.Globalization;
+using SORANO.CORE.StockEntities;
 using SORANO.WEB.Models;
 using System.Linq;
 
@@ -8,12 +10,12 @@ namespace SORANO.WEB.Infrastructure.Extensions
     {
         public static DeliveryModel ToModel(this Delivery delivery)
         {
-            return new DeliveryModel
+            var model = new DeliveryModel
             {
                 ID = delivery.ID,
                 BillNumber = delivery.BillNumber,
-                DeliveryDate = delivery.DeliveryDate,
-                PaymentDate = delivery.PaymentDate,
+                DeliveryDate = delivery.DeliveryDate.ToString("dd.MM.yyyy"),
+                PaymentDate = delivery.PaymentDate?.ToString("dd.MM.yyyy"),
                 DollarRate = delivery.DollarRate,
                 EuroRate = delivery.EuroRate,
                 TotalGrossPrice = delivery.TotalGrossPrice,
@@ -21,11 +23,19 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 TotalDiscountPrice = delivery.TotalDiscountedPrice,
                 Status = delivery.IsSubmitted,
                 Supplier = delivery.Supplier?.ToModel(),
-                SupplierID = delivery.SupplierID.ToString(),
+                SupplierID = delivery.SupplierID,
                 Location = delivery.DeliveryLocation.ToModel(),
-                LocationID = delivery.DeliveryLocation.ID.ToString(),
-                DeliveryItems = delivery.Items.Select(i => i.ToModel()).ToList()
+                LocationID = delivery.DeliveryLocation.ID,
+                SelectedCurrency = delivery.EuroRate.HasValue ? 2 : delivery.DollarRate.HasValue ? 1 : 0,
+                CanBeDeleted = !delivery.IsSubmitted && !delivery.IsDeleted,
+                CanBeUpdated = !delivery.IsSubmitted && !delivery.IsDeleted,
+                DeliveryItems = delivery.Items.Select(i => i.ToModel()).ToList(),
+                Recommendations = delivery.Recommendations?.Where(r => !r.IsDeleted).Select(r => r.ToModel()).ToList(),
+                MainPicture = delivery.Attachments?.SingleOrDefault(a => !a.IsDeleted && a.Type.Name.Equals("Основное изображение"))?.ToModel() ?? new AttachmentModel(),
+                Attachments = delivery.Attachments?.Where(a => !a.IsDeleted && !a.Type.Name.Equals("Основное изображение")).Select(a => a.ToModel()).ToList()
             };
+
+            return model;
         }
 
         public static Delivery ToEntity(this DeliveryModel model)
@@ -34,15 +44,16 @@ namespace SORANO.WEB.Infrastructure.Extensions
             {
                 ID = model.ID,
                 BillNumber = model.BillNumber,
-                DeliveryDate = model.DeliveryDate,
-                PaymentDate = model.PaymentDate,
+                DeliveryDate = DateTime.ParseExact(model.DeliveryDate, "dd.MM.yyyy", CultureInfo.InvariantCulture),
+                PaymentDate = string.IsNullOrEmpty(model.PaymentDate) ? null : (DateTime?)DateTime.ParseExact(model.PaymentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture),
                 DollarRate = model.DollarRate,
                 EuroRate = model.EuroRate,
                 TotalGrossPrice = model.TotalGrossPrice,
                 TotalDiscount = model.TotalDiscount,
                 TotalDiscountedPrice = model.TotalDiscountPrice,
-                SupplierID = int.Parse(model.SupplierID),
-                LocationID = int.Parse(model.LocationID),
+                IsSubmitted = model.Status,
+                SupplierID = model.SupplierID,
+                LocationID = model.LocationID,
                 Recommendations = model.Recommendations.Select(r => r.ToEntity()).ToList(),
                 Attachments = model.Attachments.Select(a => a.ToEntity()).ToList(),
                 Items = model.DeliveryItems.Select(di => di.ToEntity()).ToList()

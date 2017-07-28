@@ -11,5 +11,7 @@ namespace SORANO.BLL.Services.Abstract
         Task<Delivery> GetIncludeAllAsync(int id);
 
         Task<Delivery> CreateAsync(Delivery delivery, int userId);
+
+        Task<int> GetUnsubmittedCountAsync();
     }
 }

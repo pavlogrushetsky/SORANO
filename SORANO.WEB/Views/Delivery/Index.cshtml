@@ -51,20 +51,20 @@
                     <thead>
                     <tr role="row" class="search-row">
                         <th style="width: 5%" rowspan="1" colspan="1"></th>
-                        <th style="width: 14%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Поставщик" /></th>
+                        <th style="width: 14%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Номер" /></th>
                         <th style="width: 14%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Поставка" /></th>
                         <th style="width: 14%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Оплата" /></th>
-                        <th style="width: 14%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Единиц" /></th>
+                        <th style="width: 14%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Позиций" /></th>
                         <th style="width: 13%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Сумма" /></th>
                         <th style="width: 14%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Статус" /></th>
                         <th style="width: 12%" rowspan="1" colspan="1"></th>
                     </tr>
                     <tr role="row">
                         <th style="width: 5%">ID</th>
-                        <th style="width: 14%"><i class="fa fa-fw fa-cart-arrow-down" aria-hidden="true"></i>&nbsp;Поставщик</th>
+                        <th style="width: 14%"><i class="fa fa-fw fa-cart-arrow-down" aria-hidden="true"></i>&nbsp;Номер</th>
                         <th style="width: 14%"><i class="fa fa-fw fa-calendar" aria-hidden="true"></i>&nbsp;Поставка</th>
                         <th style="width: 14%"><i class="fa fa-fw fa-calendar" aria-hidden="true"></i>&nbsp;Оплата</th>
-                        <th style="width: 14%"><i class="fa fa-fw fa-hashtag" aria-hidden="true"></i>&nbsp;Единиц</th>
+                        <th style="width: 14%"><i class="fa fa-fw fa-hashtag" aria-hidden="true"></i>&nbsp;Позиций</th>
                         <th style="width: 13%"><i class="fa fa-fw fa-money" aria-hidden="true"></i>&nbsp;Сумма</th>
                         <th style="width: 14%"><i class="fa fa-fw fa-align-justify" aria-hidden="true"></i>&nbsp;Статус</th>
                         <th style="width: 12%">Действия</th>
@@ -76,20 +76,20 @@
                         <tr class="@(delivery.IsDeleted ? "danger" : "")">
                             <td>@delivery.ID</td>
                             <td>
-                                <a asp-controller="Supplier"
+                                <a asp-controller="Delivery"
                                    asp-action="Details"
-                                   asp-route-id="@delivery.SupplierID"
+                                   asp-route-id="@delivery.ID"
                                    data-toggle="tooltip"
                                    data-placement="bottom"
-                                   data-original-title="Просмотреть информацию о поставщике"
+                                   data-original-title="Просмотреть информацию о поставке"
                                    title="">
-                                    @delivery.Supplier.Name
+                                    @delivery.BillNumber
                                 </a>
                             </td>
                             <td>@delivery.DeliveryDate</td>
                             <td>@delivery.PaymentDate</td>
                             <td>@delivery.DeliveryItemsCount</td>
-                            <td>@delivery.TotalDiscountPrice</td>
+                            <td>@delivery.TotalDiscountPrice.ToString("0.00") @(delivery.SelectedCurrency == 2 ? "€" : delivery.SelectedCurrency == 1 ? "$" : "₴" )</td>
                             <td>
                                 <span class="label label@(delivery.Status ? "-success" : "-warning")">
                                     @(delivery.Status ? "Подтверждено" : "Не подтверждено")
@@ -106,7 +106,7 @@
                                    title="">
                                     <i class="fa fa-info-circle" aria-hidden="true"></i>
                                 </a>
-                                @if (!delivery.IsDeleted)
+                                @if (delivery.CanBeUpdated)
                                 {
                                     <a asp-controller="Delivery"
                                        asp-action="Update"
@@ -118,20 +118,20 @@
                                        title="">
                                         <i class="fa fa-pencil-square" aria-hidden="true"></i>
                                     </a>
-                                    if (delivery.CanBeDeleted)
-                                    {
-                                        <a class="btn btn-xs btn-danger"
-                                           data-toggle="tooltip"
-                                           data-placement="bottom"
-                                           data-original-title="Удалить накладную"
-                                           title=""
-                                           asp-controller="Delivery"
-                                           asp-action="Delete"
-                                           asp-route-id="@delivery.ID">
-                                            <i class="fa fa-trash" aria-hidden="true"></i>
-                                        </a>
-                                    }
-                                }                                    
+                                }                                   
+                                @if (delivery.CanBeDeleted)
+                                {
+                                    <a class="btn btn-xs btn-danger"
+                                        data-toggle="tooltip"
+                                        data-placement="bottom"
+                                        data-original-title="Удалить накладную"
+                                        title=""
+                                        asp-controller="Delivery"
+                                        asp-action="Delete"
+                                        asp-route-id="@delivery.ID">
+                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                    </a>
+                                }                                   
                             </td>
                         </tr>
                     }

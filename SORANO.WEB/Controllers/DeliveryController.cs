@@ -53,6 +53,8 @@ namespace SORANO.WEB.Controllers
 
             await ClearAttachments();
 
+
+
             return View(deliveries.Select(d => d.ToModel()).ToList());
         }
 
@@ -288,7 +290,7 @@ namespace SORANO.WEB.Controllers
                     ModelState.AddModelError("EuroRate", "Необходимо указать курс евро");
                 }
 
-                if (model.TotalGrossPrice != model.DeliveryItems.Sum(i => i.GrossPrice * i.Quantity))
+                if (model.TotalGrossPrice != model.DeliveryItems.Sum(i => i.GrossPrice))
                 {
                     ModelState.AddModelError("", "Общая сумма некорректна");
                 }
@@ -303,11 +305,20 @@ namespace SORANO.WEB.Controllers
                     ModelState.AddModelError("", "Общая сумма с учётом скидки некорректна");
                 }
 
+                if (model.Status)
+                {
+                    if (string.IsNullOrEmpty(model.PaymentDate))
+                    {
+                        ModelState.AddModelError("PaymentDate", "Необходимо указать дату оплаты");
+                    }
+                }
+
                 // TODO Validation
 
                 if (!ModelState.IsValid)
                 {
                     ModelState.RemoveDuplicateErrorMessages();
+                    model.Status = false;
                     return View(model);
                 }
 
@@ -323,6 +334,7 @@ namespace SORANO.WEB.Controllers
                 }
 
                 ModelState.AddModelError("", "Не удалось создать накладную.");
+                model.Status = false;
                 return View(model);
             }, ex =>
             {
@@ -331,6 +343,8 @@ namespace SORANO.WEB.Controllers
                 ViewBag.Locations = locations;
 
                 ModelState.AddModelError("", ex);
+
+                model.Status = false;
 
                 return View(model);
             });

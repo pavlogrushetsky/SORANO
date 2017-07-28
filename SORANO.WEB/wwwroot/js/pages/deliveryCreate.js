@@ -8,6 +8,10 @@
         }
     });
 
+    $('.submit-delivery').on('click', function () {
+        $('#Status').val(true);
+    });
+
     $('#pick-delivery-date').datetimepicker({
         locale: 'ru',
         format: 'DD.MM.YYYY',

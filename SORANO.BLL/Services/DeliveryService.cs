@@ -37,7 +37,7 @@ namespace SORANO.BLL.Services
                 throw new ObjectNotFoundException(Resource.UserNotFoundException);
             }
 
-            delivery.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            delivery.UpdateCreatedFields(userId).UpdateModifiedFields(userId);            
 
             var supplier = await _unitOfWork.Get<Supplier>().GetAsync(s => s.ID == delivery.SupplierID);
 
@@ -47,14 +47,43 @@ namespace SORANO.BLL.Services
 
             location.UpdateModifiedFields(userId);
 
-            foreach (var recommendation in location.Recommendations)
+            foreach (var item in delivery.Items)
+            {
+                item.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            }
+
+            foreach (var recommendation in delivery.Recommendations)
             {
                 recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            foreach (var attachment in location.Attachments)
+            foreach (var attachment in delivery.Attachments)
             {
                 attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            }
+
+            if (delivery.IsSubmitted)
+            {
+                foreach (var item in delivery.Items)
+                {
+                    for (var i = 0; i < item.Quantity; i++)
+                    {
+                        var goods = new Goods();
+
+                        goods.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+
+                        var storage = new Storage
+                        {
+                            LocationID = delivery.LocationID,
+                            FromDate = DateTime.Now
+                        };
+
+                        storage.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+
+                        goods.Storages.Add(storage);
+                        item.Goods.Add(goods);
+                    }
+                }
             }
 
             var saved = _unitOfWork.Get<Delivery>().Add(delivery);
@@ -81,6 +110,13 @@ namespace SORANO.BLL.Services
             var delivery = await _unitOfWork.Get<Delivery>().GetAsync(s => s.ID == id);
 
             return delivery;
+        }
+
+        public async Task<int> GetUnsubmittedCountAsync()
+        {
+            var deliveries = await _unitOfWork.Get<Delivery>().FindByAsync(d => !d.IsSubmitted);
+
+            return deliveries.Count();
         }
     }
 }

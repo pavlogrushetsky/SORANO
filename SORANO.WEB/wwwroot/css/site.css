@@ -29,6 +29,10 @@ textarea {
     resize: vertical;
 }
 
+.label-badge {
+    border-radius: 8px;
+}
+
 .tab-pane .panel {
     border-radius: 0;
 }
