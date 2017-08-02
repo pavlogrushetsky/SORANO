@@ -27,7 +27,7 @@ namespace SORANO.WEB.Models
         public string NewPassword { get; set; }
 
         [DataType(DataType.Password)]
-        [RequireEqual("NewPassword", ErrorMessage = "Необходимо, чтобы значения полей \"Новый пароль\" совпадали")]
+        //[RequireEqual("NewPassword", ErrorMessage = "Необходимо, чтобы значения полей \"Новый пароль\" совпадали")]
         public string RepeatPassword { get; set; }
 
         [Display(Name = "Роли")]

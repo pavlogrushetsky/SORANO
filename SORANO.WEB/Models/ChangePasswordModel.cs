@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using SORANO.WEB.Infrastructure.ValidationAttributes;
 
 namespace SORANO.WEB.Models
 {
@@ -9,17 +8,16 @@ namespace SORANO.WEB.Models
 
         public string Login { get; set; }
 
-        [Required(ErrorMessage = "Необходимо указать существующий пароль")]
+        [Display(Name = "Существующий пароль:")]
         [DataType(DataType.Password)]
         public string OldPassword { get; set; }
 
-        [Required(ErrorMessage = "Необходимо указать новый пароль")]
+        [Display(Name = "Новый пароль:")]
         [DataType(DataType.Password)]
         public string NewPassword { get; set; }
 
-        [Required(ErrorMessage = "Необходимо повторно указать новый пароль")]
+        [Display(Name = "Новый пароль:")]
         [DataType(DataType.Password)]
-        [RequireEqual("NewPassword", ErrorMessage = "Необходимо, чтобы значения полей \"Новый пароль\" совпадали")]
         public string RepeatPassword { get; set; }
 
         public string ReturnUrl { get; set; }

@@ -4,13 +4,14 @@ namespace SORANO.WEB.Models
 {
     public class LoginModel
     {
-        [Required(ErrorMessage = "Необходимо указать логин")]
+        [Display(Name = "Логин:")]
         public string Login { get; set; }
 
-        [Required(ErrorMessage = "Необходимо указать пароль")]
+        [Display(Name = "Пароль:")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
+        [Display(Name = "Запомнить меня")]
         public bool RememberMe { get; set; }
 
         public string ReturnUrl { get; set; }

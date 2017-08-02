@@ -19,14 +19,14 @@
                     <div asp-validation-summary="All" class="text-danger"></div>
                     <input type="hidden" asp-for="ReturnUrl" value="@ViewBag.ReturnUrl"/>
                         <div class="form-group">
-                            <label class="control-label" asp-for="Login">Логин:</label>
+                            <label class="control-label" asp-for="Login"></label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-addon"><i class="fa fa-fw fa-user-circle-o"></i></span>
                                 <input class="form-control input-sm" type="text" asp-for="Login" placeholder="Логин"/>
                             </div>
                         </div>
                     <div class="form-group">
-                        <label class="control-label" asp-for="Password">Пароль:</label>
+                        <label class="control-label" asp-for="Password"></label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
                             <input class="form-control input-sm" type="password" asp-for="Password" placeholder="Пароль"/>                                   

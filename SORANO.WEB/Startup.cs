@@ -9,6 +9,7 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.DAL.Context;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using SORANO.DAL.Repositories;
+using FluentValidation.AspNetCore;
 
 namespace SORANO.WEB
 {
@@ -28,7 +29,7 @@ namespace SORANO.WEB
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddMvc().AddFluentValidation(v => v.RegisterValidatorsFromAssemblyContaining<Startup>());
 
             services.AddDistributedMemoryCache();
 
