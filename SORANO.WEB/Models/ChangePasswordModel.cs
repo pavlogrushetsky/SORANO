@@ -8,15 +8,15 @@ namespace SORANO.WEB.Models
 
         public string Login { get; set; }
 
-        [Display(Name = "Существующий пароль:")]
+        [Display(Name = "Существующий пароль")]
         [DataType(DataType.Password)]
         public string OldPassword { get; set; }
 
-        [Display(Name = "Новый пароль:")]
+        [Display(Name = "Новый пароль")]
         [DataType(DataType.Password)]
         public string NewPassword { get; set; }
 
-        [Display(Name = "Новый пароль:")]
+        [Display(Name = "Новый пароль")]
         [DataType(DataType.Password)]
         public string RepeatPassword { get; set; }
 

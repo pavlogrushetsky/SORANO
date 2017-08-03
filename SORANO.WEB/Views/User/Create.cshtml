@@ -41,7 +41,7 @@
                 @if (Model.CanBeModified || !isEdit)
                 {
                     <div class="form-group">
-                        <label class="control-label" asp-for="Login">Логин:</label>
+                        <label class="control-label" asp-for="Login"></label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-addon"><i class="fa fa-fw fa-user-circle-o"></i></span>
                             <input class="form-control input-sm" type="text" asp-for="Login" placeholder="Логин"/>
@@ -57,7 +57,7 @@
                     }
                 }
                 <div class="form-group">
-                    <label class="control-label" asp-for="Description">Описание:</label>
+                    <label class="control-label" asp-for="Description"></label>
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-align-justify"></i></span>
                         <textarea class="form-control input-sm" rows="3" asp-for="Description" placeholder="Описание"></textarea>
@@ -66,7 +66,7 @@
                 @if (!isEdit)
                 {
                     <div class="form-group">
-                        <label class="control-label" asp-for="Password">Пароль:</label>
+                        <label class="control-label" asp-for="Password"></label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
                             <input class="form-control input-sm" type="password" asp-for="Password" placeholder="Новый пароль"/>
@@ -76,14 +76,14 @@
                 @if (isEdit && Model.CanBeModified)
                 {
                     <div class="form-group">
-                        <label class="control-label" asp-for="NewPassword">Новый пароль:</label>
+                        <label class="control-label" asp-for="NewPassword"></label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
                             <input class="form-control input-sm" type="password" asp-for="NewPassword" placeholder="Новый пароль" />
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label" asp-for="RepeatPassword">Новый пароль:</label>
+                        <label class="control-label" asp-for="RepeatPassword"></label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
                             <input class="form-control input-sm" type="password" asp-for="RepeatPassword" placeholder="Повторите новый пароль" />
@@ -93,7 +93,7 @@
                 @if (Model.CanBeModified || !isEdit)
                 {
                     <div class="form-group">
-                        <label class="control-label">Роли:</label>
+                        <label class="control-label" asp-for="Roles"></label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-vcard"></i></span>
                             <select class="form-control input-sm" asp-for="RoleIDs" asp-items="@ViewBag.Roles"></select>

@@ -5,13 +5,9 @@ namespace SORANO.WEB.Models
 {
     public class ArticleTypeModel : EntityBaseModel
     {
-        [Required(ErrorMessage = "Необходимо указать название типа артикулов")]
-        [MaxLength(500, ErrorMessage = "Длина названия не должна превышать 500 символов")]
-        [MinLength(5, ErrorMessage = "Длина названия должна содержать не менее 5 символов")]
         [Display(Name = "Название")]
         public string Name { get; set; }
 
-        [MaxLength(1000, ErrorMessage = "Длина описания не должна превышать 1000 символов")]
         [Display(Name = "Описание")]
         public string Description { get; set; }
 

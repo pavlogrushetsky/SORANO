@@ -40,21 +40,21 @@
             @if (!isEdit || !Model.Name.Equals("Основное изображение"))
             {
                 <div class="form-group">
-                    <label class="control-label" asp-for="Name">Название:</label>
+                    <label class="control-label" asp-for="Name"></label>
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"><i class="fa fa-fw fa-paperclip"></i></span>
                         <input class="form-control input-sm" type="text" asp-for="Name" placeholder="Название" />
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label" asp-for="Comment">Коментарий:</label>
+                    <label class="control-label" asp-for="Comment"></label>
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-comment"></i></span>
                         <textarea class="form-control input-sm" rows="3" asp-for="Comment" placeholder="Коментарий"></textarea>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label" asp-for="Extensions">Расширения:</label>
+                    <label class="control-label" asp-for="Extensions"></label>
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"><i class="fa fa-fw fa-filter"></i></span>
                         <input class="form-control input-sm" type="text" asp-for="Extensions" placeholder="Расширения" />
