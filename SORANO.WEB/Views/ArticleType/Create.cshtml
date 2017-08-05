@@ -13,6 +13,17 @@
     ViewBag.Icon = "fa fa-fw fa-tag";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/lib/select2/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="~/lib/select2-bootstrap-theme/dist/select2-bootstrap.min.css" />
+    <style>
+        span.select2-selection.select2-selection--single {
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+        }
+    </style>
+}
+
 @section Breadcrumb {
     <ul class="breadcrumb">
         <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
@@ -25,13 +36,8 @@
       asp-controller="ArticleType"
       method="post"
       enctype="multipart/form-data">
+    <input type="hidden" asp-for="ID" />
     <input type="hidden" asp-for="ReturnPath" />
-    @if (Model.ParentType != null)
-    {
-        <input type="hidden" asp-for="ParentType.ID"/>
-        <input type="hidden" asp-for="ParentType.Name"/>
-    }
-    <input type="hidden" asp-for="ID"/>
     @for (var i = 0; i < Model.Recommendations.Count; i++)
     {
         <input type="hidden" asp-for="@Model.Recommendations[i].ID"/>
@@ -49,7 +55,7 @@
     @Html.HiddenFor(m => m.MainPicture.Name)
     @Html.HiddenFor(m => m.MainPicture.FullPath)
     @Html.HiddenFor(m => m.MainPicture.TypeID)
-    <div asp-validation-summary="All" class="text-danger"></div>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
         <div class="col-lg-3 col-md-12 col-sm-12">
             @Html.Partial("~/Views/Shared/_MainPictureForm.cshtml", Model)
@@ -61,6 +67,7 @@
                     <span class="input-group-addon"><i class="fa fa-fw fa-tag"></i></span>
                     <input class="form-control input-sm" type="text" asp-for="Name" placeholder="Название"/>
                 </div>
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="Description"></label>
@@ -68,27 +75,18 @@
                     <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-align-justify"></i></span>
                     <textarea class="form-control input-sm" rows="3" asp-for="Description" placeholder="Описание"></textarea>
                 </div>
+                <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="ParentType"></label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-tags"></i></span>
-                    <div class="form-control input-sm">
-                        <span>@Model.ParentType?.Name</span>
-                    </div>
-                    <span class="input-group-btn">
-                        <button class="btn btn-default btn-sm"
-                                type="submit"
-                                asp-action="SelectParentType"
-                                asp-route-returnUrl="@returnUrl"
-                                data-toggle="tooltip"
-                                data-placement="bottom"
-                                data-original-title="Назначить родительский тип"
-                                title="">
-                            <i class="fa fa-fw fa-pencil"></i>
-                        </button>
-                    </span>
+                    <select class="form-control input-sm select-type"
+                            asp-for="@Model.ParentTypeID"
+                            asp-items="@ViewBag.ArticleTypes">
+                    </select>
                 </div>
+                <span asp-validation-for="ParentTypeID" class="text-danger"></span>
             </div>
         </div>
         <div class="col-lg-5 col-md-12 col-sm-12">
@@ -113,6 +111,8 @@
 </form>
 
 @section Scripts {
+    <script src="~/lib/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/lib/moment/min/moment-with-locales.min.js"></script>
     <environment names="Development">
         <script src="~/js/pages/articleTypeCreate.js"></script>
     </environment>

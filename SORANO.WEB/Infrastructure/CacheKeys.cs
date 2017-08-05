@@ -2,18 +2,10 @@
 {
     public static class CacheKeys
     {
-        public static readonly string SelectArticleTypeCacheKey = "SelectArticleTypeCache";
-
-        public static readonly string SelectArticleTypeCacheValidKey = "SelectArticleTypeCacheValid";
-
         public static readonly string CreateArticleTypeCacheKey = "CreateArticleTypeCache";
 
         public static readonly string CreateArticleTypeCacheValidKey = "CreateArticleTypeCacheValid";
-
-        public static readonly string SelectParentArticleTypeCacheKey = "SelectParentArticleTypeCache";
-
-        public static readonly string SelectParentArticleTypeCacheValidKey = "SelectParentArticleTypeCacheValid";
-
+       
         public static readonly string SelectMainPictureCacheKey = "SelectMainPictureCache";
 
         public static readonly string SelectMainPictureCacheValidKey = "SelectMainPictureCacheValid";
@@ -27,6 +19,8 @@
         public static readonly string LocationTypesCacheKey = "LocationTypesCache";
 
         public static readonly string ArticlesCacheKey = "ArticlesCache";
+
+        public static readonly string ArticleTypesCacheKey = "ArticleTypesCache";
 
         public static readonly string LocationsCacheKey = "LocationsCache";
 

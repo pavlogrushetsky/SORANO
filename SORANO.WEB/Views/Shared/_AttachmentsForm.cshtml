@@ -28,6 +28,7 @@
                                     </label>
                                 </span>
                             </div>
+                            <span asp-validation-for="@Model.Attachments[i].Name" class="text-danger"></span>
                         </td>
                         <td style="width: 40%; padding: 0; padding-bottom: 5px;">
                             <div class="input-group input-group-sm">
@@ -47,7 +48,7 @@
                                     </button>
                                 </span>
                             </div>
-                            
+                            <span asp-validation-for="@Model.Attachments[i].TypeID" class="text-danger"></span>
                         </td>
                     </tr>
                 }

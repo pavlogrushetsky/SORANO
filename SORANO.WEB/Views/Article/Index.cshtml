@@ -132,16 +132,19 @@
                                                    title="">
                                                     <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
                                                 </a>
-                                                <a asp-controller="Article"
-                                                   asp-action="Delete"
-                                                   asp-route-id="@Model[i].ID"
-                                                   class="btn btn-xs btn-danger @(Model[i].CanBeDeleted ? "" : "disabled")"
-                                                   data-toggle="tooltip"
-                                                   data-placement="bottom"
-                                                   data-original-title="Удалить артикул"
-                                                   title="Удалить артикул">
-                                                    <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
-                                                </a>
+                                                @if (Model[i].CanBeDeleted)
+                                                {
+                                                    <a asp-controller="Article"
+                                                       asp-action="Delete"
+                                                       asp-route-id="@Model[i].ID"
+                                                       class="btn btn-xs btn-danger"
+                                                       data-toggle="tooltip"
+                                                       data-placement="bottom"
+                                                       data-original-title="Удалить артикул"
+                                                       title="Удалить артикул">
+                                                        <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
+                                                    </a>
+                                                }
                                             }                                            
                                         </td>
                                     </tr>

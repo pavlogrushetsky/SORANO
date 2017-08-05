@@ -12,6 +12,9 @@ namespace SORANO.WEB.Models
         public string Description { get; set; }
 
         [Display(Name = "Родительский тип")]
+        public string ParentTypeID { get; set; }
+
+        [Display(Name = "Родительский тип")]
         public ArticleTypeModel ParentType { get; set; }
 
         [Display(Name = "Вложенные типы")]

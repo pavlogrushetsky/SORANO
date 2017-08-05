@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +9,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using Microsoft.Extensions.Caching.Memory;
-using MimeTypes;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Models;
 
@@ -51,10 +49,6 @@ namespace SORANO.WEB.Controllers
                 model = cachedForSelectMainPicture;
                 await CopyMainPicture(model);
             }
-            else if (TryGetCached(out ArticleTypeModel cachedForSelectParentType, CacheKeys.SelectParentArticleTypeCacheKey, CacheKeys.SelectParentArticleTypeCacheValidKey))
-            {
-                model = cachedForSelectParentType;
-            }
             else
             {
                 model = new ArticleTypeModel
@@ -88,10 +82,6 @@ namespace SORANO.WEB.Controllers
             {
                 model = cachedForSelectMainPicture;
                 await CopyMainPicture(model);
-            }
-            else if (TryGetCached(out ArticleTypeModel cachedForSelectParentType, CacheKeys.SelectParentArticleTypeCacheKey, CacheKeys.SelectParentArticleTypeCacheValidKey) && cachedForSelectParentType.ID == id)
-            {
-                model = cachedForSelectParentType;
             }
             else
             {
@@ -172,33 +162,23 @@ namespace SORANO.WEB.Controllers
         public async Task<IActionResult> Create(ArticleTypeModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             var attachmentTypes = new List<SelectListItem>();
+            var articleTypes = new List<SelectListItem>();
 
             // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
-                ModelState.RemoveFor("MainPicture");
                 attachmentTypes = await GetAttachmentTypes();
+                articleTypes = await GetArticleTypes();
+
                 ViewBag.AttachmentTypes = attachmentTypes;
+                ViewBag.ArticleTypes = articleTypes;
 
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
-                for (var i = 0; i < model.Attachments.Count; i++)
-                {
-                    var extensions = model.Attachments[i]
-                        .Type.MimeTypes?.Split(',')
-                        .Select(MimeTypeMap.GetExtension);
-
-                    if (extensions != null && !extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
-                    {
-                        ModelState.AddModelError($"Attachments[{i}].Name", "Вложение не соответствует указанному типу");
-                    }
-                }
-
                 // Check the model
                 if (!ModelState.IsValid)
                 {
-                    ModelState.RemoveDuplicateErrorMessages();
                     return View(model);
                 }
 
@@ -239,6 +219,8 @@ namespace SORANO.WEB.Controllers
             }, ex => 
             {
                 ViewBag.AttachmentTypes = attachmentTypes;
+                ViewBag.ArticleTypes = articleTypes;
+
                 ModelState.AddModelError("", ex);
                 return View(model);
             });            
@@ -249,34 +231,24 @@ namespace SORANO.WEB.Controllers
         public async Task<IActionResult> Update(ArticleTypeModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             var attachmentTypes = new List<SelectListItem>();
+            var articleTypes = new List<SelectListItem>();
 
             // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
-                ModelState.RemoveFor("MainPicture");
                 attachmentTypes = await GetAttachmentTypes();
+                articleTypes = await GetArticleTypes();
+
                 ViewBag.AttachmentTypes = attachmentTypes;
+                ViewBag.ArticleTypes = articleTypes;
 
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
-
-                for (var i = 0; i < model.Attachments.Count; i++)
-                {
-                    var extensions = model.Attachments[i]
-                        .Type.MimeTypes?.Split(',')
-                        .Select(MimeTypeMap.GetExtension);
-
-                    if (extensions != null && !extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
-                    {
-                        ModelState.AddModelError($"Attachments[{i}].Name", "Вложение не соответствует указанному типу");
-                    }
-                }
 
                 // Check the model
                 if (!ModelState.IsValid)
                 {
                     ViewData["IsEdit"] = true;
-                    ModelState.RemoveDuplicateErrorMessages();
                     return View("Create", model);
                 }
 
@@ -302,6 +274,8 @@ namespace SORANO.WEB.Controllers
             }, ex => 
             {
                 ViewBag.AttachmentTypes = attachmentTypes;
+                ViewBag.ArticleTypes = articleTypes;
+
                 ModelState.AddModelError("", ex);
                 ViewData["IsEdit"] = true;
                 return View("Create", model);
@@ -323,68 +297,6 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SelectParentType(ArticleTypeModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
-        {
-            await LoadMainPicture(model, mainPictureFile);
-            await LoadAttachments(model, attachments);
-
-            _memoryCache.Set(CacheKeys.SelectParentArticleTypeCacheKey, model);
-
-            return RedirectToAction("Select", "ArticleType", new { selectedId = model.ParentType?.ID, returnUrl, model.ID });
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Select(ArticleTypeSelectModel model)
-        {
-            var selectedType = model.Types.SingleOrDefault(t => t.IsSelected);
-
-            if (_memoryCache.TryGetValue(CacheKeys.SelectArticleTypeCacheKey, out ArticleModel cachedArticle))
-            {
-                if (selectedType != null)
-                {
-                    cachedArticle.Type = selectedType;
-                    _memoryCache.Set(CacheKeys.SelectArticleTypeCacheKey, cachedArticle);
-                }
-
-                Session.SetBool(CacheKeys.SelectArticleTypeCacheValidKey, true);                    
-            }
-            else if (_memoryCache.TryGetValue(CacheKeys.SelectParentArticleTypeCacheKey, out ArticleTypeModel cachedArticleType))
-            {
-                if (selectedType != null)
-                {
-                    cachedArticleType.ParentType = selectedType;
-                    _memoryCache.Set(CacheKeys.SelectParentArticleTypeCacheKey, cachedArticleType);
-                }
-
-                Session.SetBool(CacheKeys.SelectParentArticleTypeCacheValidKey, true);                   
-            }
-            else
-            {
-                return BadRequest();
-            }
-            
-            return Redirect(model.ReturnUrl);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult CancelSelect(ArticleTypeSelectModel model)
-        {
-            if (_memoryCache.TryGetValue(CacheKeys.SelectArticleTypeCacheKey, out ArticleModel _))
-            {
-                Session.SetBool(CacheKeys.SelectArticleTypeCacheValidKey, true);
-            }
-            else if (_memoryCache.TryGetValue(CacheKeys.SelectParentArticleTypeCacheKey, out ArticleTypeModel _))
-            {
-                Session.SetBool(CacheKeys.SelectParentArticleTypeCacheValidKey, true);
-            }
-
-            return Redirect(model.ReturnUrl);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult Cancel(ArticleTypeModel model)
         {
             if (string.IsNullOrEmpty(model.ReturnPath))
@@ -400,6 +312,30 @@ namespace SORANO.WEB.Controllers
             return Redirect(model.ReturnPath);
         }
 
-        #endregion        
+        #endregion
+
+        private async Task<List<SelectListItem>> GetArticleTypes()
+        {
+            var articleTypes = await _articleTypeService.GetAllAsync(false);
+
+            var articleTypeItems = new List<SelectListItem>
+            {
+                new SelectListItem
+                {
+                    Value = "0",
+                    Text = "-- Тип артикула --"
+                }
+            };
+
+            articleTypeItems.AddRange(articleTypes.Select(t => new SelectListItem
+            {
+                Value = t.ID.ToString(),
+                Text = t.Name
+            }));
+
+            _memoryCache.Set(CacheKeys.ArticleTypesCacheKey, articleTypeItems);
+
+            return articleTypeItems;
+        }
     }
 }

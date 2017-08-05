@@ -26,6 +26,12 @@ namespace SORANO.WEB.Validators
             RuleFor(c => c.CardNumber)
                 .MaximumLength(200)
                 .WithMessage("Длина номера карты не должна превышать 200 символов");
+
+            RuleForEach(c => c.Attachments)
+                .SetValidator(new AttachmentValidator());
+
+            RuleForEach(c => c.Recommendations)
+                .SetValidator(new RecommendationValidator());
         }
     }
 }

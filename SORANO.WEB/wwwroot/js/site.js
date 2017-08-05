@@ -1,8 +1,9 @@
 ﻿$(document).ready(function () {
     $("[data-toggle=tooltip]").tooltip({ container: 'body' });
-    $("input.input-validation-error").not(".recommendations,.attachments").closest(".input-group").addClass("has-error");
+    $("input.input-validation-error").closest(".input-group").addClass("has-error");
     $("select.input-validation-error").closest(".input-group").addClass("has-error");
     $("span.field-validation-error").closest(".input-group").addClass("has-error");
+    $("textarea.input-validation-error").closest(".input-group").addClass("has-error");
 
     $('input[type=file]').not('#main_picture_input').change(function () {
         var id = $(this).attr('id');

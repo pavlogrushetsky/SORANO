@@ -200,6 +200,14 @@ input.form-control.attachments.input-validation-error {
     border: 2px solid #e74c3c;
 }
 
+select.form-control.attachments.input-validation-error {
+    border: 2px solid #e74c3c;
+}
+
+.has-error span.select2-selection.select2-selection--single {
+    border-color: #e74c3c !important;
+}
+
 span.select2-selection.select2-selection--single {
     height: 35px !important;
     padding: 6px 9px !important;
@@ -210,6 +218,10 @@ span.select2-selection.select2-selection--single {
     border-width: 2px !important;
     box-shadow: none !important;
     border: 2px solid #dce4ec !important;
+}
+
+.select2-container {
+    width: 100% !important;
 }
 
 .select2-container--bootstrap .select2-dropdown {

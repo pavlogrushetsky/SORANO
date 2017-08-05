@@ -9,7 +9,7 @@ namespace SORANO.WEB.Validators
         {
             RuleFor(a => a.Name)
                 .NotEmpty()
-                .WithMessage("Необходимо указать название артикула");
+                .WithMessage("Необходимо указать название");
 
             RuleFor(a => a.Name)
                 .MaximumLength(500)
@@ -34,6 +34,20 @@ namespace SORANO.WEB.Validators
             RuleFor(a => a.Barcode)
                 .MaximumLength(50)
                 .WithMessage("Длина штрих-кода не должна превышать 50 символов");
+
+            RuleFor(a => a.TypeID)
+                .Must(s => 
+                {
+                    int.TryParse(s, out int id);
+                    return id > 0;
+                })
+                .WithMessage("Необходимо указать тип");
+
+            RuleForEach(a => a.Attachments)
+                .SetValidator(new AttachmentValidator());
+
+            RuleForEach(a => a.Recommendations)
+                .SetValidator(new RecommendationValidator());
         }
     }
 }

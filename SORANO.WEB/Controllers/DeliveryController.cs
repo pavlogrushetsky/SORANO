@@ -53,8 +53,6 @@ namespace SORANO.WEB.Controllers
 
             await ClearAttachments();
 
-
-
             return View(deliveries.Select(d => d.ToModel()).ToList());
         }
 
@@ -255,8 +253,6 @@ namespace SORANO.WEB.Controllers
 
             return await TryGetActionResultAsync(async () =>
             {
-                ModelState.RemoveFor("MainPicture");
-
                 articles = await GetArticles();
                 suppliers = await GetSuppliers();
                 locations = await GetLocations();
@@ -267,18 +263,6 @@ namespace SORANO.WEB.Controllers
 
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
-
-                for (var i = 0; i < model.Attachments.Count; i++)
-                {
-                    var extensions = model.Attachments[i]
-                        .Type.MimeTypes?.Split(',')
-                        .Select(MimeTypeMap.GetExtension);
-
-                    if (extensions != null && !extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
-                    {
-                        ModelState.AddModelError($"Attachments[{i}].Name", "Вложение не соответствует указанному типу");
-                    }
-                }
 
                 if (model.SelectedCurrency == 1 && (!model.DollarRate.HasValue || model.DollarRate <= 0.0M))
                 {
@@ -317,7 +301,6 @@ namespace SORANO.WEB.Controllers
 
                 if (!ModelState.IsValid)
                 {
-                    ModelState.RemoveDuplicateErrorMessages();
                     model.Status = false;
                     return View(model);
                 }

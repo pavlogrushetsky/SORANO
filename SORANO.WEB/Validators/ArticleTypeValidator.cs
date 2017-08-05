@@ -22,6 +22,20 @@ namespace SORANO.WEB.Validators
             RuleFor(t => t.Description)
                 .MaximumLength(1000)
                 .WithMessage("Длина описания не должна превышать 1000 символов");
+
+            RuleFor(a => a.ParentTypeID)
+                .Must(s =>
+                {
+                    int.TryParse(s, out int id);
+                    return id > 0;
+                })
+                .WithMessage("Необходимо указать тип");
+
+            RuleForEach(a => a.Attachments)
+                .SetValidator(new AttachmentValidator());
+
+            RuleForEach(a => a.Recommendations)
+                .SetValidator(new RecommendationValidator());
         }
     }
 }

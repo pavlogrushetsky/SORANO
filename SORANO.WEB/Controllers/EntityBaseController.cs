@@ -123,6 +123,7 @@ namespace SORANO.WEB.Controllers
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
             ViewBag.LocationTypes = GetLocationTypes();
             ViewBag.Articles = GetArticles();
+            ViewBag.ArticleTypes = GetArticleTypes();
             ViewBag.Suppliers = GetSuppliers();
             ViewBag.Locations = GetLocations();
 
@@ -153,6 +154,7 @@ namespace SORANO.WEB.Controllers
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
             ViewBag.LocationTypes = GetLocationTypes();
             ViewBag.Articles = GetArticles();
+            ViewBag.ArticleTypes = GetArticleTypes();
             ViewBag.Suppliers = GetSuppliers();
             ViewBag.Locations = GetLocations();
 
@@ -174,6 +176,7 @@ namespace SORANO.WEB.Controllers
             ViewBag.AttachmentTypes = attachmentTypes;
             ViewBag.LocationTypes = GetLocationTypes();
             ViewBag.Articles = GetArticles();
+            ViewBag.ArticleTypes = GetArticleTypes();
             ViewBag.Suppliers = GetSuppliers();
             ViewBag.Locations = GetLocations();
 
@@ -211,6 +214,7 @@ namespace SORANO.WEB.Controllers
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
             ViewBag.LocationTypes = GetLocationTypes();
             ViewBag.Articles = GetArticles();
+            ViewBag.ArticleTypes = GetArticleTypes();
             ViewBag.Suppliers = GetSuppliers();
             ViewBag.Locations = GetLocations();
 
@@ -243,6 +247,7 @@ namespace SORANO.WEB.Controllers
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
             ViewBag.LocationTypes = GetLocationTypes();
             ViewBag.Articles = GetArticles();
+            ViewBag.ArticleTypes = GetArticleTypes();
             ViewBag.Suppliers = GetSuppliers();
             ViewBag.Locations = GetLocations();
 
@@ -276,6 +281,16 @@ namespace SORANO.WEB.Controllers
             if (_memoryCache.TryGetValue(CacheKeys.LocationTypesCacheKey, out List<SelectListItem> locationTypeSelectItems))
             {
                 return locationTypeSelectItems;
+            }
+
+            return null;
+        }
+
+        private List<SelectListItem> GetArticleTypes()
+        {
+            if (_memoryCache.TryGetValue(CacheKeys.ArticleTypesCacheKey, out List<SelectListItem> articleTypeSelectItems))
+            {
+                return articleTypeSelectItems;
             }
 
             return null;
@@ -368,9 +383,7 @@ namespace SORANO.WEB.Controllers
                     {
                         var path = await Load(newAttachment, _entityTypeName);
                         model.Attachments[i].FullPath = path;
-                        model.Attachments[i].IsNew = false;
-
-                        ModelState.RemoveFor($"Attachments[{i}].FullPath");                       
+                        model.Attachments[i].IsNew = false;                      
                     }
 
                     attachmentCounter++;

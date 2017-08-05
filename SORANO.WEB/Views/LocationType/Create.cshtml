@@ -43,7 +43,7 @@
     @Html.HiddenFor(m => m.MainPicture.Name)
     @Html.HiddenFor(m => m.MainPicture.FullPath)
     @Html.HiddenFor(m => m.MainPicture.TypeID)
-    <div asp-validation-summary="All" class="text-danger"></div>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
         <div class="col-lg-3 col-md-12 col-sm-12">
             @Html.Partial("~/Views/Shared/_MainPictureForm.cshtml", Model)
@@ -55,6 +55,7 @@
                     <span class="input-group-addon"><i class="fa fa-fw fa-map-signs"></i></span>
                     <input class="form-control input-sm" type="text" asp-for="Name" placeholder="Название"/>
                 </div>
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="Description"></label>
@@ -62,6 +63,7 @@
                     <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-align-justify"></i></span>
                     <textarea class="form-control input-sm" rows="3" asp-for="Description" placeholder="Описание"></textarea>
                 </div>
+                <span asp-validation-for="Description" class="text-danger"></span>
             </div>
         </div>
         <div class="col-lg-5 col-md-12 col-sm-12">

@@ -150,26 +150,14 @@ namespace SORANO.WEB.Controllers
             // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
-                ModelState.RemoveFor("MainPicture");
                 attachmentTypes = await GetAttachmentTypes();
                 locationTypes = await GetLocationTypes();
+
                 ViewBag.AttachmentTypes = attachmentTypes;
                 ViewBag.LocationTypes = locationTypes;
 
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
-
-                for (var i = 0; i < model.Attachments.Count; i++)
-                {
-                    var extensions = model.Attachments[i]
-                        .Type.MimeTypes?.Split(',')
-                        .Select(MimeTypeMap.GetExtension);
-
-                    if (extensions != null && !extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
-                    {
-                        ModelState.AddModelError($"Attachments[{i}].Name", "Вложение не соответствует указанному типу");
-                    }
-                }
 
                 int.TryParse(model.TypeID, out int typeId);
 
@@ -181,7 +169,6 @@ namespace SORANO.WEB.Controllers
                 // Check the model
                 if (!ModelState.IsValid)
                 {
-                    ModelState.RemoveDuplicateErrorMessages();
                     return View(model);
                 }                
 
@@ -239,25 +226,12 @@ namespace SORANO.WEB.Controllers
             // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
-                ModelState.RemoveFor("MainPicture");
                 attachmentTypes = await GetAttachmentTypes();
                 ViewBag.AttachmentTypes = attachmentTypes;
                 ViewBag.LocationTypes = await GetLocationTypes();
 
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
-
-                for (var i = 0; i < model.Attachments.Count; i++)
-                {
-                    var extensions = model.Attachments[i]
-                        .Type.MimeTypes?.Split(',')
-                        .Select(MimeTypeMap.GetExtension);
-
-                    if (extensions != null && !extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
-                    {
-                        ModelState.AddModelError($"Attachments[{i}].Name", "Вложение не соответствует указанному типу");
-                    }
-                }
 
                 int.TryParse(model.TypeID, out int typeId);
 
@@ -270,7 +244,6 @@ namespace SORANO.WEB.Controllers
                 if (!ModelState.IsValid)
                 {
                     ViewData["IsEdit"] = true;
-                    ModelState.RemoveDuplicateErrorMessages();
                     return View(model);
                 }
 

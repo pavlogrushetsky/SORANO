@@ -133,29 +133,15 @@ namespace SORANO.WEB.Controllers
             // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
-                ModelState.RemoveFor("MainPicture");
                 attachmentTypes = await GetAttachmentTypes();
                 ViewBag.AttachmentTypes = attachmentTypes;
 
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
-                for (var i = 0; i < model.Attachments.Count; i++)
-                {
-                    var extensions = model.Attachments[i]
-                        .Type.MimeTypes?.Split(',')
-                        .Select(MimeTypeMap.GetExtension);
-
-                    if (extensions != null && !extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
-                    {
-                        ModelState.AddModelError($"Attachments[{i}].Name", "Вложение не соответствует указанному типу");
-                    }
-                }
-
                 // Check the model
                 if (!ModelState.IsValid)
                 {
-                    ModelState.RemoveDuplicateErrorMessages();
                     return View(model);
                 }
 
@@ -211,30 +197,16 @@ namespace SORANO.WEB.Controllers
             // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
-                ModelState.RemoveFor("MainPicture");
                 attachmentTypes = await GetAttachmentTypes();
                 ViewBag.AttachmentTypes = attachmentTypes;
 
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
-                for (var i = 0; i < model.Attachments.Count; i++)
-                {
-                    var extensions = model.Attachments[i]
-                        .Type.MimeTypes?.Split(',')
-                        .Select(MimeTypeMap.GetExtension);
-
-                    if (extensions != null && !extensions.Contains(Path.GetExtension(model.Attachments[i].FullPath)))
-                    {
-                        ModelState.AddModelError($"Attachments[{i}].Name", "Вложение не соответствует указанному типу");
-                    }
-                }
-
                 // Check the model
                 if (!ModelState.IsValid)
                 {
                     ViewData["IsEdit"] = true;
-                    ModelState.RemoveDuplicateErrorMessages();
                     return View("Create", model);
                 }
 

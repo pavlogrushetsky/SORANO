@@ -20,6 +20,9 @@ namespace SORANO.WEB.Models
         public string Barcode { get; set; }
 
         [Display(Name = "Тип артикулов")]
+        public string TypeID { get; set; }
+
+        [Display(Name = "Тип артикулов")]
         public ArticleTypeModel Type { get; set; }       
 
         public string ReturnPath { get; set; }

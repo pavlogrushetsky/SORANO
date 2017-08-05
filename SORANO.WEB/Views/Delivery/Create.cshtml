@@ -31,6 +31,7 @@
       asp-controller="Delivery"
       method="post"
       enctype="multipart/form-data">
+    <input type="hidden" asp-for="ID" />
     @for (var i = 0; i < Model.Recommendations.Count; i++)
     {
         <input type="hidden" asp-for="@Model.Recommendations[i].ID" />
@@ -55,7 +56,7 @@
     
     @Html.HiddenFor(m => m.SelectedCurrency)
     @Html.HiddenFor(m => m.Status)
-    <div asp-validation-summary="All" class="text-danger"></div>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
         <div class="col-lg-3 col-md-12 col-sm-12">
             @Html.Partial("~/Views/Shared/_MainPictureForm.cshtml", Model)

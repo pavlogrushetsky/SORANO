@@ -37,7 +37,7 @@
                   method="post">
                 <input type="hidden" asp-for="ID" />
                 <input type="hidden" asp-for="CanBeModified" />
-                <div asp-validation-summary="All" class="text-danger"></div>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 @if (Model.CanBeModified || !isEdit)
                 {
                     <div class="form-group">
@@ -46,6 +46,7 @@
                             <span class="input-group-addon"><i class="fa fa-fw fa-user-circle-o"></i></span>
                             <input class="form-control input-sm" type="text" asp-for="Login" placeholder="Логин"/>
                         </div>
+                        <span asp-validation-for="Login" class="text-danger"></span>
                     </div>
                 }
                 @if(isEdit && !Model.CanBeModified)
@@ -62,6 +63,7 @@
                         <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-align-justify"></i></span>
                         <textarea class="form-control input-sm" rows="3" asp-for="Description" placeholder="Описание"></textarea>
                     </div>
+                    <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
                 @if (!isEdit)
                 {
@@ -71,6 +73,7 @@
                             <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
                             <input class="form-control input-sm" type="password" asp-for="Password" placeholder="Новый пароль"/>
                         </div>
+                        <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
                 }
                 @if (isEdit && Model.CanBeModified)
@@ -81,6 +84,7 @@
                             <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
                             <input class="form-control input-sm" type="password" asp-for="NewPassword" placeholder="Новый пароль" />
                         </div>
+                        <span asp-validation-for="NewPassword" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label class="control-label" asp-for="RepeatPassword"></label>
@@ -88,6 +92,7 @@
                             <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
                             <input class="form-control input-sm" type="password" asp-for="RepeatPassword" placeholder="Повторите новый пароль" />
                         </div>
+                        <span asp-validation-for="RepeatPassword" class="text-danger"></span>
                     </div>
                 }
                 @if (Model.CanBeModified || !isEdit)
@@ -98,6 +103,7 @@
                             <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-vcard"></i></span>
                             <select class="form-control input-sm" asp-for="RoleIDs" asp-items="@ViewBag.Roles"></select>
                         </div>
+                        <span asp-validation-for="Roles" class="text-danger"></span>
                     </div>
                 }                
                 <div class="form-group">
