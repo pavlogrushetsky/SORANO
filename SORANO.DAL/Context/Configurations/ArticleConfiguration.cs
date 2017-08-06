@@ -36,11 +36,7 @@ namespace SORANO.DAL.Context.Configurations
 
             Property(a => a.Barcode)
                 .IsOptional()
-                .HasMaxLength(50)
-                .HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute("IX_Article_Barcode")
-                {
-                    IsUnique = true
-                }));
+                .HasMaxLength(50);
 
             ToTable("Articles");
         }

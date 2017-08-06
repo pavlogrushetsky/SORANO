@@ -124,15 +124,6 @@ namespace SORANO.BLL.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Артикул с таким штрих-кодом уже существует..
-        /// </summary>
-        internal static string ArticleWithSameBarcodeException {
-            get {
-                return ResourceManager.GetString("ArticleWithSameBarcodeException", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Тип вложений не может быть удалён..
         /// </summary>
         internal static string AttachmentTypeCannotBeDeletedException {

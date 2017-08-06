@@ -51,7 +51,7 @@ namespace SORANO.WEB.Controllers
             }
 
             ModelState.AddModelError(nameof(model.Login), "Некорректные логин и/или пароль");
-            ModelState.AddModelError(nameof(model.Password), string.Empty);
+            ModelState.AddModelError(nameof(model.Password), "Некорректные логин и/или пароль");
 
             return View(model);
         }

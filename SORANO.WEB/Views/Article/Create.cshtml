@@ -75,6 +75,7 @@
                     <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-align-justify"></i></span>
                     <textarea class="form-control input-sm" rows="3" asp-for="Description" placeholder="Описание"></textarea>
                 </div>
+                <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="Producer"></label>
@@ -82,6 +83,7 @@
                     <span class="input-group-addon"><i class="fa fa-fw fa-suitcase"></i></span>
                     <input class="form-control input-sm" type="text" asp-for="Producer" placeholder="Производитель"/>
                 </div>
+                <span asp-validation-for="Producer" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="Code"></label>
@@ -89,6 +91,7 @@
                     <span class="input-group-addon"><i class="fa fa-fw fa-barcode"></i></span>
                     <input class="form-control input-sm" type="text" asp-for="Code" placeholder="Код"/>
                 </div>
+                <span asp-validation-for="Code" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="Barcode"></label>
@@ -96,6 +99,7 @@
                     <span class="input-group-addon"><i class="fa fa-fw fa-barcode"></i></span>
                     <input class="form-control input-sm" type="text" asp-for="Barcode" placeholder="Штрих-код"/>
                 </div>
+                <span asp-validation-for="Barcode" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="Type"></label>

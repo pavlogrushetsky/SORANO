@@ -212,7 +212,14 @@ namespace SORANO.WEB.Controllers
                 ViewBag.ArticleTypes = articleTypes;
 
                 await LoadMainPicture(model, mainPictureFile);
-                await LoadAttachments(model, attachments);                               
+                await LoadAttachments(model, attachments);
+
+                var barcodeExists = await _articleService.BarcodeExistsAsync(model.Barcode);
+
+                if (barcodeExists)
+                {
+                    ModelState.AddModelError("Barcode", "Артикул с таким штрих-кодом уже существует");
+                }
 
                 if (!ModelState.IsValid)
                 {                   
@@ -276,6 +283,13 @@ namespace SORANO.WEB.Controllers
 
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
+
+                var barcodeExists = await _articleService.BarcodeExistsAsync(model.Barcode, model.ID);
+
+                if (barcodeExists)
+                {
+                    ModelState.AddModelError("Barcode", "Артикул с таким штрих-кодом уже существует");
+                }
 
                 if (!ModelState.IsValid)
                 {

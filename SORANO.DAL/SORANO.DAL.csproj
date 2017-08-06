@@ -75,6 +75,10 @@
     <Compile Include="Migrations\201707201725480_AddedLocationToDelivery.Designer.cs">
       <DependentUpon>201707201725480_AddedLocationToDelivery.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708061737225_ReimplementedBarcodeUniqueIndex.cs" />
+    <Compile Include="Migrations\201708061737225_ReimplementedBarcodeUniqueIndex.Designer.cs">
+      <DependentUpon>201708061737225_ReimplementedBarcodeUniqueIndex.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\IUnitOfWork.cs" />
     <Compile Include="Context\StockContext.cs" />
     <Compile Include="Repositories\UnitOfWork.cs" />
@@ -108,6 +112,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201707201725480_AddedLocationToDelivery.resx">
       <DependentUpon>201707201725480_AddedLocationToDelivery.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708061737225_ReimplementedBarcodeUniqueIndex.resx">
+      <DependentUpon>201708061737225_ReimplementedBarcodeUniqueIndex.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -383,7 +383,9 @@ namespace SORANO.WEB.Controllers
                     {
                         var path = await Load(newAttachment, _entityTypeName);
                         model.Attachments[i].FullPath = path;
-                        model.Attachments[i].IsNew = false;                      
+                        model.Attachments[i].IsNew = false;
+
+                        ModelState.RemoveFor($"Attachments[{i}].FullPath");
                     }
 
                     attachmentCounter++;
@@ -400,6 +402,8 @@ namespace SORANO.WEB.Controllers
                 model.MainPicture.TypeID = await GetMainPictureTypeID();
                 model.MainPicture.FullPath = path;
                 model.MainPicture.Name = mainPicture.FileName;
+
+                ModelState.RemoveFor("MainPicture");
             }
         }
 

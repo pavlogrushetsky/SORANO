@@ -15,7 +15,8 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 Name = article.Name,
                 Producer = article.Producer,
                 Description = article.Description,
-                Barcode = article.Barcode,                
+                Barcode = article.Barcode,      
+                TypeID = article.TypeID.ToString(),
                 Type = article.Type.ToModel(false),
                 Recommendations = article.Recommendations?.Where(r => !r.IsDeleted).Select(r => r.ToModel()).ToList(),
                 MainPicture = article.Attachments?.SingleOrDefault(a => !a.IsDeleted && a.Type.Name.Equals("Основное изображение"))?.ToModel() ?? new AttachmentModel(),
@@ -41,7 +42,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 Producer = model.Producer,
                 Code = model.Code,
                 Barcode = model.Barcode,
-                TypeID = model.Type.ID,
+                TypeID = int.Parse(model.TypeID),
                 Recommendations = model.Recommendations.Select(r => r.ToEntity()).ToList(),
                 Attachments = model.Attachments.Select(a => a.ToEntity()).ToList()
             };

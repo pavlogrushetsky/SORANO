@@ -49,13 +49,6 @@ namespace SORANO.BLL.Services
                 throw new ArgumentException(Resource.ArticleInvalidIdentifierException, nameof(article.ID));
             }
 
-            var articlesWithSameBarcode = await _unitOfWork.Get<Article>().FindByAsync(a => a.Barcode.Equals(article.Barcode));
-
-            if (articlesWithSameBarcode.Any())
-            {
-                throw new Exception(Resource.ArticleWithSameBarcodeException);
-            }
-
             // Get user by specified identifier
             var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
@@ -98,13 +91,6 @@ namespace SORANO.BLL.Services
             if (article.ID <= 0)
             {
                 throw new ArgumentException(Resource.ArticleInvalidIdentifierException, nameof(article.ID));
-            }
-
-            var articlesWithSameBarcode = await _unitOfWork.Get<Article>().FindByAsync(a => a.Barcode.Equals(article.Barcode) && a.ID != article.ID);
-
-            if (articlesWithSameBarcode.Any())
-            {
-                throw new Exception(Resource.ArticleWithSameBarcodeException);
             }
 
             // Get user by specified identifier
@@ -161,6 +147,18 @@ namespace SORANO.BLL.Services
             _unitOfWork.Get<Article>().Update(existentArticle);
 
             await _unitOfWork.SaveAsync();
+        }
+
+        public async Task<bool> BarcodeExistsAsync(string barcode, int articleId = 0)
+        {
+            if (string.IsNullOrEmpty(barcode))
+            {
+                return false;
+            }
+
+            var articlesWithSameBarcode = await _unitOfWork.Get<Article>().FindByAsync(a => a.Barcode.Equals(barcode) && a.ID != articleId);
+
+            return articlesWithSameBarcode.Any();
         }
     }
 }
