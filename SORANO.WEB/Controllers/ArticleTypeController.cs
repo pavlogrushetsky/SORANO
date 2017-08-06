@@ -59,6 +59,7 @@ namespace SORANO.WEB.Controllers
             }
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
+            ViewBag.ArticleTypes = await GetArticleTypes();
 
             return View(model);
         }
@@ -91,6 +92,7 @@ namespace SORANO.WEB.Controllers
             }
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
+            ViewBag.ArticleTypes = await GetArticleTypes(id);
 
             ViewData["IsEdit"] = true;
 
@@ -201,6 +203,7 @@ namespace SORANO.WEB.Controllers
 
                     if (_memoryCache.TryGetValue(CacheKeys.CreateArticleTypeCacheKey, out ArticleModel cachedArticle))
                     {
+                        cachedArticle.TypeID = articleType.ID.ToString();
                         cachedArticle.Type = articleType.ToModel();
                         _memoryCache.Set(CacheKeys.CreateArticleTypeCacheKey, cachedArticle);
                         Session.SetBool(CacheKeys.CreateArticleTypeCacheValidKey, true);
@@ -237,7 +240,7 @@ namespace SORANO.WEB.Controllers
             return await TryGetActionResultAsync(async () =>
             {
                 attachmentTypes = await GetAttachmentTypes();
-                articleTypes = await GetArticleTypes();
+                articleTypes = await GetArticleTypes(model.ID);
 
                 ViewBag.AttachmentTypes = attachmentTypes;
                 ViewBag.ArticleTypes = articleTypes;
@@ -314,7 +317,7 @@ namespace SORANO.WEB.Controllers
 
         #endregion
 
-        private async Task<List<SelectListItem>> GetArticleTypes()
+        private async Task<List<SelectListItem>> GetArticleTypes(int currentTypeId = 0)
         {
             var articleTypes = await _articleTypeService.GetAllAsync(false);
 
@@ -327,7 +330,7 @@ namespace SORANO.WEB.Controllers
                 }
             };
 
-            articleTypeItems.AddRange(articleTypes.Select(t => new SelectListItem
+            articleTypeItems.AddRange(articleTypes.Where(t => t.ID != currentTypeId).Select(t => new SelectListItem
             {
                 Value = t.ID.ToString(),
                 Text = t.Name

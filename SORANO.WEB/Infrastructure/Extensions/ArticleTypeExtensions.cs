@@ -14,6 +14,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 ID = type.ID,
                 Name = type.Name,
                 Description = type.Description,
+                ParentTypeID = type.ParentType?.ID.ToString(),
                 CanBeDeleted = type.Articles.All(a => a.IsDeleted) && !type.IsDeleted,      
                 IsDeleted = type.IsDeleted,
                 Recommendations = type.Recommendations?.Where(r => !r.IsDeleted).Select(r => r.ToModel()).ToList(),
@@ -68,7 +69,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 ID = model.ID,
                 Name = model.Name,
                 Description = model.Description,
-                ParentTypeId = model.ParentType != null && model.ParentType.ID > 0 ? (int?)model.ParentType.ID : null,
+                ParentTypeId = string.IsNullOrEmpty(model.ParentTypeID) ? null : (int?)int.Parse(model.ParentTypeID),
                 Recommendations = model.Recommendations.Select(r => r.ToEntity()).ToList(),
                 Attachments = model.Attachments.Select(a => a.ToEntity()).ToList()
             };
