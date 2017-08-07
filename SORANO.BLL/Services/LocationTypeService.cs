@@ -61,13 +61,6 @@ namespace SORANO.BLL.Services
                 throw new ArgumentException(Resource.LocationTypeInvalidIdentifierException, nameof(locationType.ID));
             }
 
-            var locationTypes = await _unitOfWork.Get<LocationType>().FindByAsync(t => t.Name.Equals(locationType.Name));
-
-            if (locationTypes.Any())
-            {
-                throw new Exception(Resource.LocationTypeWithSameNameException);
-            }
-
             // Get user by specified identifier
             var user = await _unitOfWork.Get<User>().GetAsync(s => s.ID == userId);
 
@@ -110,14 +103,7 @@ namespace SORANO.BLL.Services
             if (locationType.ID <= 0)
             {
                 throw new ArgumentException(Resource.LocationTypeInvalidIdentifierException, nameof(locationType.ID));
-            }
-
-            var locationTypes = await _unitOfWork.Get<LocationType>().FindByAsync(t => t.Name.Equals(locationType.Name) && t.ID != locationType.ID);
-
-            if (locationTypes.Any())
-            {
-                throw new Exception(Resource.LocationTypeWithSameNameException);
-            }
+            }            
 
             // Get user by specified identifier
             var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
@@ -169,6 +155,18 @@ namespace SORANO.BLL.Services
             _unitOfWork.Get<LocationType>().Update(existentLocationType);
 
             await _unitOfWork.SaveAsync();
+        }
+
+        public async Task<bool> Exists(string name, int locationTypeId = 0)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return false;
+            }
+
+            var locationTypes = await _unitOfWork.Get<LocationType>().FindByAsync(t => t.Name.Equals(name) && t.ID != locationTypeId);
+
+            return locationTypes.Any();
         }
     }
 }

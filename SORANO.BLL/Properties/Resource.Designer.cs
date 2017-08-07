@@ -160,15 +160,6 @@ namespace SORANO.BLL.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Тип вложений с таким названием уже существует..
-        /// </summary>
-        internal static string AttachmentTypeWithSameNameException {
-            get {
-                return ResourceManager.GetString("AttachmentTypeWithSameNameException", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Клиент не может быть удалён..
         /// </summary>
         internal static string ClientCannotBeDeletedException {
@@ -295,15 +286,6 @@ namespace SORANO.BLL.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Тип мест с таким названием уже существует..
-        /// </summary>
-        internal static string LocationTypeWithSameNameException {
-            get {
-                return ResourceManager.GetString("LocationTypeWithSameNameException", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Поставщик не может быть удалён..
         /// </summary>
         internal static string SupplierCannotBeDeletedException {
@@ -354,15 +336,6 @@ namespace SORANO.BLL.Properties {
         internal static string UserNotFoundException {
             get {
                 return ResourceManager.GetString("UserNotFoundException", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Пользователь с таким логином уже существует..
-        /// </summary>
-        internal static string UserWithSameLoginException {
-            get {
-                return ResourceManager.GetString("UserWithSameLoginException", resourceCulture);
             }
         }
     }

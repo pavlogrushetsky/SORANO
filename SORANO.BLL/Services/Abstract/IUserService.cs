@@ -23,5 +23,7 @@ namespace SORANO.BLL.Services.Abstract
         Task DeleteAsync(int id);
 
         Task<User> UpdateAsync(User user);
+
+        Task<bool> Exists(string login, int userId = 0);
     }
 }

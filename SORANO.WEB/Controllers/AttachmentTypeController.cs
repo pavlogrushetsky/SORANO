@@ -67,6 +67,13 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
+                var exists = await _attachmentTypeService.Exists(model.Name);
+
+                if (exists)
+                {
+                    ModelState.AddModelError("Name", "Тип вложений с таким названием уже существует");
+                }
+
                 if (!ModelState.IsValid)
                 {
                     return View(model);
@@ -98,6 +105,13 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
+                var exists = await _attachmentTypeService.Exists(model.Name, model.ID);
+
+                if (exists)
+                {
+                    ModelState.AddModelError("Name", "Тип вложений с таким названием уже существует");
+                }
+
                 if (!ModelState.IsValid)
                 {
                     ViewData["IsEdit"] = true;

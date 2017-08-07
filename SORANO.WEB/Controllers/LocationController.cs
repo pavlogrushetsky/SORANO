@@ -159,13 +159,6 @@ namespace SORANO.WEB.Controllers
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
-                int.TryParse(model.TypeID, out int typeId);
-
-                if (typeId <= 0)
-                {
-                    ModelState.AddModelError("Type", "Необходимо указать тип места.");
-                }
-
                 // Check the model
                 if (!ModelState.IsValid)
                 {
@@ -232,13 +225,6 @@ namespace SORANO.WEB.Controllers
 
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
-
-                int.TryParse(model.TypeID, out int typeId);
-
-                if (typeId <= 0)
-                {
-                    ModelState.AddModelError("Type", "Необходимо указать тип места.");
-                }
 
                 // Check the model
                 if (!ModelState.IsValid)

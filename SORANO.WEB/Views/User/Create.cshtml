@@ -98,12 +98,12 @@
                 @if (Model.CanBeModified || !isEdit)
                 {
                     <div class="form-group">
-                        <label class="control-label" asp-for="Roles"></label>
+                        <label class="control-label" asp-for="RoleIDs"></label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-vcard"></i></span>
                             <select class="form-control input-sm" asp-for="RoleIDs" asp-items="@ViewBag.Roles"></select>
                         </div>
-                        <span asp-validation-for="Roles" class="text-danger"></span>
+                        <span asp-validation-for="RoleIDs" class="text-danger"></span>
                     </div>
                 }                
                 <div class="form-group">

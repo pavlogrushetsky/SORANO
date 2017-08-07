@@ -38,13 +38,6 @@ namespace SORANO.BLL.Services
                 throw new ArgumentException(Resource.UserInvalidIdentifierException);
             }
 
-            var userWithSameLogin = await _unitOfWork.Get<User>().FindByAsync(u => u.Login.Equals(user.Login));
-
-            if (userWithSameLogin.Any())
-            {
-                throw new Exception(Resource.UserWithSameLoginException);
-            }
-
             user.Password = CryptoHelper.Hash(user.Password);
 
             var roles = await _unitOfWork.Get<Role>().GetAllAsync();
@@ -146,6 +139,18 @@ namespace SORANO.BLL.Services
             _unitOfWork.Get<User>().Update(user);
 
             await _unitOfWork.SaveAsync();           
-        }       
+        }
+
+        public async Task<bool> Exists(string login, int userId = 0)
+        {
+            if (string.IsNullOrEmpty(login))
+            {
+                return false;
+            }
+
+            var userWithSameLogin = await _unitOfWork.Get<User>().FindByAsync(u => u.Login.Equals(login) && u.ID != userId);
+
+            return userWithSameLogin.Any();
+        }
     }
 }

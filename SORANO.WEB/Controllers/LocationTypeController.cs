@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -10,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using MimeTypes;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Models;
 
@@ -132,6 +129,13 @@ namespace SORANO.WEB.Controllers
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
+                var typeExists = await _locationTypeService.Exists(model.Name);
+
+                if (typeExists)
+                {
+                    ModelState.AddModelError("Name", "Тип места с таким названием уже существует");
+                }
+
                 // Check the model
                 if (!ModelState.IsValid)
                 {
@@ -195,6 +199,13 @@ namespace SORANO.WEB.Controllers
 
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
+
+                var typeExists = await _locationTypeService.Exists(model.Name, model.ID);
+
+                if (typeExists)
+                {
+                    ModelState.AddModelError("Name", "Тип места с таким названием уже существует");
+                }
 
                 // Check the model
                 if (!ModelState.IsValid)

@@ -17,5 +17,7 @@ namespace SORANO.BLL.Services.Abstract
         Task<AttachmentType> UpdateAsync(AttachmentType attachmentType, int userId);
 
         Task DeleteAsync(int id, int userId);
+
+        Task<bool> Exists(string name, int attachmentTypeId = 0);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using SORANO.WEB.Models;
+using System.Linq;
 
 namespace SORANO.WEB.Validators
 {
@@ -30,7 +31,14 @@ namespace SORANO.WEB.Validators
 
             RuleFor(u => u.RepeatPassword)
                 .Equal(u => u.NewPassword)
-                .WithMessage("Необходимо, чтобы значения полей \"Новый пароль\" совпадали");           
+                .WithMessage("Необходимо, чтобы значения полей \"Новый пароль\" совпадали");
+
+            RuleFor(u => u.RoleIDs)
+                .Must(u =>
+                {
+                    return u != null && u.Any();
+                })
+                .WithMessage("Пользователю необходимо назначить хотя бы одну роль");
         }
     }
 }

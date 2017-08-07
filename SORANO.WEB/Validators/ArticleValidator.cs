@@ -36,9 +36,9 @@ namespace SORANO.WEB.Validators
                 .WithMessage("Длина штрих-кода не должна превышать 50 символов");
 
             RuleFor(a => a.TypeID)
-                .Must(s => 
+                .Must(a => 
                 {
-                    int.TryParse(s, out int id);
+                    int.TryParse(a, out int id);
                     return id > 0;
                 })
                 .WithMessage("Необходимо указать тип");

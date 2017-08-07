@@ -13,6 +13,17 @@
     ViewBag.Icon = "fa fa-fw fa-map-marker";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/lib/select2/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="~/lib/select2-bootstrap-theme/dist/select2-bootstrap.min.css" />
+    <style>
+        span.select2-selection.select2-selection--single {
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+        }
+    </style>
+}
+
 @section Breadcrumb {
     <ul class="breadcrumb">
         <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
@@ -70,7 +81,9 @@
                 <label class="control-label" asp-for="TypeID"></label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-map-signs"></i></span>
-                    <select class="form-control input-sm" asp-for="TypeID" asp-items="@ViewBag.LocationTypes"></select>
+                    <select class="form-control input-sm select-location-type" 
+                            asp-for="TypeID" 
+                            asp-items="@ViewBag.LocationTypes"></select>
                     @if (string.IsNullOrEmpty(Model.ReturnPath))
                     {
                         <span class="input-group-btn">
@@ -112,6 +125,8 @@
 </form>
 
 @section Scripts {
+    <script src="~/lib/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/lib/moment/min/moment-with-locales.min.js"></script>
     <environment names="Development">
         <script src="~/js/pages/locationCreate.js"></script>
     </environment>

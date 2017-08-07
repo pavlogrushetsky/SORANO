@@ -17,5 +17,7 @@ namespace SORANO.BLL.Services.Abstract
         Task DeleteAsync(int id, int userId);
 
         Task<LocationType> GetIncludeAllAsync(int id);
+
+        Task<bool> Exists(string name, int locationType = 0);
     }
 }

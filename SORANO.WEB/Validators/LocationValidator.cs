@@ -22,6 +22,20 @@ namespace SORANO.WEB.Validators
             RuleFor(l => l.Comment)
                 .MaximumLength(1000)
                 .WithMessage("Длина коментария не должна превышать 1000 символов");
+
+            RuleFor(l => l.TypeID)
+                .Must(l =>
+                {
+                    int.TryParse(l, out int id);
+                    return id > 0;
+                })
+                .WithMessage("Необходимо указать тип");
+
+            RuleForEach(l => l.Attachments)
+                .SetValidator(new AttachmentValidator());
+
+            RuleForEach(l => l.Recommendations)
+                .SetValidator(new RecommendationValidator());
         }
     }
 }

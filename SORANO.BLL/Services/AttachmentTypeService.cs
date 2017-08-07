@@ -40,14 +40,7 @@ namespace SORANO.BLL.Services
             if (attachmentType.ID != 0)
             {
                 throw new ArgumentException(Resource.AttachmentTypeInvalidIdentifierException, nameof(attachmentType.ID));
-            }
-
-            var attachmentTypes = await _unitOfWork.Get<AttachmentType>().FindByAsync(t => t.Name.Equals(attachmentType.Name));
-
-            if (attachmentTypes.Any())
-            {
-                throw new Exception(Resource.AttachmentTypeWithSameNameException);
-            }
+            }           
 
             var user = await _unitOfWork.Get<User>().GetAsync(s => s.ID == userId);
 
@@ -75,14 +68,7 @@ namespace SORANO.BLL.Services
             if (attachmentType.ID <= 0)
             {
                 throw new ArgumentException(Resource.AttachmentTypeInvalidIdentifierException, nameof(attachmentType.ID));
-            }
-
-            var attachmentTypes = await _unitOfWork.Get<AttachmentType>().FindByAsync(t => t.Name.Equals(attachmentType.Name) && t.ID != attachmentType.ID);
-
-            if (attachmentTypes.Any())
-            {
-                throw new Exception(Resource.AttachmentTypeWithSameNameException);
-            }
+            }           
 
             var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
@@ -132,6 +118,18 @@ namespace SORANO.BLL.Services
             var type = await _unitOfWork.Get<AttachmentType>().GetAsync(t => t.Name.Equals("Основное изображение"));
 
             return type.ID;
+        }
+
+        public async Task<bool> Exists(string name, int attachmentTypeId = 0)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return false;
+            }
+
+            var attachmentTypes = await _unitOfWork.Get<AttachmentType>().FindByAsync(t => t.Name.Equals(name) && t.ID != attachmentTypeId);
+
+            return attachmentTypes.Any();
         }
     }
 }

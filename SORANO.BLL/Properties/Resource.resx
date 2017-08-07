@@ -159,9 +159,6 @@
   <data name="LocationTypeInvalidIdentifierException" xml:space="preserve">
     <value>Недопустимое значение идентификатора типа мест.</value>
   </data>
-  <data name="LocationTypeWithSameNameException" xml:space="preserve">
-    <value>Тип мест с таким названием уже существует.</value>
-  </data>
   <data name="LocationTypeNotFoundException" xml:space="preserve">
     <value>Тип мест не найден.</value>
   </data>
@@ -176,9 +173,6 @@
   </data>
   <data name="UserInvalidIdentifierException" xml:space="preserve">
     <value>Недопустимое значение идентификатора пользователя.</value>
-  </data>
-  <data name="UserWithSameLoginException" xml:space="preserve">
-    <value>Пользователь с таким логином уже существует.</value>
   </data>
   <data name="LocationNotFoundException" xml:space="preserve">
     <value>Место не найдено</value>
@@ -197,9 +191,6 @@
   </data>
   <data name="AttachmentTypeCannotBeDeletedException" xml:space="preserve">
     <value>Тип вложений не может быть удалён.</value>
-  </data>
-  <data name="AttachmentTypeWithSameNameException" xml:space="preserve">
-    <value>Тип вложений с таким названием уже существует.</value>
   </data>
   <data name="ClientCannotBeDeletedException" xml:space="preserve">
     <value>Клиент не может быть удалён.</value>

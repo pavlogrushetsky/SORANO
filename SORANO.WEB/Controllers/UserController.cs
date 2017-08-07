@@ -180,6 +180,13 @@ namespace SORANO.WEB.Controllers
 
                 ViewBag.Roles = userRoles;
 
+                var exists = await _userService.Exists(model.Login, model.ID);
+
+                if (exists)
+                {
+                    ModelState.AddModelError("Login", "Пользователь с таким логином уже существует");
+                }
+
                 if (!ModelState.IsValid)
                 {
                     ViewData["IsEdit"] = true;
@@ -222,9 +229,11 @@ namespace SORANO.WEB.Controllers
 
                 ViewBag.Roles = userRoles;
 
-                if (model.RoleIDs == null || !model.RoleIDs.Any())
+                var exists = await _userService.Exists(model.Login);
+
+                if (exists)
                 {
-                    ModelState.AddModelError("RoleIDs", "Пользователю необходимо назначить хотя бы одну роль.");
+                    ModelState.AddModelError("Login", "Пользователь с таким логином уже существует");
                 }
 
                 if (!ModelState.IsValid)
