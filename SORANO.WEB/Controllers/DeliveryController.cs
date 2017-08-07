@@ -264,39 +264,6 @@ namespace SORANO.WEB.Controllers
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
-                if (model.SelectedCurrency == 1 && (!model.DollarRate.HasValue || model.DollarRate <= 0.0M))
-                {
-                    ModelState.AddModelError("DollarRate", "Необходимо указать курс доллара");
-                }
-
-                if (model.SelectedCurrency == 2 && (!model.EuroRate.HasValue || model.EuroRate <= 0.0M))
-                {
-                    ModelState.AddModelError("EuroRate", "Необходимо указать курс евро");
-                }
-
-                if (model.TotalGrossPrice != model.DeliveryItems.Sum(i => i.GrossPrice))
-                {
-                    ModelState.AddModelError("", "Общая сумма некорректна");
-                }
-
-                if (model.TotalDiscount != model.DeliveryItems.Sum(i => i.Discount))
-                {
-                    ModelState.AddModelError("", "Общая сумма скидки некорректна");
-                }
-
-                if (model.TotalDiscountPrice != model.TotalGrossPrice - model.TotalDiscount)
-                {
-                    ModelState.AddModelError("", "Общая сумма с учётом скидки некорректна");
-                }
-
-                if (model.Status)
-                {
-                    if (string.IsNullOrEmpty(model.PaymentDate))
-                    {
-                        ModelState.AddModelError("PaymentDate", "Необходимо указать дату оплаты");
-                    }
-                }
-
                 // TODO Validation
 
                 if (!ModelState.IsValid)

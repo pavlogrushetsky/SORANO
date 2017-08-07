@@ -242,7 +242,7 @@ namespace SORANO.WEB.Controllers
                     if (_memoryCache.TryGetValue(CacheKeys.CreateArticleCacheKey, out DeliveryModel cachedDelivery))
                     {
                         cachedDelivery.DeliveryItems[cachedDelivery.CurrentItemNumber].Article = model;
-                        cachedDelivery.DeliveryItems[cachedDelivery.CurrentItemNumber].ArticleID = article.ID;
+                        cachedDelivery.DeliveryItems[cachedDelivery.CurrentItemNumber].ArticleID = article.ID.ToString();
                         _memoryCache.Set(CacheKeys.CreateArticleCacheKey, cachedDelivery);
                         Session.SetBool(CacheKeys.CreateArticleCacheValidKey, true);
                     }

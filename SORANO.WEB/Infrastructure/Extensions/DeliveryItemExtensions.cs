@@ -11,7 +11,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
             {
                 ID = item.ID,
                 DeliveryID = item.DeliveryID,
-                ArticleID = item.ArticleID,
+                ArticleID = item.ArticleID.ToString(),
                 Quantity = item.Quantity,
                 UnitPrice = item.UnitPrice,
                 GrossPrice = item.GrossPrice,
@@ -30,7 +30,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 GrossPrice = model.GrossPrice,
                 Discount = model.Discount,
                 DiscountedPrice = model.DiscountPrice,
-                ArticleID = model.ArticleID,
+                ArticleID = int.Parse(model.ArticleID),
                 Quantity = model.Quantity
             };
 

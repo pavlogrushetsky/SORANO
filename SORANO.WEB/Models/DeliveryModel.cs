@@ -6,12 +6,9 @@ namespace SORANO.WEB.Models
     public class DeliveryModel : EntityBaseModel
     {
         [Display(Name = "Номер накладной")]
-        [Required(ErrorMessage = "Необходимо указать номер накладной")]
-        [MaxLength(100, ErrorMessage = "Длина номера накладной не должна превышать 100 символов")]
         public string BillNumber { get; set; }
 
         [Display(Name = "Дата поставки")]
-        [Required(ErrorMessage = "Необходимо указать дату поставки")]
         public string DeliveryDate { get; set; }
 
         [Display(Name = "Дата оплаты")]
@@ -45,12 +42,10 @@ namespace SORANO.WEB.Models
         public SupplierModel Supplier { get; set; }
 
         [Display(Name = "Поставщик")]
-        [Range(1, int.MaxValue, ErrorMessage = "Необходимо указать поставщика")]
-        public int SupplierID { get; set; }
+        public string SupplierID { get; set; }
 
         [Display(Name = "Место поставки")]
-        [Range(1, int.MaxValue, ErrorMessage = "Необходимо указать место поставки")]
-        public int LocationID { get; set; }
+        public string LocationID { get; set; }
 
         [Display(Name = "Место поставки")]
         public LocationModel Location { get; set; }
