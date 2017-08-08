@@ -12,27 +12,21 @@ namespace SORANO.WEB.Models
         public string DeliveryDate { get; set; }
 
         [Display(Name = "Дата оплаты")]
-        [DataType(DataType.Date)]
         public string PaymentDate { get; set; }
 
         [Display(Name = "Курс доллара США")]
-        [DisplayFormat(DataFormatString = "{0:F}", ApplyFormatInEditMode = true)]
         public decimal? DollarRate { get; set; }
 
         [Display(Name = "Курс евро")]
-        [DisplayFormat(DataFormatString = "{0:F}", ApplyFormatInEditMode = true)]
         public decimal? EuroRate { get; set; }
 
         [Display(Name = "Общая сумма")]
-        [DisplayFormat(DataFormatString = "{0:F}", ApplyFormatInEditMode = true)]
         public decimal TotalGrossPrice { get; set; }
 
         [Display(Name = "Размер скидки")]
-        [DisplayFormat(DataFormatString = "{0:F}", ApplyFormatInEditMode = true)]
         public decimal TotalDiscount { get; set; }
 
         [Display(Name = "Общая сумма с учётом скидки")]
-        [DisplayFormat(DataFormatString = "{0:F}", ApplyFormatInEditMode = true)]
         public decimal TotalDiscountPrice { get; set; }
 
         [Display(Name = "Статус")]

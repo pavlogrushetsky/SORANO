@@ -17,6 +17,12 @@
     <link rel="stylesheet" href="~/lib/select2/dist/css/select2.min.css" />
     <link rel="stylesheet" href="~/lib/select2-bootstrap-theme/dist/select2-bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+    <style>
+        span.select2-selection.select2-selection--single {
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+        }
+    </style>
 }
 
 @section Breadcrumb {
@@ -63,17 +69,20 @@
         </div>
         <div class="col-lg-4 col-md-12 col-sm-12">
             <div class="form-group">
-                <label class="control-label" asp-for="BillNumber">Номер накладной:</label>
+                <label class="control-label" asp-for="BillNumber"></label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-cart-arrow-down"></i></span>
                     <input class="form-control input-sm" type="text" asp-for="BillNumber" placeholder="Номер накладной"/>
                 </div>
+                <span asp-validation-for="BillNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label" asp-for="SupplierID">Поставщик:</label>
+                <label class="control-label" asp-for="SupplierID"></label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-truck"></i></span>
-                    <select class="form-control input-sm" asp-for="SupplierID" asp-items="@ViewBag.Suppliers"></select>
+                    <select class="form-control input-sm select-supplier" 
+                            asp-for="SupplierID" 
+                            asp-items="@ViewBag.Suppliers"></select>
                     <span class="input-group-btn">
                         <button class="btn btn-default btn-sm"
                                 type="submit"
@@ -87,12 +96,15 @@
                         </button>
                     </span>
                 </div>
+                <span asp-validation-for="SupplierID" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label" asp-for="LocationID">Место поставки:</label>
+                <label class="control-label" asp-for="LocationID"></label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
-                    <select class="form-control input-sm" asp-for="LocationID" asp-items="@ViewBag.Locations"></select>
+                    <select class="form-control input-sm select-location" 
+                            asp-for="LocationID" 
+                            asp-items="@ViewBag.Locations"></select>
                     <span class="input-group-btn">
                         <button class="btn btn-default btn-sm"
                                 type="submit"
@@ -106,27 +118,30 @@
                         </button>
                     </span>
                 </div>
+                <span asp-validation-for="LocationID" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label" asp-for="DeliveryDate">Дата поставки:</label>
+                <label class="control-label" asp-for="DeliveryDate"></label>
                 <div class="input-group input-group-sm date" id="pick-delivery-date">
                     <input class="form-control input-sm" type="text" asp-for="DeliveryDate" placeholder="Дата поставки" />
                     <span class="input-group-addon">
                         <span class="fa fa-fw fa-calendar"></span>
                     </span>
                 </div>
+                <span asp-validation-for="DeliveryDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label" asp-for="PaymentDate">Дата оплаты:</label>
+                <label class="control-label" asp-for="PaymentDate"></label>
                 <div class="input-group input-group-sm date" id="pick-payment-date">
                     <input class="form-control input-sm" type="text" asp-for="PaymentDate" placeholder="Дата оплаты" />
                     <span class="input-group-addon">
                         <span class="fa fa-fw fa-calendar"></span>
                     </span>
                 </div>
+                <span asp-validation-for="PaymentDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">Валюта:</label>
+                <label class="control-label">Валюта</label>
                 <table class="table table-responsive" style="width: 100%; margin-bottom: 0;">
                     <tbody>
                     <tr>
@@ -136,8 +151,8 @@
                                     <input type="radio" name="select_currency" id="select_currency_uah" value="0" style="margin-right: 1px;"/>
                                     <span style="font-weight: bold;">&#8372;</span>
                                 </span>
-                                <input type="text" readonly="readonly" class="form-control input-sm" />
-                            </div>
+                                <input type="text" readonly="readonly" class="form-control input-sm"/>
+                            </div>                          
                         </td>
                         <td style="width: 33%; padding: 0; padding-right: 5px;">
                             <div class="input-group input-group-sm">
@@ -147,6 +162,7 @@
                                 </span>
                                 <input type="number" readonly="readonly" step="0.01" min="0.0" asp-for="DollarRate" class="form-control input-sm" />
                             </div>
+                            <span asp-validation-for="DollarRate" class="text-danger"></span>
                         </td>
                         <td style="width: 33%; padding: 0; padding-right: 5px;">
                             <div class="input-group input-group-sm">
@@ -156,6 +172,7 @@
                                 </span>
                                 <input type="number" readonly="readonly" step="0.01" min="0.0" asp-for="EuroRate" class="form-control input-sm" />
                             </div>
+                            <span asp-validation-for="EuroRate" class="text-danger"></span>
                         </td>
                     </tr>
                     </tbody>
@@ -210,44 +227,57 @@
                                                     <i class="fa fa-fw fa-plus"></i>
                                                 </button>
                                             </span>
-                                        </div>                                        
+                                        </div>  
+                                        <span asp-validation-for="@Model.DeliveryItems[i].ArticleID" class="text-danger"></span>
                                     </td>
                                     <td style="padding: 0; padding-right: 5px; padding-bottom: 5px;">
                                         <div class="input-group input-group-sm">
                                             <input class="form-control input-sm deliveries delivery_item_quantity"
                                                    id="delivery_item_quantity_@i"
                                                    asp-for="@Model.DeliveryItems[i].Quantity"
-                                                   type="number" min="1" max="1000000"/>
-                                        </div>                                        
+                                                   type="number" 
+                                                   min="1" 
+                                                   max="1000000"/>
+                                        </div> 
+                                        <span asp-validation-for="@Model.DeliveryItems[i].Quantity" class="text-danger"></span>
                                     </td>
                                     <td style="padding: 0; padding-right: 5px; padding-bottom: 5px;">
                                         <div class="input-group input-group-sm">
                                             <input class="form-control input-sm deliveries delivery_item_unitprice"
                                                    id="delivery_item_unitprice_@i"
                                                    asp-for="@Model.DeliveryItems[i].UnitPrice"
-                                                   type="number" min="0.00" step="0.01"/>
-                                        </div>                                        
+                                                   type="number" 
+                                                   min="0.00" 
+                                                   step="0.01"/>
+                                        </div>    
+                                        <span asp-validation-for="@Model.DeliveryItems[i].UnitPrice" class="text-danger"></span>
                                     </td>
                                     <td style="padding: 0; padding-right: 5px; padding-bottom: 5px;">
                                         <div class="input-group input-group-sm">
                                             <input class="form-control input-sm deliveries delivery_item_grossprice"
                                                    asp-for="@Model.DeliveryItems[i].GrossPrice"
-                                                   readonly="readonly">
-                                        </div>                                        
+                                                   readonly="readonly"
+                                                   type="number">
+                                        </div>     
+                                        <span asp-validation-for="@Model.DeliveryItems[i].GrossPrice" class="text-danger"></span>
                                     </td>
                                     <td style="padding: 0; padding-right: 5px; padding-bottom: 5px;">
                                         <div class="input-group input-group-sm">
                                             <input class="form-control input-sm deliveries delivery_item_discount"
                                                    id="delivery_item_discount_@i"
                                                    asp-for="@Model.DeliveryItems[i].Discount"
-                                                   type="number" min="0.00" step="0.01"/>
-                                        </div>                                        
+                                                   type="number" 
+                                                   min="0.00" 
+                                                   step="0.01"/>
+                                        </div>  
+                                        <span asp-validation-for="@Model.DeliveryItems[i].Discount" class="text-danger"></span>
                                     </td>
                                     <td style="padding: 0;padding-right: 5px;padding-bottom: 5px;">
                                         <div class="input-group input-group-sm">
                                             <input class="form-control input-sm deliveries delivery_item_discountprice" 
                                                    asp-for="@Model.DeliveryItems[i].DiscountPrice" 
-                                                   readonly="readonly">
+                                                   readonly="readonly"
+                                                   type="number">
                                             <span class="input-group-btn">
                                                 <button class="btn btn-danger btn-sm"
                                                         type="submit"
@@ -262,6 +292,7 @@
                                                 </button>
                                             </span>
                                         </div>
+                                        <span asp-validation-for="@Model.DeliveryItems[i].DiscountPrice" class="text-danger"></span>
                                     </td>
                                 </tr>                                
                             }

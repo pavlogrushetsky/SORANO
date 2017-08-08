@@ -13,16 +13,12 @@ namespace SORANO.WEB.Models
         [Display(Name = "Количество, шт.")]
         public int Quantity { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:F}", ApplyFormatInEditMode = true)]
         public decimal UnitPrice { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:F}", ApplyFormatInEditMode = true)]
         public decimal GrossPrice { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:F}", ApplyFormatInEditMode = true)]
         public decimal Discount { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:F}", ApplyFormatInEditMode = true)]
         public decimal DiscountPrice { get; set; }
 
         public DeliveryModel Delivery { get; set; }

@@ -7,6 +7,20 @@
             }
         }
     });
+    $('.select-supplier').select2({
+        "language": {
+            "noResults": function () {
+                return "Поставщики не найдены";
+            }
+        }
+    });
+    $('.select-location').select2({
+        "language": {
+            "noResults": function () {
+                return "Места не найдены";
+            }
+        }
+    });
 
     $('.submit-delivery').on('click', function () {
         $('#Status').val(true);
