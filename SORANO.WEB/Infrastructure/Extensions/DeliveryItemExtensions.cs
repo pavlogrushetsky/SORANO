@@ -1,5 +1,6 @@
 ﻿using SORANO.CORE.StockEntities;
 using SORANO.WEB.Models;
+using System.Globalization;
 
 namespace SORANO.WEB.Infrastructure.Extensions
 {
@@ -13,10 +14,10 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 DeliveryID = item.DeliveryID,
                 ArticleID = item.ArticleID.ToString(),
                 Quantity = item.Quantity,
-                UnitPrice = item.UnitPrice,
-                GrossPrice = item.GrossPrice,
-                Discount = item.Discount,
-                DiscountPrice = item.DiscountedPrice,
+                UnitPrice = item.UnitPrice.ToString("0.00"),
+                GrossPrice = item.GrossPrice.ToString("0.00"),
+                Discount = item.Discount.ToString("0.00"),
+                DiscountPrice = item.DiscountedPrice.ToString("0.00"),
                 Article = item.Article?.ToModel()
             };
         }
@@ -26,10 +27,10 @@ namespace SORANO.WEB.Infrastructure.Extensions
             var deliveryItem = new DeliveryItem
             {
                 ID = model.ID,
-                UnitPrice = model.UnitPrice,
-                GrossPrice = model.GrossPrice,
-                Discount = model.Discount,
-                DiscountedPrice = model.DiscountPrice,
+                UnitPrice = decimal.Parse(model.UnitPrice, NumberStyles.Any, new CultureInfo("en-US")),
+                GrossPrice = decimal.Parse(model.GrossPrice, NumberStyles.Any, new CultureInfo("en-US")),
+                Discount = decimal.Parse(model.Discount, NumberStyles.Any, new CultureInfo("en-US")),
+                DiscountedPrice = decimal.Parse(model.DiscountPrice, NumberStyles.Any, new CultureInfo("en-US")),
                 ArticleID = int.Parse(model.ArticleID),
                 Quantity = model.Quantity
             };

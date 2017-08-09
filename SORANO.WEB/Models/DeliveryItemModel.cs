@@ -13,13 +13,13 @@ namespace SORANO.WEB.Models
         [Display(Name = "Количество, шт.")]
         public int Quantity { get; set; }
 
-        public decimal UnitPrice { get; set; }
+        public string UnitPrice { get; set; }
 
-        public decimal GrossPrice { get; set; }
+        public string GrossPrice { get; set; }
 
-        public decimal Discount { get; set; }
+        public string Discount { get; set; }
 
-        public decimal DiscountPrice { get; set; }
+        public string DiscountPrice { get; set; }
 
         public DeliveryModel Delivery { get; set; }
 

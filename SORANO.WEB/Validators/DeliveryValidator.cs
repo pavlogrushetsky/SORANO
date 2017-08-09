@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using SORANO.WEB.Models;
+using System.Globalization;
 using System.Linq;
 
 namespace SORANO.WEB.Validators
@@ -60,14 +61,22 @@ namespace SORANO.WEB.Validators
             RuleFor(d => d.TotalGrossPrice)
                 .Must((d, p) =>
                 {
-                    return d.DeliveryItems.Sum(di => di.GrossPrice) == p;
+                    return d.DeliveryItems.Sum(di => 
+                    {
+                        var parsed = decimal.TryParse(di.UnitPrice, NumberStyles.Any, new CultureInfo("en-US"), out decimal price);
+                        return parsed ? price : 0.0M;
+                    }) == p;
                 })
                 .WithMessage("Общая сумма некорректна");
 
             RuleFor(d => d.TotalDiscount)
                 .Must((d, p) =>
                 {
-                    return d.DeliveryItems.Sum(di => di.Discount) == p;
+                    return d.DeliveryItems.Sum(di => 
+                    {
+                        var parsed = decimal.TryParse(di.Discount, NumberStyles.Any, new CultureInfo("en-US"), out decimal price);
+                        return parsed ? price : 0.0M;
+                    }) == p;
                 })
                 .WithMessage("Общая сумма скидки некорректна");
 

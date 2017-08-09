@@ -15,10 +15,10 @@ namespace SORANO.WEB.Models
         public string PaymentDate { get; set; }
 
         [Display(Name = "Курс доллара США")]
-        public decimal? DollarRate { get; set; }
+        public string DollarRate { get; set; }
 
         [Display(Name = "Курс евро")]
-        public decimal? EuroRate { get; set; }
+        public string EuroRate { get; set; }
 
         [Display(Name = "Общая сумма")]
         public decimal TotalGrossPrice { get; set; }

@@ -206,9 +206,10 @@ namespace SORANO.WEB.Controllers
             delivery.DeliveryItems.Add(new DeliveryItemModel
             {
                 Quantity = 1,
-                UnitPrice = 0.0M,
-                Discount = 0.0M,
-                DiscountPrice = 0.0M
+                UnitPrice = "0.00",
+                Discount = "0.00",
+                DiscountPrice = "0.00",
+                GrossPrice = "0.00"
             });
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();

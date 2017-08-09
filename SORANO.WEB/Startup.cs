@@ -10,7 +10,6 @@ using SORANO.DAL.Context;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using SORANO.DAL.Repositories;
 using FluentValidation.AspNetCore;
-using SORANO.WEB.Infrastructure.Binders;
 
 namespace SORANO.WEB
 {
@@ -30,11 +29,7 @@ namespace SORANO.WEB
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(config => 
-            {
-                config.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
-            })
-            .AddFluentValidation(v => v.RegisterValidatorsFromAssemblyContaining<Startup>());
+            services.AddMvc().AddFluentValidation(v => v.RegisterValidatorsFromAssemblyContaining<Startup>());
 
             services.AddDistributedMemoryCache();
 
