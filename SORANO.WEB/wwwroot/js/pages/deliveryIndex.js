@@ -10,8 +10,8 @@ function initDeliveriesDataTable() {
         ],
         "pagingType": "numbers",
         "language": {
-            "lengthMenu": "Отобразить _MENU_ накладных на странице",
-            "zeroRecords": "Накладные отсутствуют",
+            "lengthMenu": "Отобразить _MENU_ поставок на странице",
+            "zeroRecords": "Поставки отсутствуют",
             "info": "Отображение страницы _PAGE_ из _PAGES_",
             "infoEmpty": "Записи отсутствуют",
             "infoFiltered": "(Отфильтровано из _MAX_ записей)",

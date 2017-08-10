@@ -23,14 +23,14 @@
     <div class="col-lg-12">
         <div class="panel panel-primary">
             <div class="panel-heading">
-                Список накладных
+                Список поставок
                 <span class="badge" style="margin-left: 5px;">@Model.Count</span>
                 <a class="btn btn-default btn-xs pull-right"
                    asp-controller="Delivery"
                    asp-action="Create"
                    data-toggle="tooltip"
                    data-placement="right"
-                   data-original-title="Добавить накладную"
+                   data-original-title="Добавить поставку"
                    title="">
                     <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
                 </a>
@@ -40,7 +40,7 @@
                    asp-route-show=@(ViewBag.ShowDeleted ? "false" : "true")
                    data-toggle="tooltip"
                    data-placement="right"
-                   data-original-title=@(ViewBag.ShowDeleted ? "Скрыть удалённые накладные" : "Отобразить удалённые накладные")
+                   data-original-title=@(ViewBag.ShowDeleted ? "Скрыть удалённые поставки" : "Отобразить удалённые поставки")
                    title="">
                     <i class="fa fa-fw @(ViewBag.ShowDeleted ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
                 </a>
@@ -89,7 +89,7 @@
                             <td>@delivery.DeliveryDate</td>
                             <td>@delivery.PaymentDate</td>
                             <td>@delivery.DeliveryItemsCount</td>
-                            <td>@delivery.TotalDiscountPrice.ToString("0.00") @(delivery.SelectedCurrency == 2 ? "€" : delivery.SelectedCurrency == 1 ? "$" : "₴" )</td>
+                            <td>@delivery.TotalDiscountPrice @(delivery.SelectedCurrency == 2 ? "€" : delivery.SelectedCurrency == 1 ? "$" : "₴" )</td>
                             <td>
                                 <span class="label label@(delivery.Status ? "-success" : "-warning")">
                                     @(delivery.Status ? "Подтверждено" : "Не подтверждено")
@@ -102,7 +102,7 @@
                                    class="btn btn-xs btn-default"
                                    data-toggle="tooltip"
                                    data-placement="bottom"
-                                   data-original-title="Просмотреть накладную"
+                                   data-original-title="Просмотреть информацию о поставке"
                                    title="">
                                     <i class="fa fa-info-circle" aria-hidden="true"></i>
                                 </a>
@@ -114,7 +114,7 @@
                                        class="btn btn-xs btn-default"
                                        data-toggle="tooltip"
                                        data-placement="bottom"
-                                       data-original-title="Редактировать накладную"
+                                       data-original-title="Редактировать поставку"
                                        title="">
                                         <i class="fa fa-pencil-square" aria-hidden="true"></i>
                                     </a>
@@ -124,7 +124,7 @@
                                     <a class="btn btn-xs btn-danger"
                                         data-toggle="tooltip"
                                         data-placement="bottom"
-                                        data-original-title="Удалить накладную"
+                                        data-original-title="Удалить поставку"
                                         title=""
                                         asp-controller="Delivery"
                                         asp-action="Delete"

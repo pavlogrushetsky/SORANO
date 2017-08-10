@@ -21,13 +21,13 @@ namespace SORANO.WEB.Models
         public string EuroRate { get; set; }
 
         [Display(Name = "Общая сумма")]
-        public decimal TotalGrossPrice { get; set; }
+        public string TotalGrossPrice { get; set; }
 
         [Display(Name = "Размер скидки")]
-        public decimal TotalDiscount { get; set; }
+        public string TotalDiscount { get; set; }
 
         [Display(Name = "Общая сумма с учётом скидки")]
-        public decimal TotalDiscountPrice { get; set; }
+        public string TotalDiscountPrice { get; set; }
 
         [Display(Name = "Статус")]
         public bool Status { get; set; }

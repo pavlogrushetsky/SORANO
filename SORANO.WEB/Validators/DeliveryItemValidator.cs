@@ -22,64 +22,53 @@ namespace SORANO.WEB.Validators
                 .WithMessage("Количество должно быть больше 0");
 
             RuleFor(d => d.UnitPrice)
-                .Must(d =>
-                {
-                    return Regex.IsMatch(d, @"^\d+\.\d{0,2}$");                    
-                })
+                .Must(BeValidPrice)
                 .WithMessage("Значение должно быть указано в формате #.##");
 
             RuleFor(d => d.UnitPrice)
-                .Must(d =>
-                {
-                    var parsed = decimal.TryParse(d, NumberStyles.Any, new CultureInfo("en-US"), out decimal price);
-                    return parsed && price > 0.0M;
-                })
+                .Must(BeGreaterThanZero)
                 .WithMessage("Значение должно быть больше 0");
 
             RuleFor(d => d.GrossPrice)
-                .Must(d =>
-                {
-                    return Regex.IsMatch(d, @"^\d+\.\d{0,2}$");
-                })
+                .Must(BeValidPrice)
                 .WithMessage("Значение должно быть указано в формате #.##");
 
             RuleFor(d => d.GrossPrice)
-                .Must(d =>
-                {
-                    var parsed = decimal.TryParse(d, NumberStyles.Any, new CultureInfo("en-US"), out decimal price);
-                    return parsed && price > 0.0M;
-                })
+                .Must(BeGreaterThanZero)
                 .WithMessage("Значение должно быть больше 0");
 
             RuleFor(d => d.Discount)
-                .Must(d =>
-                {
-                    return Regex.IsMatch(d, @"^\d+\.\d{0,2}$");
-                })
+                .Must(BeValidPrice)
                 .WithMessage("Значение должно быть указано в формате #.##");
 
             RuleFor(d => d.Discount)
-                .Must(d =>
-                {
-                    var parsed = decimal.TryParse(d, NumberStyles.Any, new CultureInfo("en-US"), out decimal price);
-                    return parsed && price >= 0.0M;
-                })
+                .Must(BeGreaterThanOrEqualToZero)
                 .WithMessage("Значение должно быть больше или равна 0");
 
             RuleFor(d => d.DiscountPrice)
-                .Must(d =>
-                {
-                    return Regex.IsMatch(d, @"^\d+\.\d{0,2}$");
-                })
+                .Must(BeValidPrice)
                 .WithMessage("Значение должно быть указано в формате #.##");
 
             RuleFor(d => d.DiscountPrice)
-                .Must(d =>
-                {
-                    var parsed = decimal.TryParse(d, NumberStyles.Any, new CultureInfo("en-US"), out decimal price);
-                    return parsed && price > 0.0M;
-                })
+                .Must(BeGreaterThanZero)
                 .WithMessage("Значение должно быть больше 0");
+        }
+
+        private bool BeValidPrice(string price)
+        {
+            return Regex.IsMatch(price, @"^\d+\.\d{0,2}$");
+        }
+
+        private bool BeGreaterThanZero(string price)
+        {
+            var parsed = decimal.TryParse(price, NumberStyles.Any, new CultureInfo("en-US"), out decimal p);
+            return parsed && p > 0.0M;
+        }
+
+        private bool BeGreaterThanOrEqualToZero(string price)
+        {
+            var parsed = decimal.TryParse(price, NumberStyles.Any, new CultureInfo("en-US"), out decimal p);
+            return parsed && p >= 0.0M;
         }
     }
 }

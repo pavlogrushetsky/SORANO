@@ -7,9 +7,9 @@
 }
 
 @{
-    ViewBag.Title = "SORANO - " + title + " накладной";
+    ViewBag.Title = "SORANO - " + title + " поставки";
     ViewBag.Header = title;
-    ViewBag.Description = " накладной";
+    ViewBag.Description = " поставки";
     ViewBag.Icon = "fa fa-cart-arrow-down";
 }
 
@@ -29,7 +29,7 @@
     <ul class="breadcrumb">
         <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
         <li><a asp-controller="Delivery" asp-action="Index">Поставки</a></li>
-        <li class="active">@title накладной</li>
+        <li class="active">@title поставки</li>
     </ul>
 }
 
@@ -151,7 +151,7 @@
                                     <input type="radio" name="select_currency" id="select_currency_uah" value="0" style="margin-right: 1px;"/>
                                     <span style="font-weight: bold;">&#8372;</span>
                                 </span>
-                                <input type="text" readonly="readonly" class="form-control input-sm"/>
+                                <input type="text" readonly="readonly" class="form-control input-sm" value="1.00"/>
                             </div>                          
                         </td>
                         <td style="width: 33%; padding: 0; padding-right: 5px;">
@@ -160,7 +160,7 @@
                                     <input type="radio" name="select_currency" id="select_currency_usd" value="1"/>
                                     <i class="fa fa-usd"></i>
                                 </span>
-                                <input type="number" readonly="readonly" step="0.01" min="0.0" asp-for="DollarRate" class="form-control input-sm" />
+                                <input type="text" readonly="readonly" asp-for="DollarRate" class="form-control input-sm" />
                             </div>
                             <span asp-validation-for="DollarRate" class="text-danger"></span>
                         </td>
@@ -170,7 +170,7 @@
                                     <input type="radio" name="select_currency" id="select_currency_eur" value="2" />
                                     <i class="fa fa-eur"></i>
                                 </span>
-                                <input type="number" readonly="readonly" step="0.01" min="0.0" asp-for="EuroRate" class="form-control input-sm" />
+                                <input type="text" readonly="readonly" asp-for="EuroRate" class="form-control input-sm" />
                             </div>
                             <span asp-validation-for="EuroRate" class="text-danger"></span>
                         </td>

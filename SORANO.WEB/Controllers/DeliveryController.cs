@@ -257,6 +257,8 @@ namespace SORANO.WEB.Controllers
 
             return await TryGetActionResultAsync(async () =>
             {
+                ModelState.RemoveFor("Status");
+
                 articles = await GetArticles();
                 suppliers = await GetSuppliers();
                 locations = await GetLocations();
@@ -268,7 +270,10 @@ namespace SORANO.WEB.Controllers
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
-                // TODO Validation
+                if (model.Status && model.DeliveryItemsCount == 0)
+                {
+                    ModelState.AddModelError("", "Необходимо добавить хотя бы одну позицию");
+                }
 
                 if (!ModelState.IsValid)
                 {
