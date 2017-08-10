@@ -93,6 +93,83 @@ namespace SORANO.BLL.Services
             return saved;
         }
 
+        public async Task<Delivery> UpdateAsync(Delivery delivery, int userId)
+        {
+            if (delivery == null)
+            {
+                throw new ArgumentNullException(nameof(delivery), Resource.DeliveryCannotBeNullException);
+            }
+
+            if (delivery.ID <= 0)
+            {
+                throw new ArgumentException(Resource.DeliveryInvalidIdentifierException, nameof(delivery.ID));
+            }
+
+            var user = await _unitOfWork.Get<User>().GetAsync(s => s.ID == userId);
+
+            if (user == null)
+            {
+                throw new ObjectNotFoundException(Resource.UserNotFoundException);
+            }
+
+            var existentDelivery = await _unitOfWork.Get<Delivery>().GetAsync(d => d.ID == delivery.ID);
+
+            if (existentDelivery == null)
+            {
+                throw new ObjectNotFoundException(Resource.DeliveryNotFoundException);
+            }
+
+            existentDelivery.BillNumber = delivery.BillNumber;
+            existentDelivery.DeliveryDate = delivery.DeliveryDate;
+            existentDelivery.LocationID = delivery.LocationID;
+            existentDelivery.DollarRate = delivery.DollarRate;
+            existentDelivery.EuroRate = delivery.EuroRate;
+            existentDelivery.IsSubmitted = delivery.IsSubmitted;
+            existentDelivery.PaymentDate = delivery.PaymentDate;
+            existentDelivery.SupplierID = delivery.SupplierID;
+            existentDelivery.TotalDiscount = delivery.TotalDiscount;
+            existentDelivery.TotalDiscountedPrice = delivery.TotalDiscountedPrice;
+            existentDelivery.TotalGrossPrice = delivery.TotalGrossPrice;
+
+            existentDelivery.UpdateModifiedFields(userId);
+
+            UpdateDeliveryItems(delivery, existentDelivery, userId);
+
+            if (delivery.IsSubmitted)
+            {
+                foreach (var item in delivery.Items)
+                {
+                    for (var i = 0; i < item.Quantity; i++)
+                    {
+                        var goods = new Goods();
+
+                        goods.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+
+                        var storage = new Storage
+                        {
+                            LocationID = delivery.LocationID,
+                            FromDate = DateTime.Now
+                        };
+
+                        storage.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+
+                        goods.Storages.Add(storage);
+                        item.Goods.Add(goods);
+                    }
+                }
+            }
+
+            UpdateAttachments(delivery, existentDelivery, userId);
+
+            UpdateRecommendations(delivery, existentDelivery, userId);
+
+            var updated = _unitOfWork.Get<Delivery>().Update(existentDelivery);
+
+            await _unitOfWork.SaveAsync();
+
+            return updated;
+        }
+
         public async Task<IEnumerable<Delivery>> GetAllAsync(bool withDeleted)
         {
             var deliveries = await _unitOfWork.Get<Delivery>().GetAllAsync();
@@ -117,6 +194,49 @@ namespace SORANO.BLL.Services
             var deliveries = await _unitOfWork.Get<Delivery>().FindByAsync(d => !d.IsSubmitted);
 
             return deliveries.Count();
+        }
+
+        private void UpdateDeliveryItems(Delivery from, Delivery to, int userId)
+        {
+            // Remove deleted items for existent entity
+            to.Items
+                .Where(d => !from.Items.Select(x => x.ID).Contains(d.ID))
+                .ToList()
+                .ForEach(d =>
+                {
+                    d.UpdateDeletedFields(userId);
+                    _unitOfWork.Get<DeliveryItem>().Delete(d);
+                });
+
+            // Update existent items
+            from.Items
+                .Where(d => to.Attachments.Select(x => x.ID).Contains(d.ID))
+                .ToList()
+                .ForEach(d =>
+                {
+                    var di = to.Items.SingleOrDefault(x => x.ID == d.ID);
+                    if (di == null)
+                    {
+                        return;
+                    }
+                    di.ArticleID = d.ArticleID;
+                    di.Discount = d.Discount;
+                    di.DiscountedPrice = d.DiscountedPrice;
+                    di.GrossPrice = d.GrossPrice;
+                    di.Quantity = d.Quantity;
+                    di.UnitPrice = d.UnitPrice;
+                    di.UpdateModifiedFields(userId);
+                });
+
+            // Add newly created items to existent entity
+            from.Items
+                .Where(d => !to.Attachments.Select(x => x.ID).Contains(d.ID))
+                .ToList()
+                .ForEach(d =>
+                {
+                    d.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+                    to.Items.Add(d);
+                });
         }
     }
 }

@@ -214,6 +214,15 @@ namespace SORANO.BLL.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Поставка не найден..
+        /// </summary>
+        internal static string DeliveryNotFoundException {
+            get {
+                return ResourceManager.GetString("DeliveryNotFoundException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Место не может быть удалено..
         /// </summary>
         internal static string LocationCannotBeDeletedException {

@@ -10,9 +10,7 @@ using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
-using System.IO;
 using Microsoft.AspNetCore.Http;
-using MimeTypes;
 
 namespace SORANO.WEB.Controllers
 {
@@ -306,6 +304,72 @@ namespace SORANO.WEB.Controllers
                 model.Status = false;
 
                 return View(model);
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(DeliveryModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        {
+            var articles = new List<SelectListItem>();
+            var suppliers = new List<SelectListItem>();
+            var locations = new List<SelectListItem>();
+
+            return await TryGetActionResultAsync(async () =>
+            {
+                ModelState.RemoveFor("Status");
+
+                articles = await GetArticles();
+                suppliers = await GetSuppliers();
+                locations = await GetLocations();
+
+                ViewBag.Articles = articles;
+                ViewBag.Suppliers = suppliers;
+                ViewBag.Locations = locations;
+
+                await LoadMainPicture(model, mainPictureFile);
+                await LoadAttachments(model, attachments);
+
+                if (model.Status && model.DeliveryItemsCount == 0)
+                {
+                    ModelState.AddModelError("", "Необходимо добавить хотя бы одну позицию");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    model.Status = false;
+                    ViewData["IsEdit"] = true;
+                    return View("Create", model);
+                }
+
+                var delivery = model.ToEntity();
+
+                var currentUser = await GetCurrentUser();
+
+                delivery = await _deliveryService.UpdateAsync(delivery, currentUser.ID);
+
+                if (delivery != null)
+                {
+                    return RedirectToAction("Index", "Delivery");
+                }
+
+                ModelState.AddModelError("", "Не удалось обновить накладную.");
+                ViewData["IsEdit"] = true;
+                model.Status = false;
+                return View("Create", model);
+            }, ex =>
+            {
+                ViewBag.Articles = articles;
+                ViewBag.Suppliers = suppliers;
+                ViewBag.Locations = locations;
+
+                ModelState.AddModelError("", ex);
+
+                model.Status = false;
+
+                ViewData["IsEdit"] = true;
+
+                return View("Create", model);
             });
         }
 

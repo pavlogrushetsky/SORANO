@@ -210,4 +210,7 @@
   <data name="DeliveryInvalidIdentifierException" xml:space="preserve">
     <value>Недопустимое значение идентификатора поставки.</value>
   </data>
+  <data name="DeliveryNotFoundException" xml:space="preserve">
+    <value>Поставка не найден.</value>
+  </data>
 </root>

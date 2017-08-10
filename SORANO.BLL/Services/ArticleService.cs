@@ -106,7 +106,7 @@ namespace SORANO.BLL.Services
             var existentArticle = await _unitOfWork.Get<Article>().GetAsync(t => t.ID == article.ID);
 
             // Check existent article
-            if (article == null)
+            if (existentArticle == null)
             {
                 throw new ObjectNotFoundException(Resource.ArticleNotFoundException);
             }
