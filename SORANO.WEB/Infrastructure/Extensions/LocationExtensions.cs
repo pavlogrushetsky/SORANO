@@ -27,6 +27,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
                         Quantity = gr.Count(),
                         DeliveredPrice = gr.First().DeliveryItem.UnitPrice.ToString("0.00") + " " + symbol,
                         DeliveryID = delivery.ID,
+                        DeliveryItemID = gr.First().DeliveryItem.ID,
                         BillNumber = delivery.BillNumber
                     };
                 }).ToList(),

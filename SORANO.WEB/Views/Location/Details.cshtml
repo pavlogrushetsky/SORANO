@@ -207,6 +207,10 @@
                                         <td>
                                             <a asp-controller="Goods"
                                                asp-action="ChangeLocation"
+                                               asp-route-deliveryItemId ="@Model.Goods[i].DeliveryItemID"
+                                               asp-route-currentLocationId ="@Model.ID"
+                                               asp-route-maxCount="@Model.Goods[i].Quantity"
+                                               asp-route-returnUrl="@Url.Action("Details", "Location", new { id = Model.ID } )"
                                                class="btn btn-xs btn-default"
                                                data-toggle="tooltip"
                                                data-placement="bottom"

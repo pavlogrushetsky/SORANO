@@ -279,5 +279,16 @@
       "renameLocals": true
     },
     "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/goodsChangeLocation.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/goodsChangeLocation.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
   }
 ]

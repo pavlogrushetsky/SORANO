@@ -1,0 +1,83 @@
+﻿@model GoodsChangeLocationModel
+
+@{
+    ViewBag.Title = "SORANO - Перемещение товаров";
+    ViewBag.Header = "Перемещение";
+    ViewBag.Description = " товаров";
+    ViewBag.Icon = "fa fa-map-signs";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/select2/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="~/lib/select2-bootstrap-theme/dist/select2-bootstrap.min.css" />
+    <style>
+        span.select2-selection.select2-selection--single {
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+        }
+    </style>
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li class="active">Перемещение товаров</li>
+    </ul>
+}
+
+<form asp-action="ChangeLocation"
+      asp-controller="Goods"
+      method="post">
+    <input type="hidden" asp-for="ReturnUrl"/>
+    <input type="hidden" asp-for="DeliveryItemID" />
+    <input type="hidden" asp-for="CurrentLocationID" />
+    <input type="hidden" asp-for="MaxCount" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <div class="col-lg-4 col-md-12 col-sm-12">
+            <div class="form-group">
+                <label class="control-label" asp-for="Count"></label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-hashtag"></i></span>
+                    <input class="form-control input-sm" type="number" min="1" max="@Model.MaxCount" asp-for="Count" placeholder="Количество единиц товара, шт." />
+                </div>
+                <span asp-validation-for="Count" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="TargetLocationID"></label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
+                    <select class="form-control input-sm select-location"
+                            asp-for="TargetLocationID"
+                            asp-items="@ViewBag.Locations">
+                    </select>
+                </div>
+                <span asp-validation-for="TargetLocationID" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group">
+                <a class="btn btn-default btn-sm" href="@Model.ReturnUrl">
+                    <i class="fa fa-fw fa-close"></i>
+                    Отмена
+                </a>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="fa fa-fw fa-floppy-o"></i>
+                    Сохранить
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="~/lib/select2/dist/js/select2.full.min.js"></script>
+    <environment names="Development">
+        <script src="~/js/pages/goodsChangeLocation.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/js/pages/goodsChangeLocation.min.js" asp-append-version="true"></script>
+    </environment>
+}

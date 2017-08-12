@@ -55,9 +55,14 @@
     <Content Include="wwwroot\js\pages\clientIndex.js" />
     <Content Include="wwwroot\js\pages\clientIndex.min.js" />
     <Content Include="wwwroot\js\pages\deliveryCreate.js" />
+    <Content Include="wwwroot\js\pages\deliveryCreate.min.js" />
+    <Content Include="wwwroot\js\pages\deliveryCreate_.min.js" />
+    <Content Include="wwwroot\js\pages\goodsChangeLocation.js" />
+    <Content Include="wwwroot\js\pages\deliveryCreate_.js" />
     <Content Include="wwwroot\js\pages\deliveryDetails.js" />
     <Content Include="wwwroot\js\pages\deliveryDetails.min.js" />
     <Content Include="wwwroot\js\pages\deliveryIndex.js" />
+    <Content Include="wwwroot\js\pages\goodsChangeLocation.min.js" />
     <Content Include="wwwroot\js\pages\locationCreate.js" />
     <Content Include="wwwroot\js\pages\locationDetails.js" />
     <Content Include="wwwroot\js\pages\locationIndex.js" />

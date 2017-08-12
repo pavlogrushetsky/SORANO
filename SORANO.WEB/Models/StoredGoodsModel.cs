@@ -7,6 +7,9 @@ namespace SORANO.WEB.Models
         [Display(Name = "Поставка")]
         public int DeliveryID { get; set; }
 
+        [Display(Name = "Позиция поставки")]
+        public int DeliveryItemID { get; set; }
+
         [Display(Name = "Поставка")]
         public string BillNumber { get; set; }
 
