@@ -1,1 +1,290 @@
-﻿
+﻿@model DeliveryModel
+
+@{
+    ViewBag.Title = "SORANO - Детали поставки";
+    ViewBag.Header = "Детали";
+    ViewBag.Description = "поставки";
+    ViewBag.Icon = "fa fa-fw fa-info-circle";
+
+    var symbol = Model.SelectedCurrency == 2 ? "€" : Model.SelectedCurrency == 1 ? "$" : "₴";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/datatables.net-bs/css/dataTables.bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" />
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li><a asp-controller="Delivery" asp-action="Index">Поставки</a></li>
+        <li class="active">Детали поставки</li>
+    </ul>
+}
+
+<div class="col-lg-12">
+    <div class="row">
+        <div style="float:left;">
+            @if (Model.MainPicture?.FullPath != null)
+            {
+                <img src="@Url.Content(Model.MainPicture.FullPath)" />
+            }
+        </div>
+        <div style="float:left;">
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.ID)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ID)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.BillNumber)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.BillNumber)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.DeliveryDate)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.DeliveryDate)
+                </dd>
+                @if (!string.IsNullOrEmpty(Model.PaymentDate))
+                {
+                    <dt>
+                        @Html.DisplayNameFor(model => model.PaymentDate)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => model.PaymentDate)
+                    </dd>
+                }
+                @if (!string.IsNullOrEmpty(Model.DollarRate))
+                {
+                    <dt>
+                        @Html.DisplayNameFor(model => model.DollarRate)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => model.DollarRate)
+                    </dd>
+                }
+                @if (!string.IsNullOrEmpty(Model.EuroRate))
+                {
+                    <dt>
+                        @Html.DisplayNameFor(model => model.EuroRate)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => model.EuroRate)
+                    </dd>
+                }
+                <dt>
+                    @Html.DisplayNameFor(model => model.Supplier)
+                </dt>
+                <dd>
+                    <a asp-controller="Supplier"
+                       asp-action="Details"
+                       asp-route-id="@Model.Supplier.ID"
+                       data-toggle="tooltip"
+                       data-placement="right"
+                       data-original-title="Просмотреть информацию о поставщике"
+                       title="">
+                        @Html.DisplayFor(model => model.Supplier.Name)
+                    </a>
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Location)
+                </dt>
+                <dd>
+                    <a asp-controller="Location"
+                       asp-action="Details"
+                       asp-route-id="@Model.Location.ID"
+                       data-toggle="tooltip"
+                       data-placement="right"
+                       data-original-title="Просмотреть информацию о месте поставки"
+                       title="">
+                        @Html.DisplayFor(model => model.Location.Name)
+                    </a>
+                </dd>   
+                <dt>
+                    @Html.DisplayNameFor(model => model.Status)
+                </dt>
+                <dd>
+                    <span class="label label-@(Model.Status ? "success" : "warning")">@(Model.Status ? "Подтверждено" : "Не подтверждено")</span>
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.TotalGrossPrice)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.TotalGrossPrice) @symbol
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.TotalDiscount)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.TotalDiscount) @symbol
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.TotalDiscountPrice)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.TotalDiscountPrice) @symbol
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Created)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Created)
+                </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.CreatedBy)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Modified)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Modified)
+                </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.ModifiedBy)
+                </dd>
+                @if (Model.IsDeleted)
+                {
+                    <dt>
+                        @Html.DisplayNameFor(model => model.IsDeleted)
+                    </dt>
+                    <dd>
+                        <span class="label label-danger">Удалена</span>
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Deleted)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => model.Deleted)
+                    </dd>
+                    <dd>
+                        @Html.DisplayFor(model => model.DeletedBy)
+                    </dd>
+                }
+            </dl>
+        </div>
+    </div>
+    <div class="row" style="margin-top:10px;">
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseRecommendations">
+                            <span>
+                                <i class="fa fa-fw fa-comments" aria-hidden="true"></i>
+                                @Html.DisplayNameFor(m => m.Recommendations)
+                                <span class="badge pull-right">@Model.Recommendations.Count</span>
+                            </span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseRecommendations" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                        @Html.Partial("~/Views/Shared/_RecommendationsDetails.cshtml", Model.Recommendations)
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseAttachments">
+                            <span>
+                                <i class="fa fa-fw fa-paperclip" aria-hidden="true"></i>
+                                @Html.DisplayNameFor(m => m.Attachments)
+                                <span class="badge pull-right">@Model.Attachments.Count</span>
+                            </span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseAttachments" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        @Html.Partial("~/Views/Shared/_AttachmentsDetails.cshtml", Model.Attachments)
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseDeliveries">
+                            <span>
+                                <i class="fa fa-fw fa-cart-arrow-down" aria-hidden="true"></i>
+                                @Html.DisplayNameFor(m => m.DeliveryItems)
+                                <span class="badge pull-right">@Model.DeliveryItemsCount</span>
+                            </span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseDeliveries" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <table id="items-datatable" class="table table-striped table-bordered table-hover table-responsive" style="width: 100%">
+                            <thead>
+                                <tr role="row" id="search-row">
+                                    <th style="width: 25%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Артикул" /></th>
+                                    <th style="width: 15%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Кол-во, шт." /></th>
+                                    <th style="width: 15%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Цена" /></th>
+                                    <th style="width: 15%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Без скидки" /></th>
+                                    <th style="width: 15%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Скидка" /></th>
+                                    <th style="width: 15%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Сумма" /></th>
+                                </tr>
+                                <tr role="row">
+                                    <th style="width: 25%"><i class="fa fa-fw fa-barcode" aria-hidden="true"></i>&nbsp;Артикул</th>
+                                    <th style="width: 15%"><i class="fa fa-fw fa-hashtag" aria-hidden="true"></i>&nbsp;Кол-во, шт.</th>
+                                    <th style="width: 15%"><i class="fa fa-fw fa-money" aria-hidden="true"></i>&nbsp;Цена</th>
+                                    <th style="width: 15%"><i class="fa fa-fw fa-money" aria-hidden="true"></i>&nbsp;Без скидки</th>
+                                    <th style="width: 15%"><i class="fa fa-fw fa-money" aria-hidden="true"></i>&nbsp;Скидка</th>
+                                    <th style="width: 15%"><i class="fa fa-fw fa-money" aria-hidden="true"></i>&nbsp;Сумма</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (var i = 0; i < Model.DeliveryItems.Count; i++)
+                                {
+                                    <tr class="@(Model.DeliveryItems[i].IsDeleted ? "danger" : "")">
+                                        <td>
+                                            <a asp-controller="Article"
+                                               asp-action="Details"
+                                               asp-route-id="@Model.DeliveryItems[i].ArticleID"
+                                               data-toggle="tooltip"
+                                               data-placement="bottom"
+                                               data-original-title="Просмотреть информацию об артикуле"
+                                               title="">
+                                                @Model.DeliveryItems[i].Article.Name
+                                            </a>
+                                        </td>
+                                        <td>@Model.DeliveryItems[i].Quantity</td>
+                                        <td>@Model.DeliveryItems[i].UnitPrice @symbol</td>
+                                        <td>@Model.DeliveryItems[i].GrossPrice @symbol</td>
+                                        <td>@Model.DeliveryItems[i].Discount @symbol</td>
+                                        <td>@Model.DeliveryItems[i].DiscountPrice @symbol</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <a class="btn btn-default btn-sm" asp-action="Index" asp-controller="Delivery">
+            <i class="fa fa-fw fa-arrow-left"></i>
+            Назад
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/lib/datatables.net-responsive-bs/js/responsive.bootstrap.min.js"></script>
+    <environment names="Development">
+        <script src="~/js/pages/deliveryDetails.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/js/pages/deliveryDetails.min.js" asp-append-version="true"></script>
+    </environment>
+}

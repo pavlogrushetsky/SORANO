@@ -268,5 +268,16 @@
       "renameLocals": true
     },
     "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/deliveryDetails.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/deliveryDetails.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
   }
 ]

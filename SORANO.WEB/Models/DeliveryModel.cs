@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace SORANO.WEB.Models
@@ -47,6 +48,7 @@ namespace SORANO.WEB.Models
         [Display(Name = "Единиц поставки")]
         public int DeliveryItemsCount => DeliveryItems.Count;
 
+        [Display(Name = "Позиции поставки")]
         public List<DeliveryItemModel> DeliveryItems { get; set; } = new List<DeliveryItemModel>();
 
         public int CurrentItemNumber { get; set; }

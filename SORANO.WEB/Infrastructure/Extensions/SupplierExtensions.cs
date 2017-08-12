@@ -6,9 +6,9 @@ namespace SORANO.WEB.Infrastructure.Extensions
 {
     public static class SupplierExtensions
     {
-        public static SupplierModel ToModel(this Supplier supplier)
+        public static SupplierModel ToModel(this Supplier supplier, bool deep = true)
         {
-            return new SupplierModel
+            var model = new SupplierModel
             {
                 ID = supplier.ID,
                 Name = supplier.Name,
@@ -25,6 +25,13 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 ModifiedBy = supplier.ModifiedByUser?.Login,
                 DeletedBy = supplier.DeletedByUser?.Login
             };
+
+            if (deep)
+            {
+                model.Deliveries = supplier.Deliveries?.Where(d => !d.IsDeleted).Select(d => d.ToModel()).ToList();
+            }
+
+            return model;
         }
 
         public static Supplier ToEntity(this SupplierModel model)

@@ -22,7 +22,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 TotalDiscount = delivery.TotalDiscount.ToString("0.00"),
                 TotalDiscountPrice = delivery.TotalDiscountedPrice.ToString("0.00"),
                 Status = delivery.IsSubmitted,
-                Supplier = delivery.Supplier?.ToModel(),
+                Supplier = delivery.Supplier?.ToModel(false),
                 SupplierID = delivery.SupplierID.ToString(),
                 Location = delivery.DeliveryLocation.ToModel(),
                 LocationID = delivery.LocationID.ToString(),
@@ -32,7 +32,14 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 DeliveryItems = delivery.Items.Select(i => i.ToModel()).ToList(),
                 Recommendations = delivery.Recommendations?.Where(r => !r.IsDeleted).Select(r => r.ToModel()).ToList(),
                 MainPicture = delivery.Attachments?.SingleOrDefault(a => !a.IsDeleted && a.Type.Name.Equals("Основное изображение"))?.ToModel() ?? new AttachmentModel(),
-                Attachments = delivery.Attachments?.Where(a => !a.IsDeleted && !a.Type.Name.Equals("Основное изображение")).Select(a => a.ToModel()).ToList()
+                Attachments = delivery.Attachments?.Where(a => !a.IsDeleted && !a.Type.Name.Equals("Основное изображение")).Select(a => a.ToModel()).ToList(),
+                IsDeleted = delivery.IsDeleted,
+                Created = delivery.CreatedDate.ToString("dd.MM.yyyy"),
+                Modified = delivery.ModifiedDate.ToString("dd.MM.yyyy"),
+                Deleted = delivery.DeletedDate?.ToString("dd.MM.yyyy"),
+                CreatedBy = delivery.CreatedByUser?.Login,
+                ModifiedBy = delivery.ModifiedByUser?.Login,
+                DeletedBy = delivery.DeletedByUser?.Login
             };
 
             return model;

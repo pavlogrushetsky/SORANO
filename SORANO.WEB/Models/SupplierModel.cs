@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SORANO.WEB.Models
 {
@@ -9,6 +10,9 @@ namespace SORANO.WEB.Models
 
         [Display(Name = "Описание")]
         public string Description { get; set; }
+
+        [Display(Name = "Поставки")]
+        public List<DeliveryModel> Deliveries { get; set; }
 
         public string ReturnPath { get; set; }
     }

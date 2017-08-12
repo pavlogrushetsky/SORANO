@@ -89,7 +89,7 @@
                             <td>@delivery.DeliveryDate</td>
                             <td>@delivery.PaymentDate</td>
                             <td>@delivery.DeliveryItemsCount</td>
-                            <td>@delivery.TotalDiscountPrice @(delivery.SelectedCurrency == 2 ? "€" : delivery.SelectedCurrency == 1 ? "$" : "₴" )</td>
+                            <td>@delivery.TotalDiscountPrice @(delivery.SelectedCurrency == 2 ? "€" : delivery.SelectedCurrency == 1 ? "$" : "₴")</td>
                             <td>
                                 <span class="label label@(delivery.Status ? "-success" : "-warning")">
                                     @(delivery.Status ? "Подтверждено" : "Не подтверждено")
@@ -104,7 +104,7 @@
                                    data-placement="bottom"
                                    data-original-title="Просмотреть информацию о поставке"
                                    title="">
-                                    <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                    <i class="fa fa-fw fa-info-circle" aria-hidden="true"></i>
                                 </a>
                                 @if (delivery.CanBeUpdated)
                                 {
@@ -116,7 +116,7 @@
                                        data-placement="bottom"
                                        data-original-title="Редактировать поставку"
                                        title="">
-                                        <i class="fa fa-pencil-square" aria-hidden="true"></i>
+                                        <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
                                     </a>
                                 }                                   
                                 @if (delivery.CanBeDeleted)
@@ -129,7 +129,7 @@
                                         asp-controller="Delivery"
                                         asp-action="Delete"
                                         asp-route-id="@delivery.ID">
-                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                        <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
                                     </a>
                                 }                                   
                             </td>
