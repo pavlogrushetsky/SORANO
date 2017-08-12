@@ -14,6 +14,10 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<Delivery> UpdateAsync(Delivery delivery, int userId);
 
+        Task DeleteAsync(int id, int userId);
+
         Task<int> GetUnsubmittedCountAsync();
+
+        Task<int> GetSubmittedCountAsync();
     }
 }

@@ -133,6 +133,11 @@ namespace SORANO.WEB.Validators
 
         private bool BeValidPrice(string price)
         {
+            if (string.IsNullOrEmpty(price))
+            {
+                return false;
+            }
+
             return Regex.IsMatch(price, @"^\d+\.\d{0,2}$");
         }
     }

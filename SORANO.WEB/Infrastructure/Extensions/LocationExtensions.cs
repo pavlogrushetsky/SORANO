@@ -15,6 +15,21 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 Comment = location.Comment,
                 TypeID = location.TypeID.ToString(),
                 Type = location.Type?.ToModel(false),
+                Goods = location.Storages.Select(s => s.Goods).GroupBy(g => g.DeliveryItemID).Select(gr => 
+                {
+                    var delivery = gr.First().DeliveryItem.Delivery;
+                    var symbol = delivery.EuroRate.HasValue ? "€" : delivery.DollarRate.HasValue ? "$" : "₴";
+
+                    return new StoredGoodsModel
+                    {
+                        Article = gr.First().DeliveryItem.Article.Name,
+                        ArticleID = gr.First().DeliveryItem.Article.ID,
+                        Quantity = gr.Count(),
+                        DeliveredPrice = gr.First().DeliveryItem.UnitPrice.ToString("0.00") + " " + symbol,
+                        DeliveryID = delivery.ID,
+                        BillNumber = delivery.BillNumber
+                    };
+                }).ToList(),
                 Recommendations = location.Recommendations?.Where(r => !r.IsDeleted).Select(r => r.ToModel()).ToList(),
                 MainPicture = location.Attachments?.SingleOrDefault(a => !a.IsDeleted && a.Type.Name.Equals("Основное изображение"))?.ToModel() ?? new AttachmentModel(),
                 Attachments = location.Attachments?.Where(a => !a.IsDeleted && !a.Type.Name.Equals("Основное изображение")).Select(a => a.ToModel()).ToList(),

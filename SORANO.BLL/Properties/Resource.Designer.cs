@@ -196,6 +196,15 @@ namespace SORANO.BLL.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Поставка не может быть удалена..
+        /// </summary>
+        internal static string DeliveryCannotBeDeletedException {
+            get {
+                return ResourceManager.GetString("DeliveryCannotBeDeletedException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Поставка не может быть null..
         /// </summary>
         internal static string DeliveryCannotBeNullException {

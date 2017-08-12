@@ -373,6 +373,19 @@ namespace SORANO.WEB.Controllers
             });
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Delete(DeliveryModel model)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var currentUser = await GetCurrentUser();
+
+                await _deliveryService.DeleteAsync(model.ID, currentUser.ID);
+
+                return RedirectToAction("Index", "Delivery");
+            }, ex => RedirectToAction("Index", "Delivery"));
+        }
+
         #endregion
 
         private async Task<List<SelectListItem>> GetSuppliers()

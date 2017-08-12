@@ -1,4 +1,6 @@
-﻿@{
+﻿@model DashboardModel
+
+@{
     ViewBag.Title = "SORANO - Главная";
     ViewBag.Header = "Главная";
     ViewBag.Icon = "fa fa-home";
@@ -11,7 +13,7 @@
 }
 
 <div class="row">
-    <div class="col-lg-3 col-md-3">
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class="row">
@@ -19,7 +21,7 @@
                         <i class="fa fa-cart-arrow-down fa-4x"></i>
                     </div>
                     <div class="col-xs-9 text-right">
-                        <div class="huge" style="font-size: 30px;">26</div>
+                        <div class="huge" style="font-size: 30px;">@Model.DeliveriesCount</div>
                         <div>Поставок</div>
                     </div>
                 </div>
@@ -35,7 +37,7 @@
             </a>
         </div>
     </div>
-    <div class="col-lg-3 col-md-3">
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class="row">
@@ -59,7 +61,7 @@
             </a>
         </div>
     </div>
-    <div class="col-lg-3 col-md-3">
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class="row">
@@ -83,7 +85,7 @@
             </a>
         </div>
     </div>
-    <div class="col-lg-3 col-md-3">
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class="row">

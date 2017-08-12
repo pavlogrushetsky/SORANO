@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SORANO.WEB.Models
 {
@@ -15,6 +16,9 @@ namespace SORANO.WEB.Models
 
         [Display(Name = "Тип")]
         public LocationTypeModel Type { get; set; }
+
+        [Display(Name = "Товары")]
+        public List<StoredGoodsModel> Goods { get; set; }
 
         public string ReturnPath { get; set; }
     }

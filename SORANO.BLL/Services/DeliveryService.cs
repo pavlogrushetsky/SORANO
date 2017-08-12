@@ -174,7 +174,7 @@ namespace SORANO.BLL.Services
         {
             var deliveries = await _unitOfWork.Get<Delivery>().GetAllAsync();
 
-            if (withDeleted)
+            if (!withDeleted)
             {
                 return deliveries.Where(d => !d.IsDeleted);
             }
@@ -191,9 +191,25 @@ namespace SORANO.BLL.Services
 
         public async Task<int> GetUnsubmittedCountAsync()
         {
-            var deliveries = await _unitOfWork.Get<Delivery>().FindByAsync(d => !d.IsSubmitted);
+            var deliveries = await _unitOfWork.Get<Delivery>().FindByAsync(d => !d.IsSubmitted && !d.IsDeleted);
 
             return deliveries.Count();
+        }
+
+        public async Task DeleteAsync(int id, int userId)
+        {
+            var existentDelivery = await _unitOfWork.Get<Delivery>().GetAsync(t => t.ID == id);
+
+            if (existentDelivery.IsSubmitted)
+            {
+                throw new Exception(Resource.DeliveryCannotBeDeletedException);
+            }
+
+            existentDelivery.UpdateDeletedFields(userId);
+
+            _unitOfWork.Get<Delivery>().Update(existentDelivery);
+
+            await _unitOfWork.SaveAsync();
         }
 
         private void UpdateDeliveryItems(Delivery from, Delivery to, int userId)
@@ -237,6 +253,13 @@ namespace SORANO.BLL.Services
                     d.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
                     to.Items.Add(d);
                 });
+        }
+
+        public async Task<int> GetSubmittedCountAsync()
+        {
+            var deliveries = await _unitOfWork.Get<Delivery>().FindByAsync(d => d.IsSubmitted && !d.IsDeleted);
+
+            return deliveries.Count();
         }
     }
 }

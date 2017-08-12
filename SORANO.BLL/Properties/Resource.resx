@@ -213,4 +213,7 @@
   <data name="DeliveryNotFoundException" xml:space="preserve">
     <value>Поставка не найден.</value>
   </data>
+  <data name="DeliveryCannotBeDeletedException" xml:space="preserve">
+    <value>Поставка не может быть удалена.</value>
+  </data>
 </root>

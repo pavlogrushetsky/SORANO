@@ -1,1 +1,63 @@
-﻿
+﻿@model DeliveryModel
+
+@{
+    ViewBag.Title = "SORANO - Удаление поставки";
+    ViewBag.Header = "Удаление";
+    ViewBag.Description = "поставки";
+    ViewBag.Icon = "fa fa-fw fa-trash";
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li><a asp-controller="Delivery" asp-action="Index">Поставки</a></li>
+        <li class="active">Удаление поставки</li>
+    </ul>
+}
+
+<div class="col-lg-6 col-sm-12">
+    <div class="row">
+        <p class="@(Model.CanBeDeleted ? "text-warning" : "text-danger")">
+            <i class="fa fa-fw fa-exclamation" aria-hidden="true"></i>
+            @(Model.CanBeDeleted
+                ? "Вы уверены, что хотите удалить следующую поставку?"
+                : "Подтверждённая поставка не может быть удалена.")
+        </p>
+    </div>
+    <br />
+    <div class="row">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.BillNumber)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.BillNumber)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Supplier)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Supplier.Name)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Location)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Location.Name)
+            </dd>
+        </dl>
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="ID" />
+            <div class="form-group">
+                <a class="btn btn-default btn-sm" asp-action="Index" asp-controller="Delivery">
+                    <i class="fa fa-fw fa-close"></i>
+                    Отмена
+                </a>
+                <button type="submit" class="btn btn-danger btn-sm @(Model.CanBeDeleted ? "" : "disabled")">
+                    <i class="fa fa-fw fa-trash"></i>
+                    Удалить
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
