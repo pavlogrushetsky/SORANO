@@ -177,59 +177,59 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @for (var i = 0; i < Model.Goods.Count; i++)
-                                {
-                                    <tr>
-                                        <td>
-                                            <a asp-controller="Delivery"
-                                               asp-action="Details"
-                                               asp-route-id="@Model.Goods[i].DeliveryID"
-                                               data-toggle="tooltip"
-                                               data-placement="bottom"
-                                               data-original-title="Просмотреть информацию о поставке"
-                                               title="">
-                                                @Model.Goods[i].BillNumber
-                                            </a>
-                                        </td>
-                                        <td>
-                                            <a asp-controller="Article"
-                                               asp-action="Details"
-                                               asp-route-id="@Model.Goods[i].ArticleID"
-                                               data-toggle="tooltip"
-                                               data-placement="bottom"
-                                               data-original-title="Просмотреть информацию об артикуле"
-                                               title="">
-                                                @Model.Goods[i].Article
-                                            </a>
-                                        </td>
-                                        <td>@Model.Goods[i].Quantity</td>
-                                        <td>@Model.Goods[i].DeliveredPrice</td>
-                                        <td>
-                                            <a asp-controller="Goods"
-                                               asp-action="ChangeLocation"
-                                               asp-route-deliveryItemId ="@Model.Goods[i].DeliveryItemID"
-                                               asp-route-currentLocationId ="@Model.ID"
-                                               asp-route-maxCount="@Model.Goods[i].Quantity"
-                                               asp-route-returnUrl="@Url.Action("Details", "Location", new { id = Model.ID } )"
-                                               class="btn btn-xs btn-default"
-                                               data-toggle="tooltip"
-                                               data-placement="bottom"
-                                               data-original-title="Переместить товары"
-                                               title="">
-                                                <i class="fa fa-fw fa-map-signs" aria-hidden="true"></i>
-                                            </a>
-                                            <a asp-controller="Goods"
-                                               asp-action="Sale"
-                                               class="btn btn-xs btn-default"
-                                               data-toggle="tooltip"
-                                               data-placement="bottom"
-                                               data-original-title="Продать товары"
-                                               title="">
-                                                <i class="fa fa-fw fa-handshake-o" aria-hidden="true"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                }
+                            @foreach (var goods in Model.Goods)
+                            {
+                                <tr>
+                                    <td>
+                                        <a asp-controller="Delivery"
+                                           asp-action="Details"
+                                           asp-route-id="@goods.DeliveryID"
+                                           data-toggle="tooltip"
+                                           data-placement="bottom"
+                                           data-original-title="Просмотреть информацию о поставке"
+                                           title="">
+                                            @goods.BillNumber
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a asp-controller="Article"
+                                           asp-action="Details"
+                                           asp-route-id="@goods.ArticleID"
+                                           data-toggle="tooltip"
+                                           data-placement="bottom"
+                                           data-original-title="Просмотреть информацию об артикуле"
+                                           title="">
+                                            @goods.Article
+                                        </a>
+                                    </td>
+                                    <td>@goods.Quantity</td>
+                                    <td>@goods.DeliveredPrice</td>
+                                    <td>
+                                        <a asp-controller="Goods"
+                                           asp-action="ChangeLocation"
+                                           asp-route-articleId ="@goods.ArticleID"
+                                           asp-route-currentLocationId ="@Model.ID"
+                                           asp-route-maxCount="@goods.Quantity"
+                                           asp-route-returnUrl="@Url.Action("Details", "Location", new { id = Model.ID } )"
+                                           class="btn btn-xs btn-default"
+                                           data-toggle="tooltip"
+                                           data-placement="bottom"
+                                           data-original-title="Переместить товары"
+                                           title="">
+                                            <i class="fa fa-fw fa-map-signs" aria-hidden="true"></i>
+                                        </a>
+                                        <a asp-controller="Goods"
+                                           asp-action="Sale"
+                                           class="btn btn-xs btn-default"
+                                           data-toggle="tooltip"
+                                           data-placement="bottom"
+                                           data-original-title="Продать товары"
+                                           title="">
+                                            <i class="fa fa-fw fa-handshake-o" aria-hidden="true"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
                             </tbody>
                         </table>
                     </div>

@@ -15,7 +15,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 Comment = location.Comment,
                 TypeID = location.TypeID.ToString(),
                 Type = location.Type?.ToModel(false),
-                Goods = location.Storages.Select(s => s.Goods).GroupBy(g => g.DeliveryItemID).Select(gr => 
+                Goods = location.Storages.Where(s => !s.ToDate.HasValue).Select(s => s.Goods).GroupBy(g => g.DeliveryItemID).Select(gr => 
                 {
                     var delivery = gr.First().DeliveryItem.Delivery;
                     var symbol = delivery.EuroRate.HasValue ? "€" : delivery.DollarRate.HasValue ? "$" : "₴";
@@ -27,7 +27,6 @@ namespace SORANO.WEB.Infrastructure.Extensions
                         Quantity = gr.Count(),
                         DeliveredPrice = gr.First().DeliveryItem.UnitPrice.ToString("0.00") + " " + symbol,
                         DeliveryID = delivery.ID,
-                        DeliveryItemID = gr.First().DeliveryItem.ID,
                         BillNumber = delivery.BillNumber
                     };
                 }).ToList(),

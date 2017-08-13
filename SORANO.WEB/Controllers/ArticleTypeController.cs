@@ -100,39 +100,6 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Select(int? selectedId, string returnUrl, int? currentTypeId)
-        {
-            if (string.IsNullOrEmpty(returnUrl))
-            {
-                return BadRequest();
-            }
-
-            var types = await _articleTypeService.GetAllAsync(false);
-
-            var model = new ArticleTypeSelectModel
-            {
-                Types = types.Select(t => t.ToModel()).ToList(),
-                ReturnUrl = returnUrl
-            };
-
-            if (selectedId.HasValue)
-            {
-                var selectedType = model.Types.FirstOrDefault(t => t.ID == selectedId);
-                if (selectedType != null)
-                {
-                    selectedType.IsSelected = true;
-                }
-            }
-
-            if (currentTypeId.HasValue)
-            {
-                model.CurrentType = model.Types.FirstOrDefault(t => t.ID == currentTypeId);
-            }
-
-            return View(model);
-        }
-
-        [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
             var articleType = await _articleTypeService.GetAsync(id);

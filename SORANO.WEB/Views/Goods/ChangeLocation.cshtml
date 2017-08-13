@@ -29,19 +29,25 @@
       asp-controller="Goods"
       method="post">
     <input type="hidden" asp-for="ReturnUrl"/>
-    <input type="hidden" asp-for="DeliveryItemID" />
+    <input type="hidden" asp-for="ArticleID" />
     <input type="hidden" asp-for="CurrentLocationID" />
     <input type="hidden" asp-for="MaxCount" />
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
-        <div class="col-lg-4 col-md-12 col-sm-12">
+        <div class="col-lg-4 col-md-12 col-sm-12"> 
             <div class="form-group">
-                <label class="control-label" asp-for="Count"></label>
+                <label class="control-label" asp-for="ArticleName"></label>
                 <div class="input-group input-group-sm">
-                    <span class="input-group-addon"><i class="fa fa-fw fa-hashtag"></i></span>
-                    <input class="form-control input-sm" type="number" min="1" max="@Model.MaxCount" asp-for="Count" placeholder="Количество единиц товара, шт." />
+                    <span class="input-group-addon"><i class="fa fa-fw fa-barcode"></i></span>
+                    <input class="form-control input-sm" type="text" asp-for="ArticleName" readonly="readonly" />
                 </div>
-                <span asp-validation-for="Count" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="CurrentLocationName"></label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
+                    <input class="form-control input-sm" type="text" asp-for="CurrentLocationName" readonly="readonly" />
+                </div>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="TargetLocationID"></label>
@@ -53,6 +59,14 @@
                     </select>
                 </div>
                 <span asp-validation-for="TargetLocationID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="Count"></label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-hashtag"></i></span>
+                    <input class="form-control input-sm" type="number" min="1" max="@Model.MaxCount" asp-for="Count" placeholder="Количество единиц товара, шт." />
+                </div>
+                <span asp-validation-for="Count" class="text-danger"></span>
             </div>
         </div>
     </div>

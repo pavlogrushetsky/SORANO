@@ -14,27 +14,34 @@ namespace SORANO.WEB.Controllers
     {
         private readonly IGoodsService _goodsService;
         private readonly ILocationService _locationService;
+        private readonly IArticleService _articleService;
 
-        public GoodsController(IGoodsService goodsService, ILocationService locationService, IUserService userService) : base(userService)
+        public GoodsController(IGoodsService goodsService, ILocationService locationService, IUserService userService, IArticleService articleService) : base(userService)
         {
             _goodsService = goodsService;
             _locationService = locationService;
+            _articleService = articleService;
         }
 
         #region GET Actions
 
         [HttpGet]
-        public async Task<IActionResult> ChangeLocation(int deliveryItemId, int currentLocationId, int maxCount, string returnUrl)
+        public async Task<IActionResult> ChangeLocation(int articleId, int currentLocationId, int maxCount, string returnUrl)
         {
             ViewBag.Locations = await GetLocations(currentLocationId);
+
+            var currentLocation = await _locationService.GetAsync(currentLocationId);
+            var article = await _articleService.GetAsync(articleId);
 
             return View(new GoodsChangeLocationModel
             {
                 ReturnUrl = returnUrl,
-                DeliveryItemID = deliveryItemId,
+                ArticleID = articleId,
                 MaxCount = maxCount,
                 Count = 1,
-                CurrentLocationID = currentLocationId
+                CurrentLocationID = currentLocationId,
+                CurrentLocationName = currentLocation.Name,
+                ArticleName = article.Name
             });
         }
 
@@ -60,7 +67,7 @@ namespace SORANO.WEB.Controllers
 
                 var currentUser = await GetCurrentUser();
 
-                await _goodsService.ChangeLocationAsync(model.DeliveryItemID, int.Parse(model.TargetLocationID), model.Count, currentUser.ID);
+                await _goodsService.ChangeLocationAsync(model.ArticleID, model.CurrentLocationID, model.TargetLocationID, model.Count, currentUser.ID);
 
                 return Redirect(model.ReturnUrl);
             }, ex =>

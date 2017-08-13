@@ -36,12 +36,6 @@
   <ItemGroup>
     <Content Include="wwwroot\css\site.css" />
     <Content Include="wwwroot\js\pages\articleCreate.js" />
-    <Content Include="wwwroot\js\pages\articleDetails - Copy.js">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="wwwroot\js\pages\articleDetails - Copy.min.js">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
     <Content Include="wwwroot\js\pages\articleDetails.js" />
     <Content Include="wwwroot\js\pages\articleIndex.js" />
     <Content Include="wwwroot\js\pages\articleTypeCreate.js" />
@@ -56,9 +50,7 @@
     <Content Include="wwwroot\js\pages\clientIndex.min.js" />
     <Content Include="wwwroot\js\pages\deliveryCreate.js" />
     <Content Include="wwwroot\js\pages\deliveryCreate.min.js" />
-    <Content Include="wwwroot\js\pages\deliveryCreate_.min.js" />
     <Content Include="wwwroot\js\pages\goodsChangeLocation.js" />
-    <Content Include="wwwroot\js\pages\deliveryCreate_.js" />
     <Content Include="wwwroot\js\pages\deliveryDetails.js" />
     <Content Include="wwwroot\js\pages\deliveryDetails.min.js" />
     <Content Include="wwwroot\js\pages\deliveryIndex.js" />

@@ -4,7 +4,10 @@ namespace SORANO.WEB.Models
 {
     public class GoodsChangeLocationModel
     {
-        public int DeliveryItemID { get; set; }
+        public int ArticleID { get; set; }
+
+        [Display(Name = "Артикул")]
+        public string ArticleName { get; set; }
 
         [Display(Name = "Количество, шт.")]
         public int Count { get; set; }
@@ -12,8 +15,11 @@ namespace SORANO.WEB.Models
         [Display(Name = "Максимальное количество, шт.")]
         public int MaxCount { get; set; }
 
+        [Display(Name = "Текущее место")]
+        public string CurrentLocationName { get; set; }
+
         [Display(Name = "Место")]
-        public string TargetLocationID { get; set; }
+        public int TargetLocationID { get; set; }
 
         public int CurrentLocationID { get; set; }
 

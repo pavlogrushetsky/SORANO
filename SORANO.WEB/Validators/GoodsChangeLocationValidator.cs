@@ -8,21 +8,12 @@ namespace SORANO.WEB.Validators
         public GoodsChangeLocationValidator()
         {
             RuleFor(g => g.TargetLocationID)
-                .Must(BeGreaterThanZero)
+                .GreaterThan(0)
                 .WithMessage("Необходимо указать место");
 
             RuleFor(g => g.Count)
-                .Must((g, c) =>
-                {
-                    return c <= g.MaxCount;
-                })
+                .Must((g, c) => c <= g.MaxCount)
                 .WithMessage("Указанное значение превышает доступное количество товара");
-        }
-
-        private bool BeGreaterThanZero(string id)
-        {
-            int.TryParse(id, out int i);
-            return i > 0;
         }
     }
 }
