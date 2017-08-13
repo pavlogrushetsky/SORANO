@@ -119,6 +119,10 @@ namespace SORANO.WEB.Controllers
             {
                 model = cachedForCreateLocation;
             }
+            else if (TryGetCached(out DeliveryModel cachedForCreateArticle, CacheKeys.CreateArticleCacheKey, CacheKeys.CreateArticleCacheValidKey))
+            {
+                model = cachedForCreateArticle;
+            }
             else
             {
                 var delivery = await _deliveryService.GetIncludeAllAsync(id);
