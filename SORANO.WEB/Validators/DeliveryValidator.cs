@@ -23,10 +23,7 @@ namespace SORANO.WEB.Validators
                 .WithMessage("Необходимо указать дату поставки");
 
             RuleFor(d => d.PaymentDate)
-                .Must((d, pd) =>
-                {
-                    return !d.Status || !string.IsNullOrEmpty(pd);
-                })
+                .Must((d, pd) => !d.Status || !string.IsNullOrEmpty(pd))
                 .WithMessage("Необходимо указать дату оплаты");
 
             RuleFor(d => d.LocationID)
@@ -38,17 +35,11 @@ namespace SORANO.WEB.Validators
                 .WithMessage("Необходимо указать поставщика");
 
             RuleFor(d => d.DollarRate)
-                .Must((d, r) =>
-                {
-                    return d.SelectedCurrency != 1 || (!string.IsNullOrEmpty(r) && decimal.TryParse(r, NumberStyles.Any, new CultureInfo("en-US"), out decimal p) && p > 0.0M);
-                })
+                .Must((d, r) => d.SelectedCurrency != 1 || (!string.IsNullOrEmpty(r) && decimal.TryParse(r, NumberStyles.Any, new CultureInfo("en-US"), out decimal p) && p > 0.0M))
                 .WithMessage("Необходимо указать курс доллара");
 
             RuleFor(d => d.EuroRate)
-                .Must((d, r) =>
-                {
-                    return d.SelectedCurrency != 2 || (!string.IsNullOrEmpty(r) && decimal.TryParse(r, NumberStyles.Any, new CultureInfo("en-US"), out decimal p) && p > 0.0M);
-                })
+                .Must((d, r) => d.SelectedCurrency != 2 || (!string.IsNullOrEmpty(r) && decimal.TryParse(r, NumberStyles.Any, new CultureInfo("en-US"), out decimal p) && p > 0.0M))
                 .WithMessage("Необходимо указать курс евро");
 
             RuleFor(d => d.TotalGrossPrice)

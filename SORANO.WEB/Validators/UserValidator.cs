@@ -34,10 +34,7 @@ namespace SORANO.WEB.Validators
                 .WithMessage("Необходимо, чтобы значения полей \"Новый пароль\" совпадали");
 
             RuleFor(u => u.RoleIDs)
-                .Must(u =>
-                {
-                    return u != null && u.Any();
-                })
+                .Must(u => u != null && u.Any())
                 .WithMessage("Пользователю необходимо назначить хотя бы одну роль");
         }
     }
