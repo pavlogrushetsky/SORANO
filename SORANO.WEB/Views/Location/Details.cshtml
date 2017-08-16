@@ -218,12 +218,16 @@
                                            title="">
                                             <i class="fa fa-fw fa-map-signs" aria-hidden="true"></i>
                                         </a>
-                                        <a asp-controller="Goods"
+                                        <a asp-controller="Sale"
                                            asp-action="Sale"
+                                           asp-route-articleId ="@goods.ArticleID"
+                                           asp-route-currentLocationId ="@Model.ID"
+                                           asp-route-maxCount="@goods.Quantity"
+                                           asp-route-returnUrl="@Url.Action("Details", "Location", new { id = Model.ID } )"
                                            class="btn btn-xs btn-default"
                                            data-toggle="tooltip"
                                            data-placement="bottom"
-                                           data-original-title="Продать товары"
+                                           data-original-title="Оформить продажу"
                                            title="">
                                             <i class="fa fa-fw fa-handshake-o" aria-hidden="true"></i>
                                         </a>
