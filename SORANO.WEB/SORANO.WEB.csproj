@@ -34,41 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="wwwroot\css\site.css" />
-    <Content Include="wwwroot\js\pages\articleCreate.js" />
-    <Content Include="wwwroot\js\pages\articleDetails.js" />
-    <Content Include="wwwroot\js\pages\articleIndex.js" />
-    <Content Include="wwwroot\js\pages\articleTypeCreate.js" />
-    <Content Include="wwwroot\js\pages\articleTypeDetails.js" />
-    <Content Include="wwwroot\js\pages\articleTypeSelect.js" />
-    <Content Include="wwwroot\js\pages\attachmentSelectMainPicture.js" />
-    <Content Include="wwwroot\js\pages\attachmentTypeIndex.js" />
-    <Content Include="wwwroot\js\pages\clientCreate.min.js" />
-    <Content Include="wwwroot\js\pages\clientDetails.js" />
-    <Content Include="wwwroot\js\pages\clientDetails.min.js" />
-    <Content Include="wwwroot\js\pages\clientIndex.js" />
-    <Content Include="wwwroot\js\pages\clientIndex.min.js" />
-    <Content Include="wwwroot\js\pages\deliveryCreate.js" />
-    <Content Include="wwwroot\js\pages\deliveryCreate.min.js" />
-    <Content Include="wwwroot\js\pages\goodsChangeLocation.js" />
-    <Content Include="wwwroot\js\pages\deliveryDetails.js" />
-    <Content Include="wwwroot\js\pages\deliveryDetails.min.js" />
-    <Content Include="wwwroot\js\pages\deliveryIndex.js" />
-    <Content Include="wwwroot\js\pages\goodsChangeLocation.min.js" />
-    <Content Include="wwwroot\js\pages\locationCreate.js" />
-    <Content Include="wwwroot\js\pages\locationDetails.js" />
-    <Content Include="wwwroot\js\pages\locationIndex.js" />
-    <Content Include="wwwroot\js\pages\locationTypeCreate.js" />
-    <Content Include="wwwroot\js\pages\locationTypeDetails.js" />
-    <Content Include="wwwroot\js\pages\clientCreate.js" />
-    <Content Include="wwwroot\js\pages\supplierCreate.js" />
-    <Content Include="wwwroot\js\pages\supplierDetails.js" />
-    <Content Include="wwwroot\js\pages\supplierIndex.js" />
-    <Content Include="wwwroot\js\pages\userDetails.js" />
-    <Content Include="wwwroot\js\pages\userList.js" />
-    <Content Include="wwwroot\js\site.js" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier" Version="2.4.337" />
     <PackageReference Include="EntityFramework" Version="6.1.3" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="7.1.1" />

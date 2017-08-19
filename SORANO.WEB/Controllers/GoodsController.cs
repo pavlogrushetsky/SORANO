@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Models;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,15 +16,49 @@ namespace SORANO.WEB.Controllers
         private readonly IGoodsService _goodsService;
         private readonly ILocationService _locationService;
         private readonly IArticleService _articleService;
+        private readonly IClientService _clientService;
 
-        public GoodsController(IGoodsService goodsService, ILocationService locationService, IUserService userService, IArticleService articleService) : base(userService)
+        public GoodsController(IClientService clientService, IGoodsService goodsService, ILocationService locationService, IUserService userService, IArticleService articleService) : base(userService)
         {
+            _clientService = clientService;
             _goodsService = goodsService;
             _locationService = locationService;
             _articleService = articleService;
         }
 
         #region GET Actions
+
+        [HttpGet]
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult Sales()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Sale(int articleId, int currentLocationId, int maxCount, string returnUrl)
+        {
+            ViewBag.Clients = await GetClients();
+
+            var location = await _locationService.GetAsync(currentLocationId);
+            var article = await _articleService.GetAsync(articleId);
+
+            return View(new SaleModel
+            {
+                ReturnUrl = returnUrl,
+                ArticleID = articleId,
+                ArticleName = article.Name,
+                LocationID = currentLocationId,
+                LocationName = location.Name,
+                MaxCount = maxCount,
+                Count = 1
+            });
+        }
 
         [HttpGet]
         public async Task<IActionResult> ChangeLocation(int articleId, int currentLocationId, int maxCount, string returnUrl)
@@ -80,6 +115,39 @@ namespace SORANO.WEB.Controllers
             });
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Sale(SaleModel model)
+        {
+            var clients = new List<SelectListItem>();
+
+            return await TryGetActionResultAsync(async () =>
+            {
+                clients = await GetClients();
+
+                ViewBag.Clients = clients;
+
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                var currentUser = await GetCurrentUser();
+
+                var parsed = decimal.TryParse(model.SalePrice, NumberStyles.Any, new CultureInfo("en-US"), out decimal salePrice);
+
+                await _goodsService.SaleAsync(model.ArticleID, model.LocationID, model.ClientID, model.Count, salePrice, currentUser.ID);
+
+                return Redirect(model.ReturnUrl);
+            }, ex =>
+            {
+                ViewBag.Clients = clients;
+
+                ModelState.AddModelError("", ex);
+
+                return View(model);
+            });
+        }
+
         #endregion 
 
         private async Task<List<SelectListItem>> GetLocations(int exceptId)
@@ -102,6 +170,28 @@ namespace SORANO.WEB.Controllers
             }));
 
             return locationItems;
+        }
+
+        private async Task<List<SelectListItem>> GetClients()
+        {
+            var clients = await _clientService.GetAllAsync(false);
+
+            var clientItems = new List<SelectListItem>
+            {
+                new SelectListItem
+                {
+                    Value = "0",
+                    Text = "-- Клиент --"
+                }
+            };
+
+            clientItems.AddRange(clients.Select(c => new SelectListItem
+            {
+                Value = c.ID.ToString(),
+                Text = c.Name
+            }));
+
+            return clientItems;
         }
     }
 }

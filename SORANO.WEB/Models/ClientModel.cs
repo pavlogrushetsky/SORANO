@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SORANO.WEB.Models
 {
@@ -15,5 +16,8 @@ namespace SORANO.WEB.Models
 
         [Display(Name = "Номер карты")]
         public string CardNumber { get; set; }
+
+        [Display(Name = "Покупки")]
+        public List<SaleModel> Purchases { get; set; } = new List<SaleModel>();
     }
 }

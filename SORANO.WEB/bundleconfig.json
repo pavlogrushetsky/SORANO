@@ -290,5 +290,16 @@
       "renameLocals": true
     },
     "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/goodsSale.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/goodsSale.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
   }
 ]

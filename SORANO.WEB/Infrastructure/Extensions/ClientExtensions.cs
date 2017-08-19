@@ -25,7 +25,20 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 Deleted = client.DeletedDate?.ToString("dd.MM.yyyy"),
                 CreatedBy = client.CreatedByUser?.Login,
                 ModifiedBy = client.ModifiedByUser?.Login,
-                DeletedBy = client.DeletedByUser?.Login
+                DeletedBy = client.DeletedByUser?.Login,
+                Purchases = client.Goods
+                    .Where(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue)
+                    .GroupBy(g => new { g.DeliveryItem.ArticleID, g.SaleLocationID, g.SaleDate.Value.Date, g.SalePrice })
+                    .Select(g => new SaleModel
+                    {
+                        ArticleID = g.Key.ArticleID,
+                        ArticleName = g.Select(a => a.DeliveryItem.Article.Name).First(),
+                        Count = g.Count(),
+                        LocationID = g.Key.SaleLocationID.Value,
+                        LocationName = g.Select(l => l.SaleLocation.Name).First(),
+                        TotalPrice = (g.Count() * g.Key.SalePrice.Value).ToString("0.00") + " ₴",
+                        SaleDate = g.Key.Date.ToString("dd.MM.yyyy")
+                    }).ToList()
             };
         }
 

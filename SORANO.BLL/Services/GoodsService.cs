@@ -50,5 +50,38 @@ namespace SORANO.BLL.Services
             
             await _unitOfWork.SaveAsync();
         }
+
+        public async Task SaleAsync(int articleId, int locationId, int clientId, int num, decimal price, int userId)
+        {
+            var storages = await _unitOfWork.Get<Storage>().GetAllAsync();
+
+            var currentStorages = storages
+                .Where(s => s.LocationID == locationId && s.Goods.DeliveryItem.ArticleID == articleId && !s.ToDate.HasValue)
+                .Take(num)
+                .ToList();
+
+            currentStorages.ForEach(storage =>
+            {
+                storage.ToDate = DateTime.Now.Date;
+                storage.UpdateModifiedFields(userId);
+
+                _unitOfWork.Get<Storage>().Update(storage);
+            });
+
+            currentStorages.Select(s => s.Goods).ToList().ForEach(goods =>
+            {
+                goods.SaleDate = DateTime.Now;
+                goods.SaleLocationID = locationId;
+                goods.SoldBy = userId;
+                goods.SalePrice = price;
+                goods.ClientID = clientId;
+
+                goods.UpdateModifiedFields(userId);
+
+                _unitOfWork.Get<Goods>().Update(goods);
+            });
+
+            await _unitOfWork.SaveAsync();
+        }
     }
 }
