@@ -54,5 +54,10 @@
   <ItemGroup>
     <Folder Include="wwwroot\attachments\" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Update="wwwroot\js\pages\goodsSales.min.js">
+      <DependentUpon>goodsSales.js</DependentUpon>
+    </Content>
+  </ItemGroup>
 
 </Project>

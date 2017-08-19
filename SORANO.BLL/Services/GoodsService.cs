@@ -5,6 +5,7 @@ using SORANO.DAL.Repositories;
 using System.Threading.Tasks;
 using SORANO.BLL.Helpers;
 using SORANO.CORE.StockEntities;
+using System.Collections.Generic;
 
 namespace SORANO.BLL.Services
 {
@@ -49,6 +50,20 @@ namespace SORANO.BLL.Services
             });
             
             await _unitOfWork.SaveAsync();
+        }
+
+        public async Task<List<Goods>> GetSoldGoodsAsync()
+        {
+            var goods = await _unitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
+
+            return goods.ToList();
+        }
+
+        public async Task<decimal> GetTotalIncomeAsync()
+        {
+            var goods = await _unitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
+
+            return goods.Sum(g => g.SalePrice.Value);
         }
 
         public async Task SaleAsync(int articleId, int locationId, int clientId, int num, decimal price, int userId)

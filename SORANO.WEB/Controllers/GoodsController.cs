@@ -35,9 +35,25 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public IActionResult Sales()
+        public async Task<IActionResult> Sales()
         {
-            return View();
+            var goods = await _goodsService.GetSoldGoodsAsync();
+
+            var sales = goods.GroupBy(g => new { g.ClientID, g.DeliveryItem.ArticleID, g.SaleLocationID, g.SaleDate.Value.Date, g.SalePrice })
+                    .Select(g => new SaleModel
+                    {
+                        ClientID = g.Key.ClientID.Value,
+                        ClientName = g.First().Client.Name,
+                        ArticleID = g.Key.ArticleID,
+                        ArticleName = g.First().DeliveryItem.Article.Name,
+                        Count = g.Count(),
+                        LocationID = g.Key.SaleLocationID.Value,
+                        LocationName = g.First().SaleLocation.Name,
+                        TotalPrice = (g.Count() * g.Key.SalePrice.Value).ToString("0.00") + " ₴",
+                        SaleDate = g.Key.Date.ToString("dd.MM.yyyy")
+                    }).ToList();
+
+            return View(sales);
         }
 
         [HttpGet]

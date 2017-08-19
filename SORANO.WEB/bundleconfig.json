@@ -301,5 +301,27 @@
       "renameLocals": true
     },
     "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/goodsSales.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/goodsSales.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/dashboard.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/dashboard.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
   }
 ]
