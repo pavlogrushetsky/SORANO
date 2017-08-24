@@ -57,21 +57,28 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Sale(int articleId, int currentLocationId, int maxCount, string returnUrl)
+        public async Task<IActionResult> Sale(int? articleId, int? currentLocationId, int? maxCount, string returnUrl)
         {
-            ViewBag.Clients = await GetClients();
+            var locations = await GetLocations();
+            var articles = await GetArticles();
 
-            var location = await _locationService.GetAsync(currentLocationId);
-            var article = await _articleService.GetAsync(articleId);
+            ViewBag.Clients = await GetClients();
+            ViewBag.Locations = locations;
+            ViewBag.Articles = await GetArticles();
+
+            var locationName = currentLocationId.HasValue ? locations.Single(l => l.Value.Equals(currentLocationId.Value.ToString())).Text : null;
+            var articleName = articleId.HasValue ? articles.Single(a => a.Value.Equals(articleId.Value.ToString())).Text : null;
 
             return View(new SaleModel
             {
                 ReturnUrl = returnUrl,
-                ArticleID = articleId,
-                ArticleName = article.Name,
-                LocationID = currentLocationId,
-                LocationName = location.Name,
-                MaxCount = maxCount,
+                ArticleID = articleId.Value,
+                ArticleName = articleName,
+                IsArticleEditable = !articleId.HasValue,
+                LocationID = currentLocationId.Value,
+                LocationName = locationName,
+                IsLocationEditable = !currentLocationId.HasValue,
+                MaxCount = maxCount.Value,
                 Count = 1
             });
         }
@@ -135,12 +142,18 @@ namespace SORANO.WEB.Controllers
         public async Task<IActionResult> Sale(SaleModel model)
         {
             var clients = new List<SelectListItem>();
+            var locations = new List<SelectListItem>();
+            var articles = new List<SelectListItem>();
 
             return await TryGetActionResultAsync(async () =>
             {
                 clients = await GetClients();
+                locations = await GetLocations();
+                articles = await GetArticles();
 
                 ViewBag.Clients = clients;
+                ViewBag.Locations = locations;
+                ViewBag.Articles = articles;
 
                 if (!ModelState.IsValid)
                 {
@@ -157,6 +170,8 @@ namespace SORANO.WEB.Controllers
             }, ex =>
             {
                 ViewBag.Clients = clients;
+                ViewBag.Locations = locations;
+                ViewBag.Articles = articles;
 
                 ModelState.AddModelError("", ex);
 
@@ -166,7 +181,7 @@ namespace SORANO.WEB.Controllers
 
         #endregion 
 
-        private async Task<List<SelectListItem>> GetLocations(int exceptId)
+        private async Task<List<SelectListItem>> GetLocations(int exceptId = 0)
         {
             var locations = await _locationService.GetAllAsync(false);
 
@@ -208,6 +223,28 @@ namespace SORANO.WEB.Controllers
             }));
 
             return clientItems;
+        }
+
+        private async Task<List<SelectListItem>> GetArticles()
+        {
+            var articles = await _articleService.GetAllAsync(false);
+
+            var articleItems = new List<SelectListItem>
+            {
+                new SelectListItem
+                {
+                    Value = "0",
+                    Text = "-- Артикул --"
+                }
+            };
+
+            articleItems.AddRange(articles.Select(c => new SelectListItem
+            {
+                Value = c.ID.ToString(),
+                Text = c.Name
+            }));
+
+            return articleItems;
         }
     }
 }

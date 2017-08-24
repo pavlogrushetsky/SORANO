@@ -33,6 +33,8 @@
     <input type="hidden" asp-for="ArticleID" />
     <input type="hidden" asp-for="LocationID" />
     <input type="hidden" asp-for="MaxCount" />
+    <input type="hidden" asp-for="IsArticleEditable" />
+    <input type="hidden" asp-for="IsLocationEditable" />
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
         <div class="col-lg-4 col-md-12 col-sm-12">
@@ -40,15 +42,23 @@
                 <label class="control-label" asp-for="ArticleName"></label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-barcode"></i></span>
-                    <input class="form-control input-sm" type="text" asp-for="ArticleName" readonly="readonly" />
+                    <select class="form-control input-sm select-article"
+                            asp-for="ArticleID"
+                            asp-items="@ViewBag.Articles">
+                    </select>
                 </div>
+                <span asp-validation-for="ArticleID" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="LocationName"></label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
-                    <input class="form-control input-sm" type="text" asp-for="LocationName" readonly="readonly" />
+                    <select class="form-control input-sm select-location"
+                            asp-for="LocationID"
+                            asp-items="@ViewBag.Locations">
+                    </select>
                 </div>
+                <span asp-validation-for="LocationID" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="ClientName"></label>

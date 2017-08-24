@@ -9,16 +9,20 @@ namespace SORANO.WEB.Models
         [Display(Name = "Артикул")]
         public string ArticleName { get; set; }
 
+        public bool IsArticleEditable { get; set; }
+
         [Display(Name = "Количество, шт.")]
         public int Count { get; set; }
 
         [Display(Name = "Максимально количество, шт.")]
-        public int MaxCount { get; set; }
+        public int? MaxCount { get; set; }
 
         public int LocationID { get; set; }
 
         [Display(Name = "Место")]
         public string LocationName { get; set; }
+
+        public bool IsLocationEditable { get; set; }
 
         public int ClientID { get; set; }
 

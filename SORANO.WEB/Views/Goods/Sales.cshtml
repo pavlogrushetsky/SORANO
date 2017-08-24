@@ -69,6 +69,7 @@
                 <a class="btn btn-default btn-xs pull-right"
                    asp-controller="Goods"
                    asp-action="Sale"
+                   asp-route-returnUrl="@Url.Action("Sales", "Goods")"
                    data-toggle="tooltip"
                    data-placement="right"
                    data-original-title="Оформить продажу"

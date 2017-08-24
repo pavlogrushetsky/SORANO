@@ -7,4 +7,11 @@
             }
         }
     });
+    $('.select-article').select2({
+        "language": {
+            "noResults": function () {
+                return "Артикулы не найдены";
+            }
+        }
+    });
 });
