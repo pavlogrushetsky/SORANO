@@ -263,3 +263,7 @@ span.select2-selection.select2-selection--single {
     color: #2c3e50 !important;
     padding-left: 0px !important;
 }
+
+.select2-selection__placeholder {
+    font-size: 13px !important;
+}

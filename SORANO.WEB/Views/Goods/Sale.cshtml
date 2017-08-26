@@ -14,6 +14,8 @@
         span.select2-selection.select2-selection--single {
             border-top-left-radius: 0 !important;
             border-bottom-left-radius: 0 !important;
+            border-top-right-radius: 4px !important;
+            border-bottom-right-radius: 4px !important;
         }
     </style>
 }
@@ -32,6 +34,8 @@
     <input type="hidden" asp-for="ReturnUrl" />
     <input type="hidden" asp-for="ArticleID" />
     <input type="hidden" asp-for="LocationID" />
+    <input type="hidden" asp-for="ClientID" />
+    <input type="hidden" asp-for="ClientName" />
     <input type="hidden" asp-for="MaxCount" />
     <input type="hidden" asp-for="IsArticleEditable" />
     <input type="hidden" asp-for="IsLocationEditable" />
@@ -65,8 +69,8 @@
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-address-book"></i></span>
                     <select class="form-control input-sm select-client"
-                            asp-for="ClientID"
-                            asp-items="@ViewBag.Clients"></select>
+                            asp-for="ClientID">
+                    </select>
                 </div>
                 <span asp-validation-for="ClientID" class="text-danger"></span>
             </div>

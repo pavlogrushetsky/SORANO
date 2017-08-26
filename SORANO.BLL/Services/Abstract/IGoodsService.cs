@@ -12,6 +12,8 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<List<Goods>> GetSoldGoodsAsync();
 
+        Task<List<Article>> GetArticlesForLocationAsync(int? locationId);
+
         Task<decimal> GetTotalIncomeAsync();
     }
 }
