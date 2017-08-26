@@ -82,7 +82,7 @@ namespace SORANO.WEB.Controllers
                 LocationID = currentLocationId ?? default(int),
                 LocationName = locationName,
                 IsLocationEditable = !currentLocationId.HasValue,
-                MaxCount = maxCount ?? default(int),
+                MaxCount = maxCount ?? 1,
                 Count = 1
             });
         }
@@ -184,28 +184,30 @@ namespace SORANO.WEB.Controllers
             return Json(new
             {
                 results = articles
-                    .Where(a => !string.IsNullOrEmpty(term) ? a.Name.Contains(term) : true)
+                    .Where(a => !string.IsNullOrEmpty(term) ? a.Key.Name.Contains(term) : true)
                     .Select(a => new
                     {
-                        id = a.ID,
-                        text = a.Name
+                        id = a.Key.ID,
+                        text = a.Key.Name,
+                        max = a.Value
                     })
             });
         }
 
         [HttpPost]
-        public async Task<JsonResult> GetLocations(string term, int? articleId)
+        public async Task<JsonResult> GetLocations(string term, int? articleId, int? except)
         {
-            var locations = await _locationService.GetLocationsForArticleAsync(articleId);
+            var locations = await _locationService.GetLocationsForArticleAsync(articleId, except);
 
             return Json(new
             {
                 results = locations
-                    .Where(a => !string.IsNullOrEmpty(term) ? a.Name.Contains(term) : true)
+                    .Where(a => !string.IsNullOrEmpty(term) ? a.Key.Name.Contains(term) : true)
                     .Select(a => new
                     {
-                        id = a.ID,
-                        text = a.Name
+                        id = a.Key.ID,
+                        text = a.Key.Name,
+                        max = a.Value
                     })
             });
         }

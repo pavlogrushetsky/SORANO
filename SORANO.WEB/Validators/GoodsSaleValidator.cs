@@ -13,6 +13,14 @@ namespace SORANO.WEB.Validators
                 .GreaterThan(0)
                 .WithMessage("Необходимо указать клиента");
 
+            RuleFor(s => s.ArticleID)
+                .GreaterThan(0)
+                .WithMessage("Необходимо указать артикул");
+
+            RuleFor(s => s.LocationID)
+                .GreaterThan(0)
+                .WithMessage("Необходимо указать место");
+
             RuleFor(s => s.SalePrice)
                 .Must(BeValidPrice)
                 .WithMessage("Значение должно быть указано в формате #.##");
@@ -32,7 +40,7 @@ namespace SORANO.WEB.Validators
 
         private bool BeValidPrice(string price)
         {
-            return Regex.IsMatch(price, @"^\d+\.\d{0,2}$");
+            return string.IsNullOrEmpty(price) || Regex.IsMatch(price, @"^\d+(\.\d{0,2})?$");
         }
 
         private bool BeGreaterThanZero(string price)

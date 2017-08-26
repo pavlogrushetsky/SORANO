@@ -18,6 +18,6 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<bool> BarcodeExistsAsync(string barcode, int articleId = 0);
 
-        Task<List<Article>> GetArticlesForLocationAsync(int? locationId);
+        Task<Dictionary<Article, int>> GetArticlesForLocationAsync(int? locationId);
     }
 }

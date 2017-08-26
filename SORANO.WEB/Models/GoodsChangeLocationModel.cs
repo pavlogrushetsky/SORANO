@@ -21,6 +21,9 @@ namespace SORANO.WEB.Models
         [Display(Name = "Место")]
         public int TargetLocationID { get; set; }
 
+        [Display(Name = "Место")]
+        public string TargetLocationName { get; set; }
+
         public int CurrentLocationID { get; set; }
 
         public string ReturnUrl { get; set; }

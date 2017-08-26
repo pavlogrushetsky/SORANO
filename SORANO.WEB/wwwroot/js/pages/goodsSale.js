@@ -74,7 +74,10 @@ function initArticleSelect() {
     var selectArticle = $('.select-article');
     var articleId = $('#ArticleID');
     var articleName = $('#ArticleName');
+    var maxCount = $('#MaxCount');
+    var count = $('#Count');
     var locationId = $('#LocationID');
+    var isEditable = $('#IsArticleEditable').val();
 
     selectArticle.select2({
         "language": {
@@ -107,7 +110,8 @@ function initArticleSelect() {
                     results: $.map(data, function (item) {
                         return {
                             text: item.text,
-                            id: item.id
+                            id: item.id,
+                            max: item.max
                         }
                     })
                 };
@@ -120,6 +124,10 @@ function initArticleSelect() {
         selectArticle.append($('<option></option>').attr('value', articleId.val()).text(articleName.val()));
     }
 
+    if (isEditable == 'False') {
+        selectArticle.prop("disabled", true);
+    }
+
     selectArticle.on("select2:opening", function () {
         selectArticle.val(null).trigger('change');
     });
@@ -129,10 +137,14 @@ function initArticleSelect() {
         if (data[0]) {
             articleId.val(data[0].id);
             articleName.val(data[0].text);
+            maxCount.val(data[0].max);
+            count.attr('max', data[0].max);
         }
         else {
             articleId.val(0);
             articleName.val('');
+            maxCount.val(1);
+            count.attr('max', 1);
         }
     });
 }
@@ -142,6 +154,9 @@ function initLocationSelect() {
     var locationId = $('#LocationID');
     var locationName = $('#LocationName');
     var articleId = $('#ArticleID');
+    var isEditable = $('#IsLocationEditable').val();
+    var maxCount = $('#MaxCount');
+    var count = $('#Count');
 
     selectLocation.select2({
         "language": {
@@ -174,7 +189,8 @@ function initLocationSelect() {
                     results: $.map(data, function (item) {
                         return {
                             text: item.text,
-                            id: item.id
+                            id: item.id,
+                            max: item.max
                         }
                     })
                 };
@@ -187,6 +203,10 @@ function initLocationSelect() {
         selectLocation.append($('<option></option>').attr('value', locationId.val()).text(locationName.val()));
     }
 
+    if (isEditable == 'False') {
+        selectLocation.prop("disabled", true);
+    }
+
     selectLocation.on("select2:opening", function () {
         selectLocation.val(null).trigger('change');
     });
@@ -196,10 +216,14 @@ function initLocationSelect() {
         if (data[0]) {
             locationId.val(data[0].id);
             locationName.val(data[0].text);
+            maxCount.val(data[0].max);
+            count.attr('max', data[0].max);
         }
         else {
             locationId.val(0);
             locationName.val('');
+            maxCount.val(1);
+            count.attr('max', 1);
         }
     });
 }

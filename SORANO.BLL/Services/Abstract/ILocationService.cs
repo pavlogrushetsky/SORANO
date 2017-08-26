@@ -16,6 +16,6 @@ namespace SORANO.BLL.Services.Abstract
 
         Task DeleteAsync(int id, int userId);
 
-        Task<List<Location>> GetLocationsForArticleAsync(int? articleId);
+        Task<Dictionary<Location, int>> GetLocationsForArticleAsync(int? articleId, int? except);
     }
 }

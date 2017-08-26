@@ -129,7 +129,7 @@ namespace SORANO.WEB.Validators
                 return false;
             }
 
-            return Regex.IsMatch(price, @"^\d+\.\d{0,2}$");
+            return Regex.IsMatch(price, @"^\d+(\.\d{0,2})?$");
         }
     }
 }

@@ -154,16 +154,27 @@ namespace SORANO.BLL.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task<List<Location>> GetLocationsForArticleAsync(int? articleId)
+        public async Task<Dictionary<Location, int>> GetLocationsForArticleAsync(int? articleId, int? except)
         {
-            var goods = await _unitOfWork.Get<Goods>().GetAllAsync(); ;
+            var allGoods = await _unitOfWork.Get<Goods>().GetAllAsync();
+            Dictionary<Location, int> locations;
 
             if (!articleId.HasValue || articleId == 0)
             {
-                return goods.Where(g => !g.SaleDate.HasValue).Select(g => g.Storages.Last().Location).Distinct().ToList();
+                locations = allGoods.Where(g => !g.SaleDate.HasValue)
+                    .GroupBy(g => g.Storages.Single(s => !s.ToDate.HasValue).Location)
+                    .ToDictionary(gr => gr.Key, gr => gr.Count());
+            }
+            else
+            {
+                locations = allGoods.Where(g => !g.SaleDate.HasValue && g.DeliveryItem.ArticleID == articleId)
+                        .GroupBy(g => g.Storages.Single(s => !s.ToDate.HasValue).Location)
+                        .ToDictionary(gr => gr.Key, gr => gr.Count());
             }
 
-            return goods.Where(g => !g.SaleDate.HasValue && g.DeliveryItem.ArticleID == articleId).Select(g => g.Storages.Last().Location).Distinct().ToList();
+            return !except.HasValue 
+                ? locations 
+                : locations.Where(l => l.Key.ID != except).ToDictionary(l => l.Key, l => l.Value);
         }
     }
 }

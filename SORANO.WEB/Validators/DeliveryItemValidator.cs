@@ -56,7 +56,7 @@ namespace SORANO.WEB.Validators
 
         private bool BeValidPrice(string price)
         {
-            return Regex.IsMatch(price, @"^\d+\.\d{0,2}$");
+            return string.IsNullOrEmpty(price) || Regex.IsMatch(price, @"^\d+(\.\d{0,2})?$");
         }
 
         private bool BeGreaterThanZero(string price)

@@ -31,6 +31,8 @@
     <input type="hidden" asp-for="ReturnUrl"/>
     <input type="hidden" asp-for="ArticleID" />
     <input type="hidden" asp-for="CurrentLocationID" />
+    <input type="hidden" asp-for="TargetLocationID" />
+    <input type="hidden" asp-for="TargetLocationName" />
     <input type="hidden" asp-for="MaxCount" />
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
@@ -54,8 +56,7 @@
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
                     <select class="form-control input-sm select-location"
-                            asp-for="TargetLocationID"
-                            asp-items="@ViewBag.Locations">
+                            asp-for="TargetLocationID">
                     </select>
                 </div>
                 <span asp-validation-for="TargetLocationID" class="text-danger"></span>
