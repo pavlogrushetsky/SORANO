@@ -153,5 +153,17 @@ namespace SORANO.BLL.Services
 
             await _unitOfWork.SaveAsync();
         }
+
+        public async Task<List<Location>> GetLocationsForArticleAsync(int? articleId)
+        {
+            var goods = await _unitOfWork.Get<Goods>().GetAllAsync(); ;
+
+            if (!articleId.HasValue || articleId == 0)
+            {
+                return goods.Where(g => !g.SaleDate.HasValue).Select(g => g.Storages.Last().Location).Distinct().ToList();
+            }
+
+            return goods.Where(g => !g.SaleDate.HasValue && g.DeliveryItem.ArticleID == articleId).Select(g => g.Storages.Last().Location).Distinct().ToList();
+        }
     }
 }

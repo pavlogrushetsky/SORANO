@@ -50,21 +50,7 @@ namespace SORANO.BLL.Services
             });
             
             await _unitOfWork.SaveAsync();
-        }
-
-        public async Task<List<Article>> GetArticlesForLocationAsync(int? locationId)
-        {
-            if (!locationId.HasValue || locationId == 0)
-            {
-                var goods = await _unitOfWork.Get<Goods>().GetAllAsync();
-
-                return goods.Select(g => g.DeliveryItem.Article).ToList();
-            }
-
-            var location = await _unitOfWork.Get<Location>().GetAsync(locationId.Value);
-
-            return location.Storages.Where(s => !s.ToDate.HasValue).Select(s => s.Goods.DeliveryItem.Article).ToList();
-        }
+        }        
 
         public async Task<List<Goods>> GetSoldGoodsAsync()
         {

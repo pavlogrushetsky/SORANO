@@ -33,7 +33,9 @@
       method="post">
     <input type="hidden" asp-for="ReturnUrl" />
     <input type="hidden" asp-for="ArticleID" />
+    <input type="hidden" asp-for="ArticleName" />
     <input type="hidden" asp-for="LocationID" />
+    <input type="hidden" asp-for="LocationName" />
     <input type="hidden" asp-for="ClientID" />
     <input type="hidden" asp-for="ClientName" />
     <input type="hidden" asp-for="MaxCount" />
@@ -47,8 +49,7 @@
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-barcode"></i></span>
                     <select class="form-control input-sm select-article"
-                            asp-for="ArticleID"
-                            asp-items="@ViewBag.Articles">
+                            asp-for="ArticleID">
                     </select>
                 </div>
                 <span asp-validation-for="ArticleID" class="text-danger"></span>
@@ -58,8 +59,7 @@
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
                     <select class="form-control input-sm select-location"
-                            asp-for="LocationID"
-                            asp-items="@ViewBag.Locations">
+                            asp-for="LocationID">
                     </select>
                 </div>
                 <span asp-validation-for="LocationID" class="text-danger"></span>

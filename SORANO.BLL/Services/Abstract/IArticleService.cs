@@ -17,5 +17,7 @@ namespace SORANO.BLL.Services.Abstract
         Task DeleteAsync(int id, int userId);
 
         Task<bool> BarcodeExistsAsync(string barcode, int articleId = 0);
+
+        Task<List<Article>> GetArticlesForLocationAsync(int? locationId);
     }
 }

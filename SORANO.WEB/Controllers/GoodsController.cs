@@ -59,18 +59,19 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Sale(int? articleId, int? currentLocationId, int? maxCount, string returnUrl)
         {
-            var locations = await GetLocations();
-
-            ViewBag.Locations = locations;
+            var locationName = string.Empty;
+            if (currentLocationId.HasValue)
+            {
+                var location = await _locationService.GetAsync(currentLocationId.Value);
+                locationName = location?.Name;
+            }
 
             var articleName = string.Empty;
             if (articleId.HasValue)
             {
                 var article = await _articleService.GetAsync(articleId.Value);
-                articleName = article.Name;
+                articleName = article?.Name;
             }
-
-            var locationName = currentLocationId.HasValue ? locations.Single(l => l.Value.Equals(currentLocationId.Value.ToString())).Text : null;
 
             return View(new SaleModel
             {
@@ -89,8 +90,6 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> ChangeLocation(int articleId, int currentLocationId, int maxCount, string returnUrl)
         {
-            ViewBag.Locations = await GetLocations(currentLocationId);
-
             var currentLocation = await _locationService.GetAsync(currentLocationId);
             var article = await _articleService.GetAsync(articleId);
 
@@ -113,14 +112,8 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         public async Task<IActionResult> ChangeLocation(GoodsChangeLocationModel model)
         {
-            var locations = new List<SelectListItem>();
-
             return await TryGetActionResultAsync(async () =>
             {
-                locations = await GetLocations(model.CurrentLocationID);
-
-                ViewBag.Locations = locations;
-
                 if (!ModelState.IsValid)
                 {
                     return View(model);
@@ -133,8 +126,6 @@ namespace SORANO.WEB.Controllers
                 return Redirect(model.ReturnUrl);
             }, ex =>
             {
-                ViewBag.Locations = locations;
-
                 ModelState.AddModelError("", ex);
 
                 return View(model);
@@ -144,14 +135,8 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         public async Task<IActionResult> Sale(SaleModel model)
         {
-            var locations = new List<SelectListItem>();
-
             return await TryGetActionResultAsync(async () =>
             {
-                locations = await GetLocations();
-
-                ViewBag.Locations = locations;
-
                 if (!ModelState.IsValid)
                 {
                     return View(model);
@@ -166,8 +151,6 @@ namespace SORANO.WEB.Controllers
                 return Redirect(model.ReturnUrl);
             }, ex =>
             {
-                ViewBag.Locations = locations;
-
                 ModelState.AddModelError("", ex);
 
                 return View(model);
@@ -196,7 +179,7 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         public async Task<JsonResult> GetArticles(string term, int? locationId)
         {
-            var articles = await _goodsService.GetArticlesForLocationAsync(locationId);
+            var articles = await _articleService.GetArticlesForLocationAsync(locationId);
 
             return Json(new
             {
@@ -210,26 +193,21 @@ namespace SORANO.WEB.Controllers
             });
         }
 
-        private async Task<List<SelectListItem>> GetLocations(int exceptId = 0)
+        [HttpPost]
+        public async Task<JsonResult> GetLocations(string term, int? articleId)
         {
-            var locations = await _locationService.GetAllAsync(false);
+            var locations = await _locationService.GetLocationsForArticleAsync(articleId);
 
-            var locationItems = new List<SelectListItem>
+            return Json(new
             {
-                new SelectListItem
-                {
-                    Value = "0",
-                    Text = "-- Место --"
-                }
-            };
-
-            locationItems.AddRange(locations.Where(l => l.ID != exceptId).Select(l => new SelectListItem
-            {
-                Value = l.ID.ToString(),
-                Text = l.Name
-            }));
-
-            return locationItems;
+                results = locations
+                    .Where(a => !string.IsNullOrEmpty(term) ? a.Name.Contains(term) : true)
+                    .Select(a => new
+                    {
+                        id = a.ID,
+                        text = a.Name
+                    })
+            });
         }
     }
 }

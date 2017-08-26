@@ -160,5 +160,23 @@ namespace SORANO.BLL.Services
 
             return articlesWithSameBarcode.Any();
         }
+
+        public async Task<List<Article>> GetArticlesForLocationAsync(int? locationId)
+        {
+            if (!locationId.HasValue || locationId == 0)
+            {
+                var goods = await _unitOfWork.Get<Goods>().GetAllAsync();
+
+                return goods.Where(g => !g.SaleDate.HasValue).Select(g => g.DeliveryItem.Article).Distinct().ToList();
+            }
+
+            var location = await _unitOfWork.Get<Location>().GetAsync(locationId.Value);
+
+            return location.Storages
+                .Where(s => !s.ToDate.HasValue)
+                .Select(s => s.Goods.DeliveryItem.Article)
+                .Distinct()
+                .ToList();
+        }
     }
 }
