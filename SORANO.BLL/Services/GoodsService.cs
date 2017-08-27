@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using SORANO.BLL.Helpers;
 using SORANO.CORE.StockEntities;
 using System.Collections.Generic;
+using SORANO.BLL.DTOs;
 
 namespace SORANO.BLL.Services
 {
@@ -50,7 +51,45 @@ namespace SORANO.BLL.Services
             });
             
             await _unitOfWork.SaveAsync();
-        }        
+        }
+
+        public async Task<List<AllGoodsDTO>> GetAllAsync()
+        {
+            var goods = await _unitOfWork.Get<Goods>().GetAllAsync();
+
+            return goods
+                .Where(g => !g.SaleDate.HasValue)
+                .GroupBy(g => new
+                {
+                    g.DeliveryItem.Article,
+                    g.Storages.Single(s => !s.ToDate.HasValue).Location,
+                    g.DeliveryItem.Delivery,
+                    g.DeliveryItem.UnitPrice,
+                    g.DeliveryItem.Delivery.DollarRate,
+                    g.DeliveryItem.Delivery.EuroRate
+                })
+                .GroupBy(g => g.Key.Article)
+                .Select(g => new AllGoodsDTO
+                {
+                    ArticleId = g.Key.ID,
+                    ArticleName = g.Key.Name,
+                    ArticleImage = g.Key.Attachments.FirstOrDefault(a => a.Type.Name.Equals("Основное изображение"))
+                        ?.FullPath,
+                    Goods = g.Select(gr => new GoodsGroupDTO
+                        {
+                            BillNumber = gr.Key.Delivery.BillNumber,
+                            Count = gr.Count(),
+                            DeliveryId = gr.Key.Delivery.ID,
+                            DeliveryPrice = gr.Key.UnitPrice,
+                            DollarRate = gr.Key.DollarRate,
+                            EuroRate = gr.Key.EuroRate,
+                            LocationId = gr.Key.Location.ID,
+                            LocationName = gr.Key.Location.Name
+                        })
+                        .ToList()
+                })
+                .ToList();
+        }
 
         public async Task<List<Goods>> GetSoldGoodsAsync()
         {

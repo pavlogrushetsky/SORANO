@@ -1,6 +1,7 @@
 ﻿using SORANO.CORE.StockEntities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SORANO.BLL.DTOs;
 
 namespace SORANO.BLL.Services.Abstract
 {
@@ -13,5 +14,7 @@ namespace SORANO.BLL.Services.Abstract
         Task<List<Goods>> GetSoldGoodsAsync();       
 
         Task<decimal> GetTotalIncomeAsync();
+
+        Task<List<AllGoodsDTO>> GetAllAsync();
     }
 }

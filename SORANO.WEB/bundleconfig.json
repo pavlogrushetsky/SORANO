@@ -323,5 +323,16 @@
       "renameLocals": true
     },
     "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/goodsIndex.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/goodsIndex.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
   }
 ]

@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTOs\AllGoodsDTO.cs" />
+    <Compile Include="DTOs\GoodsGroupDTO.cs" />
     <Compile Include="Helpers\CryptoHelper.cs" />
     <Compile Include="Helpers\StockEntityHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

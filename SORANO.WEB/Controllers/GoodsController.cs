@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using SORANO.WEB.Infrastructure.Extensions;
 
 namespace SORANO.WEB.Controllers
 {
@@ -29,9 +30,11 @@ namespace SORANO.WEB.Controllers
         #region GET Actions
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var goods = await _goodsService.GetAllAsync();
+
+            return View(goods.Select(g => g.ToIndexModel()).ToList());
         }
 
         [HttpGet]
@@ -167,7 +170,7 @@ namespace SORANO.WEB.Controllers
             return Json(new
             {
                 results = clients
-                    .Where(c => !string.IsNullOrEmpty(term) ? c.Name.Contains(term) : true)
+                    .Where(c => string.IsNullOrEmpty(term) || c.Name.Contains(term))
                     .Select(c => new
                     {
                         id = c.ID,
@@ -184,7 +187,7 @@ namespace SORANO.WEB.Controllers
             return Json(new
             {
                 results = articles
-                    .Where(a => !string.IsNullOrEmpty(term) ? a.Key.Name.Contains(term) : true)
+                    .Where(a => string.IsNullOrEmpty(term) || a.Key.Name.Contains(term))
                     .Select(a => new
                     {
                         id = a.Key.ID,
@@ -202,7 +205,7 @@ namespace SORANO.WEB.Controllers
             return Json(new
             {
                 results = locations
-                    .Where(a => !string.IsNullOrEmpty(term) ? a.Key.Name.Contains(term) : true)
+                    .Where(a => string.IsNullOrEmpty(term) || a.Key.Name.Contains(term))
                     .Select(a => new
                     {
                         id = a.Key.ID,
