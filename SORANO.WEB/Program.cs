@@ -10,11 +10,11 @@ namespace SORANO.WEB
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("hosting.json", optional: true)
+                .AddJsonFile("hosting.json", true)
                 .Build();
 
             var host = new WebHostBuilder()
-                .UseEnvironment("Development")
+                .UseEnvironment("Production")
                 .UseConfiguration(config)
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())

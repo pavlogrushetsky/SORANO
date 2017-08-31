@@ -256,6 +256,7 @@ namespace SORANO.WEB.Controllers
             var articles = new List<SelectListItem>();
             var suppliers = new List<SelectListItem>();
             var locations = new List<SelectListItem>();
+            var attachmentTypes = new List<SelectListItem>();
 
             return await TryGetActionResultAsync(async () =>
             {
@@ -264,7 +265,9 @@ namespace SORANO.WEB.Controllers
                 articles = await GetArticles();
                 suppliers = await GetSuppliers();
                 locations = await GetLocations();
+                attachmentTypes = await GetAttachmentTypes();
 
+                ViewBag.AttachmentTypes = attachmentTypes;
                 ViewBag.Articles = articles;
                 ViewBag.Suppliers = suppliers;
                 ViewBag.Locations = locations;
@@ -299,6 +302,7 @@ namespace SORANO.WEB.Controllers
                 return View(model);
             }, ex =>
             {
+                ViewBag.AttachmentTypes = attachmentTypes;
                 ViewBag.Articles = articles;
                 ViewBag.Suppliers = suppliers;
                 ViewBag.Locations = locations;
@@ -318,6 +322,7 @@ namespace SORANO.WEB.Controllers
             var articles = new List<SelectListItem>();
             var suppliers = new List<SelectListItem>();
             var locations = new List<SelectListItem>();
+            var attachmentTypes = new List<SelectListItem>();
 
             return await TryGetActionResultAsync(async () =>
             {
@@ -326,7 +331,9 @@ namespace SORANO.WEB.Controllers
                 articles = await GetArticles();
                 suppliers = await GetSuppliers();
                 locations = await GetLocations();
+                attachmentTypes = await GetAttachmentTypes();
 
+                ViewBag.AttachmentTypes = attachmentTypes;
                 ViewBag.Articles = articles;
                 ViewBag.Suppliers = suppliers;
                 ViewBag.Locations = locations;
@@ -363,6 +370,7 @@ namespace SORANO.WEB.Controllers
                 return View("Create", model);
             }, ex =>
             {
+                ViewBag.AttachmentTypes = attachmentTypes;
                 ViewBag.Articles = articles;
                 ViewBag.Suppliers = suppliers;
                 ViewBag.Locations = locations;
