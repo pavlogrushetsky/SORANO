@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DTOs\AllGoodsDTO.cs" />
+    <Compile Include="DTOs\ArticleDto.cs" />
     <Compile Include="DTOs\GoodsGroupDTO.cs" />
     <Compile Include="Helpers\CryptoHelper.cs" />
     <Compile Include="Helpers\StockEntityHelper.cs" />
@@ -74,6 +75,8 @@
     <Compile Include="Services\LocationTypeService.cs" />
     <Compile Include="Services\RoleService.cs" />
     <Compile Include="Services\ClientService.cs" />
+    <Compile Include="Services\ServiceResponse.cs" />
+    <Compile Include="Services\ServiceResponseType.cs" />
     <Compile Include="Services\SupplierService.cs" />
     <Compile Include="Services\UserService.cs" />
   </ItemGroup>

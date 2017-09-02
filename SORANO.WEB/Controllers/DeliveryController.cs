@@ -461,7 +461,8 @@ namespace SORANO.WEB.Controllers
                 }
             };
 
-            articleItems.AddRange(articles.Select(l => new SelectListItem
+            //TODO
+            articleItems.AddRange(articles.Result.Select(l => new SelectListItem
             {
                 Value = l.ID.ToString(),
                 Text = $"{l.Code} \u2022 {l.Barcode} \u2022 {l.Name}"

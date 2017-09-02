@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SORANO.BLL.Helpers;
 using SORANO.BLL.Properties;
@@ -18,50 +16,41 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<IEnumerable<Article>> GetAllAsync(bool withDeleted)
+        public async Task<ServiceResponse<IEnumerable<Article>>> GetAllAsync(bool withDeleted)
         {
+            var response = new SuccessResponse<IEnumerable<Article>>();
+
             var articles = await _unitOfWork.Get<Article>().GetAllAsync();
 
-            if (!withDeleted)
-            {
-                return articles.Where(a => !a.IsDeleted);
-            }
+            response.Result = !withDeleted 
+                ? articles.Where(a => !a.IsDeleted) 
+                : articles;
 
-            return articles;
+            return response;
         }
 
-        public async Task<Article> GetAsync(int id)
+        public async Task<ServiceResponse<Article>> GetAsync(int id)
         {
-            return await _unitOfWork.Get<Article>().GetAsync(a => a.ID == id);
+            var article = await _unitOfWork.Get<Article>().GetAsync(a => a.ID == id);
+
+            return new SuccessResponse<Article>(article);
         }
 
-        public async Task<Article> CreateAsync(Article article, int userId)
-        {
-            // Check passed article
+        public async Task<ServiceResponse<Article>> CreateAsync(Article article, int userId)
+        {                 
             if (article == null)
-            {
-                throw new ArgumentNullException(nameof(article), Resource.ArticleCannotBeNullException);
-            }
+                return new FailResponse<Article>(Resource.ArticleCannotBeNullMessage);
 
-            // Identifier of new article must be equal 0
             if (article.ID != 0)
-            {
-                throw new ArgumentException(Resource.ArticleInvalidIdentifierException, nameof(article.ID));
-            }
+                return new FailResponse<Article>(Resource.ArticleInvalidIdentifierMessage);
 
-            // Get user by specified identifier
             var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
-            // Check user
             if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
-            }
+                return new FailResponse<Article>(Resource.UserNotFoundMessage);
 
-            // Update created and modified fields for article
             article.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-            // Update created and modified fields for each article recommendation
             foreach (var recommendation in article.Recommendations)
             {
                 recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
@@ -76,42 +65,27 @@ namespace SORANO.BLL.Services
 
             await _unitOfWork.SaveAsync();
 
-            return saved;
+            return new SuccessResponse<Article>(saved);
         }
 
-        public async Task<Article> UpdateAsync(Article article, int userId)
+        public async Task<ServiceResponse<Article>> UpdateAsync(Article article, int userId)
         {
-            // Check passed article
             if (article == null)
-            {
-                throw new ArgumentNullException(nameof(article), Resource.ArticleCannotBeNullException);
-            }
+                return new FailResponse<Article>(Resource.ArticleCannotBeNullMessage);
 
-            // Identifier of new article must be > 0
             if (article.ID <= 0)
-            {
-                throw new ArgumentException(Resource.ArticleInvalidIdentifierException, nameof(article.ID));
-            }
+                return new FailResponse<Article>(Resource.ArticleInvalidIdentifierMessage);
 
-            // Get user by specified identifier
             var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
-            // Check user
             if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
-            }
+                return new FailResponse<Article>(Resource.UserNotFoundMessage);
 
-            // Get existent article by identifier
             var existentArticle = await _unitOfWork.Get<Article>().GetAsync(t => t.ID == article.ID);
 
-            // Check existent article
             if (existentArticle == null)
-            {
-                throw new ObjectNotFoundException(Resource.ArticleNotFoundException);
-            }
+                return new FailResponse<Article>(Resource.ArticleNotFoundMessage);
 
-            // Update fields
             existentArticle.Name = article.Name;
             existentArticle.Description = article.Description;
             existentArticle.Producer = article.Producer;
@@ -119,7 +93,6 @@ namespace SORANO.BLL.Services
             existentArticle.Barcode = article.Barcode;
             existentArticle.TypeID = article.TypeID;
 
-            // Update modified fields for existent article
             existentArticle.UpdateModifiedFields(userId);
 
             UpdateAttachments(article, existentArticle, userId);
@@ -130,51 +103,57 @@ namespace SORANO.BLL.Services
 
             await _unitOfWork.SaveAsync();
 
-            return updated;
+            return new SuccessResponse<Article>(updated);
         }
 
-        public async Task DeleteAsync(int id, int userId)
+        public async Task<ServiceResponse<bool>> DeleteAsync(int id, int userId)
         {
             var existentArticle = await _unitOfWork.Get<Article>().GetAsync(t => t.ID == id);
 
             if (existentArticle.DeliveryItems.Any())
-            {
-                throw new Exception(Resource.ArticleCannotBeDeletedException);
-            }
+                return new FailResponse<bool>(Resource.ArticleCannotBeDeletedMessage);
 
             existentArticle.UpdateDeletedFields(userId);
 
             _unitOfWork.Get<Article>().Update(existentArticle);
 
             await _unitOfWork.SaveAsync();
+
+            return new SuccessResponse<bool>(true);
         }
 
-        public async Task<bool> BarcodeExistsAsync(string barcode, int articleId = 0)
+        public async Task<ServiceResponse<bool>> BarcodeExistsAsync(string barcode, int articleId = 0)
         {
             if (string.IsNullOrEmpty(barcode))
             {
-                return false;
+                return new SuccessResponse<bool>(false);
             }
 
             var articlesWithSameBarcode = await _unitOfWork.Get<Article>().FindByAsync(a => a.Barcode.Equals(barcode) && a.ID != articleId);
 
-            return articlesWithSameBarcode.Any();
+            return new SuccessResponse<bool>(articlesWithSameBarcode.Any());
         }
 
-        public async Task<Dictionary<Article, int>> GetArticlesForLocationAsync(int? locationId)
+        public async Task<ServiceResponse<IDictionary<Article, int>>> GetArticlesForLocationAsync(int? locationId)
         {
             var goods = await _unitOfWork.Get<Goods>().GetAllAsync();
 
+            IDictionary<Article, int> result;
+
             if (!locationId.HasValue || locationId == 0)
             {                
-                return goods.Where(g => !g.SaleDate.HasValue)
+                result = goods.Where(g => !g.SaleDate.HasValue)
                     .GroupBy(g => g.DeliveryItem.Article)
                     .ToDictionary(gr => gr.Key, gr => gr.Count());
             }
+            else
+            {
+                result = goods.Where(g => !g.SaleDate.HasValue && g.Storages.Single(s => !s.ToDate.HasValue).LocationID == locationId)
+                    .GroupBy(g => g.DeliveryItem.Article)
+                    .ToDictionary(gr => gr.Key, gr => gr.Count());
+            }            
 
-            return goods.Where(g => !g.SaleDate.HasValue && g.Storages.Single(s => !s.ToDate.HasValue).LocationID == locationId)
-                .GroupBy(g => g.DeliveryItem.Article)
-                .ToDictionary(gr => gr.Key, gr => gr.Count());
+            return new SuccessResponse<IDictionary<Article, int>>(result);
         }
     }
 }

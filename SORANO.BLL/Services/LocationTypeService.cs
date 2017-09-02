@@ -67,7 +67,7 @@ namespace SORANO.BLL.Services
             // Check user
             if (user == null)
             {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
+                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
             }
 
             // Update created and modified fields for location type
@@ -111,7 +111,7 @@ namespace SORANO.BLL.Services
             // Check user
             if (user == null)
             {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
+                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
             }
 
             // Get existent location type by identifier

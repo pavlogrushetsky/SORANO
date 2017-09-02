@@ -38,7 +38,7 @@ namespace SORANO.BLL.Services
             // Check user
             if (user == null)
             {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
+                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
             }
 
             // Update created and modified fields for supplier
@@ -106,7 +106,7 @@ namespace SORANO.BLL.Services
             // Check user
             if (user == null)
             {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
+                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
             }
 
             // Get existent supplier by identifier

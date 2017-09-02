@@ -14,7 +14,7 @@ namespace SORANO.WEB
                 .Build();
 
             var host = new WebHostBuilder()
-                .UseEnvironment("Production")
+                .UseEnvironment("Development")
                 .UseConfiguration(config)
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())

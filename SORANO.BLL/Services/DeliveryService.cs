@@ -34,7 +34,7 @@ namespace SORANO.BLL.Services
 
             if (user == null)
             {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
+                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
             }
 
             delivery.UpdateCreatedFields(userId).UpdateModifiedFields(userId);            
@@ -109,7 +109,7 @@ namespace SORANO.BLL.Services
 
             if (user == null)
             {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
+                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
             }
 
             var existentDelivery = await _unitOfWork.Get<Delivery>().GetAsync(d => d.ID == delivery.ID);

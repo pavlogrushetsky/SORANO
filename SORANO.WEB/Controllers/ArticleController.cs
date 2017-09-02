@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using Microsoft.Extensions.Caching.Memory;
+using SORANO.BLL.Services;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Models;
 
@@ -23,16 +24,6 @@ namespace SORANO.WEB.Controllers
         private readonly IArticleService _articleService;
         private readonly IArticleTypeService _articleTypeService;
 
-        /// <summary>
-        /// Article controller
-        /// </summary>
-        /// <param name="articleService">Articles service</param>
-        /// <param name="articleTypeService">Article types service</param>
-        /// <param name="userService">Users service</param>
-        /// <param name="environment"></param>
-        /// <param name="attachmentTypeService"></param>
-        /// <param name="attachmentService"></param>
-        /// <param name="memoryCache"></param>
         public ArticleController(IArticleService articleService,
             IArticleTypeService articleTypeService,
             IUserService userService, 
@@ -47,31 +38,35 @@ namespace SORANO.WEB.Controllers
 
         #region GET Actions
 
-        /// <summary>
-        /// Get Index view
-        /// </summary>
-        /// <returns>Index view</returns>
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var showDeletedArticles = Session.GetBool("ShowDeletedArticles");
-            var showDeletedArticleTypes = Session.GetBool("ShowDeletedArticleTypes");
+            return await TryGetActionResultAsync(async () =>
+            {
+                var showDeletedArticles = Session.GetBool("ShowDeletedArticles");
+                var showDeletedArticleTypes = Session.GetBool("ShowDeletedArticleTypes");
 
-            var articles = await _articleService.GetAllAsync(showDeletedArticles);
+                var result = await _articleService.GetAllAsync(showDeletedArticles);
 
-            ViewBag.ShowDeletedArticles = showDeletedArticles;
-            ViewBag.ShowDeletedArticleTypes = showDeletedArticleTypes;
+                if (result.Status == ServiceResponseStatusType.Fail)
+                {
+                    ViewBag.Error = result.Message;
+                    return RedirectToAction("Index", "Home");
+                }
 
-            await ClearAttachments();
+                ViewBag.ShowDeletedArticles = showDeletedArticles;
+                ViewBag.ShowDeletedArticleTypes = showDeletedArticleTypes;
 
-            return View(articles.Select(a => a.ToModel()).ToList());
+                await ClearAttachments();
+
+                return View(result.Result.Select(a => a.ToModel()).ToList());
+            }, ex =>
+            {
+                ViewBag.Error = ex;
+                return RedirectToAction("Index", "Home");
+            });
         }
 
-        /// <summary>
-        /// Reload Index view with/without showing deleted articles
-        /// </summary>
-        /// <param name="show">If true show deleted articles</param>
-        /// <returns>Redirection to Index view</returns>
         [HttpGet]
         public IActionResult ShowDeleted(bool show)
         {
@@ -80,97 +75,120 @@ namespace SORANO.WEB.Controllers
             return RedirectToAction("Index");
         }
 
-        /// <summary>
-        /// Get Create view
-        /// </summary>
-        /// <returns>Create view</returns>
         [HttpGet]
         public async Task<IActionResult> Create(string returnUrl)
         {
-            ArticleModel model;
+            return await TryGetActionResultAsync(async () =>
+            {
+                ArticleModel model;
 
-            if (TryGetCached(out ArticleModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
-            {
-                model = cachedForSelectMainPicture;
-                await CopyMainPicture(model);
-            }
-            else if (TryGetCached(out ArticleModel cachedForCreateType, CacheKeys.CreateArticleTypeCacheKey, CacheKeys.CreateArticleTypeCacheValidKey))
-            {
-                model = cachedForCreateType;
-            }
-            else
-            {
-                model = new ArticleModel
+                if (TryGetCached(out ArticleModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
                 {
-                    MainPicture = new AttachmentModel(),
-                    ReturnPath = returnUrl
-                };
-            }
-            
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
-            ViewBag.ArticleTypes = await GetArticleTypes();
+                    model = cachedForSelectMainPicture;
+                    await CopyMainPicture(model);
+                }
+                else if (TryGetCached(out ArticleModel cachedForCreateType, CacheKeys.CreateArticleTypeCacheKey, CacheKeys.CreateArticleTypeCacheValidKey))
+                {
+                    model = cachedForCreateType;
+                }
+                else
+                {
+                    model = new ArticleModel
+                    {
+                        MainPicture = new AttachmentModel(),
+                        ReturnPath = returnUrl
+                    };
+                }
 
-            return View(model);
+                ViewBag.AttachmentTypes = await GetAttachmentTypes();
+                ViewBag.ArticleTypes = await GetArticleTypes();
+
+                return View(model);
+            }, ex =>
+            {
+                ViewBag.Error = ex;
+                return RedirectToAction("Index");
+            });            
         }
 
-        /// <summary>
-        /// Get Update/Create view for specified article
-        /// </summary>
-        /// <param name="id">Article identifier</param>
-        /// <returns>Update/Create view</returns>
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            ArticleModel model;
-
-            if (TryGetCached(out ArticleModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedForSelectMainPicture.ID == id)
+            return await TryGetActionResultAsync(async () =>
             {
-                model = cachedForSelectMainPicture;
-                await CopyMainPicture(model);
-            }
-            else if (TryGetCached(out ArticleModel cachedForCreateType, CacheKeys.CreateArticleTypeCacheKey, CacheKeys.CreateArticleTypeCacheValidKey) && cachedForCreateType.ID == id)
+                ArticleModel model;
+
+                if (TryGetCached(out ArticleModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedForSelectMainPicture.ID == id)
+                {
+                    model = cachedForSelectMainPicture;
+                    await CopyMainPicture(model);
+                }
+                else if (TryGetCached(out ArticleModel cachedForCreateType, CacheKeys.CreateArticleTypeCacheKey, CacheKeys.CreateArticleTypeCacheValidKey) && cachedForCreateType.ID == id)
+                {
+                    model = cachedForCreateType;
+                }
+                else
+                {
+                    var result = await _articleService.GetAsync(id);
+
+                    if (result.Status == ServiceResponseStatusType.Fail)
+                    {
+                        ViewBag.Error = result.Message;
+                        return RedirectToAction("Index");
+                    }
+
+                    model = result.Result.ToModel();
+                }
+
+                ViewBag.AttachmentTypes = await GetAttachmentTypes();
+                ViewBag.ArticleTypes = await GetArticleTypes();
+
+                ViewData["IsEdit"] = true;
+
+                return View("Create", model);
+            }, ex =>
             {
-                model = cachedForCreateType;
-            }
-            else
-            {
-                var article = await _articleService.GetAsync(id);
-
-                model = article.ToModel();
-            }                
-
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
-            ViewBag.ArticleTypes = await GetArticleTypes();
-
-            ViewData["IsEdit"] = true;
-
-            return View("Create", model);
+                ViewBag.Error = ex;
+                return RedirectToAction("Index");
+            });            
         }
 
-        /// <summary>
-        /// Get Details view for specified article
-        /// </summary>
-        /// <param name="id">Article identifier</param>
-        /// <returns>Details view</returns>
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var article = await _articleService.GetAsync(id);
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _articleService.GetAsync(id);
 
-            return View(article.ToModel());
+                if (result.Status != ServiceResponseStatusType.Fail)
+                    return View(result.Result.ToModel());
+
+                ViewBag.Error = result.Message;
+                return RedirectToAction("Index");
+            }, ex =>
+            {
+                ViewBag.Error = ex;
+                return RedirectToAction("Index");
+            });            
         }
 
-        /// <summary>
-        /// Get Delete view for specified article
-        /// </summary>
-        /// <param name="id">Article identifier</param>
-        /// <returns>Delete view</returns>
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var article = await _articleService.GetAsync(id);
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _articleService.GetAsync(id);
 
-            return View(article.ToModel());
+                if (result.Status != ServiceResponseStatusType.Fail)
+                    return View(result.Result.ToModel());
+
+                ViewBag.Error = result.Message;
+                return RedirectToAction("Index");
+            }, ex =>
+            {
+                ViewBag.Error = ex;
+                return RedirectToAction("Index");
+            });            
         }        
 
         #endregion
@@ -189,13 +207,6 @@ namespace SORANO.WEB.Controllers
             return RedirectToAction("Create", "ArticleType", new { returnUrl });
         }
 
-        /// <summary>
-        /// Post article for creation
-        /// </summary>
-        /// <param name="model">Article model</param>
-        /// <param name="mainPictureFile"></param>
-        /// <param name="attachments"></param>
-        /// <returns>Index view</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ArticleModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
@@ -216,7 +227,13 @@ namespace SORANO.WEB.Controllers
 
                 var barcodeExists = await _articleService.BarcodeExistsAsync(model.Barcode);
 
-                if (barcodeExists)
+                if (barcodeExists.Status == ServiceResponseStatusType.Fail)
+                {
+                    ViewBag.Error = barcodeExists.Message;
+                    return RedirectToAction("Index");
+                }
+
+                if (barcodeExists.Result)
                 {
                     ModelState.AddModelError("Barcode", "Артикул с таким штрих-кодом уже существует");
                 }
@@ -230,13 +247,14 @@ namespace SORANO.WEB.Controllers
 
                 var currentUser = await GetCurrentUser();
 
-                article = await _articleService.CreateAsync(article, currentUser.ID);
+                var result = await _articleService.CreateAsync(article, currentUser.ID);
 
-                if (article != null)
+                if (result.Status == ServiceResponseStatusType.Success && result.Result != null)
                 {
                     if (string.IsNullOrEmpty(model.ReturnPath))
                     {
-                        return RedirectToAction("Index", "Article");
+                        ViewBag.Success = $"Артикул \"{model.Name}\" был успешно создан";
+                        return RedirectToAction("Index");
                     }
 
                     if (_memoryCache.TryGetValue(CacheKeys.CreateArticleCacheKey, out DeliveryModel cachedDelivery))
@@ -254,15 +272,15 @@ namespace SORANO.WEB.Controllers
                     return Redirect(model.ReturnPath);
                 }
 
-                ModelState.AddModelError("", "Не удалось создать новый артикул.");
+                ViewBag.Error = result.Message;
                 return View(model);
             }, ex =>
             {
                 ViewBag.AttachmentTypes = attachmentTypes;
                 ViewBag.ArticleTypes = articleTypes;
 
-                ModelState.AddModelError("", ex);
-                return View(model);
+                ViewBag.Error = ex;
+                return RedirectToAction("Index");
             });
         }
 
@@ -286,7 +304,13 @@ namespace SORANO.WEB.Controllers
 
                 var barcodeExists = await _articleService.BarcodeExistsAsync(model.Barcode, model.ID);
 
-                if (barcodeExists)
+                if (barcodeExists.Status == ServiceResponseStatusType.Fail)
+                {
+                    ViewBag.Error = barcodeExists.Message;
+                    return RedirectToAction("Index");
+                }
+
+                if (barcodeExists.Result)
                 {
                     ModelState.AddModelError("Barcode", "Артикул с таким штрих-кодом уже существует");
                 }
@@ -301,14 +325,15 @@ namespace SORANO.WEB.Controllers
 
                 var currentUser = await GetCurrentUser();
 
-                article = await _articleService.UpdateAsync(article, currentUser.ID);
+                var result = await _articleService.UpdateAsync(article, currentUser.ID);
 
-                if (article != null)
-                {                    
+                if (result.Status == ServiceResponseStatusType.Success)
+                {
+                    ViewBag.Success = $"Артикул \"{model.Name}\" был успешно обновлён";
                     return RedirectToAction("Index", "Article");
                 }
 
-                ModelState.AddModelError("", "Не удалось обновить артикул.");
+                ViewBag.Error = result.Message;
                 ViewData["IsEdit"] = true;
                 return View("Create", model);
             }, ex =>
@@ -316,9 +341,8 @@ namespace SORANO.WEB.Controllers
                 ViewBag.AttachmentTypes = attachmentTypes;
                 ViewBag.ArticleTypes = articleTypes;
 
-                ModelState.AddModelError("", ex);
-                ViewData["IsEdit"] = true;
-                return View("Create", model);
+                ViewBag.Error = ex;
+                return RedirectToAction("Index");
             });
         }
 
@@ -331,6 +355,7 @@ namespace SORANO.WEB.Controllers
 
                 await _articleService.DeleteAsync(model.ID, currentUser.ID);
 
+                ViewBag.Success = $"Артикул \"{model.Name}\" был успешно помечен как удалённый";
                 return RedirectToAction("Index", "Article");
             }, ex => RedirectToAction("Index", "Article"));            
         }

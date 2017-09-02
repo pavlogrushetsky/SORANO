@@ -80,15 +80,43 @@
     </nav>    
     <div class="container">
         <div class="page-header">
-            <div class="row">
+            <div class="row">                
                 <div class="col-lg-12">
                     @RenderSection("Breadcrumb", false)
                     <h2>
                         <i class="@ViewBag.Icon"></i>
-                        @ViewBag.Header 
+                        @ViewBag.Header
                         <small>@ViewBag.Description</small>
                     </h2>
                 </div>
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-dismissible alert-danger">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Ошибка!</strong> ViewBag.Error
+                    </div>
+                }
+                @if (ViewBag.Succes != null)
+                {
+                    <div class="alert alert-dismissible alert-success">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        ViewBag.Succes
+                    </div>
+                }
+                @if (ViewBag.Info != null)
+                {
+                    <div class="alert alert-dismissible alert-info">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Информация:</strong> ViewBag.Info
+                    </div>
+                }
+                @if (ViewBag.Warning != null)
+                {
+                    <div class="alert alert-dismissible alert-warning">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Warning!</strong> ViewBag.Warning
+                    </div>
+                }
             </div>
         </div>
         <div class="row">

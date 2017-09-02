@@ -19,7 +19,7 @@ namespace SORANO.BLL.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resource {
@@ -63,36 +63,36 @@ namespace SORANO.BLL.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Артикул не может быть удалён..
         /// </summary>
-        internal static string ArticleCannotBeDeletedException {
+        internal static string ArticleCannotBeDeletedMessage {
             get {
-                return ResourceManager.GetString("ArticleCannotBeDeletedException", resourceCulture);
+                return ResourceManager.GetString("ArticleCannotBeDeletedMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Артикул не может быть null..
         /// </summary>
-        internal static string ArticleCannotBeNullException {
+        internal static string ArticleCannotBeNullMessage {
             get {
-                return ResourceManager.GetString("ArticleCannotBeNullException", resourceCulture);
+                return ResourceManager.GetString("ArticleCannotBeNullMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Недопустимое значение идентификатора артикула..
         /// </summary>
-        internal static string ArticleInvalidIdentifierException {
+        internal static string ArticleInvalidIdentifierMessage {
             get {
-                return ResourceManager.GetString("ArticleInvalidIdentifierException", resourceCulture);
+                return ResourceManager.GetString("ArticleInvalidIdentifierMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Артикул не найден..
         /// </summary>
-        internal static string ArticleNotFoundException {
+        internal static string ArticleNotFoundMessage {
             get {
-                return ResourceManager.GetString("ArticleNotFoundException", resourceCulture);
+                return ResourceManager.GetString("ArticleNotFoundMessage", resourceCulture);
             }
         }
         
@@ -351,9 +351,9 @@ namespace SORANO.BLL.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Указанный пользователь не найден..
         /// </summary>
-        internal static string UserNotFoundException {
+        internal static string UserNotFoundMessage {
             get {
-                return ResourceManager.GetString("UserNotFoundException", resourceCulture);
+                return ResourceManager.GetString("UserNotFoundMessage", resourceCulture);
             }
         }
     }

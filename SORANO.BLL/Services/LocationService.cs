@@ -55,7 +55,7 @@ namespace SORANO.BLL.Services
             // Check user
             if (user == null)
             {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
+                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
             }
 
             // Update created and modified fields for location
@@ -103,7 +103,7 @@ namespace SORANO.BLL.Services
             // Check user
             if (user == null)
             {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
+                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
             }
 
             var existentLocation = await _unitOfWork.Get<Location>().GetAsync(l => l.ID == location.ID);

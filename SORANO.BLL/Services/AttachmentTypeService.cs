@@ -46,7 +46,7 @@ namespace SORANO.BLL.Services
 
             if (user == null)
             {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
+                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
             }
 
             attachmentType.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
@@ -74,7 +74,7 @@ namespace SORANO.BLL.Services
 
             if (user == null)
             {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
+                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
             }
 
             var existentAttachmentType = await _unitOfWork.Get<AttachmentType>().GetAsync(t => t.ID == attachmentType.ID);

@@ -120,7 +120,7 @@
   <data name="ArticleTypeCannotBeNullException" xml:space="preserve">
     <value>Тип артикула не может быть null.</value>
   </data>
-  <data name="UserNotFoundException" xml:space="preserve">
+  <data name="UserNotFoundMessage" xml:space="preserve">
     <value>Указанный пользователь не найден.</value>
   </data>
   <data name="ArticleTypeInvalidIdentifierException" xml:space="preserve">
@@ -129,16 +129,16 @@
   <data name="ArticleTypeNotFoundException" xml:space="preserve">
     <value>Тип артикулов не найден.</value>
   </data>
-  <data name="ArticleCannotBeNullException" xml:space="preserve">
+  <data name="ArticleCannotBeNullMessage" xml:space="preserve">
     <value>Артикул не может быть null.</value>
   </data>
-  <data name="ArticleInvalidIdentifierException" xml:space="preserve">
+  <data name="ArticleInvalidIdentifierMessage" xml:space="preserve">
     <value>Недопустимое значение идентификатора артикула.</value>
   </data>
-  <data name="ArticleNotFoundException" xml:space="preserve">
+  <data name="ArticleNotFoundMessage" xml:space="preserve">
     <value>Артикул не найден.</value>
   </data>
-  <data name="ArticleCannotBeDeletedException" xml:space="preserve">
+  <data name="ArticleCannotBeDeletedMessage" xml:space="preserve">
     <value>Артикул не может быть удалён.</value>
   </data>
   <data name="SupplierCannotBeNullException" xml:space="preserve">

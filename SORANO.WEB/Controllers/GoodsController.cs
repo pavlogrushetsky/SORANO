@@ -73,7 +73,7 @@ namespace SORANO.WEB.Controllers
             if (articleId.HasValue)
             {
                 var article = await _articleService.GetAsync(articleId.Value);
-                articleName = article?.Name;
+                articleName = article.Result?.Name;//TODO
             }
 
             return View(new SaleModel
@@ -104,7 +104,7 @@ namespace SORANO.WEB.Controllers
                 Count = 1,
                 CurrentLocationID = currentLocationId,
                 CurrentLocationName = currentLocation.Name,
-                ArticleName = article.Name
+                ArticleName = article.Result?.Name//TODO
             });
         }
 
@@ -186,7 +186,7 @@ namespace SORANO.WEB.Controllers
 
             return Json(new
             {
-                results = articles
+                results = articles.Result//TODO
                     .Where(a => string.IsNullOrEmpty(term) || a.Key.Name.Contains(term))
                     .Select(a => new
                     {
