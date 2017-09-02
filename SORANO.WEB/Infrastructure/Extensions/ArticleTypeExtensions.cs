@@ -64,12 +64,14 @@ namespace SORANO.WEB.Infrastructure.Extensions
 
         public static ArticleType ToEntity(this ArticleTypeModel model)
         {
+            int.TryParse(model.ParentTypeID, out int parentTypeId);
+
             var articleType = new ArticleType
             {
                 ID = model.ID,
                 Name = model.Name,
                 Description = model.Description,
-                ParentTypeId = string.IsNullOrEmpty(model.ParentTypeID) ? null : (int?)int.Parse(model.ParentTypeID),
+                ParentTypeId = parentTypeId > 0 ? (int?)parentTypeId : null,
                 Recommendations = model.Recommendations.Select(r => r.ToEntity()).ToList(),
                 Attachments = model.Attachments.Select(a => a.ToEntity()).ToList()
             };
