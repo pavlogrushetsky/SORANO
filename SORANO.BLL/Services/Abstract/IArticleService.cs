@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using SORANO.BLL.DTOs;
 using SORANO.CORE.StockEntities;
 
 namespace SORANO.BLL.Services.Abstract
@@ -10,7 +11,7 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<ServiceResponse<Article>> CreateAsync(Article article, int userId);
 
-        Task<ServiceResponse<Article>> GetAsync(int id);
+        Task<ServiceResponse<ArticleDetailedDto>> GetAsync(int id);
 
         Task<ServiceResponse<Article>> UpdateAsync(Article article, int userId);
 

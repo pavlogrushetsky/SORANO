@@ -7,6 +7,7 @@ using SORANO.CORE.AccountEntities;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 using System.Linq;
+using SORANO.BLL.DTOs;
 
 namespace SORANO.BLL.Services
 {
@@ -29,11 +30,36 @@ namespace SORANO.BLL.Services
             return response;
         }
 
-        public async Task<ServiceResponse<Article>> GetAsync(int id)
+        public async Task<ServiceResponse<ArticleDetailedDto>> GetAsync(int id)
         {
             var article = await _unitOfWork.Get<Article>().GetAsync(a => a.ID == id);
 
-            return new SuccessResponse<Article>(article);
+            if (article == null)
+                return new FailResponse<ArticleDetailedDto>(Resource.ArticleNotFoundMessage);
+
+            return new SuccessResponse<ArticleDetailedDto>(new ArticleDetailedDto
+            {
+                ID = article.ID,
+                Name = article.Name,
+                Description = article.Description,
+                Producer = article.Producer,
+                Code = article.Code,
+                Barcode = article.Barcode,
+                IsDeleted = article.IsDeleted,
+                CanBeDeleted = !article.DeliveryItems.Any() && !article.IsDeleted,
+                Created = article.CreatedDate,
+                Modified = article.ModifiedDate,
+                Deleted = article.DeletedDate,
+                CreatedBy = article.CreatedByUser?.Login,
+                ModifiedBy = article.ModifiedByUser?.Login,
+                DeletedBy = article.DeletedByUser?.Login,
+                Recommendations = article.Recommendations?.Where(r => !r.IsDeleted).Select(r => new RecommendationDto
+                {
+                    ID = r.ID,
+                    Value = r.Value,
+                    Comment = r.Comment
+                })
+            });
         }
 
         public async Task<ServiceResponse<Article>> CreateAsync(Article article, int userId)
