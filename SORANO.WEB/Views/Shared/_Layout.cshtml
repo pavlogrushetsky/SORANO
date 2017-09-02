@@ -80,7 +80,7 @@
     </nav>    
     <div class="container">
         <div class="page-header">
-            <div class="row">                
+            <div class="row">
                 <div class="col-lg-12">
                     @RenderSection("Breadcrumb", false)
                     <h2>
@@ -89,32 +89,42 @@
                         <small>@ViewBag.Description</small>
                     </h2>
                 </div>
-                @if (ViewBag.Error != null)
+            </div>
+            <div class="row">
+                @if (TempData.ContainsKey("Error"))
                 {
-                    <div class="alert alert-dismissible alert-danger">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        <strong>Ошибка!</strong> ViewBag.Error
+                    <div class="col-lg-12">
+                        <div class="alert alert-dismissible alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <strong>Ошибка!</strong> @TempData["Error"]
+                        </div>
                     </div>
                 }
-                @if (ViewBag.Succes != null)
+                @if (TempData.ContainsKey("Success"))
                 {
-                    <div class="alert alert-dismissible alert-success">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        ViewBag.Succes
+                    <div class="col-lg-12">
+                        <div class="alert alert-dismissible alert-success">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            @TempData["Success"]
+                        </div>
                     </div>
                 }
-                @if (ViewBag.Info != null)
+                @if (TempData.ContainsKey("Info"))
                 {
-                    <div class="alert alert-dismissible alert-info">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        <strong>Информация:</strong> ViewBag.Info
+                    <div class="col-lg-12">
+                        <div class="alert alert-dismissible alert-info">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <strong>Информация:</strong> @TempData["Info"]
+                        </div>
                     </div>
                 }
-                @if (ViewBag.Warning != null)
+                @if (TempData.ContainsKey("Warning"))
                 {
-                    <div class="alert alert-dismissible alert-warning">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        <strong>Warning!</strong> ViewBag.Warning
+                    <div class="col-lg-12">
+                        <div class="alert alert-dismissible alert-warning">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <strong>Warning!</strong> @TempData["Warning"]
+                        </div>
                     </div>
                 }
             </div>
@@ -123,8 +133,8 @@
             <div class="col-lg-12">
                 @RenderBody()
             </div>
-        </div>        
-        <hr/>
+        </div>
+        <hr />
         <footer>
             <div class="row">
                 <div class="col-lg-12">
@@ -133,6 +143,7 @@
             </div>
         </footer>
     </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootswatch-dist/js/bootstrap.min.js"></script>
     <environment names="Development">

@@ -50,7 +50,7 @@ namespace SORANO.WEB.Controllers
 
                 if (result.Status == ServiceResponseStatusType.Fail)
                 {
-                    ViewBag.Error = result.Message;
+                    TempData["Error"] = result.Message;
                     return RedirectToAction("Index", "Home");
                 }
 
@@ -62,7 +62,7 @@ namespace SORANO.WEB.Controllers
                 return View(result.Result.Select(a => a.ToModel()).ToList());
             }, ex =>
             {
-                ViewBag.Error = ex;
+                TempData["Error"] = ex;
                 return RedirectToAction("Index", "Home");
             });
         }
@@ -106,7 +106,7 @@ namespace SORANO.WEB.Controllers
                 return View(model);
             }, ex =>
             {
-                ViewBag.Error = ex;
+                TempData["Error"] = ex;
                 return RedirectToAction("Index");
             });            
         }
@@ -133,7 +133,7 @@ namespace SORANO.WEB.Controllers
 
                     if (result.Status == ServiceResponseStatusType.Fail)
                     {
-                        ViewBag.Error = result.Message;
+                        TempData["Error"] = result.Message;
                         return RedirectToAction("Index");
                     }
 
@@ -148,7 +148,7 @@ namespace SORANO.WEB.Controllers
                 return View("Create", model);
             }, ex =>
             {
-                ViewBag.Error = ex;
+                TempData["Error"] = ex;
                 return RedirectToAction("Index");
             });            
         }
@@ -163,11 +163,11 @@ namespace SORANO.WEB.Controllers
                 if (result.Status != ServiceResponseStatusType.Fail)
                     return View(result.Result.ToModel());
 
-                ViewBag.Error = result.Message;
+                TempData["Error"] = result.Message;
                 return RedirectToAction("Index");
             }, ex =>
             {
-                ViewBag.Error = ex;
+                TempData["Error"] = ex;
                 return RedirectToAction("Index");
             });            
         }
@@ -182,11 +182,11 @@ namespace SORANO.WEB.Controllers
                 if (result.Status != ServiceResponseStatusType.Fail)
                     return View(result.Result.ToModel());
 
-                ViewBag.Error = result.Message;
+                TempData["Error"] = result.Message;
                 return RedirectToAction("Index");
             }, ex =>
             {
-                ViewBag.Error = ex;
+                TempData["Error"] = ex;
                 return RedirectToAction("Index");
             });            
         }        
@@ -229,7 +229,7 @@ namespace SORANO.WEB.Controllers
 
                 if (barcodeExists.Status == ServiceResponseStatusType.Fail)
                 {
-                    ViewBag.Error = barcodeExists.Message;
+                    TempData["Error"] = barcodeExists.Message;
                     return RedirectToAction("Index");
                 }
 
@@ -253,7 +253,7 @@ namespace SORANO.WEB.Controllers
                 {
                     if (string.IsNullOrEmpty(model.ReturnPath))
                     {
-                        ViewBag.Success = $"Артикул \"{model.Name}\" был успешно создан";
+                        TempData["Success"] = $"Артикул \"{model.Name}\" был успешно создан";
                         return RedirectToAction("Index");
                     }
 
@@ -279,7 +279,7 @@ namespace SORANO.WEB.Controllers
                 ViewBag.AttachmentTypes = attachmentTypes;
                 ViewBag.ArticleTypes = articleTypes;
 
-                ViewBag.Error = ex;
+                TempData["Error"] = ex;
                 return RedirectToAction("Index");
             });
         }
@@ -306,7 +306,7 @@ namespace SORANO.WEB.Controllers
 
                 if (barcodeExists.Status == ServiceResponseStatusType.Fail)
                 {
-                    ViewBag.Error = barcodeExists.Message;
+                    TempData["Error"] = barcodeExists.Message;
                     return RedirectToAction("Index");
                 }
 
@@ -329,7 +329,7 @@ namespace SORANO.WEB.Controllers
 
                 if (result.Status == ServiceResponseStatusType.Success)
                 {
-                    ViewBag.Success = $"Артикул \"{model.Name}\" был успешно обновлён";
+                    TempData["Success"] = $"Артикул \"{model.Name}\" был успешно обновлён";
                     return RedirectToAction("Index", "Article");
                 }
 
@@ -341,7 +341,7 @@ namespace SORANO.WEB.Controllers
                 ViewBag.AttachmentTypes = attachmentTypes;
                 ViewBag.ArticleTypes = articleTypes;
 
-                ViewBag.Error = ex;
+                TempData["Error"] = ex;
                 return RedirectToAction("Index");
             });
         }
@@ -355,7 +355,7 @@ namespace SORANO.WEB.Controllers
 
                 await _articleService.DeleteAsync(model.ID, currentUser.ID);
 
-                ViewBag.Success = $"Артикул \"{model.Name}\" был успешно помечен как удалённый";
+                TempData["Success"] = $"Артикул \"{model.Name}\" был успешно помечен как удалённый";
                 return RedirectToAction("Index", "Article");
             }, ex => RedirectToAction("Index", "Article"));            
         }
