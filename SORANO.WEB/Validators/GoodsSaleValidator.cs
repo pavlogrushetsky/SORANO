@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
-using SORANO.WEB.Models;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using SORANO.WEB.ViewModels;
 
 namespace SORANO.WEB.Validators
 {

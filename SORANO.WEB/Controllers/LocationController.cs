@@ -12,7 +12,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Http;
 using MimeTypes;
 using SORANO.WEB.Infrastructure;
-using SORANO.WEB.Models;
+using SORANO.WEB.ViewModels;
 
 // ReSharper disable Mvc.ViewNotResolved
 

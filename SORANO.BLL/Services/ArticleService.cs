@@ -45,14 +45,17 @@ namespace SORANO.BLL.Services
                 Producer = article.Producer,
                 Code = article.Code,
                 Barcode = article.Barcode,
-                IsDeleted = article.IsDeleted,
-                CanBeDeleted = !article.DeliveryItems.Any() && !article.IsDeleted,
-                Created = article.CreatedDate,
-                Modified = article.ModifiedDate,
-                Deleted = article.DeletedDate,
-                CreatedBy = article.CreatedByUser?.Login,
-                ModifiedBy = article.ModifiedByUser?.Login,
-                DeletedBy = article.DeletedByUser?.Login,
+                Details = new DetailsDto
+                { 
+                    IsDeleted = article.IsDeleted,
+                    CanBeDeleted = !article.DeliveryItems.Any() && !article.IsDeleted,
+                    Created = article.CreatedDate,
+                    Modified = article.ModifiedDate,
+                    Deleted = article.DeletedDate,
+                    CreatedBy = article.CreatedByUser?.Login,
+                    ModifiedBy = article.ModifiedByUser?.Login,
+                    DeletedBy = article.DeletedByUser?.Login                   
+                },
                 Recommendations = article.Recommendations?.Where(r => !r.IsDeleted).Select(r => new RecommendationDto
                 {
                     ID = r.ID,

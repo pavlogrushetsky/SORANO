@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
-using SORANO.WEB.Models;
+using SORANO.WEB.ViewModels;
 
 namespace SORANO.WEB.Controllers
 {

@@ -6,7 +6,7 @@ using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Extensions;
-using SORANO.WEB.Models;
+using SORANO.WEB.ViewModels;
 
 namespace SORANO.WEB.Controllers
 {

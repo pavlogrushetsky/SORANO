@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MimeTypes;
 using SORANO.WEB.Infrastructure;
-using SORANO.WEB.Models;
+using SORANO.WEB.ViewModels;
 
 namespace SORANO.WEB.Controllers
 {

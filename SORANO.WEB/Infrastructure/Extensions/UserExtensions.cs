@@ -1,6 +1,6 @@
 ﻿using SORANO.CORE.AccountEntities;
 using System.Linq;
-using SORANO.WEB.Models;
+using SORANO.WEB.ViewModels;
 
 namespace SORANO.WEB.Infrastructure.Extensions
 {

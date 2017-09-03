@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Services.Abstract;
-using SORANO.WEB.Models;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using MimeTypes;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Extensions;
+using SORANO.WEB.ViewModels;
 
 // ReSharper disable Mvc.ViewNotResolved
 

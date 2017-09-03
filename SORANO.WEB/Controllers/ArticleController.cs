@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -11,18 +12,16 @@ using SORANO.WEB.Infrastructure.Extensions;
 using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Services;
 using SORANO.WEB.Infrastructure;
-using SORANO.WEB.Models;
+using SORANO.WEB.ViewModels;
 
 namespace SORANO.WEB.Controllers
 {
-    /// <summary>
-    /// Controller to handle requests to articles
-    /// </summary>
     [Authorize(Roles = "developer,administrator,manager")]
     public class ArticleController : EntityBaseController<ArticleModel>
     {
         private readonly IArticleService _articleService;
         private readonly IArticleTypeService _articleTypeService;
+        private readonly IMapper _mapper;
 
         public ArticleController(IArticleService articleService,
             IArticleTypeService articleTypeService,
@@ -30,10 +29,12 @@ namespace SORANO.WEB.Controllers
             IHostingEnvironment environment,
             IAttachmentTypeService attachmentTypeService,
             IAttachmentService attachmentService,
-            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
+            IMemoryCache memoryCache, 
+            IMapper mapper) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
         {
             _articleService = articleService;
             _articleTypeService = articleTypeService;
+            _mapper = mapper;
         }
 
         #region GET Actions
@@ -82,12 +83,12 @@ namespace SORANO.WEB.Controllers
             {
                 ArticleModel model;
 
-                if (TryGetCached(out ArticleModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
+                if (TryGetCached(out var cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
                 {
                     model = cachedForSelectMainPicture;
                     await CopyMainPicture(model);
                 }
-                else if (TryGetCached(out ArticleModel cachedForCreateType, CacheKeys.CreateArticleTypeCacheKey, CacheKeys.CreateArticleTypeCacheValidKey))
+                else if (TryGetCached(out var cachedForCreateType, CacheKeys.CreateArticleTypeCacheKey, CacheKeys.CreateArticleTypeCacheValidKey))
                 {
                     model = cachedForCreateType;
                 }
@@ -118,12 +119,12 @@ namespace SORANO.WEB.Controllers
             {
                 ArticleModel model;
 
-                if (TryGetCached(out ArticleModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedForSelectMainPicture.ID == id)
+                if (TryGetCached(out var cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedForSelectMainPicture.ID == id)
                 {
                     model = cachedForSelectMainPicture;
                     await CopyMainPicture(model);
                 }
-                else if (TryGetCached(out ArticleModel cachedForCreateType, CacheKeys.CreateArticleTypeCacheKey, CacheKeys.CreateArticleTypeCacheValidKey) && cachedForCreateType.ID == id)
+                else if (TryGetCached(out var cachedForCreateType, CacheKeys.CreateArticleTypeCacheKey, CacheKeys.CreateArticleTypeCacheValidKey) && cachedForCreateType.ID == id)
                 {
                     model = cachedForCreateType;
                 }
@@ -136,8 +137,9 @@ namespace SORANO.WEB.Controllers
                         TempData["Error"] = result.Message;
                         return RedirectToAction("Index");
                     }
-
-                    model = result.Result.ToModel();
+                    //todo
+                    //model = result.Result.ToModel();
+                    model = null;
                 }
 
                 ViewBag.AttachmentTypes = await GetAttachmentTypes();
@@ -161,7 +163,7 @@ namespace SORANO.WEB.Controllers
                 var result = await _articleService.GetAsync(id);
 
                 if (result.Status != ServiceResponseStatusType.Fail)
-                    return View(result.Result.ToModel());
+                    return View(/*result.Result.ToModel()*/);//todo
 
                 TempData["Error"] = result.Message;
                 return RedirectToAction("Index");
@@ -180,7 +182,7 @@ namespace SORANO.WEB.Controllers
                 var result = await _articleService.GetAsync(id);
 
                 if (result.Status != ServiceResponseStatusType.Fail)
-                    return View(result.Result.ToModel());
+                    return View(/*result.Result.ToModel()*/);//todo
 
                 TempData["Error"] = result.Message;
                 return RedirectToAction("Index");

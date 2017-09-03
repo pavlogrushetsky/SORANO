@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,7 @@ using SORANO.DAL.Context;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using SORANO.DAL.Repositories;
 using FluentValidation.AspNetCore;
+using SORANO.WEB.Mappings;
 
 namespace SORANO.WEB
 {
@@ -29,6 +31,13 @@ namespace SORANO.WEB
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var mappingConfig = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(new AutoMapperProfileConfiguration());
+            });
+
+            services.AddSingleton(mappingConfig.CreateMapper());
+
             services.AddMvc().AddFluentValidation(v => v.RegisterValidatorsFromAssemblyContaining<Startup>());
 
             services.AddDistributedMemoryCache();

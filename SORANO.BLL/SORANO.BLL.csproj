@@ -44,6 +44,7 @@
     <Compile Include="DTOs\AllGoodsDTO.cs" />
     <Compile Include="DTOs\ArticleDetailedDto.cs" />
     <Compile Include="DTOs\ArticleDto.cs" />
+    <Compile Include="DTOs\DetailsDto.cs" />
     <Compile Include="DTOs\GoodsGroupDTO.cs" />
     <Compile Include="DTOs\RecommendationDto.cs" />
     <Compile Include="Helpers\CryptoHelper.cs" />

@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
-using SORANO.WEB.Models;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using SORANO.WEB.Infrastructure.Extensions;
+using SORANO.WEB.ViewModels;
 
 namespace SORANO.WEB.Controllers
 {

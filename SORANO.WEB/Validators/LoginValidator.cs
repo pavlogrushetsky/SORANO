@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using SORANO.WEB.Models;
+using SORANO.WEB.ViewModels;
 
 namespace SORANO.WEB.Validators
 {

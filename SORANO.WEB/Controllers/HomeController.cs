@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
-using SORANO.WEB.Models;
 using System;
 using System.Threading.Tasks;
+using SORANO.WEB.ViewModels;
 
 namespace SORANO.WEB.Controllers
 {

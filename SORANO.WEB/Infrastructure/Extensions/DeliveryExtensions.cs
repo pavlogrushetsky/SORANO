@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Globalization;
 using SORANO.CORE.StockEntities;
-using SORANO.WEB.Models;
 using System.Linq;
+using SORANO.WEB.ViewModels;
 
 namespace SORANO.WEB.Infrastructure.Extensions
 {

@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 using MimeTypes;
-using SORANO.WEB.Models;
 using System.IO;
 using System.Linq;
+using SORANO.WEB.ViewModels;
 
 namespace SORANO.WEB.Validators
 {

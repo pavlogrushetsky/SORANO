@@ -6,7 +6,7 @@ using SORANO.WEB.Infrastructure.Extensions;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using SORANO.WEB.Models;
+using SORANO.WEB.ViewModels;
 
 namespace SORANO.WEB.Controllers
 {

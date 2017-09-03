@@ -7,10 +7,10 @@ using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Extensions;
-using SORANO.WEB.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using SORANO.WEB.ViewModels;
 
 namespace SORANO.WEB.Controllers
 {
