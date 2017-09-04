@@ -185,7 +185,7 @@ namespace SORANO.WEB.Controllers
                 var result = await _articleService.GetAsync(id);
 
                 if (result.Status != ServiceResponseStatusType.Fail)
-                    return View(/*result.Result.ToModel()*/);//todo
+                    return View(_mapper.Map<ArticleDeleteViewModel>(result.Result));
 
                 TempData["Error"] = result.Message;
                 return RedirectToAction("Index");
@@ -352,17 +352,29 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(ArticleModel model)
+        public async Task<IActionResult> Delete(ArticleDeleteViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
             {
                 var currentUser = await GetCurrentUser();
 
-                await _articleService.DeleteAsync(model.ID, currentUser.ID);
+                var result = await _articleService.DeleteAsync(model.ID, currentUser.ID);
 
-                TempData["Success"] = $"Артикул \"{model.Name}\" был успешно помечен как удалённый";
+                if (result.Status == ServiceResponseStatusType.Success)
+                {
+                    TempData["Success"] = $"Артикул \"{model.Name}\" был успешно помечен как удалённый";
+                }
+                else
+                {
+                    TempData["Error"] = result.Message;
+                }
+                
                 return RedirectToAction("Index", "Article");
-            }, ex => RedirectToAction("Index", "Article"));            
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Article");
+            });            
         }
 
         [HttpPost]
