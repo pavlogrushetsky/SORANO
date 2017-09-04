@@ -22,18 +22,19 @@ namespace SORANO.BLL.Services
         {
             var articleTypes = await UnitOfWork.Get<ArticleType>().GetAllAsync();
 
-            if (!withDeleted)
+            if (withDeleted)
             {
-                var filtered = articleTypes.Where(t => !t.IsDeleted).ToList();
-                filtered.ForEach(t =>
-                {
-                    t.ChildTypes = t.ChildTypes.Where(c => !c.IsDeleted).ToList();
-                    t.Articles = t.Articles.Where(a => !a.IsDeleted).ToList();
-                });
-                return filtered;
+                return articleTypes;
             }
 
-            return articleTypes;
+            var filtered = articleTypes.Where(t => !t.IsDeleted).ToList();
+            filtered.ForEach(t =>
+            {
+                t.ChildTypes = t.ChildTypes.Where(c => !c.IsDeleted).ToList();
+                t.Articles = t.Articles.Where(a => !a.IsDeleted).ToList();
+            });
+
+            return filtered;
         }
 
         public async Task<ArticleType> GetAsync(int id)

@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using SORANO.BLL.DTOs;
+using SORANO.BLL.Extensions;
 
 namespace SORANO.BLL.Services
 {
@@ -18,11 +20,13 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<IEnumerable<AttachmentType>> GetAllAsync()
+        public async Task<IEnumerable<AttachmentTypeDto>> GetAllAsync(bool includeMainPicture)
         {
             var attachmentTypes = await UnitOfWork.Get<AttachmentType>().GetAllAsync();
 
-            return attachmentTypes;
+            return includeMainPicture 
+                ? attachmentTypes.Select(t => t.ToDto()) 
+                : attachmentTypes.Where(t => !t.Name.Equals("Основное изображение")).Select(t => t.ToDto());
         }
 
         public async Task<AttachmentType> GetAsync(int id)

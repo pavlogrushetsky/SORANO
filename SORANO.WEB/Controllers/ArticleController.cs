@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using Microsoft.Extensions.Caching.Memory;
@@ -106,8 +105,6 @@ namespace SORANO.WEB.Controllers
                     };
                 }
 
-                ViewBag.AttachmentTypes = await GetAttachmentTypes();
-
                 return View(model);
             }, ex =>
             {
@@ -145,8 +142,6 @@ namespace SORANO.WEB.Controllers
                     model = _mapper.Map<ArticleCreateUpdateViewModel>(result.Result);
                     model.IsUpdate = true;
                 }
-
-                ViewBag.AttachmentTypes = await GetAttachmentTypes();
 
                 return View("Create", model);
             }, ex =>
@@ -214,14 +209,8 @@ namespace SORANO.WEB.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ArticleCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            var attachmentTypes = new List<SelectListItem>();
-
             return await TryGetActionResultAsync(async () =>
             {
-                attachmentTypes = await GetAttachmentTypes();
-
-                ViewBag.AttachmentTypes = attachmentTypes;
-
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
@@ -276,8 +265,6 @@ namespace SORANO.WEB.Controllers
                 return View(model);
             }, ex =>
             {
-                ViewBag.AttachmentTypes = attachmentTypes;
-
                 TempData["Error"] = ex;
                 return RedirectToAction("Index");
             });
@@ -287,14 +274,8 @@ namespace SORANO.WEB.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(ArticleCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            var attachmentTypes = new List<SelectListItem>();
-
             return await TryGetActionResultAsync(async () =>
             {
-                attachmentTypes = await GetAttachmentTypes();
-
-                ViewBag.AttachmentTypes = attachmentTypes;
-
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
@@ -332,8 +313,6 @@ namespace SORANO.WEB.Controllers
                 return View("Create", model);
             }, ex =>
             {
-                ViewBag.AttachmentTypes = attachmentTypes;
-
                 TempData["Error"] = ex;
                 return RedirectToAction("Index");
             });
@@ -392,11 +371,11 @@ namespace SORANO.WEB.Controllers
             return Json(new
             {
                 results = articleTypes
-                    .Where(c => string.IsNullOrEmpty(term) || c.Name.Contains(term))
-                    .Select(c => new
+                    .Where(t => string.IsNullOrEmpty(term) || t.Name.Contains(term))
+                    .Select(t => new
                     {
-                        id = c.ID,
-                        text = c.Name
+                        id = t.ID,
+                        text = t.Name
                     })
             });
         }

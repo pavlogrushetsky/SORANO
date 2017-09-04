@@ -104,7 +104,6 @@ namespace SORANO.WEB.Controllers
 
             model.Recommendations.Add(new RecommendationViewModel());
 
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
             ViewBag.LocationTypes = GetLocationTypes();
             ViewBag.Articles = GetArticles();
             ViewBag.Suppliers = GetSuppliers();
@@ -126,7 +125,6 @@ namespace SORANO.WEB.Controllers
 
             model.Recommendations.RemoveAt(num);
 
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
             ViewBag.LocationTypes = GetLocationTypes();
             ViewBag.Articles = GetArticles();
             ViewBag.Suppliers = GetSuppliers();
@@ -146,7 +144,6 @@ namespace SORANO.WEB.Controllers
         {
             ModelState.Clear();                        
 
-            var attachmentTypes = await GetAttachmentTypes();
             attachmentTypes[0].Selected = true;
             ViewBag.AttachmentTypes = attachmentTypes;
             ViewBag.LocationTypes = GetLocationTypes();
@@ -186,7 +183,6 @@ namespace SORANO.WEB.Controllers
 
             entity.Attachments.RemoveAt(num);
 
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
             ViewBag.LocationTypes = GetLocationTypes();
             ViewBag.Articles = GetArticles();
             ViewBag.Suppliers = GetSuppliers();
@@ -218,7 +214,6 @@ namespace SORANO.WEB.Controllers
 
             entity.MainPicture = new MainPictureViewModel();
 
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
             ViewBag.LocationTypes = GetLocationTypes();
             ViewBag.Articles = GetArticles();
             ViewBag.Suppliers = GetSuppliers();
@@ -237,16 +232,6 @@ namespace SORANO.WEB.Controllers
             var bytes = System.IO.File.ReadAllBytes(Environment.WebRootPath + path);
 
             return File(bytes, MimeTypeMap.GetMimeType(Path.GetExtension(path)), name);
-        }
-
-        protected virtual async Task<List<SelectListItem>> GetAttachmentTypes()
-        {
-            if (MemoryCache.TryGetValue(CacheKeys.AttachmentTypesCacheKey, out List<SelectListItem> attachmentTypeSelectItems))
-            {
-                return attachmentTypeSelectItems;
-            }
-
-            return await CacheAttachmentTypes();
         }
 
         private List<SelectListItem> GetLocationTypes()
@@ -289,19 +274,21 @@ namespace SORANO.WEB.Controllers
             return null;
         }
 
-        protected virtual async Task<List<SelectListItem>> CacheAttachmentTypes()
+        [HttpPost]
+        public async Task<JsonResult> GetAttachmentTypes(string term)
         {
-            var attachmentTypes = await AttachmentTypeService.GetAllAsync();
+            var attachmentTypes = await AttachmentTypeService.GetAllAsync(false);
 
-            var attachmentTypeSelectItems = attachmentTypes.Where(t => !t.Name.Equals("Основное изображение")).Select(a => new SelectListItem
+            return Json(new
             {
-                Text = a.Name,
-                Value = a.ID.ToString()
-            }).ToList();
-
-            MemoryCache.Set(CacheKeys.AttachmentTypesCacheKey, attachmentTypeSelectItems);
-
-            return attachmentTypeSelectItems;
+                results = attachmentTypes
+                    .Where(t => string.IsNullOrEmpty(term) || t.Name.Contains(term))
+                    .Select(t => new
+                    {
+                        id = t.ID,
+                        text = t.Name
+                    })
+            });
         }
 
         protected virtual async Task<string> GetMainPictureTypeID()

@@ -9,6 +9,7 @@ namespace SORANO.BLL.Extensions
         {
             return new AttachmentTypeDto
             {
+                ID = model.ID,
                 Name = model.Name,
                 Comment = model.Comment,
                 Extensions = model.Extensions,

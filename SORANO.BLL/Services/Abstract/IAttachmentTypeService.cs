@@ -1,12 +1,13 @@
 ﻿using SORANO.CORE.StockEntities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SORANO.BLL.DTOs;
 
 namespace SORANO.BLL.Services.Abstract
 {
     public interface IAttachmentTypeService
     {
-        Task<IEnumerable<AttachmentType>> GetAllAsync();
+        Task<IEnumerable<AttachmentTypeDto>> GetAllAsync(bool includeMainPicture);
 
         Task<int> GetMainPictureTypeIDAsync();
 
