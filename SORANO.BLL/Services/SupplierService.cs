@@ -33,7 +33,7 @@ namespace SORANO.BLL.Services
             }
 
             // Get user by specified identifier
-            var user = await _unitOfWork.Get<User>().GetAsync(s => s.ID == userId);
+            var user = await UnitOfWork.Get<User>().GetAsync(s => s.ID == userId);
 
             // Check user
             if (user == null)
@@ -55,16 +55,16 @@ namespace SORANO.BLL.Services
                 attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            var saved = _unitOfWork.Get<Supplier>().Add(supplier);
+            var saved = UnitOfWork.Get<Supplier>().Add(supplier);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
 
             return saved;
         }
 
         public async Task<IEnumerable<Supplier>> GetAllAsync(bool withDeleted)
         {
-            var suppliers = await _unitOfWork.Get<Supplier>().GetAllAsync();
+            var suppliers = await UnitOfWork.Get<Supplier>().GetAllAsync();
 
             if (!withDeleted)
             {
@@ -76,12 +76,12 @@ namespace SORANO.BLL.Services
 
         public async Task<Supplier> GetAsync(int id)
         {
-            return await _unitOfWork.Get<Supplier>().GetAsync(s => s.ID == id);
+            return await UnitOfWork.Get<Supplier>().GetAsync(s => s.ID == id);
         }
 
         public async Task<Supplier> GetIncludeAllAsync(int id)
         {
-            var supplier = await _unitOfWork.Get<Supplier>().GetAsync(s => s.ID == id);
+            var supplier = await UnitOfWork.Get<Supplier>().GetAsync(s => s.ID == id);
 
             return supplier;
         }
@@ -101,7 +101,7 @@ namespace SORANO.BLL.Services
             }
 
             // Get user by specified identifier
-            var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
+            var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
             // Check user
             if (user == null)
@@ -110,7 +110,7 @@ namespace SORANO.BLL.Services
             }
 
             // Get existent supplier by identifier
-            var existentSupplier = await _unitOfWork.Get<Supplier>().GetAsync(t => t.ID == supplier.ID);
+            var existentSupplier = await UnitOfWork.Get<Supplier>().GetAsync(t => t.ID == supplier.ID);
 
             // Check existent supplier
             if (existentSupplier == null)
@@ -129,16 +129,16 @@ namespace SORANO.BLL.Services
 
             UpdateRecommendations(supplier, existentSupplier, userId);
 
-            var updated = _unitOfWork.Get<Supplier>().Update(existentSupplier);
+            var updated = UnitOfWork.Get<Supplier>().Update(existentSupplier);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
 
             return updated;
         }
 
         public async Task DeleteAsync(int id, int userId)
         {
-            var existentSupplier = await _unitOfWork.Get<Supplier>().GetAsync(t => t.ID == id);
+            var existentSupplier = await UnitOfWork.Get<Supplier>().GetAsync(t => t.ID == id);
 
             if (existentSupplier.Deliveries.Any())
             {
@@ -147,9 +147,9 @@ namespace SORANO.BLL.Services
 
             existentSupplier.UpdateDeletedFields(userId);
 
-            _unitOfWork.Get<Supplier>().Update(existentSupplier);
+            UnitOfWork.Get<Supplier>().Update(existentSupplier);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
         }
     }
 }

@@ -20,14 +20,14 @@ namespace SORANO.BLL.Services
 
         public async Task<IEnumerable<AttachmentType>> GetAllAsync()
         {
-            var attachmentTypes = await _unitOfWork.Get<AttachmentType>().GetAllAsync();
+            var attachmentTypes = await UnitOfWork.Get<AttachmentType>().GetAllAsync();
 
             return attachmentTypes;
         }
 
         public async Task<AttachmentType> GetAsync(int id)
         {
-            return await _unitOfWork.Get<AttachmentType>().GetAsync(a => a.ID == id);
+            return await UnitOfWork.Get<AttachmentType>().GetAsync(a => a.ID == id);
         }
 
         public async Task<AttachmentType> CreateAsync(AttachmentType attachmentType, int userId)
@@ -42,7 +42,7 @@ namespace SORANO.BLL.Services
                 throw new ArgumentException(Resource.AttachmentTypeInvalidIdentifierException, nameof(attachmentType.ID));
             }           
 
-            var user = await _unitOfWork.Get<User>().GetAsync(s => s.ID == userId);
+            var user = await UnitOfWork.Get<User>().GetAsync(s => s.ID == userId);
 
             if (user == null)
             {
@@ -51,9 +51,9 @@ namespace SORANO.BLL.Services
 
             attachmentType.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-            var saved = _unitOfWork.Get<AttachmentType>().Add(attachmentType);
+            var saved = UnitOfWork.Get<AttachmentType>().Add(attachmentType);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
 
             return saved;
         }
@@ -70,14 +70,14 @@ namespace SORANO.BLL.Services
                 throw new ArgumentException(Resource.AttachmentTypeInvalidIdentifierException, nameof(attachmentType.ID));
             }           
 
-            var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
+            var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
             if (user == null)
             {
                 throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
             }
 
-            var existentAttachmentType = await _unitOfWork.Get<AttachmentType>().GetAsync(t => t.ID == attachmentType.ID);
+            var existentAttachmentType = await UnitOfWork.Get<AttachmentType>().GetAsync(t => t.ID == attachmentType.ID);
 
             if (existentAttachmentType == null)
             {
@@ -90,16 +90,16 @@ namespace SORANO.BLL.Services
 
             existentAttachmentType.UpdateModifiedFields(userId);
 
-            var updated = _unitOfWork.Get<AttachmentType>().Update(existentAttachmentType);
+            var updated = UnitOfWork.Get<AttachmentType>().Update(existentAttachmentType);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
 
             return updated;
         }
 
         public async Task DeleteAsync(int id, int userId)
         {
-            var existentAttachmentType = await _unitOfWork.Get<AttachmentType>().GetAsync(t => t.ID == id);
+            var existentAttachmentType = await UnitOfWork.Get<AttachmentType>().GetAsync(t => t.ID == id);
 
             if (existentAttachmentType.Attachments.Any())
             {
@@ -108,14 +108,14 @@ namespace SORANO.BLL.Services
 
             existentAttachmentType.UpdateDeletedFields(userId);
 
-            _unitOfWork.Get<AttachmentType>().Update(existentAttachmentType);
+            UnitOfWork.Get<AttachmentType>().Update(existentAttachmentType);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
         }
 
         public async Task<int> GetMainPictureTypeIDAsync()
         {
-            var type = await _unitOfWork.Get<AttachmentType>().GetAsync(t => t.Name.Equals("Основное изображение"));
+            var type = await UnitOfWork.Get<AttachmentType>().GetAsync(t => t.Name.Equals("Основное изображение"));
 
             return type.ID;
         }
@@ -127,7 +127,7 @@ namespace SORANO.BLL.Services
                 return false;
             }
 
-            var attachmentTypes = await _unitOfWork.Get<AttachmentType>().FindByAsync(t => t.Name.Equals(name) && t.ID != attachmentTypeId);
+            var attachmentTypes = await UnitOfWork.Get<AttachmentType>().FindByAsync(t => t.Name.Equals(name) && t.ID != attachmentTypeId);
 
             return attachmentTypes.Any();
         }

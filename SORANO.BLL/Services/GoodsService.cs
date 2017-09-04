@@ -18,7 +18,7 @@ namespace SORANO.BLL.Services
 
         public async Task ChangeLocationAsync(int articleId, int currentLocationId, int targetLocationId, int num, int userId)
         {
-            var storages = await _unitOfWork.Get<Storage>().GetAllAsync();
+            var storages = await UnitOfWork.Get<Storage>().GetAllAsync();
 
             var currentStorages = storages
                 .Where(s => s.LocationID == currentLocationId && s.Goods.DeliveryItem.ArticleID == articleId && !s.ToDate.HasValue)
@@ -30,7 +30,7 @@ namespace SORANO.BLL.Services
                 storage.ToDate = DateTime.Now;
                 storage.UpdateModifiedFields(userId);
 
-                _unitOfWork.Get<Storage>().Update(storage);
+                UnitOfWork.Get<Storage>().Update(storage);
             });
 
             currentStorages.Select(s => s.Goods).ToList().ForEach(goods =>
@@ -47,15 +47,15 @@ namespace SORANO.BLL.Services
 
                 goods.UpdateModifiedFields(userId);
 
-                _unitOfWork.Get<Goods>().Update(goods);
+                UnitOfWork.Get<Goods>().Update(goods);
             });
             
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
         }
 
         public async Task<List<AllGoodsDTO>> GetAllAsync()
         {
-            var goods = await _unitOfWork.Get<Goods>().GetAllAsync();
+            var goods = await UnitOfWork.Get<Goods>().GetAllAsync();
 
             return goods
                 .Where(g => !g.SaleDate.HasValue)
@@ -93,21 +93,21 @@ namespace SORANO.BLL.Services
 
         public async Task<List<Goods>> GetSoldGoodsAsync()
         {
-            var goods = await _unitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
+            var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
 
             return goods.ToList();
         }
 
         public async Task<decimal> GetTotalIncomeAsync()
         {
-            var goods = await _unitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
+            var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
 
             return goods.Sum(g => g.SalePrice.Value);
         }
 
         public async Task SaleAsync(int articleId, int locationId, int clientId, int num, decimal price, int userId)
         {
-            var storages = await _unitOfWork.Get<Storage>().GetAllAsync();
+            var storages = await UnitOfWork.Get<Storage>().GetAllAsync();
 
             var currentStorages = storages
                 .Where(s => s.LocationID == locationId && s.Goods.DeliveryItem.ArticleID == articleId && !s.ToDate.HasValue)
@@ -119,7 +119,7 @@ namespace SORANO.BLL.Services
                 storage.ToDate = DateTime.Now.Date;
                 storage.UpdateModifiedFields(userId);
 
-                _unitOfWork.Get<Storage>().Update(storage);
+                UnitOfWork.Get<Storage>().Update(storage);
             });
 
             currentStorages.Select(s => s.Goods).ToList().ForEach(goods =>
@@ -132,10 +132,10 @@ namespace SORANO.BLL.Services
 
                 goods.UpdateModifiedFields(userId);
 
-                _unitOfWork.Get<Goods>().Update(goods);
+                UnitOfWork.Get<Goods>().Update(goods);
             });
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
         }
     }
 }

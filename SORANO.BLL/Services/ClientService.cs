@@ -30,7 +30,7 @@ namespace SORANO.BLL.Services
                 throw new ArgumentException(Resource.ClientInvalidIdentifierException, nameof(client.ID));
             }
 
-            var user = await _unitOfWork.Get<User>().GetAsync(s => s.ID == userId);
+            var user = await UnitOfWork.Get<User>().GetAsync(s => s.ID == userId);
 
             if (user == null)
             {
@@ -49,16 +49,16 @@ namespace SORANO.BLL.Services
                 attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            var saved = _unitOfWork.Get<Client>().Add(client);
+            var saved = UnitOfWork.Get<Client>().Add(client);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
 
             return saved;
         }
 
         public async Task<IEnumerable<Client>> GetAllAsync(bool withDeleted)
         {
-            var clients = await _unitOfWork.Get<Client>().GetAllAsync();
+            var clients = await UnitOfWork.Get<Client>().GetAllAsync();
 
             if (!withDeleted)
             {
@@ -70,12 +70,12 @@ namespace SORANO.BLL.Services
 
         public async Task<Client> GetAsync(int id)
         {
-            return await _unitOfWork.Get<Client>().GetAsync(s => s.ID == id);
+            return await UnitOfWork.Get<Client>().GetAsync(s => s.ID == id);
         }
 
         public async Task<Client> GetIncludeAllAsync(int id)
         {
-            var client = await _unitOfWork.Get<Client>().GetAsync(s => s.ID == id);
+            var client = await UnitOfWork.Get<Client>().GetAsync(s => s.ID == id);
 
             return client;
         }
@@ -92,14 +92,14 @@ namespace SORANO.BLL.Services
                 throw new ArgumentException(Resource.ClientInvalidIdentifierException, nameof(client.ID));
             }
 
-            var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
+            var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
             if (user == null)
             {
                 throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
             }
 
-            var existentClient = await _unitOfWork.Get<Client>().GetAsync(t => t.ID == client.ID);
+            var existentClient = await UnitOfWork.Get<Client>().GetAsync(t => t.ID == client.ID);
 
             if (existentClient == null)
             {
@@ -117,16 +117,16 @@ namespace SORANO.BLL.Services
 
             UpdateRecommendations(client, existentClient, userId);
 
-            var updated = _unitOfWork.Get<Client>().Update(existentClient);
+            var updated = UnitOfWork.Get<Client>().Update(existentClient);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
 
             return updated;
         }
 
         public async Task DeleteAsync(int id, int userId)
         {
-            var existentClient = await _unitOfWork.Get<Client>().GetAsync(t => t.ID == id);
+            var existentClient = await UnitOfWork.Get<Client>().GetAsync(t => t.ID == id);
 
             if (existentClient.Goods.Any())
             {
@@ -135,9 +135,9 @@ namespace SORANO.BLL.Services
 
             existentClient.UpdateDeletedFields(userId);
 
-            _unitOfWork.Get<Client>().Update(existentClient);
+            UnitOfWork.Get<Client>().Update(existentClient);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
         }
     }
 }

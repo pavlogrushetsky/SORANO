@@ -28,7 +28,7 @@ namespace SORANO.WEB.Controllers
         {
             await CacheAttachmentTypes();
 
-            var attachmentTypes = await _attachmentTypeService.GetAllAsync();          
+            var attachmentTypes = await AttachmentTypeService.GetAllAsync();          
 
             return View(attachmentTypes.Select(a => a.ToModel()).ToList());
         }
@@ -42,7 +42,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            var attachmentType = await _attachmentTypeService.GetAsync(id);
+            var attachmentType = await AttachmentTypeService.GetAsync(id);
 
             ViewData["IsEdit"] = true;
 
@@ -52,7 +52,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var attachmentType = await _attachmentTypeService.GetAsync(id);
+            var attachmentType = await AttachmentTypeService.GetAsync(id);
 
             return View(attachmentType.ToModel());
         }
@@ -67,7 +67,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var exists = await _attachmentTypeService.Exists(model.Name);
+                var exists = await AttachmentTypeService.Exists(model.Name);
 
                 if (exists)
                 {
@@ -83,7 +83,7 @@ namespace SORANO.WEB.Controllers
 
                 var currentUser = await GetCurrentUser();
 
-                attachmentType = await _attachmentTypeService.CreateAsync(attachmentType, currentUser.ID);
+                attachmentType = await AttachmentTypeService.CreateAsync(attachmentType, currentUser.ID);
 
                 if (attachmentType != null)
                 {                    
@@ -105,7 +105,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var exists = await _attachmentTypeService.Exists(model.Name, model.ID);
+                var exists = await AttachmentTypeService.Exists(model.Name, model.ID);
 
                 if (exists)
                 {
@@ -122,7 +122,7 @@ namespace SORANO.WEB.Controllers
 
                 var currentUser = await GetCurrentUser();
 
-                attachmentType = await _attachmentTypeService.UpdateAsync(attachmentType, currentUser.ID);
+                attachmentType = await AttachmentTypeService.UpdateAsync(attachmentType, currentUser.ID);
 
                 if (attachmentType != null)
                 {
@@ -147,7 +147,7 @@ namespace SORANO.WEB.Controllers
             {
                 var currentUser = await GetCurrentUser();
 
-                await _attachmentTypeService.DeleteAsync(model.ID, currentUser.ID);
+                await AttachmentTypeService.DeleteAsync(model.ID, currentUser.ID);
 
                 return RedirectToAction("Index", "AttachmentType");
             }, ex => RedirectToAction("Index", "AttachmentType"));

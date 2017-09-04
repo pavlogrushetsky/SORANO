@@ -23,7 +23,7 @@ namespace SORANO.BLL.Services
         {
             var response = new SuccessResponse<IEnumerable<ArticleDto>>();
 
-            var articles = await _unitOfWork.Get<Article>().GetAllAsync();
+            var articles = await UnitOfWork.Get<Article>().GetAllAsync();
 
             response.Result = !withDeleted 
                 ? articles.Where(a => !a.IsDeleted).Select(a => a.ToDto()) 
@@ -34,7 +34,7 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<ArticleDto>> GetAsync(int id)
         {
-            var article = await _unitOfWork.Get<Article>().GetAsync(a => a.ID == id);
+            var article = await UnitOfWork.Get<Article>().GetAsync(a => a.ID == id);
 
             if (article == null)
                 return new FailResponse<ArticleDto>(Resource.ArticleNotFoundMessage);
@@ -50,7 +50,7 @@ namespace SORANO.BLL.Services
             if (article.ID != 0)
                 return new FailResponse<Article>(Resource.ArticleInvalidIdentifierMessage);
 
-            var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
+            var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
             if (user == null)
                 return new FailResponse<Article>(Resource.UserNotFoundMessage);
@@ -67,9 +67,9 @@ namespace SORANO.BLL.Services
                 attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            var saved = _unitOfWork.Get<Article>().Add(article);
+            var saved = UnitOfWork.Get<Article>().Add(article);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
 
             return new SuccessResponse<Article>(saved);
         }
@@ -82,12 +82,12 @@ namespace SORANO.BLL.Services
             if (article.ID <= 0)
                 return new FailResponse<Article>(Resource.ArticleInvalidIdentifierMessage);
 
-            var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
+            var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
             if (user == null)
                 return new FailResponse<Article>(Resource.UserNotFoundMessage);
 
-            var existentArticle = await _unitOfWork.Get<Article>().GetAsync(t => t.ID == article.ID);
+            var existentArticle = await UnitOfWork.Get<Article>().GetAsync(t => t.ID == article.ID);
 
             if (existentArticle == null)
                 return new FailResponse<Article>(Resource.ArticleNotFoundMessage);
@@ -105,25 +105,25 @@ namespace SORANO.BLL.Services
 
             UpdateRecommendations(article, existentArticle, userId);
 
-            var updated = _unitOfWork.Get<Article>().Update(existentArticle);
+            var updated = UnitOfWork.Get<Article>().Update(existentArticle);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
 
             return new SuccessResponse<Article>(updated);
         }
 
         public async Task<ServiceResponse<bool>> DeleteAsync(int id, int userId)
         {
-            var existentArticle = await _unitOfWork.Get<Article>().GetAsync(t => t.ID == id);
+            var existentArticle = await UnitOfWork.Get<Article>().GetAsync(t => t.ID == id);
 
             if (existentArticle.DeliveryItems.Any())
                 return new FailResponse<bool>(Resource.ArticleCannotBeDeletedMessage);
 
             existentArticle.UpdateDeletedFields(userId);
 
-            _unitOfWork.Get<Article>().Update(existentArticle);
+            UnitOfWork.Get<Article>().Update(existentArticle);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
 
             return new SuccessResponse<bool>(true);
         }
@@ -135,14 +135,14 @@ namespace SORANO.BLL.Services
                 return new SuccessResponse<bool>(false);
             }
 
-            var articlesWithSameBarcode = await _unitOfWork.Get<Article>().FindByAsync(a => a.Barcode.Equals(barcode) && a.ID != articleId);
+            var articlesWithSameBarcode = await UnitOfWork.Get<Article>().FindByAsync(a => a.Barcode.Equals(barcode) && a.ID != articleId);
 
             return new SuccessResponse<bool>(articlesWithSameBarcode.Any());
         }
 
         public async Task<ServiceResponse<IDictionary<Article, int>>> GetArticlesForLocationAsync(int? locationId)
         {
-            var goods = await _unitOfWork.Get<Goods>().GetAllAsync();
+            var goods = await UnitOfWork.Get<Goods>().GetAllAsync();
 
             IDictionary<Article, int> result;
 

@@ -16,7 +16,7 @@ namespace SORANO.BLL.Services
 
         public async Task<IEnumerable<string>> GetAllForAsync(string type)
         {
-            var attachments = await _unitOfWork.Get<Attachment>().GetAllAsync();
+            var attachments = await UnitOfWork.Get<Attachment>().GetAllAsync();
             
             return attachments.Where(a => a.ParentEntities.Any(p =>
             {
@@ -27,7 +27,7 @@ namespace SORANO.BLL.Services
 
         public async Task<bool> HasMainPictureAsync(int id, int mainPictureId)
         {
-            var existentMainPicture = await _unitOfWork.Get<Attachment>()
+            var existentMainPicture = await UnitOfWork.Get<Attachment>()
                 .GetAsync(a => a.Type.Name.Equals("Основное изображение") &&
                                a.ParentEntities.Select(p => p.ID).Contains(id));
 
@@ -36,7 +36,7 @@ namespace SORANO.BLL.Services
 
         public async Task<IEnumerable<Attachment>> GetPicturesExceptAsync(int currentMainPictureId)
         {
-            var attachments = await _unitOfWork.Get<Attachment>().GetAllAsync();
+            var attachments = await UnitOfWork.Get<Attachment>().GetAllAsync();
 
             var extensions = "png,bmp,dwg,gif,ico,jpeg,jpg,pic,tif,tiff".Split(',');
 

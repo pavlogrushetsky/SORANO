@@ -7,11 +7,11 @@ namespace SORANO.BLL.Services
 {
     public abstract class BaseService
     {
-        protected readonly IUnitOfWork _unitOfWork;
+        protected readonly IUnitOfWork UnitOfWork;
 
         protected BaseService(IUnitOfWork unitOfWork)
         {
-            _unitOfWork = unitOfWork;
+            UnitOfWork = unitOfWork;
         }
 
         protected void UpdateRecommendations(StockEntity from, StockEntity to, int userId)
@@ -23,7 +23,7 @@ namespace SORANO.BLL.Services
                 .ForEach(r =>
                 {
                     r.UpdateDeletedFields(userId);
-                    _unitOfWork.Get<Recommendation>().Update(r);
+                    UnitOfWork.Get<Recommendation>().Update(r);
                 });
 
             // Update existent recommendations
@@ -63,7 +63,7 @@ namespace SORANO.BLL.Services
                 .ForEach(a =>
                 {
                     a.ParentEntities.Remove(to);
-                    _unitOfWork.Get<Attachment>().Delete(a);
+                    UnitOfWork.Get<Attachment>().Delete(a);
                 });
 
             // Update existent attachments

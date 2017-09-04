@@ -168,11 +168,11 @@ namespace SORANO.WEB.Controllers
                         return RedirectToAction("Index", "Article");
                     }
 
-                    if (_memoryCache.TryGetValue(CacheKeys.CreateArticleTypeCacheKey, out ArticleModel cachedArticle))
+                    if (MemoryCache.TryGetValue(CacheKeys.CreateArticleTypeCacheKey, out ArticleModel cachedArticle))
                     {
                         cachedArticle.TypeID = articleType.ID.ToString();
                         cachedArticle.Type = articleType.ToModel();
-                        _memoryCache.Set(CacheKeys.CreateArticleTypeCacheKey, cachedArticle);
+                        MemoryCache.Set(CacheKeys.CreateArticleTypeCacheKey, cachedArticle);
                         Session.SetBool(CacheKeys.CreateArticleTypeCacheValidKey, true);
                     }
                     else
@@ -274,7 +274,7 @@ namespace SORANO.WEB.Controllers
                 return RedirectToAction("Index", "Article");
             }
 
-            if (_memoryCache.TryGetValue(CacheKeys.CreateArticleTypeCacheKey, out ArticleModel _))
+            if (MemoryCache.TryGetValue(CacheKeys.CreateArticleTypeCacheKey, out ArticleModel _))
             {
                 Session.SetBool(CacheKeys.CreateArticleTypeCacheValidKey, true);
             }
@@ -303,7 +303,7 @@ namespace SORANO.WEB.Controllers
                 Text = t.Name
             }));
 
-            _memoryCache.Set(CacheKeys.ArticleTypesCacheKey, articleTypeItems);
+            MemoryCache.Set(CacheKeys.ArticleTypesCacheKey, articleTypeItems);
 
             return articleTypeItems;
         }

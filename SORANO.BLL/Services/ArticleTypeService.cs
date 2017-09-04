@@ -20,7 +20,7 @@ namespace SORANO.BLL.Services
 
         public async Task<IEnumerable<ArticleType>> GetAllAsync(bool withDeleted)
         {
-            var articleTypes = await _unitOfWork.Get<ArticleType>().GetAllAsync();
+            var articleTypes = await UnitOfWork.Get<ArticleType>().GetAllAsync();
 
             if (!withDeleted)
             {
@@ -38,7 +38,7 @@ namespace SORANO.BLL.Services
 
         public async Task<ArticleType> GetAsync(int id)
         {
-            return await _unitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id);          
+            return await UnitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id);          
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace SORANO.BLL.Services
             }
 
             // Get user by specified identifier
-            var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
+            var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
             // Check user
             if (user == null)
@@ -84,9 +84,9 @@ namespace SORANO.BLL.Services
                 attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            var saved = _unitOfWork.Get<ArticleType>().Add(articleType);
+            var saved = UnitOfWork.Get<ArticleType>().Add(articleType);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
 
             return saved;           
         }
@@ -112,7 +112,7 @@ namespace SORANO.BLL.Services
             }
 
             // Get user by specified identifier
-            var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
+            var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
             // Check user
             if (user == null)
@@ -121,7 +121,7 @@ namespace SORANO.BLL.Services
             }
 
             // Get existent article type by identifier
-            var existentArticleType = await _unitOfWork.Get<ArticleType>().GetAsync(t => t.ID == articleType.ID);
+            var existentArticleType = await UnitOfWork.Get<ArticleType>().GetAsync(t => t.ID == articleType.ID);
 
             // Check existent article type
             if (existentArticleType == null)
@@ -141,29 +141,29 @@ namespace SORANO.BLL.Services
 
             UpdateRecommendations(articleType, existentArticleType, userId);
 
-            var updated = _unitOfWork.Get<ArticleType>().Update(existentArticleType);
+            var updated = UnitOfWork.Get<ArticleType>().Update(existentArticleType);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
 
             return updated;          
         }
 
         public async Task DeleteAsync(int id, int userId)
         {
-            var existentArticleType = await _unitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id);
+            var existentArticleType = await UnitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id);
 
             existentArticleType.ChildTypes.ToList().ForEach(t =>
             {
                 t.ParentTypeId = existentArticleType.ParentTypeId;
                 t.UpdateModifiedFields(userId);
-                _unitOfWork.Get<ArticleType>().Update(t);
+                UnitOfWork.Get<ArticleType>().Update(t);
             });
 
             existentArticleType.UpdateDeletedFields(userId);
 
-            _unitOfWork.Get<ArticleType>().Update(existentArticleType);
+            UnitOfWork.Get<ArticleType>().Update(existentArticleType);
 
-            await _unitOfWork.SaveAsync();           
+            await UnitOfWork.SaveAsync();           
         }
     }
 }

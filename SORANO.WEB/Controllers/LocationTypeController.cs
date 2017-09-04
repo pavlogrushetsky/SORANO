@@ -159,11 +159,11 @@ namespace SORANO.WEB.Controllers
                         return RedirectToAction("Index", "Location");
                     }
 
-                    if (_memoryCache.TryGetValue(CacheKeys.CreateLocationTypeCacheKey, out LocationModel cachedLocation))
+                    if (MemoryCache.TryGetValue(CacheKeys.CreateLocationTypeCacheKey, out LocationModel cachedLocation))
                     {
                         cachedLocation.Type = locationType.ToModel();
                         cachedLocation.TypeID = locationType.ID.ToString();
-                        _memoryCache.Set(CacheKeys.CreateLocationTypeCacheKey, cachedLocation);
+                        MemoryCache.Set(CacheKeys.CreateLocationTypeCacheKey, cachedLocation);
                         Session.SetBool(CacheKeys.CreateLocationTypeCacheValidKey, true);
                     }
                     else
@@ -264,7 +264,7 @@ namespace SORANO.WEB.Controllers
                 return RedirectToAction("Index", "Location");
             }
 
-            if (_memoryCache.TryGetValue(CacheKeys.CreateLocationTypeCacheKey, out LocationModel _))
+            if (MemoryCache.TryGetValue(CacheKeys.CreateLocationTypeCacheKey, out LocationModel _))
             {
                 Session.SetBool(CacheKeys.CreateLocationTypeCacheValidKey, true);
             }

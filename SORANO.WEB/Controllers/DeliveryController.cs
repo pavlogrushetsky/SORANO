@@ -169,7 +169,7 @@ namespace SORANO.WEB.Controllers
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
 
-            _memoryCache.Set(CacheKeys.CreateLocationCacheKey, model);
+            MemoryCache.Set(CacheKeys.CreateLocationCacheKey, model);
 
             return RedirectToAction("Create", "Location", new { returnUrl });
         }
@@ -181,7 +181,7 @@ namespace SORANO.WEB.Controllers
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
 
-            _memoryCache.Set(CacheKeys.CreateSupplierCacheKey, model);
+            MemoryCache.Set(CacheKeys.CreateSupplierCacheKey, model);
 
             return RedirectToAction("Create", "Supplier", new { returnUrl });
         }
@@ -195,7 +195,7 @@ namespace SORANO.WEB.Controllers
 
             model.CurrentItemNumber = num;
 
-            _memoryCache.Set(CacheKeys.CreateArticleCacheKey, model);
+            MemoryCache.Set(CacheKeys.CreateArticleCacheKey, model);
 
             return RedirectToAction("Create", "Article", new { returnUrl });
         }
@@ -419,7 +419,7 @@ namespace SORANO.WEB.Controllers
                 Text = s.Name
             }));
 
-            _memoryCache.Set(CacheKeys.SuppliersCacheKey, supplierItems);
+            MemoryCache.Set(CacheKeys.SuppliersCacheKey, supplierItems);
 
             return supplierItems;
         }
@@ -443,7 +443,7 @@ namespace SORANO.WEB.Controllers
                 Text = l.Name
             }));
 
-            _memoryCache.Set(CacheKeys.LocationsCacheKey, locationItems);
+            MemoryCache.Set(CacheKeys.LocationsCacheKey, locationItems);
 
             return locationItems;
         }
@@ -468,7 +468,7 @@ namespace SORANO.WEB.Controllers
                 Text = $"{l.Code} \u2022 {l.Barcode} \u2022 {l.Name}"
             }));            
 
-            _memoryCache.Set(CacheKeys.ArticlesCacheKey, articleItems);
+            MemoryCache.Set(CacheKeys.ArticlesCacheKey, articleItems);
 
             return articleItems;
         }        

@@ -12,39 +12,46 @@ using Microsoft.AspNetCore.Hosting;
 using MimeTypes;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Extensions;
-using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.Attachment;
+using SORANO.WEB.ViewModels.Common;
+using SORANO.WEB.ViewModels.Recommendation;
 
 // ReSharper disable Mvc.ViewNotResolved
 
 namespace SORANO.WEB.Controllers
 {
-    public class EntityBaseController<T> : BaseController where T : EntityBaseModel
+    public class EntityBaseController<T> : BaseController where T : BaseCreateUpdateViewModel
     {
-        protected readonly IAttachmentTypeService _attachmentTypeService;
-        protected readonly IAttachmentService _attachmentService;
-        protected readonly IMemoryCache _memoryCache;
-        protected readonly IHostingEnvironment _environment;
+        protected readonly IAttachmentTypeService AttachmentTypeService;
+        protected readonly IAttachmentService AttachmentService;
+        protected readonly IMemoryCache MemoryCache;
+        protected readonly IHostingEnvironment Environment;
         private readonly string _entityTypeName;
 
-        public EntityBaseController(IUserService userService, IHostingEnvironment environment, IAttachmentTypeService attachmentTypeService, IAttachmentService attachmentService, IMemoryCache memorycache) : base(userService)
+        public EntityBaseController(IUserService userService, 
+            IHostingEnvironment environment, 
+            IAttachmentTypeService attachmentTypeService, 
+            IAttachmentService attachmentService, 
+            IMemoryCache memorycache) : base(userService)
         {
-            _attachmentTypeService = attachmentTypeService;
-            _attachmentService = attachmentService;
-            _memoryCache = memorycache;
-            _environment = environment;
+            AttachmentTypeService = attachmentTypeService;
+            AttachmentService = attachmentService;
+            MemoryCache = memorycache;
+            Environment = environment;
             _entityTypeName = typeof(T).Name.ToLower().Replace("model", "");
         }
 
         protected bool TryGetCached(out T model, string key, string validKey)
         {
-            if (_memoryCache.TryGetValue(key, out EntityBaseModel cachedModel))
+            if (MemoryCache.TryGetValue(key, out BaseCreateUpdateViewModel cachedModel))
             {
-                _memoryCache.Remove(key);
+                MemoryCache.Remove(key);
 
-                if (cachedModel is T && Session.GetBool(validKey))
+                var m = cachedModel as T;
+                if (m != null && Session.GetBool(validKey))
                 {
                     Session.SetBool(validKey, false);
-                    model = cachedModel as T;
+                    model = m;
                     return true;
                 }
             }
@@ -59,7 +66,7 @@ namespace SORANO.WEB.Controllers
 
             if (cachedModel.MainPicture.ID > 0)
             {
-                hasThisMainPicture = await _attachmentService.HasMainPictureAsync(cachedModel.ID, cachedModel.MainPicture.ID);
+                hasThisMainPicture = await AttachmentService.HasMainPictureAsync(cachedModel.ID, cachedModel.MainPicture.ID);
             }
                                 
             if (hasThisMainPicture)
@@ -69,20 +76,20 @@ namespace SORANO.WEB.Controllers
 
             var mainPicture = cachedModel.MainPicture;
 
-            if (string.IsNullOrEmpty(mainPicture.FullPath) || !System.IO.File.Exists(_environment.WebRootPath + mainPicture.FullPath))
+            if (string.IsNullOrEmpty(mainPicture.FullPath) || !System.IO.File.Exists(Environment.WebRootPath + mainPicture.FullPath))
             {
                 return;
             }
             
             var filename = Guid.NewGuid() + Path.GetExtension(mainPicture.FullPath);
             var path = "/attachments/" + _entityTypeName + "/";
-            var fullPath = _environment.WebRootPath + path;
+            var fullPath = Environment.WebRootPath + path;
 
             Directory.CreateDirectory(fullPath);
 
-            System.IO.File.Copy(_environment.WebRootPath + mainPicture.FullPath, fullPath + filename);
+            System.IO.File.Copy(Environment.WebRootPath + mainPicture.FullPath, fullPath + filename);
 
-            cachedModel.MainPicture = new AttachmentModel
+            cachedModel.MainPicture = new MainPictureViewModel
             {
                 TypeID = await GetMainPictureTypeID(),
                 Name = mainPicture.Name,
@@ -90,69 +97,52 @@ namespace SORANO.WEB.Controllers
             };
         }
 
-        /// <summary>
-        /// Post entity model to add recommendation
-        /// </summary>
-        /// <param name="entity">Entity model</param>
-        /// <param name="isEdit">Is editing</param>
-        /// <param name="mainPictureFile"></param>
-        /// <param name="attachments"></param>
-        /// <returns>Create view</returns>
         [HttpPost]
-        public virtual async Task<IActionResult> AddRecommendation(T entity, bool isEdit, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public virtual async Task<IActionResult> AddRecommendation(T model, bool isEdit, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             ModelState.Clear();
 
-            entity.Recommendations.Add(new RecommendationModel());
+            model.Recommendations.Add(new RecommendationViewModel());
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
             ViewBag.LocationTypes = GetLocationTypes();
             ViewBag.Articles = GetArticles();
-            ViewBag.ArticleTypes = GetArticleTypes();
             ViewBag.Suppliers = GetSuppliers();
             ViewBag.Locations = GetLocations();
 
+            //todo remove
             ViewData["IsEdit"] = isEdit;
 
-            await LoadMainPicture(entity, mainPictureFile);
-            await LoadAttachments(entity, attachments);
+            await LoadMainPicture(model, mainPictureFile);
+            await LoadAttachments(model, attachments);
 
-            return View("Create", entity);
+            return View("Create", model);
         }
 
-        /// <summary>
-        /// Post entity model to remove recommendation
-        /// </summary>
-        /// <param name="entity">Entity model</param>
-        /// <param name="isEdit">Is editing</param>
-        /// <param name="num">Relative position of the recommendation</param>
-        /// <param name="mainPictureFile"></param>
-        /// <param name="attachments"></param>
-        /// <returns>Create view</returns>
         [HttpPost]
-        public virtual async Task<IActionResult> DeleteRecommendation(T entity, bool isEdit, int num, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public virtual async Task<IActionResult> DeleteRecommendation(T model, bool isEdit, int num, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             ModelState.Clear();
 
-            entity.Recommendations.RemoveAt(num);
+            model.Recommendations.RemoveAt(num);
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
             ViewBag.LocationTypes = GetLocationTypes();
             ViewBag.Articles = GetArticles();
-            ViewBag.ArticleTypes = GetArticleTypes();
             ViewBag.Suppliers = GetSuppliers();
             ViewBag.Locations = GetLocations();
 
+            //todo remove
             ViewData["IsEdit"] = isEdit;
 
-            await LoadMainPicture(entity, mainPictureFile);
-            await LoadAttachments(entity, attachments);
+            await LoadMainPicture(model, mainPictureFile);
+            await LoadAttachments(model, attachments);
 
-            return View("Create", entity);
+            return View("Create", model);
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> AddAttachment(T entity, bool isEdit, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public virtual async Task<IActionResult> AddAttachment(T model, bool isEdit, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             ModelState.Clear();                        
 
@@ -161,30 +151,30 @@ namespace SORANO.WEB.Controllers
             ViewBag.AttachmentTypes = attachmentTypes;
             ViewBag.LocationTypes = GetLocationTypes();
             ViewBag.Articles = GetArticles();
-            ViewBag.ArticleTypes = GetArticleTypes();
             ViewBag.Suppliers = GetSuppliers();
             ViewBag.Locations = GetLocations();
 
-            var defaultType = await _attachmentTypeService.GetAsync(int.Parse(attachmentTypes[0].Value));
+            var defaultType = await AttachmentTypeService.GetAsync(int.Parse(attachmentTypes[0].Value));
 
-            entity.Attachments.Add(new AttachmentModel
+            model.Attachments.Add(new AttachmentViewModel
             {
                 Type = defaultType.ToModel(),
                 TypeID = defaultType.ID.ToString()
             });
 
+            //todo remove
             ViewData["IsEdit"] = isEdit;
 
-            await LoadMainPicture(entity, mainPictureFile);
-            await LoadAttachments(entity, attachments);
+            await LoadMainPicture(model, mainPictureFile);
+            await LoadAttachments(model, attachments);
 
-            return View("Create", entity);
+            return View("Create", model);
         }
 
         [HttpPost]
         public virtual async Task<string> GetMimeType(int id)
         {
-            var type = await _attachmentTypeService.GetAsync(id);
+            var type = await AttachmentTypeService.GetAsync(id);
 
             return type.ToModel().MimeTypes;
         }
@@ -199,7 +189,6 @@ namespace SORANO.WEB.Controllers
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
             ViewBag.LocationTypes = GetLocationTypes();
             ViewBag.Articles = GetArticles();
-            ViewBag.ArticleTypes = GetArticleTypes();
             ViewBag.Suppliers = GetSuppliers();
             ViewBag.Locations = GetLocations();
 
@@ -217,7 +206,7 @@ namespace SORANO.WEB.Controllers
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
 
-            _memoryCache.Set(CacheKeys.SelectMainPictureCacheKey, model);
+            MemoryCache.Set(CacheKeys.SelectMainPictureCacheKey, model);
 
             return RedirectToAction("SelectMainPicture", "Attachment", new { currentMainPictureId = model.MainPicture.ID, returnUrl });
         }
@@ -227,12 +216,11 @@ namespace SORANO.WEB.Controllers
         {
             ModelState.Clear();
 
-            entity.MainPicture = new AttachmentModel();
+            entity.MainPicture = new MainPictureViewModel();
 
             ViewBag.AttachmentTypes = await GetAttachmentTypes();
             ViewBag.LocationTypes = GetLocationTypes();
             ViewBag.Articles = GetArticles();
-            ViewBag.ArticleTypes = GetArticleTypes();
             ViewBag.Suppliers = GetSuppliers();
             ViewBag.Locations = GetLocations();
 
@@ -246,14 +234,14 @@ namespace SORANO.WEB.Controllers
 
         public virtual FileResult DownloadFile(string path, string name)
         {
-            var bytes = System.IO.File.ReadAllBytes(_environment.WebRootPath + path);
+            var bytes = System.IO.File.ReadAllBytes(Environment.WebRootPath + path);
 
             return File(bytes, MimeTypeMap.GetMimeType(Path.GetExtension(path)), name);
         }
 
         protected virtual async Task<List<SelectListItem>> GetAttachmentTypes()
         {
-            if (_memoryCache.TryGetValue(CacheKeys.AttachmentTypesCacheKey, out List<SelectListItem> attachmentTypeSelectItems))
+            if (MemoryCache.TryGetValue(CacheKeys.AttachmentTypesCacheKey, out List<SelectListItem> attachmentTypeSelectItems))
             {
                 return attachmentTypeSelectItems;
             }
@@ -263,7 +251,7 @@ namespace SORANO.WEB.Controllers
 
         private List<SelectListItem> GetLocationTypes()
         {
-            if (_memoryCache.TryGetValue(CacheKeys.LocationTypesCacheKey, out List<SelectListItem> locationTypeSelectItems))
+            if (MemoryCache.TryGetValue(CacheKeys.LocationTypesCacheKey, out List<SelectListItem> locationTypeSelectItems))
             {
                 return locationTypeSelectItems;
             }
@@ -271,19 +259,9 @@ namespace SORANO.WEB.Controllers
             return null;
         }
 
-        private List<SelectListItem> GetArticleTypes()
-        {
-            if (_memoryCache.TryGetValue(CacheKeys.ArticleTypesCacheKey, out List<SelectListItem> articleTypeSelectItems))
-            {
-                return articleTypeSelectItems;
-            }
-
-            return null;
-        }
-
         private List<SelectListItem> GetSuppliers()
         {
-            if (_memoryCache.TryGetValue(CacheKeys.SuppliersCacheKey, out List<SelectListItem> supplierSelectItems))
+            if (MemoryCache.TryGetValue(CacheKeys.SuppliersCacheKey, out List<SelectListItem> supplierSelectItems))
             {
                 return supplierSelectItems;
             }
@@ -293,7 +271,7 @@ namespace SORANO.WEB.Controllers
 
         private List<SelectListItem> GetLocations()
         {
-            if (_memoryCache.TryGetValue(CacheKeys.LocationsCacheKey, out List<SelectListItem> locationSelectItems))
+            if (MemoryCache.TryGetValue(CacheKeys.LocationsCacheKey, out List<SelectListItem> locationSelectItems))
             {
                 return locationSelectItems;
             }
@@ -303,7 +281,7 @@ namespace SORANO.WEB.Controllers
 
         private List<SelectListItem> GetArticles()
         {
-            if (_memoryCache.TryGetValue(CacheKeys.ArticlesCacheKey, out List<SelectListItem> articleCodesSelectItems))
+            if (MemoryCache.TryGetValue(CacheKeys.ArticlesCacheKey, out List<SelectListItem> articleCodesSelectItems))
             {
                 return articleCodesSelectItems;
             }
@@ -313,7 +291,7 @@ namespace SORANO.WEB.Controllers
 
         protected virtual async Task<List<SelectListItem>> CacheAttachmentTypes()
         {
-            var attachmentTypes = await _attachmentTypeService.GetAllAsync();
+            var attachmentTypes = await AttachmentTypeService.GetAllAsync();
 
             var attachmentTypeSelectItems = attachmentTypes.Where(t => !t.Name.Equals("Основное изображение")).Select(a => new SelectListItem
             {
@@ -321,14 +299,14 @@ namespace SORANO.WEB.Controllers
                 Value = a.ID.ToString()
             }).ToList();
 
-            _memoryCache.Set(CacheKeys.AttachmentTypesCacheKey, attachmentTypeSelectItems);
+            MemoryCache.Set(CacheKeys.AttachmentTypesCacheKey, attachmentTypeSelectItems);
 
             return attachmentTypeSelectItems;
         }
 
         protected virtual async Task<string> GetMainPictureTypeID()
         {
-            var id = await _attachmentTypeService.GetMainPictureTypeIDAsync();
+            var id = await AttachmentTypeService.GetMainPictureTypeIDAsync();
 
             return id.ToString();
         }
@@ -338,7 +316,7 @@ namespace SORANO.WEB.Controllers
             var extension = Path.GetExtension(file.FileName);
             var filename = Guid.NewGuid() + extension;
             var path = "/attachments/" + subfolder + "/";
-            var fullPath = _environment.WebRootPath + path;
+            var fullPath = Environment.WebRootPath + path;
 
             Directory.CreateDirectory(fullPath);
 
@@ -394,14 +372,14 @@ namespace SORANO.WEB.Controllers
 
         protected virtual async Task ClearAttachments()
         {
-            var path = _environment.WebRootPath + "/attachments/" + _entityTypeName + "/";
+            var path = Environment.WebRootPath + "/attachments/" + _entityTypeName + "/";
             if (!Directory.Exists(path))
             {
                 return;
             }
 
             var files = Directory.GetFiles(path);
-            var attachments = await _attachmentService.GetAllForAsync(_entityTypeName);
+            var attachments = await AttachmentService.GetAllForAsync(_entityTypeName);
             var fileNames = attachments.Select(Path.GetFileName).ToList();
 
             foreach (var file in files)

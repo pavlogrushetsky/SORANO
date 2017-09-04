@@ -20,7 +20,7 @@ namespace SORANO.BLL.Services
 
         public async Task<IEnumerable<Location>> GetAllAsync(bool withDeleted)
         {
-            var locations = await _unitOfWork.Get<Location>().GetAllAsync();
+            var locations = await UnitOfWork.Get<Location>().GetAllAsync();
 
             if (!withDeleted)
             {
@@ -32,7 +32,7 @@ namespace SORANO.BLL.Services
 
         public async Task<Location> GetAsync(int id)
         {
-            return await _unitOfWork.Get<Location>().GetAsync(s => s.ID == id);
+            return await UnitOfWork.Get<Location>().GetAsync(s => s.ID == id);
         }
 
         public async Task<Location> CreateAsync(Location location, int userId)
@@ -50,7 +50,7 @@ namespace SORANO.BLL.Services
             }
 
             // Get user by specified identifier
-            var user = await _unitOfWork.Get<User>().GetAsync(s => s.ID == userId);
+            var user = await UnitOfWork.Get<User>().GetAsync(s => s.ID == userId);
 
             // Check user
             if (user == null)
@@ -61,7 +61,7 @@ namespace SORANO.BLL.Services
             // Update created and modified fields for location
             location.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-            var type = await _unitOfWork.Get<LocationType>().GetAsync(t => t.ID == location.TypeID);
+            var type = await UnitOfWork.Get<LocationType>().GetAsync(t => t.ID == location.TypeID);
 
             type.UpdateModifiedFields(userId);
 
@@ -76,9 +76,9 @@ namespace SORANO.BLL.Services
                 attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            var saved = _unitOfWork.Get<Location>().Add(location);
+            var saved = UnitOfWork.Get<Location>().Add(location);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
 
             return saved;
         }
@@ -98,7 +98,7 @@ namespace SORANO.BLL.Services
             }
 
             // Get user by specified identifier
-            var user = await _unitOfWork.Get<User>().GetAsync(s => s.ID == userId);
+            var user = await UnitOfWork.Get<User>().GetAsync(s => s.ID == userId);
 
             // Check user
             if (user == null)
@@ -106,7 +106,7 @@ namespace SORANO.BLL.Services
                 throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
             }
 
-            var existentLocation = await _unitOfWork.Get<Location>().GetAsync(l => l.ID == location.ID);
+            var existentLocation = await UnitOfWork.Get<Location>().GetAsync(l => l.ID == location.ID);
 
             if (existentLocation == null)
             {
@@ -116,7 +116,7 @@ namespace SORANO.BLL.Services
             existentLocation.Name = location.Name;
             existentLocation.Comment = location.Comment; 
 
-            var type = await _unitOfWork.Get<LocationType>().GetAsync(t => t.ID == location.TypeID);
+            var type = await UnitOfWork.Get<LocationType>().GetAsync(t => t.ID == location.TypeID);
 
             if (type.ID != existentLocation.TypeID)
             {
@@ -131,16 +131,16 @@ namespace SORANO.BLL.Services
 
             UpdateAttachments(location, existentLocation, userId);
 
-            var saved = _unitOfWork.Get<Location>().Update(existentLocation);
+            var saved = UnitOfWork.Get<Location>().Update(existentLocation);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
 
             return saved;
         }
 
         public async Task DeleteAsync(int id, int userId)
         {
-            var existentLocation = await _unitOfWork.Get<Location>().GetAsync(t => t.ID == id);
+            var existentLocation = await UnitOfWork.Get<Location>().GetAsync(t => t.ID == id);
 
             if (existentLocation.Storages.Any() || existentLocation.SoldGoods.Any())
             {
@@ -149,14 +149,14 @@ namespace SORANO.BLL.Services
 
             existentLocation.UpdateDeletedFields(userId);
 
-            _unitOfWork.Get<Location>().Update(existentLocation);
+            UnitOfWork.Get<Location>().Update(existentLocation);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
         }
 
         public async Task<Dictionary<Location, int>> GetLocationsForArticleAsync(int? articleId, int? except)
         {
-            var allGoods = await _unitOfWork.Get<Goods>().GetAllAsync();
+            var allGoods = await UnitOfWork.Get<Goods>().GetAllAsync();
             Dictionary<Location, int> locations;
 
             if (!articleId.HasValue || articleId == 0)

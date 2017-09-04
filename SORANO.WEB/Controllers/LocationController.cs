@@ -182,11 +182,11 @@ namespace SORANO.WEB.Controllers
                         return RedirectToAction("Index", "Location");
                     }
 
-                    if (_memoryCache.TryGetValue(CacheKeys.CreateLocationCacheKey, out DeliveryModel cachedDelivery))
+                    if (MemoryCache.TryGetValue(CacheKeys.CreateLocationCacheKey, out DeliveryModel cachedDelivery))
                     {
                         cachedDelivery.Location = location.ToModel();
                         cachedDelivery.LocationID = location.ID.ToString();
-                        _memoryCache.Set(CacheKeys.CreateLocationCacheKey, cachedDelivery);
+                        MemoryCache.Set(CacheKeys.CreateLocationCacheKey, cachedDelivery);
                         Session.SetBool(CacheKeys.CreateLocationCacheValidKey, true);
                     }
                     else
@@ -282,7 +282,7 @@ namespace SORANO.WEB.Controllers
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
 
-            _memoryCache.Set(CacheKeys.CreateLocationTypeCacheKey, model);
+            MemoryCache.Set(CacheKeys.CreateLocationTypeCacheKey, model);
 
             return RedirectToAction("Create", "LocationType", new { returnUrl });
         }
@@ -296,7 +296,7 @@ namespace SORANO.WEB.Controllers
                 return RedirectToAction("Index", "Location");
             }
 
-            if (_memoryCache.TryGetValue(CacheKeys.CreateLocationCacheKey, out DeliveryModel _))
+            if (MemoryCache.TryGetValue(CacheKeys.CreateLocationCacheKey, out DeliveryModel _))
             {
                 Session.SetBool(CacheKeys.CreateLocationCacheValidKey, true);
             }
@@ -325,7 +325,7 @@ namespace SORANO.WEB.Controllers
                 Text = l.Name
             }));
 
-            _memoryCache.Set(CacheKeys.LocationTypesCacheKey, locationTypes);
+            MemoryCache.Set(CacheKeys.LocationTypesCacheKey, locationTypes);
 
             return locationTypes;
         }

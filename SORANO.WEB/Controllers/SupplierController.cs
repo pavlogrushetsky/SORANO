@@ -162,11 +162,11 @@ namespace SORANO.WEB.Controllers
                         return RedirectToAction("Index", "Supplier");
                     }
 
-                    if (_memoryCache.TryGetValue(CacheKeys.CreateSupplierCacheKey, out DeliveryModel cachedDelivery))
+                    if (MemoryCache.TryGetValue(CacheKeys.CreateSupplierCacheKey, out DeliveryModel cachedDelivery))
                     {
                         cachedDelivery.Supplier = supplier.ToModel();
                         cachedDelivery.SupplierID = supplier.ID.ToString();
-                        _memoryCache.Set(CacheKeys.CreateSupplierCacheKey, cachedDelivery);
+                        MemoryCache.Set(CacheKeys.CreateSupplierCacheKey, cachedDelivery);
                         Session.SetBool(CacheKeys.CreateSupplierCacheValidKey, true);
                     }
                     else
@@ -260,7 +260,7 @@ namespace SORANO.WEB.Controllers
                 return RedirectToAction("Index", "Supplier");
             }
 
-            if (_memoryCache.TryGetValue(CacheKeys.CreateSupplierCacheKey, out DeliveryModel _))
+            if (MemoryCache.TryGetValue(CacheKeys.CreateSupplierCacheKey, out DeliveryModel _))
             {
                 Session.SetBool(CacheKeys.CreateSupplierCacheValidKey, true);
             }

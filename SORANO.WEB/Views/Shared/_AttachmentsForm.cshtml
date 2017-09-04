@@ -1,13 +1,13 @@
-﻿@model EntityBaseModel
+﻿@model BaseCreateUpdateViewModel
 
 <div class="form-group">
     <label class="control-label">Вложения:</label>
     <div id="attachments">
-        <table class="table table-responsive" style="width: 100%; margin-bottom: 0;">
+        <table class="table table-responsive" style="margin-bottom: 0;">
             @if (Model.Attachments.Any())
             {
                 <tbody>
-                @for (int i = 0; i < Model.Attachments.Count; i++)
+                @for (var i = 0; i < Model.Attachments.Count; i++)
                 {
                     <tr>
                         <td style="width: 60%; padding: 0; padding-right: 5px; padding-bottom: 5px;">
@@ -21,7 +21,7 @@
                                                style="display: none !important;"
                                                id="attachment_input_@i"
                                                name="attachments"
-                                               accept="@Model.Attachments[i].Type?.MimeTypes"
+                                               accept="@Model.Attachments[i].MimeTypes"
                                                data-toggle="tooltip"
                                                data-placement="right"
                                                data-original-title="Выбрать файл" />
@@ -38,7 +38,7 @@
                                     <button class="btn btn-danger btn-sm"
                                             type="submit"
                                             asp-action="DeleteAttachment"
-                                            asp-route-isEdit="@(ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"])"
+                                            asp-route-isEdit="@Model.IsUpdate"
                                             asp-route-num="@i"
                                             data-toggle="tooltip"
                                             data-placement="right"
@@ -61,7 +61,7 @@
                     <button class="btn btn-default btn-sm"
                             type="submit"
                             asp-action="AddAttachment"
-                            asp-route-isEdit="@(ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"])"
+                            asp-route-isEdit="@Model.IsUpdate"
                             data-toggle="tooltip"
                             data-placement="right"
                             data-original-title="Добавить вложение"

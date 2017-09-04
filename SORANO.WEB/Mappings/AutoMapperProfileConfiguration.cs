@@ -5,6 +5,8 @@ using SORANO.WEB.Mappings.Converters;
 using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.Article;
 using SORANO.WEB.ViewModels.ArticleType;
+using SORANO.WEB.ViewModels.Attachment;
+using SORANO.WEB.ViewModels.Recommendation;
 
 namespace SORANO.WEB.Mappings
 {
@@ -26,7 +28,8 @@ namespace SORANO.WEB.Mappings
             CreateMap<RecommendationDto, RecommendationViewModel>();
             CreateMap<RecommendationViewModel, RecommendationDto>();
 
-            CreateMap<AttachmentDto, AttachmentViewModel>();
+            CreateMap<AttachmentDto, AttachmentViewModel>()
+                .ForMember(dest => dest.TypeName, source => source.MapFrom(s => s.AttachmentType.Name));
             CreateMap<AttachmentViewModel, AttachmentDto>();
 
             CreateMap<ArticleTypeDto, ArticleTypeIndexViewModel>();

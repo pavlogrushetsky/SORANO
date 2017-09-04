@@ -10,15 +10,17 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using Microsoft.Extensions.Caching.Memory;
+using SORANO.BLL.DTOs;
 using SORANO.BLL.Services;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.Article;
+using SORANO.WEB.ViewModels.Attachment;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    public class ArticleController : EntityBaseController<ArticleModel>
+    public class ArticleController : EntityBaseController<ArticleCreateUpdateViewModel>
     {
         private readonly IArticleService _articleService;
         private readonly IArticleTypeService _articleTypeService;
@@ -84,7 +86,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                ArticleModel model;
+                ArticleCreateUpdateViewModel model;
 
                 if (TryGetCached(out var cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
                 {
@@ -97,15 +99,14 @@ namespace SORANO.WEB.Controllers
                 }
                 else
                 {
-                    model = new ArticleModel
+                    model = new ArticleCreateUpdateViewModel
                     {
-                        MainPicture = new AttachmentModel(),
+                        MainPicture = new MainPictureViewModel(),
                         ReturnPath = returnUrl
                     };
                 }
 
                 ViewBag.AttachmentTypes = await GetAttachmentTypes();
-                ViewBag.ArticleTypes = await GetArticleTypes();
 
                 return View(model);
             }, ex =>
@@ -120,7 +121,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                ArticleModel model;
+                ArticleCreateUpdateViewModel model;
 
                 if (TryGetCached(out var cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedForSelectMainPicture.ID == id)
                 {
@@ -140,15 +141,12 @@ namespace SORANO.WEB.Controllers
                         TempData["Error"] = result.Message;
                         return RedirectToAction("Index");
                     }
-                    //todo
-                    //model = result.Result.ToModel();
-                    model = null;
+                    
+                    model = _mapper.Map<ArticleCreateUpdateViewModel>(result.Result);
+                    model.IsUpdate = true;
                 }
 
                 ViewBag.AttachmentTypes = await GetAttachmentTypes();
-                ViewBag.ArticleTypes = await GetArticleTypes();
-
-                ViewData["IsEdit"] = true;
 
                 return View("Create", model);
             }, ex =>
@@ -202,30 +200,27 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateParentType(ArticleModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public async Task<IActionResult> CreateParentType(ArticleCreateUpdateViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
 
-            _memoryCache.Set(CacheKeys.CreateArticleTypeCacheKey, model);
+            MemoryCache.Set(CacheKeys.CreateArticleTypeCacheKey, model);
 
             return RedirectToAction("Create", "ArticleType", new { returnUrl });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ArticleModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public async Task<IActionResult> Create(ArticleCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             var attachmentTypes = new List<SelectListItem>();
-            var articleTypes = new List<SelectListItem>();
 
             return await TryGetActionResultAsync(async () =>
             {
                 attachmentTypes = await GetAttachmentTypes();
-                articleTypes = await GetArticleTypes();
 
                 ViewBag.AttachmentTypes = attachmentTypes;
-                ViewBag.ArticleTypes = articleTypes;
 
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
@@ -248,7 +243,7 @@ namespace SORANO.WEB.Controllers
                     return View(model);
                 }
 
-                var article = model.ToEntity();
+                var article = _mapper.Map<ArticleDto>(model);
 
                 var currentUser = await GetCurrentUser();
 
@@ -262,11 +257,11 @@ namespace SORANO.WEB.Controllers
                         return RedirectToAction("Index");
                     }
 
-                    if (_memoryCache.TryGetValue(CacheKeys.CreateArticleCacheKey, out DeliveryModel cachedDelivery))
+                    if (MemoryCache.TryGetValue(CacheKeys.CreateArticleCacheKey, out DeliveryModel cachedDelivery))
                     {
                         cachedDelivery.DeliveryItems[cachedDelivery.CurrentItemNumber].Article = model;
                         cachedDelivery.DeliveryItems[cachedDelivery.CurrentItemNumber].ArticleID = article.ID.ToString();
-                        _memoryCache.Set(CacheKeys.CreateArticleCacheKey, cachedDelivery);
+                        MemoryCache.Set(CacheKeys.CreateArticleCacheKey, cachedDelivery);
                         Session.SetBool(CacheKeys.CreateArticleCacheValidKey, true);
                     }
                     else
@@ -282,7 +277,6 @@ namespace SORANO.WEB.Controllers
             }, ex =>
             {
                 ViewBag.AttachmentTypes = attachmentTypes;
-                ViewBag.ArticleTypes = articleTypes;
 
                 TempData["Error"] = ex;
                 return RedirectToAction("Index");
@@ -291,18 +285,15 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(ArticleModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public async Task<IActionResult> Update(ArticleCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             var attachmentTypes = new List<SelectListItem>();
-            var articleTypes = new List<SelectListItem>();
 
             return await TryGetActionResultAsync(async () =>
             {
                 attachmentTypes = await GetAttachmentTypes();
-                articleTypes = await GetArticleTypes();
 
                 ViewBag.AttachmentTypes = attachmentTypes;
-                ViewBag.ArticleTypes = articleTypes;
 
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
@@ -322,11 +313,10 @@ namespace SORANO.WEB.Controllers
 
                 if (!ModelState.IsValid)
                 {
-                    ViewData["IsEdit"] = true;
                     return View("Create", model);
                 }
 
-                var article = model.ToEntity();
+                var article = _mapper.Map<ArticleDto>(model);
 
                 var currentUser = await GetCurrentUser();
 
@@ -338,13 +328,11 @@ namespace SORANO.WEB.Controllers
                     return RedirectToAction("Index", "Article");
                 }
 
-                ViewBag.Error = result.Message;
-                ViewData["IsEdit"] = true;
+                TempData["Error"] = result.Message;
                 return View("Create", model);
             }, ex =>
             {
                 ViewBag.AttachmentTypes = attachmentTypes;
-                ViewBag.ArticleTypes = articleTypes;
 
                 TempData["Error"] = ex;
                 return RedirectToAction("Index");
@@ -369,11 +357,11 @@ namespace SORANO.WEB.Controllers
                     TempData["Error"] = result.Message;
                 }
                 
-                return RedirectToAction("Index", "Article");
+                return RedirectToAction("Index");
             }, ex =>
             {
                 TempData["Error"] = ex;
-                return RedirectToAction("Index", "Article");
+                return RedirectToAction("Index");
             });            
         }
 
@@ -386,7 +374,7 @@ namespace SORANO.WEB.Controllers
                 return RedirectToAction("Index", "Article");
             }
 
-            if (_memoryCache.TryGetValue(CacheKeys.CreateArticleCacheKey, out DeliveryModel _))
+            if (MemoryCache.TryGetValue(CacheKeys.CreateArticleCacheKey, out DeliveryModel _))
             {
                 Session.SetBool(CacheKeys.CreateArticleCacheValidKey, true);
             }
@@ -396,28 +384,21 @@ namespace SORANO.WEB.Controllers
 
         #endregion
 
-        private async Task<List<SelectListItem>> GetArticleTypes()
+        [HttpPost]
+        public async Task<JsonResult> GetArticleTypes(string term)
         {
             var articleTypes = await _articleTypeService.GetAllAsync(false);
 
-            var articleTypeItems = new List<SelectListItem>
+            return Json(new
             {
-                new SelectListItem
-                {
-                    Value = "0",
-                    Text = "-- Тип артикулов --"
-                }
-            };
-
-            articleTypeItems.AddRange(articleTypes.Select(t => new SelectListItem
-            {
-                Value = t.ID.ToString(),
-                Text = t.Name
-            }));
-
-            _memoryCache.Set(CacheKeys.ArticleTypesCacheKey, articleTypeItems);
-
-            return articleTypeItems;
+                results = articleTypes
+                    .Where(c => string.IsNullOrEmpty(term) || c.Name.Contains(term))
+                    .Select(c => new
+                    {
+                        id = c.ID,
+                        text = c.Name
+                    })
+            });
         }
     }
 }

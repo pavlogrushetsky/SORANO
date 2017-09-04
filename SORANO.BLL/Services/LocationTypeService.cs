@@ -20,7 +20,7 @@ namespace SORANO.BLL.Services
 
         public async Task<IEnumerable<LocationType>> GetAllAsync(bool withDeleted)
         {
-            var locationTypes = await _unitOfWork.Get<LocationType>().GetAllAsync();
+            var locationTypes = await UnitOfWork.Get<LocationType>().GetAllAsync();
 
             if (!withDeleted)
             {
@@ -37,12 +37,12 @@ namespace SORANO.BLL.Services
 
         public async Task<LocationType> GetAsync(int id)
         {
-            return await _unitOfWork.Get<LocationType>().GetAsync(l => l.ID == id);
+            return await UnitOfWork.Get<LocationType>().GetAsync(l => l.ID == id);
         }
 
         public async Task<LocationType> GetIncludeAllAsync(int id)
         {
-            var locationType = await _unitOfWork.Get<LocationType>().GetAsync(l => l.ID == id);
+            var locationType = await UnitOfWork.Get<LocationType>().GetAsync(l => l.ID == id);
 
             return locationType;
         }
@@ -62,7 +62,7 @@ namespace SORANO.BLL.Services
             }
 
             // Get user by specified identifier
-            var user = await _unitOfWork.Get<User>().GetAsync(s => s.ID == userId);
+            var user = await UnitOfWork.Get<User>().GetAsync(s => s.ID == userId);
 
             // Check user
             if (user == null)
@@ -84,9 +84,9 @@ namespace SORANO.BLL.Services
                 attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            var saved = _unitOfWork.Get<LocationType>().Add(locationType);
+            var saved = UnitOfWork.Get<LocationType>().Add(locationType);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
 
             return saved;
         }
@@ -106,7 +106,7 @@ namespace SORANO.BLL.Services
             }            
 
             // Get user by specified identifier
-            var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
+            var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
             // Check user
             if (user == null)
@@ -115,7 +115,7 @@ namespace SORANO.BLL.Services
             }
 
             // Get existent location type by identifier
-            var existentLocationType = await _unitOfWork.Get<LocationType>().GetAsync(t => t.ID == locationType.ID);
+            var existentLocationType = await UnitOfWork.Get<LocationType>().GetAsync(t => t.ID == locationType.ID);
 
             // Check existent location type
             if (existentLocationType == null)
@@ -134,16 +134,16 @@ namespace SORANO.BLL.Services
 
             UpdateAttachments(locationType, existentLocationType, userId);
 
-            var updated = _unitOfWork.Get<LocationType>().Update(existentLocationType);
+            var updated = UnitOfWork.Get<LocationType>().Update(existentLocationType);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
 
             return updated;
         }
 
         public async Task DeleteAsync(int id, int userId)
         {
-            var existentLocationType = await _unitOfWork.Get<LocationType>().GetAsync(t => t.ID == id);
+            var existentLocationType = await UnitOfWork.Get<LocationType>().GetAsync(t => t.ID == id);
 
             if (existentLocationType.Locations.Any())
             {
@@ -152,9 +152,9 @@ namespace SORANO.BLL.Services
 
             existentLocationType.UpdateDeletedFields(userId);
 
-            _unitOfWork.Get<LocationType>().Update(existentLocationType);
+            UnitOfWork.Get<LocationType>().Update(existentLocationType);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
         }
 
         public async Task<bool> Exists(string name, int locationTypeId = 0)
@@ -164,7 +164,7 @@ namespace SORANO.BLL.Services
                 return false;
             }
 
-            var locationTypes = await _unitOfWork.Get<LocationType>().FindByAsync(t => t.Name.Equals(name) && t.ID != locationTypeId);
+            var locationTypes = await UnitOfWork.Get<LocationType>().FindByAsync(t => t.Name.Equals(name) && t.ID != locationTypeId);
 
             return locationTypes.Any();
         }

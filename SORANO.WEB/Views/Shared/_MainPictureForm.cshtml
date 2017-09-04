@@ -1,7 +1,6 @@
-﻿@model EntityBaseModel
+﻿@model BaseCreateUpdateViewModel
 
 @{
-    var isEdit = ViewData.ContainsKey("IsEdit") && (bool) ViewData["IsEdit"];
     var hasMainPicture = !string.IsNullOrEmpty(Model.MainPicture.Name);
     var controllerName = ViewContext.RouteData.Values["controller"].ToString();
 }
@@ -40,7 +39,7 @@
             <button class="btn btn-default btn-sm"
                     type="submit"
                     asp-action="SelectMainPicture"
-                    asp-route-returnUrl="@(isEdit ? Url.Action("Update", controllerName) : Url.Action("Create", controllerName))"
+                    asp-route-returnUrl="@(Model.IsUpdate ? Url.Action("Update", controllerName) : Url.Action("Create", controllerName))"
                     data-toggle="tooltip"
                     data-placement="right"
                     data-original-title="Выбрать изображение из существующих вложений"
@@ -53,7 +52,7 @@
                 <button class="btn btn-danger btn-sm"
                         type="submit"
                         asp-action="DeleteMainPicture"
-                        asp-route-isEdit="@isEdit"
+                        asp-route-isEdit="@Model.IsUpdate"
                         data-toggle="tooltip"
                         data-placement="right"
                         data-original-title="Удалить изображение"
