@@ -3,6 +3,8 @@ using AutoMapper;
 using SORANO.BLL.DTOs;
 using SORANO.WEB.Mappings.Converters;
 using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.Article;
+using SORANO.WEB.ViewModels.ArticleType;
 
 namespace SORANO.WEB.Mappings
 {
@@ -27,12 +29,16 @@ namespace SORANO.WEB.Mappings
             CreateMap<AttachmentDto, AttachmentViewModel>();
             CreateMap<AttachmentViewModel, AttachmentDto>();
 
-            CreateMap<ArticleDto, ArticleViewModel>();
-            CreateMap<ArticleViewModel, ArticleDto>();
+            CreateMap<ArticleTypeDto, ArticleTypeIndexViewModel>();
+            CreateMap<ArticleTypeDto, ArticleTypeCreateUpdateViewModel>();
+            CreateMap<ArticleTypeDto, ArticleTypeDetailsViewModel>();
+            CreateMap<ArticleTypeDto, ArticleTypeDeleteViewModel>();
 
-            CreateMap<DetailsDto, DetailsViewModel>();
-
-            CreateMap<ArticleDetailedDto, ArticleDetailedViewModel>();
+            CreateMap<ArticleDto, ArticleIndexViewModel>()
+                .ForMember(dest => dest.TypeName, source => source.MapFrom(s => s.Type.Name));
+            CreateMap<ArticleDto, ArticleCreateUpdateViewModel>();
+            CreateMap<ArticleDto, ArticleDetailsViewModel>();
+            CreateMap<ArticleDto, ArticleDeleteViewModel>();
         }
     }
 }

@@ -42,16 +42,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DTOs\AllGoodsDTO.cs" />
-    <Compile Include="DTOs\ArticleDetailedDto.cs" />
     <Compile Include="DTOs\ArticleDto.cs" />
+    <Compile Include="DTOs\ArticleTypeDto.cs" />
     <Compile Include="DTOs\AttachmentDto.cs" />
     <Compile Include="DTOs\AttachmentTypeDto.cs" />
-    <Compile Include="DTOs\DetailsDto.cs" />
+    <Compile Include="DTOs\BaseDto.cs" />
     <Compile Include="DTOs\GoodsGroupDTO.cs" />
     <Compile Include="DTOs\RecommendationDto.cs" />
+    <Compile Include="Extensions\ArticleDtoExtensions.cs" />
+    <Compile Include="Extensions\ArticleTypeDtoExtensions.cs" />
     <Compile Include="Extensions\AttachmentDtoExtensions.cs" />
     <Compile Include="Extensions\AttachmentTypeDtoExtensions.cs" />
-    <Compile Include="Extensions\DetailsDtoExtensions.cs" />
     <Compile Include="Extensions\RecommendationDtoExtensions.cs" />
     <Compile Include="Helpers\CryptoHelper.cs" />
     <Compile Include="Helpers\StockEntityHelper.cs" />

@@ -1,6 +1,6 @@
-﻿namespace SORANO.BLL.DTOs
+﻿namespace SORANO.WEB.ViewModels.Article
 {
-    public class ArticleDto : BaseDto
+    public class ArticleIndexViewModel
     {
         public int ID { get; set; }
 
@@ -16,6 +16,10 @@
 
         public int TypeID { get; set; }
 
-        public ArticleTypeDto Type { get; set; }
+        public string TypeName { get; set; }
+
+        public bool IsDeleted { get; set; }
+
+        public bool CanBeDeleted { get; set; }
     }
 }

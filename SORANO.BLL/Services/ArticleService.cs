@@ -19,50 +19,27 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<ServiceResponse<IEnumerable<Article>>> GetAllAsync(bool withDeleted)
+        public async Task<ServiceResponse<IEnumerable<ArticleDto>>> GetAllAsync(bool withDeleted)
         {
-            var response = new SuccessResponse<IEnumerable<Article>>();
+            var response = new SuccessResponse<IEnumerable<ArticleDto>>();
 
             var articles = await _unitOfWork.Get<Article>().GetAllAsync();
 
             response.Result = !withDeleted 
-                ? articles.Where(a => !a.IsDeleted) 
-                : articles;
+                ? articles.Where(a => !a.IsDeleted).Select(a => a.ToDto()) 
+                : articles.Select(a => a.ToDto());
 
             return response;
         }
 
-        public async Task<ServiceResponse<ArticleDetailedDto>> GetAsync(int id)
+        public async Task<ServiceResponse<ArticleDto>> GetAsync(int id)
         {
             var article = await _unitOfWork.Get<Article>().GetAsync(a => a.ID == id);
 
             if (article == null)
-                return new FailResponse<ArticleDetailedDto>(Resource.ArticleNotFoundMessage);
+                return new FailResponse<ArticleDto>(Resource.ArticleNotFoundMessage);
 
-            var dto = article.ToDto();
-
-            return new SuccessResponse<ArticleDetailedDto>(new ArticleDetailedDto
-            {
-                ID = article.ID,
-                Name = article.Name,
-                Description = article.Description,
-                Producer = article.Producer,
-                Code = article.Code,
-                Barcode = article.Barcode,
-                Details = new DetailsDto
-                { 
-                    IsDeleted = article.IsDeleted,
-                    CanBeDeleted = !article.DeliveryItems.Any() && !article.IsDeleted,
-                    Created = article.CreatedDate,
-                    Modified = article.ModifiedDate,
-                    Deleted = article.DeletedDate,
-                    CreatedBy = article.CreatedByUser?.Login,
-                    ModifiedBy = article.ModifiedByUser?.Login,
-                    DeletedBy = article.DeletedByUser?.Login                   
-                },
-                Recommendations = article.Recommendations?.Where(r => !r.IsDeleted).Select(r => r.ToDto()),
-                Attachments = article.Attachments?.Where(a => a.IsDeleted && !a.Type.Name.Equals("Основное изображение")).Select(a => a.ToDto())
-            });
+            return new SuccessResponse<ArticleDto>(article.ToDto());
         }
 
         public async Task<ServiceResponse<Article>> CreateAsync(Article article, int userId)

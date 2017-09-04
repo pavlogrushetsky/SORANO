@@ -13,6 +13,7 @@ using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Services;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.Article;
 
 namespace SORANO.WEB.Controllers
 {
@@ -60,7 +61,9 @@ namespace SORANO.WEB.Controllers
 
                 await ClearAttachments();
 
-                return View(result.Result.Select(a => a.ToModel()).ToList());
+                var viewModel = _mapper.Map<IEnumerable<ArticleIndexViewModel>>(result.Result);
+
+                return View(viewModel);
             }, ex =>
             {
                 TempData["Error"] = ex;

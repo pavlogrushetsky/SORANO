@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SORANO.BLL.DTOs
 {
-    public class DetailsDto
+    public abstract class BaseDto
     {
         public bool IsDeleted { get; internal set; }
 
@@ -19,5 +20,11 @@ namespace SORANO.BLL.DTOs
         public string ModifiedBy { get; internal set; }
 
         public string DeletedBy { get; internal set; }
+
+        public IEnumerable<RecommendationDto> Recommendations { get; set; }
+
+        public IEnumerable<AttachmentDto> Attachments { get; set; }
+
+        public AttachmentDto MainPicture { get; set; }
     }
 }

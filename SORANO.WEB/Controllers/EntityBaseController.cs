@@ -26,14 +26,6 @@ namespace SORANO.WEB.Controllers
         protected readonly IHostingEnvironment _environment;
         private readonly string _entityTypeName;
 
-        /// <summary>
-        /// Controller to perform entities controllers' base functionality
-        /// </summary>
-        /// <param name="userService">Users' service</param>
-        /// <param name="environment"></param>
-        /// <param name="attachmentTypeService"></param>
-        /// <param name="attachmentService"></param>
-        /// <param name="memorycache"></param>
         public EntityBaseController(IUserService userService, IHostingEnvironment environment, IAttachmentTypeService attachmentTypeService, IAttachmentService attachmentService, IMemoryCache memorycache) : base(userService)
         {
             _attachmentTypeService = attachmentTypeService;
@@ -43,13 +35,6 @@ namespace SORANO.WEB.Controllers
             _entityTypeName = typeof(T).Name.ToLower().Replace("model", "");
         }
 
-        /// <summary>
-        /// Tries to get cached model from memory cache
-        /// </summary>
-        /// <param name="model">Cached model</param>
-        /// <param name="key"></param>
-        /// <param name="validKey"></param>
-        /// <returns>True if succeeded</returns>
         protected bool TryGetCached(out T model, string key, string validKey)
         {
             if (_memoryCache.TryGetValue(key, out EntityBaseModel cachedModel))

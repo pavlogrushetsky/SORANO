@@ -1,4 +1,4 @@
-﻿@model IList<ArticleModel>
+﻿@model IEnumerable<ArticleIndexViewModel>
 
 @{
     ViewBag.Title = "SORANO - Артикулы";
@@ -100,12 +100,12 @@
                                     <td>
                                         <a asp-controller="ArticleType"
                                            asp-action="Details"
-                                           asp-route-id="@article.Type.ID"
+                                           asp-route-id="@article.TypeID"
                                            data-toggle="tooltip"
                                            data-placement="bottom"
                                            data-original-title="Просмотреть информацию о типе артикулов"
                                            title="">
-                                            @article.Type.Name
+                                            @article.TypeName
                                         </a>
                                     </td>
                                     <td>@article.Producer</td>
