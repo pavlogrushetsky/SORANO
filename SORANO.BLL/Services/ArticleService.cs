@@ -8,6 +8,8 @@ using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 using System.Linq;
 using SORANO.BLL.DTOs;
+using System.IO;
+using SORANO.BLL.Extensions;
 
 namespace SORANO.BLL.Services
 {
@@ -37,6 +39,8 @@ namespace SORANO.BLL.Services
             if (article == null)
                 return new FailResponse<ArticleDetailedDto>(Resource.ArticleNotFoundMessage);
 
+            var dto = article.ToDto();
+
             return new SuccessResponse<ArticleDetailedDto>(new ArticleDetailedDto
             {
                 ID = article.ID,
@@ -56,12 +60,8 @@ namespace SORANO.BLL.Services
                     ModifiedBy = article.ModifiedByUser?.Login,
                     DeletedBy = article.DeletedByUser?.Login                   
                 },
-                Recommendations = article.Recommendations?.Where(r => !r.IsDeleted).Select(r => new RecommendationDto
-                {
-                    ID = r.ID,
-                    Value = r.Value,
-                    Comment = r.Comment
-                })
+                Recommendations = article.Recommendations?.Where(r => !r.IsDeleted).Select(r => r.ToDto()),
+                Attachments = article.Attachments?.Where(a => a.IsDeleted && !a.Type.Name.Equals("Основное изображение")).Select(a => a.ToDto())
             });
         }
 

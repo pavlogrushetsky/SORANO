@@ -24,6 +24,9 @@ namespace SORANO.WEB.Mappings
             CreateMap<RecommendationDto, RecommendationViewModel>();
             CreateMap<RecommendationViewModel, RecommendationDto>();
 
+            CreateMap<AttachmentDto, AttachmentViewModel>();
+            CreateMap<AttachmentViewModel, AttachmentDto>();
+
             CreateMap<ArticleDto, ArticleViewModel>();
             CreateMap<ArticleViewModel, ArticleDto>();
 

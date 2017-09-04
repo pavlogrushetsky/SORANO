@@ -17,5 +17,9 @@ namespace SORANO.BLL.DTOs
         public string Barcode { get; set; }
 
         public IEnumerable<RecommendationDto> Recommendations { get; set; }
+
+        public IEnumerable<AttachmentDto> Attachments { get; set; }
+
+        public AttachmentDto MainPicture { get; set; }
     }
 }
