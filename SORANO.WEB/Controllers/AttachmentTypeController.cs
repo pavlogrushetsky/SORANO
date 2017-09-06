@@ -3,13 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Services.Abstract;
-using SORANO.WEB.Infrastructure.Extensions;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
+using SORANO.BLL.Dtos;
 using SORANO.BLL.Services;
-using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.AttachmentType;
 
 namespace SORANO.WEB.Controllers
@@ -105,30 +103,32 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var exists = await AttachmentTypeService.Exists(model.Name);
+                // TODO Move to service
+                //var exists = await AttachmentTypeService.Exists(model.Name);
 
-                if (exists)
-                {
-                    ModelState.AddModelError("Name", "Тип вложений с таким названием уже существует");
-                }
+                //if (exists)
+                //{
+                //    ModelState.AddModelError("Name", "Тип вложений с таким названием уже существует");
+                //}
 
                 if (!ModelState.IsValid)
                 {
                     return View(model);
                 }
 
-                var attachmentType = model.ToEntity();
+                var attachmentType = _mapper.Map<AttachmentTypeDto>(model);
 
                 var currentUser = await GetCurrentUser();
 
-                attachmentType = await AttachmentTypeService.CreateAsync(attachmentType, currentUser.ID);
+                var result = await AttachmentTypeService.CreateAsync(attachmentType, currentUser.ID);
 
-                if (attachmentType != null)
-                {                    
-                    return RedirectToAction("Index", "AttachmentType");
+                if (result.Status == ServiceResponseStatusType.Success)
+                {
+                    TempData["Success"] = $"Тип вложений \"{model.Name}\" был успешно создан";
+                    return RedirectToAction("Index");
                 }
 
-                ModelState.AddModelError("", "Не удалось создать новый тип вложений.");
+                TempData["Error"] = result.Message;
                 return View(model);
             }, OnFault);
         }
@@ -139,32 +139,32 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var exists = await AttachmentTypeService.Exists(model.Name, model.ID);
+                // TODO Move to service
+                //var exists = await AttachmentTypeService.Exists(model.Name, model.ID);
 
-                if (exists)
-                {
-                    ModelState.AddModelError("Name", "Тип вложений с таким названием уже существует");
-                }
+                //if (exists)
+                //{
+                //    ModelState.AddModelError("Name", "Тип вложений с таким названием уже существует");
+                //}
 
                 if (!ModelState.IsValid)
                 {
-                    ViewData["IsEdit"] = true;
                     return View("Create", model);
                 }
 
-                var attachmentType = model.ToEntity();
+                var attachmentType = _mapper.Map<AttachmentTypeDto>(model);
 
                 var currentUser = await GetCurrentUser();
 
-                attachmentType = await AttachmentTypeService.UpdateAsync(attachmentType, currentUser.ID);
+                var result = await AttachmentTypeService.UpdateAsync(attachmentType, currentUser.ID);
 
-                if (attachmentType != null)
+                if (result.Status == ServiceResponseStatusType.Success)
                 {
-                    return RedirectToAction("Index", "AttachmentType");
+                    TempData["Success"] = $"Тип вложений \"{model.Name}\" был успешно обновлён";
+                    return RedirectToAction("Index");
                 }
 
-                ModelState.AddModelError("", "Не удалось обновить тип вложений.");
-                ViewData["IsEdit"] = true;
+                TempData["Error"] = result.Message;
                 return View("Create", model);
             }, OnFault);
         }
