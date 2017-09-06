@@ -3,7 +3,7 @@ using SORANO.CORE.StockEntities;
 
 namespace SORANO.BLL.Extensions
 {
-    internal static class AttachmentTypeDtoExtensions
+    internal static class AttachmentTypeExtensions
     {
         public static AttachmentTypeDto ToDto(this AttachmentType model)
         {

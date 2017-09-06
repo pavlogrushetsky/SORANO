@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SORANO.BLL.Helpers;
 using SORANO.BLL.Properties;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.AccountEntities;
@@ -8,7 +7,6 @@ using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 using System.Linq;
 using SORANO.BLL.DTOs;
-using System.IO;
 using SORANO.BLL.Extensions;
 
 namespace SORANO.BLL.Services
@@ -42,74 +40,71 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<ArticleDto>(article.ToDto());
         }
 
-        public async Task<ServiceResponse<Article>> CreateAsync(Article article, int userId)
+        public async Task<ServiceResponse<ArticleDto>> CreateAsync(ArticleDto article, int userId)
         {                 
             if (article == null)
-                return new FailResponse<Article>(Resource.ArticleCannotBeNullMessage);
+                return new FailResponse<ArticleDto>(Resource.ArticleCannotBeNullMessage);
 
             if (article.ID != 0)
-                return new FailResponse<Article>(Resource.ArticleInvalidIdentifierMessage);
+                return new FailResponse<ArticleDto>(Resource.ArticleInvalidIdentifierMessage);
 
             var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
             if (user == null)
-                return new FailResponse<Article>(Resource.UserNotFoundMessage);
+                return new FailResponse<ArticleDto>(Resource.UserNotFoundMessage);
 
-            article.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            var entity = article.ToEntity();
 
-            foreach (var recommendation in article.Recommendations)
+            entity.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+
+            foreach (var recommendation in entity.Recommendations)
             {
                 recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            foreach (var attachment in article.Attachments)
+            foreach (var attachment in entity.Attachments)
             {
                 attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            var saved = UnitOfWork.Get<Article>().Add(article);
+            var saved = UnitOfWork.Get<Article>().Add(entity);
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<Article>(saved);
+            return new SuccessResponse<ArticleDto>(saved.ToDto());
         }
 
-        public async Task<ServiceResponse<Article>> UpdateAsync(Article article, int userId)
+        public async Task<ServiceResponse<ArticleDto>> UpdateAsync(ArticleDto article, int userId)
         {
             if (article == null)
-                return new FailResponse<Article>(Resource.ArticleCannotBeNullMessage);
+                return new FailResponse<ArticleDto>(Resource.ArticleCannotBeNullMessage);
 
             if (article.ID <= 0)
-                return new FailResponse<Article>(Resource.ArticleInvalidIdentifierMessage);
+                return new FailResponse<ArticleDto>(Resource.ArticleInvalidIdentifierMessage);
 
             var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
             if (user == null)
-                return new FailResponse<Article>(Resource.UserNotFoundMessage);
+                return new FailResponse<ArticleDto>(Resource.UserNotFoundMessage);
 
-            var existentArticle = await UnitOfWork.Get<Article>().GetAsync(t => t.ID == article.ID);
+            var existentEntity = await UnitOfWork.Get<Article>().GetAsync(t => t.ID == article.ID);
 
-            if (existentArticle == null)
-                return new FailResponse<Article>(Resource.ArticleNotFoundMessage);
+            if (existentEntity == null)
+                return new FailResponse<ArticleDto>(Resource.ArticleNotFoundMessage);
 
-            existentArticle.Name = article.Name;
-            existentArticle.Description = article.Description;
-            existentArticle.Producer = article.Producer;
-            existentArticle.Code = article.Code;
-            existentArticle.Barcode = article.Barcode;
-            existentArticle.TypeID = article.TypeID;
+            var entity = article.ToEntity();
 
-            existentArticle.UpdateModifiedFields(userId);
+            existentEntity.UpdateFields(entity);
+            existentEntity.UpdateModifiedFields(userId);
 
-            UpdateAttachments(article, existentArticle, userId);
+            UpdateAttachments(entity, existentEntity, userId);
+            UpdateRecommendations(entity, existentEntity, userId);
 
-            UpdateRecommendations(article, existentArticle, userId);
-
-            var updated = UnitOfWork.Get<Article>().Update(existentArticle);
+            var updated = UnitOfWork.Get<Article>().Update(existentEntity);
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<Article>(updated);
+            return new SuccessResponse<ArticleDto>(updated.ToDto());
         }
 
         public async Task<ServiceResponse<bool>> DeleteAsync(int id, int userId)

@@ -7,8 +7,8 @@ using SORANO.DAL.Repositories;
 using SORANO.BLL.Properties;
 using SORANO.CORE.AccountEntities;
 using System.Data;
-using SORANO.BLL.Helpers;
 using System.Linq;
+using SORANO.BLL.Extensions;
 
 namespace SORANO.BLL.Services
 {

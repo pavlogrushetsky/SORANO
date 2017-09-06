@@ -5,10 +5,10 @@ using SORANO.DAL.Repositories;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using SORANO.BLL.Helpers;
 using SORANO.BLL.Properties;
 using SORANO.CORE.AccountEntities;
 using System.Linq;
+using SORANO.BLL.Extensions;
 
 namespace SORANO.BLL.Services
 {

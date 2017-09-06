@@ -9,11 +9,11 @@ namespace SORANO.BLL.Services.Abstract
     {
         Task<ServiceResponse<IEnumerable<ArticleDto>>> GetAllAsync(bool withDeleted);
 
-        Task<ServiceResponse<Article>> CreateAsync(Article article, int userId);
+        Task<ServiceResponse<ArticleDto>> CreateAsync(ArticleDto article, int userId);
 
         Task<ServiceResponse<ArticleDto>> GetAsync(int id);
 
-        Task<ServiceResponse<Article>> UpdateAsync(Article article, int userId);
+        Task<ServiceResponse<ArticleDto>> UpdateAsync(ArticleDto article, int userId);
 
         Task<ServiceResponse<bool>> DeleteAsync(int id, int userId);
 

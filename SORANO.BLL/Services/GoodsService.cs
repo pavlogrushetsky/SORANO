@@ -3,10 +3,10 @@ using System.Linq;
 using SORANO.BLL.Services.Abstract;
 using SORANO.DAL.Repositories;
 using System.Threading.Tasks;
-using SORANO.BLL.Helpers;
 using SORANO.CORE.StockEntities;
 using System.Collections.Generic;
 using SORANO.BLL.DTOs;
+using SORANO.BLL.Extensions;
 
 namespace SORANO.BLL.Services
 {

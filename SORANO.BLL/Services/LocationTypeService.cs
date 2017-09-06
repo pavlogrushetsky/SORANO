@@ -8,7 +8,7 @@ using System;
 using SORANO.CORE.AccountEntities;
 using System.Data;
 using System.Linq;
-using SORANO.BLL.Helpers;
+using SORANO.BLL.Extensions;
 
 namespace SORANO.BLL.Services
 {

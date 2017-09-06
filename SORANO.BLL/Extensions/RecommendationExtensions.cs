@@ -3,7 +3,7 @@ using SORANO.CORE.StockEntities;
 
 namespace SORANO.BLL.Extensions
 {
-    internal static class RecommendationDtoExtensions
+    internal static class RecommendationExtensions
     {
         public static RecommendationDto ToDto(this Recommendation model)
         {
@@ -12,6 +12,16 @@ namespace SORANO.BLL.Extensions
                 ID = model.ID,
                 Value = model.Value,
                 Comment = model.Comment
+            };
+        }
+
+        public static Recommendation ToEntity(this RecommendationDto dto)
+        {
+            return new Recommendation
+            {
+                ID = dto.ID,
+                Value = dto.Value,
+                Comment = dto.Comment
             };
         }
     }

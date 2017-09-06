@@ -1,7 +1,7 @@
-﻿using SORANO.BLL.Helpers;
-using SORANO.CORE.StockEntities;
+﻿using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 using System.Linq;
+using SORANO.BLL.Extensions;
 
 namespace SORANO.BLL.Services
 {

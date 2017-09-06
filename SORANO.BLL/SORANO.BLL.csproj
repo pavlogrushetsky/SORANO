@@ -49,14 +49,13 @@
     <Compile Include="DTOs\BaseDto.cs" />
     <Compile Include="DTOs\GoodsGroupDTO.cs" />
     <Compile Include="DTOs\RecommendationDto.cs" />
-    <Compile Include="Extensions\ArticleDtoExtensions.cs" />
-    <Compile Include="Extensions\ArticleTypeDtoExtensions.cs" />
-    <Compile Include="Extensions\AttachmentDtoExtensions.cs" />
-    <Compile Include="Extensions\AttachmentTypeDtoExtensions.cs" />
-    <Compile Include="Extensions\BaseDtoExtensions.cs" />
-    <Compile Include="Extensions\RecommendationDtoExtensions.cs" />
+    <Compile Include="Extensions\ArticleExtensions.cs" />
+    <Compile Include="Extensions\ArticleTypeExtensions.cs" />
+    <Compile Include="Extensions\AttachmentExtensions.cs" />
+    <Compile Include="Extensions\AttachmentTypeExtensions.cs" />
+    <Compile Include="Extensions\RecommendationExtensions.cs" />
     <Compile Include="Helpers\CryptoHelper.cs" />
-    <Compile Include="Helpers\StockEntityHelper.cs" />
+    <Compile Include="Extensions\CommonExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resource.Designer.cs">
       <AutoGen>True</AutoGen>

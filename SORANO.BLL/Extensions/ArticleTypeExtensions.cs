@@ -4,7 +4,7 @@ using SORANO.CORE.StockEntities;
 
 namespace SORANO.BLL.Extensions
 {
-    internal static class ArticleTypeDtoExtensions
+    internal static class ArticleTypeExtensions
     {
         public static ArticleTypeDto ToDto(this ArticleType model)
         {
