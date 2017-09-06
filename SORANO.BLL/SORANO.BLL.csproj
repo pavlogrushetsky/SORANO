@@ -53,6 +53,7 @@
     <Compile Include="Extensions\ArticleTypeDtoExtensions.cs" />
     <Compile Include="Extensions\AttachmentDtoExtensions.cs" />
     <Compile Include="Extensions\AttachmentTypeDtoExtensions.cs" />
+    <Compile Include="Extensions\BaseDtoExtensions.cs" />
     <Compile Include="Extensions\RecommendationDtoExtensions.cs" />
     <Compile Include="Helpers\CryptoHelper.cs" />
     <Compile Include="Helpers\StockEntityHelper.cs" />

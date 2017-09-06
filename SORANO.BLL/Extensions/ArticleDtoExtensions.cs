@@ -8,7 +8,7 @@ namespace SORANO.BLL.Extensions
     {
         public static ArticleDto ToDto(this Article model)
         {
-            return new ArticleDto
+            var dto = new ArticleDto
             {
                 ID = model.ID,
                 Name = model.Name,
@@ -17,25 +17,13 @@ namespace SORANO.BLL.Extensions
                 Code = model.Code,
                 Barcode = model.Barcode,
                 TypeID = model.TypeID,
-                Type = model.Type.ToDto(),
-                IsDeleted = model.IsDeleted,
-                CanBeDeleted = !model.DeliveryItems.Any() && !model.IsDeleted,
-                Created = model.CreatedDate,
-                Modified = model.ModifiedDate,
-                Deleted = model.DeletedDate,
-                CreatedBy = model.CreatedByUser?.Login,
-                ModifiedBy = model.ModifiedByUser?.Login,
-                DeletedBy = model.DeletedByUser?.Login,
-                Recommendations = model.Recommendations?
-                    .Where(r => !r.IsDeleted)
-                    .Select(r => r.ToDto()),
-                Attachments = model.Attachments?
-                    .Where(a => a.IsDeleted && !a.Type.Name.Equals("Основное изображение"))
-                    .Select(a => a.ToDto()),
-                MainPicture = model.Attachments?
-                    .SingleOrDefault(a => !a.IsDeleted && a.Type.Name.Equals("Основное изображение"))?
-                    .ToDto() ?? new AttachmentDto()
+                Type = model.Type.ToDto()
             };
+
+            dto.MapDetails(model);
+            dto.CanBeDeleted = !model.DeliveryItems.Any() && !model.IsDeleted;
+
+            return dto;
         }
     }
 }
