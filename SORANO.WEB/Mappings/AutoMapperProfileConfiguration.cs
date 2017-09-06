@@ -6,6 +6,7 @@ using SORANO.WEB.Mappings.Converters;
 using SORANO.WEB.ViewModels.Article;
 using SORANO.WEB.ViewModels.ArticleType;
 using SORANO.WEB.ViewModels.Attachment;
+using SORANO.WEB.ViewModels.AttachmentType;
 using SORANO.WEB.ViewModels.Recommendation;
 
 namespace SORANO.WEB.Mappings
@@ -40,6 +41,12 @@ namespace SORANO.WEB.Mappings
                         : "")
                 );
             CreateMap<AttachmentViewModel, AttachmentDto>();
+
+            CreateMap<AttachmentTypeDto, AttachmentTypeIndexViewModel>()
+                .ForMember(
+                    dest => dest.Extensions,
+                    source => source.MapFrom(s => s.Extensions.Split(','))
+                );
 
             CreateMap<ArticleTypeDto, ArticleTypeIndexViewModel>();
             CreateMap<ArticleTypeDto, ArticleTypeCreateUpdateViewModel>();

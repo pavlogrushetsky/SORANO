@@ -25,7 +25,7 @@
         <div class="panel panel-primary">
             <div class="panel-heading">
                 Таблица типов вложений
-                <span class="badge" style="margin-left: 5px;">@Model.Count</span>
+                <span class="badge" style="margin-left: 5px;">@Model.Count()</span>
                 <a class="btn btn-default btn-xs pull-right"
                    asp-controller="AttachmentType"
                    asp-action="Create"
@@ -65,13 +65,10 @@
                                 <td>@attachmentType.Name</td>
                                 <td>@attachmentType.Comment</td>
                                 <td>
-                                    @if (!string.IsNullOrEmpty(attachmentType.Extensions))
+                                    @foreach (var extension in attachmentType.Extensions)
                                     {
-                                        foreach (var extension in attachmentType.Extensions.Split(','))
-                                        {
-                                            <span class="label label-default">@extension</span>
-                                        }
-                                    }                                    
+                                        <span class="label label-default">@extension</span>
+                                    }                                   
                                 </td>
                                 <td><span class="badge">@attachmentType.AttachmentsCount</span></td>
                                 <td>
