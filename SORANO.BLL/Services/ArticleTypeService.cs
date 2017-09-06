@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SORANO.BLL.Dtos;
@@ -55,10 +53,10 @@ namespace SORANO.BLL.Services
         public async Task<ServiceResponse<ArticleTypeDto>> CreateAsync(ArticleTypeDto articleType, int userId)
         {
             if (articleType == null)
-                return new FailResponse<ArticleTypeDto>(Resource.ArticleTypeCannotBeNullException);
+                return new FailResponse<ArticleTypeDto>(Resource.ArticleTypeCannotBeNullMessage);
 
             if (articleType.ID != 0)
-                return new FailResponse<ArticleTypeDto>(Resource.ArticleTypeInvalidIdentifierException);
+                return new FailResponse<ArticleTypeDto>(Resource.ArticleTypeInvalidIdentifierMessage);
 
             var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
@@ -86,52 +84,45 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<ArticleTypeDto>(saved.ToDto());           
         }
 
-        public async Task<ArticleType> UpdateAsync(ArticleType articleType, int userId)
+        public async Task<ServiceResponse<ArticleTypeDto>> UpdateAsync(ArticleTypeDto articleType, int userId)
         {
             if (articleType == null)
-            {
-                throw new ArgumentNullException(nameof(articleType), Resource.ArticleTypeCannotBeNullException);
-            }
+                return new FailResponse<ArticleTypeDto>(Resource.ArticleTypeCannotBeNullMessage);
 
             if (articleType.ID <= 0)
-            {
-                throw new ArgumentException(Resource.ArticleTypeInvalidIdentifierException, nameof(articleType.ID));
-            }
+                return new FailResponse<ArticleTypeDto>(Resource.ArticleTypeInvalidIdentifierMessage);
 
             var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
             if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
-            }
+                return new FailResponse<ArticleTypeDto>(Resource.UserNotFoundMessage);
 
-            var existentArticleType = await UnitOfWork.Get<ArticleType>().GetAsync(t => t.ID == articleType.ID);
+            var existentEntity = await UnitOfWork.Get<ArticleType>().GetAsync(t => t.ID == articleType.ID);
 
-            if (existentArticleType == null)
-            {
-                throw new ObjectNotFoundException(Resource.ArticleTypeNotFoundMessage);
-            }
+            if (existentEntity == null)
+                return new FailResponse<ArticleTypeDto>(Resource.ArticleTypeNotFoundMessage);
 
-            existentArticleType.Name = articleType.Name;
-            existentArticleType.Description = articleType.Description;
-            existentArticleType.ParentTypeId = articleType.ParentTypeId;
+            var entity = articleType.ToEntity();
 
-            existentArticleType.UpdateModifiedFields(userId);
+            existentEntity.UpdateFields(entity);            
+            existentEntity.UpdateModifiedFields(userId);
 
-            UpdateAttachments(articleType, existentArticleType, userId);
+            UpdateAttachments(entity, existentEntity, userId);
+            UpdateRecommendations(entity, existentEntity, userId);
 
-            UpdateRecommendations(articleType, existentArticleType, userId);
-
-            var updated = UnitOfWork.Get<ArticleType>().Update(existentArticleType);
+            var updated = UnitOfWork.Get<ArticleType>().Update(existentEntity);
 
             await UnitOfWork.SaveAsync();
 
-            return updated;          
+            return new SuccessResponse<ArticleTypeDto>(updated.ToDto());          
         }
 
-        public async Task DeleteAsync(int id, int userId)
+        public async Task<ServiceResponse<bool>> DeleteAsync(int id, int userId)
         {
             var existentArticleType = await UnitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id);
+
+            if (existentArticleType.Articles.Any())
+                return new FailResponse<bool>(Resource.ArticleTypeCannotBeDeletedMessage);
 
             existentArticleType.ChildTypes.ToList().ForEach(t =>
             {
@@ -144,7 +135,9 @@ namespace SORANO.BLL.Services
 
             UnitOfWork.Get<ArticleType>().Update(existentArticleType);
 
-            await UnitOfWork.SaveAsync();           
+            await UnitOfWork.SaveAsync(); 
+            
+            return new SuccessResponse<bool>(true);
         }
     }
 }

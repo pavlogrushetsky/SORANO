@@ -62,9 +62,7 @@ namespace SORANO.WEB.Controllers
 
                 await ClearAttachments();
 
-                var viewModel = _mapper.Map<IEnumerable<ArticleIndexViewModel>>(result.Result);
-
-                return View(viewModel);
+                return View(_mapper.Map<IEnumerable<ArticleIndexViewModel>>(result.Result));
             }, ex =>
             {
                 TempData["Error"] = ex;
@@ -374,7 +372,7 @@ namespace SORANO.WEB.Controllers
 
             return Json(new
             {
-                results = articleTypes
+                results = articleTypes.Result?
                     .Where(t => string.IsNullOrEmpty(term) || t.Name.Contains(term))
                     .Select(t => new
                     {

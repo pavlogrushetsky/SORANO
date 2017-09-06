@@ -117,13 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ArticleTypeCannotBeNullException" xml:space="preserve">
+  <data name="ArticleTypeCannotBeNullMessage" xml:space="preserve">
     <value>Тип артикула не может быть null.</value>
   </data>
   <data name="UserNotFoundMessage" xml:space="preserve">
     <value>Указанный пользователь не найден.</value>
   </data>
-  <data name="ArticleTypeInvalidIdentifierException" xml:space="preserve">
+  <data name="ArticleTypeInvalidIdentifierMessage" xml:space="preserve">
     <value>Недопустимое значение идентификатора типа артикула.</value>
   </data>
   <data name="ArticleTypeNotFoundMessage" xml:space="preserve">
@@ -215,5 +215,8 @@
   </data>
   <data name="DeliveryCannotBeDeletedException" xml:space="preserve">
     <value>Поставка не может быть удалена.</value>
+  </data>
+  <data name="ArticleTypeCannotBeDeletedMessage" xml:space="preserve">
+    <value>Тип артикулов не может быть удалён.</value>
   </data>
 </root>

@@ -41,5 +41,12 @@ namespace SORANO.BLL.Extensions
 
             return entity;
         }
+
+        public static void UpdateFields(this ArticleType existentArticleType, ArticleType newArticleType)
+        {
+            existentArticleType.Name = newArticleType.Name;
+            existentArticleType.Description = newArticleType.Description;
+            existentArticleType.ParentTypeId = newArticleType.ParentTypeId;
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using Microsoft.Extensions.Caching.Memory;
+using SORANO.BLL.Services;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.ArticleType;
@@ -18,15 +20,18 @@ namespace SORANO.WEB.Controllers
     public class ArticleTypeController : EntityBaseController<ArticleTypeCreateUpdateViewModel>
     {
         private readonly IArticleTypeService _articleTypeService;
+        private readonly IMapper _mapper;
 
         public ArticleTypeController(IArticleTypeService articleTypeService, 
             IUserService userService,
             IHostingEnvironment environment,
             IAttachmentTypeService attachmentTypeService,
             IAttachmentService attachmentService,
-            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
+            IMemoryCache memoryCache, 
+            IMapper mapper) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
         {
             _articleTypeService = articleTypeService;
+            _mapper = mapper;
         }
 
         #region GET Actions
@@ -73,11 +78,17 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var type = await _articleTypeService.GetAsync(id);
+                var result = await _articleTypeService.GetAsync(id);
+
+                if (result.Status == ServiceResponseStatusType.Fail)
+                {
+                    TempData["Error"] = result.Message;
+                    return RedirectToAction("Index", "Article");
+                }
 
                 await ClearAttachments();
 
-                return PartialView("_Brief", type.ToModel());
+                return PartialView("_Brief", _mapper.Map<ArticleTypeBriefViewModel>(result.Result));
             }, ex =>
             {
                 TempData["Error"] = ex;
@@ -99,12 +110,17 @@ namespace SORANO.WEB.Controllers
                 }
                 else
                 {
-                    var articleType = await _articleTypeService.GetAsync(id);
+                    var result = await _articleTypeService.GetAsync(id);
 
-                    model = articleType.ToModel();
+                    if (result.Status == ServiceResponseStatusType.Fail)
+                    {
+                        TempData["Error"] = result.Message;
+                        return RedirectToAction("Index", "Article");
+                    }
+
+                    model = _mapper.Map<ArticleTypeCreateUpdateViewModel>(result.Result);
+                    model.IsUpdate = true;
                 }
-
-                ViewData["IsEdit"] = true;
 
                 return View("Create", model);
             }, ex =>
@@ -117,17 +133,43 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var articleType = await _articleTypeService.GetAsync(id);
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _articleTypeService.GetAsync(id);
 
-            return View(articleType.ToModel());
+                if (result.Status != ServiceResponseStatusType.Fail)
+                {
+                    return View(_mapper.Map<ArticleTypeDeleteViewModel>(result.Result));
+                }
+
+                TempData["Error"] = result.Message;
+                return RedirectToAction("Index", "Article");
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Article");
+            });
         }
 
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var articleType = await _articleTypeService.GetAsync(id);
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _articleTypeService.GetAsync(id);
 
-            return View(articleType.ToModel());
+                if (result.Status != ServiceResponseStatusType.Fail)
+                {
+                    return View(_mapper.Map<ArticleTypeDetailsViewModel>(result.Result));
+                }
+
+                TempData["Error"] = result.Message;
+                return RedirectToAction("Index", "Article");
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Article");
+            });           
         }
 
         #endregion
@@ -176,7 +218,6 @@ namespace SORANO.WEB.Controllers
                     return Redirect(model.ReturnPath);
                 }
 
-                // If failed
                 ModelState.AddModelError("", "Не удалось создать новый тип артикулов.");
                 return View(model);
             }, ex => 
@@ -262,7 +303,7 @@ namespace SORANO.WEB.Controllers
 
             return Json(new
             {
-                results = articleTypes
+                results = articleTypes.Result?
                     .Where(t => (string.IsNullOrEmpty(term) || t.Name.Contains(term)) && t.ID != currentTypeId)
                     .Select(t => new
                     {

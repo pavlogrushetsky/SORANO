@@ -97,20 +97,29 @@ namespace SORANO.BLL.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Тип артикулов не может быть удалён..
+        /// </summary>
+        internal static string ArticleTypeCannotBeDeletedMessage {
+            get {
+                return ResourceManager.GetString("ArticleTypeCannotBeDeletedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Тип артикула не может быть null..
         /// </summary>
-        internal static string ArticleTypeCannotBeNullException {
+        internal static string ArticleTypeCannotBeNullMessage {
             get {
-                return ResourceManager.GetString("ArticleTypeCannotBeNullException", resourceCulture);
+                return ResourceManager.GetString("ArticleTypeCannotBeNullMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Недопустимое значение идентификатора типа артикула..
         /// </summary>
-        internal static string ArticleTypeInvalidIdentifierException {
+        internal static string ArticleTypeInvalidIdentifierMessage {
             get {
-                return ResourceManager.GetString("ArticleTypeInvalidIdentifierException", resourceCulture);
+                return ResourceManager.GetString("ArticleTypeInvalidIdentifierMessage", resourceCulture);
             }
         }
         
