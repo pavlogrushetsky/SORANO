@@ -135,225 +135,225 @@ namespace SORANO.BLL.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Тип вложений не может быть удалён..
         /// </summary>
-        internal static string AttachmentTypeCannotBeDeletedException {
+        internal static string AttachmentTypeCannotBeDeletedMessage {
             get {
-                return ResourceManager.GetString("AttachmentTypeCannotBeDeletedException", resourceCulture);
+                return ResourceManager.GetString("AttachmentTypeCannotBeDeletedMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Тип вложений не может быть null..
         /// </summary>
-        internal static string AttachmentTypeCannotBeNullException {
+        internal static string AttachmentTypeCannotBeNullMessage {
             get {
-                return ResourceManager.GetString("AttachmentTypeCannotBeNullException", resourceCulture);
+                return ResourceManager.GetString("AttachmentTypeCannotBeNullMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Недопустимое значение идентификатора типа вложений..
         /// </summary>
-        internal static string AttachmentTypeInvalidIdentifierException {
+        internal static string AttachmentTypeInvalidIdentifierMessage {
             get {
-                return ResourceManager.GetString("AttachmentTypeInvalidIdentifierException", resourceCulture);
+                return ResourceManager.GetString("AttachmentTypeInvalidIdentifierMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Тип вложений не найден..
         /// </summary>
-        internal static string AttachmentTypeNotFoundException {
+        internal static string AttachmentTypeNotFoundMessage {
             get {
-                return ResourceManager.GetString("AttachmentTypeNotFoundException", resourceCulture);
+                return ResourceManager.GetString("AttachmentTypeNotFoundMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Клиент не может быть удалён..
         /// </summary>
-        internal static string ClientCannotBeDeletedException {
+        internal static string ClientCannotBeDeletedMessage {
             get {
-                return ResourceManager.GetString("ClientCannotBeDeletedException", resourceCulture);
+                return ResourceManager.GetString("ClientCannotBeDeletedMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Клиент не может быть null..
         /// </summary>
-        internal static string ClientCannotBeNullException {
+        internal static string ClientCannotBeNullMessage {
             get {
-                return ResourceManager.GetString("ClientCannotBeNullException", resourceCulture);
+                return ResourceManager.GetString("ClientCannotBeNullMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Недопустимое значение идентификатора клиента..
         /// </summary>
-        internal static string ClientInvalidIdentifierException {
+        internal static string ClientInvalidIdentifierMessage {
             get {
-                return ResourceManager.GetString("ClientInvalidIdentifierException", resourceCulture);
+                return ResourceManager.GetString("ClientInvalidIdentifierMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Клиент не найден..
         /// </summary>
-        internal static string ClientNotFoundException {
+        internal static string ClientNotFoundMessage {
             get {
-                return ResourceManager.GetString("ClientNotFoundException", resourceCulture);
+                return ResourceManager.GetString("ClientNotFoundMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Поставка не может быть удалена..
         /// </summary>
-        internal static string DeliveryCannotBeDeletedException {
+        internal static string DeliveryCannotBeDeletedMessage {
             get {
-                return ResourceManager.GetString("DeliveryCannotBeDeletedException", resourceCulture);
+                return ResourceManager.GetString("DeliveryCannotBeDeletedMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Поставка не может быть null..
         /// </summary>
-        internal static string DeliveryCannotBeNullException {
+        internal static string DeliveryCannotBeNullMessage {
             get {
-                return ResourceManager.GetString("DeliveryCannotBeNullException", resourceCulture);
+                return ResourceManager.GetString("DeliveryCannotBeNullMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Недопустимое значение идентификатора поставки..
         /// </summary>
-        internal static string DeliveryInvalidIdentifierException {
+        internal static string DeliveryInvalidIdentifierMessage {
             get {
-                return ResourceManager.GetString("DeliveryInvalidIdentifierException", resourceCulture);
+                return ResourceManager.GetString("DeliveryInvalidIdentifierMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Поставка не найден..
         /// </summary>
-        internal static string DeliveryNotFoundException {
+        internal static string DeliveryNotFoundMessage {
             get {
-                return ResourceManager.GetString("DeliveryNotFoundException", resourceCulture);
+                return ResourceManager.GetString("DeliveryNotFoundMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Место не может быть удалено..
         /// </summary>
-        internal static string LocationCannotBeDeletedException {
+        internal static string LocationCannotBeDeletedMessage {
             get {
-                return ResourceManager.GetString("LocationCannotBeDeletedException", resourceCulture);
+                return ResourceManager.GetString("LocationCannotBeDeletedMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Место не может быть null..
         /// </summary>
-        internal static string LocationCannotBeNullException {
+        internal static string LocationCannotBeNullMessage {
             get {
-                return ResourceManager.GetString("LocationCannotBeNullException", resourceCulture);
+                return ResourceManager.GetString("LocationCannotBeNullMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Недопустимое значение идентификатора места..
         /// </summary>
-        internal static string LocationInvalidIdentifierException {
+        internal static string LocationInvalidIdentifierMessage {
             get {
-                return ResourceManager.GetString("LocationInvalidIdentifierException", resourceCulture);
+                return ResourceManager.GetString("LocationInvalidIdentifierMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Место не найдено.
         /// </summary>
-        internal static string LocationNotFoundException {
+        internal static string LocationNotFoundMessage {
             get {
-                return ResourceManager.GetString("LocationNotFoundException", resourceCulture);
+                return ResourceManager.GetString("LocationNotFoundMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Тип мест не может быть удалён..
         /// </summary>
-        internal static string LocationTypeCannotBeDeletedException {
+        internal static string LocationTypeCannotBeDeletedMessage {
             get {
-                return ResourceManager.GetString("LocationTypeCannotBeDeletedException", resourceCulture);
+                return ResourceManager.GetString("LocationTypeCannotBeDeletedMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Тип мест не может быть null..
         /// </summary>
-        internal static string LocationTypeCannotBeNullException {
+        internal static string LocationTypeCannotBeNullMessage {
             get {
-                return ResourceManager.GetString("LocationTypeCannotBeNullException", resourceCulture);
+                return ResourceManager.GetString("LocationTypeCannotBeNullMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Недопустимое значение идентификатора типа мест..
         /// </summary>
-        internal static string LocationTypeInvalidIdentifierException {
+        internal static string LocationTypeInvalidIdentifierMessage {
             get {
-                return ResourceManager.GetString("LocationTypeInvalidIdentifierException", resourceCulture);
+                return ResourceManager.GetString("LocationTypeInvalidIdentifierMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Тип мест не найден..
         /// </summary>
-        internal static string LocationTypeNotFoundException {
+        internal static string LocationTypeNotFoundMessage {
             get {
-                return ResourceManager.GetString("LocationTypeNotFoundException", resourceCulture);
+                return ResourceManager.GetString("LocationTypeNotFoundMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Поставщик не может быть удалён..
         /// </summary>
-        internal static string SupplierCannotBeDeletedException {
+        internal static string SupplierCannotBeDeletedMessage {
             get {
-                return ResourceManager.GetString("SupplierCannotBeDeletedException", resourceCulture);
+                return ResourceManager.GetString("SupplierCannotBeDeletedMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Поставщик не может быть null..
         /// </summary>
-        internal static string SupplierCannotBeNullException {
+        internal static string SupplierCannotBeNullMessage {
             get {
-                return ResourceManager.GetString("SupplierCannotBeNullException", resourceCulture);
+                return ResourceManager.GetString("SupplierCannotBeNullMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Недопустимое значение идентификатора поставщика..
         /// </summary>
-        internal static string SupplierInvalidIdentifierException {
+        internal static string SupplierInvalidIdentifierMessage {
             get {
-                return ResourceManager.GetString("SupplierInvalidIdentifierException", resourceCulture);
+                return ResourceManager.GetString("SupplierInvalidIdentifierMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Поставщик не найден..
         /// </summary>
-        internal static string SupplierNotFoundException {
+        internal static string SupplierNotFoundMessage {
             get {
-                return ResourceManager.GetString("SupplierNotFoundException", resourceCulture);
+                return ResourceManager.GetString("SupplierNotFoundMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Недопустимое значение идентификатора пользователя..
         /// </summary>
-        internal static string UserInvalidIdentifierException {
+        internal static string UserInvalidIdentifierMessage {
             get {
-                return ResourceManager.GetString("UserInvalidIdentifierException", resourceCulture);
+                return ResourceManager.GetString("UserInvalidIdentifierMessage", resourceCulture);
             }
         }
         

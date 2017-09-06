@@ -98,7 +98,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> AddRecommendation(T model, bool isEdit, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public virtual async Task<IActionResult> AddRecommendation(T model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             ModelState.Clear();
 
@@ -109,9 +109,6 @@ namespace SORANO.WEB.Controllers
             ViewBag.Suppliers = GetSuppliers();
             ViewBag.Locations = GetLocations();
 
-            //todo remove
-            ViewData["IsEdit"] = isEdit;
-
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
 
@@ -119,7 +116,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> DeleteRecommendation(T model, bool isEdit, int num, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public virtual async Task<IActionResult> DeleteRecommendation(T model, int num, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             ModelState.Clear();
 
@@ -130,9 +127,6 @@ namespace SORANO.WEB.Controllers
             ViewBag.Suppliers = GetSuppliers();
             ViewBag.Locations = GetLocations();
 
-            //todo remove
-            ViewData["IsEdit"] = isEdit;
-
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
 
@@ -140,27 +134,16 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> AddAttachment(T model, bool isEdit, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public virtual async Task<IActionResult> AddAttachment(T model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             ModelState.Clear();                        
 
-            attachmentTypes[0].Selected = true;
-            ViewBag.AttachmentTypes = attachmentTypes;
             ViewBag.LocationTypes = GetLocationTypes();
             ViewBag.Articles = GetArticles();
             ViewBag.Suppliers = GetSuppliers();
             ViewBag.Locations = GetLocations();
 
-            var defaultType = await AttachmentTypeService.GetAsync(int.Parse(attachmentTypes[0].Value));
-
-            model.Attachments.Add(new AttachmentViewModel
-            {
-                Type = defaultType.ToModel(),
-                TypeID = defaultType.ID.ToString()
-            });
-
-            //todo remove
-            ViewData["IsEdit"] = isEdit;
+            model.Attachments.Add(new AttachmentViewModel());
 
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
@@ -177,7 +160,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> DeleteAttachment(T entity, bool isEdit, int num, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public virtual async Task<IActionResult> DeleteAttachment(T entity, int num, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             ModelState.Clear();
 
@@ -187,8 +170,6 @@ namespace SORANO.WEB.Controllers
             ViewBag.Articles = GetArticles();
             ViewBag.Suppliers = GetSuppliers();
             ViewBag.Locations = GetLocations();
-
-            ViewData["IsEdit"] = isEdit;
 
             await LoadMainPicture(entity, mainPictureFile);
             await LoadAttachments(entity, attachments);
@@ -208,7 +189,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> DeleteMainPicture(T entity, bool isEdit, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public virtual async Task<IActionResult> DeleteMainPicture(T entity, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             ModelState.Clear();
 
@@ -218,8 +199,6 @@ namespace SORANO.WEB.Controllers
             ViewBag.Articles = GetArticles();
             ViewBag.Suppliers = GetSuppliers();
             ViewBag.Locations = GetLocations();
-
-            ViewData["IsEdit"] = isEdit;
 
             await LoadMainPicture(entity, mainPictureFile);
             await LoadAttachments(entity, attachments);
@@ -293,7 +272,7 @@ namespace SORANO.WEB.Controllers
 
         protected virtual async Task<string> GetMainPictureTypeID()
         {
-            var id = await AttachmentTypeService.GetMainPictureTypeIDAsync();
+            var id = await AttachmentTypeService.GetMainPictureTypeIdAsync();
 
             return id.ToString();
         }

@@ -11,11 +11,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.Delivery;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager,editor,user")]
-    public class DeliveryController : EntityBaseController<DeliveryModel>
+    public class DeliveryController : EntityBaseController<DeliveryCreateUpdateViewModel>
     {
         private readonly IDeliveryService _deliveryService;
         private readonly ISupplierService _supplierService;

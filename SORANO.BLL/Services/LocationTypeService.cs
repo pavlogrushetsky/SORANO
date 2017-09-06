@@ -52,13 +52,13 @@ namespace SORANO.BLL.Services
             // Check passed location type
             if (locationType == null)
             {
-                throw new ArgumentNullException(nameof(locationType), Resource.LocationTypeCannotBeNullException);
+                throw new ArgumentNullException(nameof(locationType), Resource.LocationTypeCannotBeNullMessage);
             }
 
             // Identifier of new location type must be equal 0
             if (locationType.ID != 0)
             {
-                throw new ArgumentException(Resource.LocationTypeInvalidIdentifierException, nameof(locationType.ID));
+                throw new ArgumentException(Resource.LocationTypeInvalidIdentifierMessage, nameof(locationType.ID));
             }
 
             // Get user by specified identifier
@@ -96,13 +96,13 @@ namespace SORANO.BLL.Services
             // Check passed location type
             if (locationType == null)
             {
-                throw new ArgumentNullException(nameof(locationType), Resource.LocationTypeCannotBeNullException);
+                throw new ArgumentNullException(nameof(locationType), Resource.LocationTypeCannotBeNullMessage);
             }
 
             // Identifier of location type must be > 0
             if (locationType.ID <= 0)
             {
-                throw new ArgumentException(Resource.LocationTypeInvalidIdentifierException, nameof(locationType.ID));
+                throw new ArgumentException(Resource.LocationTypeInvalidIdentifierMessage, nameof(locationType.ID));
             }            
 
             // Get user by specified identifier
@@ -120,7 +120,7 @@ namespace SORANO.BLL.Services
             // Check existent location type
             if (existentLocationType == null)
             {
-                throw new ObjectNotFoundException(Resource.LocationTypeNotFoundException);
+                throw new ObjectNotFoundException(Resource.LocationTypeNotFoundMessage);
             }
 
             // Update fields
@@ -147,7 +147,7 @@ namespace SORANO.BLL.Services
 
             if (existentLocationType.Locations.Any())
             {
-                throw new Exception(Resource.LocationTypeCannotBeDeletedException);
+                throw new Exception(Resource.LocationTypeCannotBeDeletedMessage);
             }
 
             existentLocationType.UpdateDeletedFields(userId);

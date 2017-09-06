@@ -40,13 +40,13 @@ namespace SORANO.BLL.Services
             // Check passed location
             if (location == null)
             {
-                throw new ArgumentNullException(nameof(location), Resource.LocationCannotBeNullException);
+                throw new ArgumentNullException(nameof(location), Resource.LocationCannotBeNullMessage);
             }
 
             // Identifier of new location must be equal 0
             if (location.ID != 0)
             {
-                throw new ArgumentException(Resource.LocationInvalidIdentifierException, nameof(location.ID));
+                throw new ArgumentException(Resource.LocationInvalidIdentifierMessage, nameof(location.ID));
             }
 
             // Get user by specified identifier
@@ -88,13 +88,13 @@ namespace SORANO.BLL.Services
             // Check passed location
             if (location == null)
             {
-                throw new ArgumentNullException(nameof(location), Resource.LocationCannotBeNullException);
+                throw new ArgumentNullException(nameof(location), Resource.LocationCannotBeNullMessage);
             }
 
             // Identifier of new location must be > 0
             if (location.ID <= 0)
             {
-                throw new ArgumentException(Resource.LocationInvalidIdentifierException, nameof(location.ID));
+                throw new ArgumentException(Resource.LocationInvalidIdentifierMessage, nameof(location.ID));
             }
 
             // Get user by specified identifier
@@ -110,7 +110,7 @@ namespace SORANO.BLL.Services
 
             if (existentLocation == null)
             {
-                throw new ObjectNotFoundException(Resource.LocationNotFoundException);
+                throw new ObjectNotFoundException(Resource.LocationNotFoundMessage);
             }
 
             existentLocation.Name = location.Name;
@@ -144,7 +144,7 @@ namespace SORANO.BLL.Services
 
             if (existentLocation.Storages.Any() || existentLocation.SoldGoods.Any())
             {
-                throw new Exception(Resource.LocationCannotBeDeletedException);
+                throw new Exception(Resource.LocationCannotBeDeletedMessage);
             }
 
             existentLocation.UpdateDeletedFields(userId);

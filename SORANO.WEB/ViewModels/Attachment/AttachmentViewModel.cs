@@ -4,6 +4,8 @@ namespace SORANO.WEB.ViewModels.Attachment
 {
     public class AttachmentViewModel
     {
+        public int ID { get; set; }
+
         [Display(Name = "Название")]
         public string Name { get; set; }
 

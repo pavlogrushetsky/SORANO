@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
@@ -10,16 +9,16 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Http;
-using MimeTypes;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.Common;
 
 // ReSharper disable Mvc.ViewNotResolved
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    public class LocationController : EntityBaseController<LocationModel>
+    public class LocationController : EntityBaseController<BaseCreateUpdateViewModel>
     {
         private readonly ILocationService _locationService;
         private readonly ILocationTypeService _locationTypeService;

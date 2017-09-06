@@ -22,12 +22,12 @@ namespace SORANO.BLL.Services
         {
             if (client == null)
             {
-                throw new ArgumentNullException(nameof(client), Resource.ClientCannotBeNullException);
+                throw new ArgumentNullException(nameof(client), Resource.ClientCannotBeNullMessage);
             }
 
             if (client.ID != 0)
             {
-                throw new ArgumentException(Resource.ClientInvalidIdentifierException, nameof(client.ID));
+                throw new ArgumentException(Resource.ClientInvalidIdentifierMessage, nameof(client.ID));
             }
 
             var user = await UnitOfWork.Get<User>().GetAsync(s => s.ID == userId);
@@ -84,12 +84,12 @@ namespace SORANO.BLL.Services
         {
             if (client == null)
             {
-                throw new ArgumentNullException(nameof(client), Resource.ClientCannotBeNullException);
+                throw new ArgumentNullException(nameof(client), Resource.ClientCannotBeNullMessage);
             }
 
             if (client.ID <= 0)
             {
-                throw new ArgumentException(Resource.ClientInvalidIdentifierException, nameof(client.ID));
+                throw new ArgumentException(Resource.ClientInvalidIdentifierMessage, nameof(client.ID));
             }
 
             var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
@@ -103,7 +103,7 @@ namespace SORANO.BLL.Services
 
             if (existentClient == null)
             {
-                throw new ObjectNotFoundException(Resource.ClientNotFoundException);
+                throw new ObjectNotFoundException(Resource.ClientNotFoundMessage);
             }
 
             existentClient.Name = client.Name;
@@ -130,7 +130,7 @@ namespace SORANO.BLL.Services
 
             if (existentClient.Goods.Any())
             {
-                throw new Exception(Resource.ClientCannotBeDeletedException);
+                throw new Exception(Resource.ClientCannotBeDeletedMessage);
             }
 
             existentClient.UpdateDeletedFields(userId);

@@ -13,11 +13,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using MimeTypes;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.AttachmentType;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    public class ClientController : EntityBaseController<ClientModel>
+    public class ClientController : EntityBaseController<AttachmentTypeCreateUpdateViewModel>
     {
         private readonly IClientService _clientService;
 

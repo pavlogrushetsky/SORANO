@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using Microsoft.Extensions.Caching.Memory;
+using SORANO.BLL.Dtos;
 using SORANO.BLL.Services;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.ViewModels;
@@ -66,12 +67,8 @@ namespace SORANO.WEB.Controllers
                 }
 
                 return View(model);
-            }, ex =>
-            {
-                TempData["Error"] = ex;
-                return RedirectToAction("Index", "Article");
-            });            
-        }
+            }, OnFault);            
+        }        
 
         [HttpGet]
         public async Task<IActionResult> Brief(int id)
@@ -89,11 +86,7 @@ namespace SORANO.WEB.Controllers
                 await ClearAttachments();
 
                 return PartialView("_Brief", _mapper.Map<ArticleTypeBriefViewModel>(result.Result));
-            }, ex =>
-            {
-                TempData["Error"] = ex;
-                return RedirectToAction("Index", "Article");
-            });           
+            }, OnFault);           
         }
 
         [HttpGet]
@@ -123,11 +116,7 @@ namespace SORANO.WEB.Controllers
                 }
 
                 return View("Create", model);
-            }, ex =>
-            {
-                TempData["Error"] = ex;
-                return RedirectToAction("Index", "Article");
-            });            
+            }, OnFault);            
         }
 
         [HttpGet]
@@ -144,11 +133,7 @@ namespace SORANO.WEB.Controllers
 
                 TempData["Error"] = result.Message;
                 return RedirectToAction("Index", "Article");
-            }, ex =>
-            {
-                TempData["Error"] = ex;
-                return RedirectToAction("Index", "Article");
-            });
+            }, OnFault);
         }
 
         [HttpGet]
@@ -165,11 +150,7 @@ namespace SORANO.WEB.Controllers
 
                 TempData["Error"] = result.Message;
                 return RedirectToAction("Index", "Article");
-            }, ex =>
-            {
-                TempData["Error"] = ex;
-                return RedirectToAction("Index", "Article");
-            });           
+            }, OnFault);           
         }
 
         #endregion
@@ -178,7 +159,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ArticleTypeModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public async Task<IActionResult> Create(ArticleTypeCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return await TryGetActionResultAsync(async () =>
             {
@@ -190,46 +171,44 @@ namespace SORANO.WEB.Controllers
                     return View(model);
                 }
 
-                var articleType = model.ToEntity();
+                var articleType = _mapper.Map<ArticleTypeDto>(model);
 
                 var currentUser = await GetCurrentUser();
 
-                articleType = await _articleTypeService.CreateAsync(articleType, currentUser.ID);
+                var result = await _articleTypeService.CreateAsync(articleType, currentUser.ID);
 
-                if (articleType != null)
+                if (result.Status == ServiceResponseStatusType.Success && result.Result != null)
                 {
                     if (string.IsNullOrEmpty(model.ReturnPath))
                     {
+                        TempData["Success"] = $"Тип артикула \"{model.Name}\" был успешно создан";
                         return RedirectToAction("Index", "Article");
                     }
 
-                    if (MemoryCache.TryGetValue(CacheKeys.CreateArticleTypeCacheKey, out ArticleModel cachedArticle))
-                    {
-                        cachedArticle.TypeID = articleType.ID.ToString();
-                        cachedArticle.Type = articleType.ToModel();
-                        MemoryCache.Set(CacheKeys.CreateArticleTypeCacheKey, cachedArticle);
-                        Session.SetBool(CacheKeys.CreateArticleTypeCacheValidKey, true);
-                    }
-                    else
-                    {
-                        return BadRequest();
-                    }
+                    // TODO
+                    //if (MemoryCache.TryGetValue(CacheKeys.CreateArticleTypeCacheKey, out ArticleModel cachedArticle))
+                    //{
+                    //    cachedArticle.TypeID = articleType.ID.ToString();
+                    //    cachedArticle.Type = articleType.ToModel();
+                    //    MemoryCache.Set(CacheKeys.CreateArticleTypeCacheKey, cachedArticle);
+                    //    Session.SetBool(CacheKeys.CreateArticleTypeCacheValidKey, true);
+                    //}
+                    //else
+                    //{
+                    //    return BadRequest();
+                    //}
 
                     return Redirect(model.ReturnPath);
                 }
 
-                ModelState.AddModelError("", "Не удалось создать новый тип артикулов.");
+                TempData["Error"] = result.Message;
                 return View(model);
-            }, ex => 
-            {
-                ModelState.AddModelError("", ex);
-                return View(model);
-            });            
+            }, OnFault);            
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(ArticleTypeModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public async Task<IActionResult> Update(ArticleTypeCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return await TryGetActionResultAsync(async () =>
             {
@@ -238,30 +217,24 @@ namespace SORANO.WEB.Controllers
 
                 if (!ModelState.IsValid)
                 {
-                    ViewData["IsEdit"] = true;
                     return View("Create", model);
                 }
 
-                var articleType = model.ToEntity();
+                var articleType = _mapper.Map<ArticleTypeDto>(model);
 
                 var currentUser = await GetCurrentUser();
 
-                articleType = await _articleTypeService.UpdateAsync(articleType, currentUser.ID);
+                var result = await _articleTypeService.UpdateAsync(articleType, currentUser.ID);
 
-                if (articleType != null)
+                if (result.Status == ServiceResponseStatusType.Success)
                 {
+                    TempData["Success"] = $"Тип артикула \"{model.Name}\" был успешно обновлён";
                     return RedirectToAction("Index", "Article");
                 }
 
-                ModelState.AddModelError("", "Не удалось обновить тип артикулов.");
-                ViewData["IsEdit"] = true;
+                TempData["Error"] = result.Message;
                 return View("Create", model);
-            }, ex => 
-            {
-                ModelState.AddModelError("", ex);
-                ViewData["IsEdit"] = true;
-                return View("Create", model);
-            });            
+            }, OnFault);            
         }
 
         [HttpPost]
@@ -271,10 +244,19 @@ namespace SORANO.WEB.Controllers
             {
                 var currentUser = await GetCurrentUser();
 
-                await _articleTypeService.DeleteAsync(model.ID, currentUser.ID);
+                var result = await _articleTypeService.DeleteAsync(model.ID, currentUser.ID);
+
+                if (result.Status == ServiceResponseStatusType.Success)
+                {
+                    TempData["Success"] = $"Тип артикула \"{model.Name}\" был успешно помечен как удалённый";
+                }
+                else
+                {
+                    TempData["Error"] = result.Message;
+                }
 
                 return RedirectToAction("Index", "Article");
-            }, ex => RedirectToAction("Index", "Article"));
+            }, OnFault);
         }
 
         [HttpPost]
@@ -311,6 +293,12 @@ namespace SORANO.WEB.Controllers
                         text = t.Name
                     })
             });
+        }
+
+        private IActionResult OnFault(string ex)
+        {
+            TempData["Error"] = ex;
+            return RedirectToAction("Index", "Article");
         }
     }
 }

@@ -22,12 +22,12 @@ namespace SORANO.BLL.Services
         {
             if (delivery == null)
             {
-                throw new ArgumentNullException(nameof(delivery), Resource.DeliveryCannotBeNullException);
+                throw new ArgumentNullException(nameof(delivery), Resource.DeliveryCannotBeNullMessage);
             }
 
             if (delivery.ID != 0)
             {
-                throw new ArgumentException(Resource.DeliveryInvalidIdentifierException, nameof(delivery.ID));
+                throw new ArgumentException(Resource.DeliveryInvalidIdentifierMessage, nameof(delivery.ID));
             }
 
             var user = await UnitOfWork.Get<User>().GetAsync(s => s.ID == userId);
@@ -97,12 +97,12 @@ namespace SORANO.BLL.Services
         {
             if (delivery == null)
             {
-                throw new ArgumentNullException(nameof(delivery), Resource.DeliveryCannotBeNullException);
+                throw new ArgumentNullException(nameof(delivery), Resource.DeliveryCannotBeNullMessage);
             }
 
             if (delivery.ID <= 0)
             {
-                throw new ArgumentException(Resource.DeliveryInvalidIdentifierException, nameof(delivery.ID));
+                throw new ArgumentException(Resource.DeliveryInvalidIdentifierMessage, nameof(delivery.ID));
             }
 
             var user = await UnitOfWork.Get<User>().GetAsync(s => s.ID == userId);
@@ -116,7 +116,7 @@ namespace SORANO.BLL.Services
 
             if (existentDelivery == null)
             {
-                throw new ObjectNotFoundException(Resource.DeliveryNotFoundException);
+                throw new ObjectNotFoundException(Resource.DeliveryNotFoundMessage);
             }
 
             existentDelivery.BillNumber = delivery.BillNumber;
@@ -202,7 +202,7 @@ namespace SORANO.BLL.Services
 
             if (existentDelivery.IsSubmitted)
             {
-                throw new Exception(Resource.DeliveryCannotBeDeletedException);
+                throw new Exception(Resource.DeliveryCannotBeDeletedMessage);
             }
 
             existentDelivery.UpdateDeletedFields(userId);

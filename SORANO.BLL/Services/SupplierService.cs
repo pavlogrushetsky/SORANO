@@ -23,13 +23,13 @@ namespace SORANO.BLL.Services
             // Check passed supplier
             if (supplier == null)
             {
-                throw new ArgumentNullException(nameof(supplier), Resource.SupplierCannotBeNullException);
+                throw new ArgumentNullException(nameof(supplier), Resource.SupplierCannotBeNullMessage);
             }
 
             // Identifier of new supplier must be equal 0
             if (supplier.ID != 0)
             {
-                throw new ArgumentException(Resource.SupplierInvalidIdentifierException, nameof(supplier.ID));
+                throw new ArgumentException(Resource.SupplierInvalidIdentifierMessage, nameof(supplier.ID));
             }
 
             // Get user by specified identifier
@@ -91,13 +91,13 @@ namespace SORANO.BLL.Services
             // Check passed supplier
             if (supplier == null)
             {
-                throw new ArgumentNullException(nameof(supplier), Resource.SupplierCannotBeNullException);
+                throw new ArgumentNullException(nameof(supplier), Resource.SupplierCannotBeNullMessage);
             }
 
             // Identifier of supplier must be > 0
             if (supplier.ID <= 0)
             {
-                throw new ArgumentException(Resource.SupplierInvalidIdentifierException, nameof(supplier.ID));
+                throw new ArgumentException(Resource.SupplierInvalidIdentifierMessage, nameof(supplier.ID));
             }
 
             // Get user by specified identifier
@@ -115,7 +115,7 @@ namespace SORANO.BLL.Services
             // Check existent supplier
             if (existentSupplier == null)
             {
-                throw new ObjectNotFoundException(Resource.SupplierNotFoundException);
+                throw new ObjectNotFoundException(Resource.SupplierNotFoundMessage);
             }
 
             // Update fields
@@ -142,7 +142,7 @@ namespace SORANO.BLL.Services
 
             if (existentSupplier.Deliveries.Any())
             {
-                throw new Exception(Resource.SupplierCannotBeDeletedException);
+                throw new Exception(Resource.SupplierCannotBeDeletedMessage);
             }
 
             existentSupplier.UpdateDeletedFields(userId);

@@ -1,5 +1,4 @@
-﻿using SORANO.CORE.StockEntities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SORANO.BLL.Dtos;
 
@@ -7,18 +6,18 @@ namespace SORANO.BLL.Services.Abstract
 {
     public interface IAttachmentTypeService
     {
-        Task<IEnumerable<AttachmentTypeDto>> GetAllAsync(bool includeMainPicture);
+        Task<ServiceResponse<IEnumerable<AttachmentTypeDto>>> GetAllAsync(bool includeMainPicture);
 
-        Task<int> GetMainPictureTypeIDAsync();
+        Task<ServiceResponse<int>> GetMainPictureTypeIdAsync();
 
-        Task<AttachmentType> GetAsync(int id);
+        Task<ServiceResponse<AttachmentTypeDto>> GetAsync(int id);
 
-        Task<AttachmentType> CreateAsync(AttachmentType attachmentType, int userId);
+        Task<ServiceResponse<AttachmentTypeDto>> CreateAsync(AttachmentTypeDto attachmentType, int userId);
 
-        Task<AttachmentType> UpdateAsync(AttachmentType attachmentType, int userId);
+        Task<ServiceResponse<AttachmentTypeDto>> UpdateAsync(AttachmentTypeDto attachmentType, int userId);
 
-        Task DeleteAsync(int id, int userId);
+        Task<ServiceResponse<bool>> DeleteAsync(int id, int userId);
 
-        Task<bool> Exists(string name, int attachmentTypeId = 0);
+        Task<ServiceResponse<bool>> Exists(string name, int attachmentTypeId = 0);
     }
 }

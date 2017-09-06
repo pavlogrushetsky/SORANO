@@ -1,12 +1,9 @@
-﻿using SORANO.BLL.Helpers;
-using SORANO.BLL.Properties;
+﻿using SORANO.BLL.Properties;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.AccountEntities;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
-using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using SORANO.BLL.Dtos;
@@ -20,120 +17,116 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<IEnumerable<AttachmentTypeDto>> GetAllAsync(bool includeMainPicture)
+        public async Task<ServiceResponse<IEnumerable<AttachmentTypeDto>>> GetAllAsync(bool includeMainPicture)
         {
+            var response = new SuccessResponse<IEnumerable<AttachmentTypeDto>>();
+
             var attachmentTypes = await UnitOfWork.Get<AttachmentType>().GetAllAsync();
 
-            return includeMainPicture 
-                ? attachmentTypes.Select(t => t.ToDto()) 
+            response.Result = includeMainPicture
+                ? attachmentTypes.Select(t => t.ToDto())
                 : attachmentTypes.Where(t => !t.Name.Equals("Основное изображение")).Select(t => t.ToDto());
+
+            return response;
         }
 
-        public async Task<AttachmentType> GetAsync(int id)
+        public async Task<ServiceResponse<AttachmentTypeDto>> GetAsync(int id)
         {
-            return await UnitOfWork.Get<AttachmentType>().GetAsync(a => a.ID == id);
+            var attachmentType = await UnitOfWork.Get<AttachmentType>().GetAsync(a => a.ID == id);
+
+            if (attachmentType == null)
+                return new FailResponse<AttachmentTypeDto>(Resource.AttachmentTypeNotFoundMessage);
+
+            return new SuccessResponse<AttachmentTypeDto>(attachmentType.ToDto());
         }
 
-        public async Task<AttachmentType> CreateAsync(AttachmentType attachmentType, int userId)
+        public async Task<ServiceResponse<AttachmentTypeDto>> CreateAsync(AttachmentTypeDto attachmentType, int userId)
         {
             if (attachmentType == null)
-            {
-                throw new ArgumentNullException(nameof(attachmentType), Resource.AttachmentTypeCannotBeNullException);
-            }
+                return new FailResponse<AttachmentTypeDto>(Resource.AttachmentTypeCannotBeNullMessage);
 
             if (attachmentType.ID != 0)
-            {
-                throw new ArgumentException(Resource.AttachmentTypeInvalidIdentifierException, nameof(attachmentType.ID));
-            }           
+                return new FailResponse<AttachmentTypeDto>(Resource.AttachmentTypeInvalidIdentifierMessage);          
 
             var user = await UnitOfWork.Get<User>().GetAsync(s => s.ID == userId);
 
             if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
-            }
+                return new FailResponse<AttachmentTypeDto>(Resource.UserNotFoundMessage);
 
-            attachmentType.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            var entity = attachmentType.ToEntity();
 
-            var saved = UnitOfWork.Get<AttachmentType>().Add(attachmentType);
+            entity.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+
+            var saved = UnitOfWork.Get<AttachmentType>().Add(entity);
 
             await UnitOfWork.SaveAsync();
 
-            return saved;
+            return new SuccessResponse<AttachmentTypeDto>(saved.ToDto());
         }
 
-        public async Task<AttachmentType> UpdateAsync(AttachmentType attachmentType, int userId)
+        public async Task<ServiceResponse<AttachmentTypeDto>> UpdateAsync(AttachmentTypeDto attachmentType, int userId)
         {
             if (attachmentType == null)
-            {
-                throw new ArgumentNullException(nameof(attachmentType), Resource.AttachmentTypeCannotBeNullException);
-            }
+                return new FailResponse<AttachmentTypeDto>(Resource.AttachmentTypeCannotBeNullMessage);
 
             if (attachmentType.ID <= 0)
-            {
-                throw new ArgumentException(Resource.AttachmentTypeInvalidIdentifierException, nameof(attachmentType.ID));
-            }           
+                return new FailResponse<AttachmentTypeDto>(Resource.AttachmentTypeInvalidIdentifierMessage);          
 
             var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
             if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
-            }
+                return new FailResponse<AttachmentTypeDto>(Resource.UserNotFoundMessage);
 
-            var existentAttachmentType = await UnitOfWork.Get<AttachmentType>().GetAsync(t => t.ID == attachmentType.ID);
+            var existentEntity = await UnitOfWork.Get<AttachmentType>().GetAsync(t => t.ID == attachmentType.ID);
 
-            if (existentAttachmentType == null)
-            {
-                throw new ObjectNotFoundException(Resource.AttachmentTypeNotFoundException);
-            }
+            if (existentEntity == null)
+                return new FailResponse<AttachmentTypeDto>(Resource.AttachmentTypeNotFoundMessage);
 
-            existentAttachmentType.Name = attachmentType.Name;
-            existentAttachmentType.Comment = attachmentType.Comment;
-            existentAttachmentType.Extensions = attachmentType.Extensions;
+            var entity = attachmentType.ToEntity();
 
-            existentAttachmentType.UpdateModifiedFields(userId);
+            existentEntity.UpdateFields(entity);
+            existentEntity.UpdateModifiedFields(userId);
 
-            var updated = UnitOfWork.Get<AttachmentType>().Update(existentAttachmentType);
+            var updated = UnitOfWork.Get<AttachmentType>().Update(existentEntity);
 
             await UnitOfWork.SaveAsync();
 
-            return updated;
+            return new SuccessResponse<AttachmentTypeDto>(updated.ToDto());
         }
 
-        public async Task DeleteAsync(int id, int userId)
+        public async Task<ServiceResponse<bool>> DeleteAsync(int id, int userId)
         {
             var existentAttachmentType = await UnitOfWork.Get<AttachmentType>().GetAsync(t => t.ID == id);
 
             if (existentAttachmentType.Attachments.Any())
-            {
-                throw new Exception(Resource.AttachmentTypeCannotBeDeletedException);
-            }
+                return new FailResponse<bool>(Resource.AttachmentTypeCannotBeDeletedMessage);
 
             existentAttachmentType.UpdateDeletedFields(userId);
 
             UnitOfWork.Get<AttachmentType>().Update(existentAttachmentType);
 
             await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<bool>(true);
         }
 
-        public async Task<int> GetMainPictureTypeIDAsync()
+        public async Task<ServiceResponse<int>> GetMainPictureTypeIdAsync()
         {
             var type = await UnitOfWork.Get<AttachmentType>().GetAsync(t => t.Name.Equals("Основное изображение"));
 
-            return type.ID;
+            return new SuccessResponse<int>(type.ID);
         }
 
-        public async Task<bool> Exists(string name, int attachmentTypeId = 0)
+        public async Task<ServiceResponse<bool>> Exists(string name, int attachmentTypeId = 0)
         {
             if (string.IsNullOrEmpty(name))
             {
-                return false;
+                return new SuccessResponse<bool>(false);
             }
 
             var attachmentTypes = await UnitOfWork.Get<AttachmentType>().FindByAsync(t => t.Name.Equals(name) && t.ID != attachmentTypeId);
 
-            return attachmentTypes.Any();
+            return new SuccessResponse<bool>(attachmentTypes.Any());
         }
     }
 }

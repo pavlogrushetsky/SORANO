@@ -35,7 +35,7 @@ namespace SORANO.BLL.Services
         {
             if (user.ID != 0)
             {
-                throw new ArgumentException(Resource.UserInvalidIdentifierException);
+                throw new ArgumentException(Resource.UserInvalidIdentifierMessage);
             }
 
             user.Password = CryptoHelper.Hash(user.Password);

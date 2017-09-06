@@ -104,11 +104,7 @@ namespace SORANO.WEB.Controllers
                 }
 
                 return View(model);
-            }, ex =>
-            {
-                TempData["Error"] = ex;
-                return RedirectToAction("Index");
-            });            
+            }, OnFault);            
         }
 
         [HttpGet]
@@ -142,11 +138,7 @@ namespace SORANO.WEB.Controllers
                 }
 
                 return View("Create", model);
-            }, ex =>
-            {
-                TempData["Error"] = ex;
-                return RedirectToAction("Index");
-            });            
+            }, OnFault);            
         }
 
         [HttpGet]
@@ -163,11 +155,7 @@ namespace SORANO.WEB.Controllers
 
                 TempData["Error"] = result.Message;
                 return RedirectToAction("Index");
-            }, ex =>
-            {
-                TempData["Error"] = ex;
-                return RedirectToAction("Index");
-            });            
+            }, OnFault);            
         }
 
         [HttpGet]
@@ -184,11 +172,7 @@ namespace SORANO.WEB.Controllers
 
                 TempData["Error"] = result.Message;
                 return RedirectToAction("Index");
-            }, ex =>
-            {
-                TempData["Error"] = ex;
-                return RedirectToAction("Index");
-            });            
+            }, OnFault);            
         }        
 
         #endregion
@@ -248,28 +232,25 @@ namespace SORANO.WEB.Controllers
                         return RedirectToAction("Index");
                     }
 
-                    if (MemoryCache.TryGetValue(CacheKeys.CreateArticleCacheKey, out DeliveryModel cachedDelivery))
-                    {
-                        cachedDelivery.DeliveryItems[cachedDelivery.CurrentItemNumber].Article = model;
-                        cachedDelivery.DeliveryItems[cachedDelivery.CurrentItemNumber].ArticleID = article.ID.ToString();
-                        MemoryCache.Set(CacheKeys.CreateArticleCacheKey, cachedDelivery);
-                        Session.SetBool(CacheKeys.CreateArticleCacheValidKey, true);
-                    }
-                    else
-                    {
-                        return BadRequest();
-                    }
+                    // TODO
+                    //if (MemoryCache.TryGetValue(CacheKeys.CreateArticleCacheKey, out DeliveryModel cachedDelivery))
+                    //{
+                    //    cachedDelivery.DeliveryItems[cachedDelivery.CurrentItemNumber].Article = model;
+                    //    cachedDelivery.DeliveryItems[cachedDelivery.CurrentItemNumber].ArticleID = article.ID.ToString();
+                    //    MemoryCache.Set(CacheKeys.CreateArticleCacheKey, cachedDelivery);
+                    //    Session.SetBool(CacheKeys.CreateArticleCacheValidKey, true);
+                    //}
+                    //else
+                    //{
+                    //    return BadRequest();
+                    //}
 
                     return Redirect(model.ReturnPath);
                 }
 
-                ViewBag.Error = result.Message;
+                TempData["Error"] = result.Message;
                 return View(model);
-            }, ex =>
-            {
-                TempData["Error"] = ex;
-                return RedirectToAction("Index");
-            });
+            }, OnFault);
         }
 
         [HttpPost]
@@ -313,11 +294,7 @@ namespace SORANO.WEB.Controllers
 
                 TempData["Error"] = result.Message;
                 return View("Create", model);
-            }, ex =>
-            {
-                TempData["Error"] = ex;
-                return RedirectToAction("Index");
-            });
+            }, OnFault);
         }
 
         [HttpPost]
@@ -339,11 +316,7 @@ namespace SORANO.WEB.Controllers
                 }
                 
                 return RedirectToAction("Index");
-            }, ex =>
-            {
-                TempData["Error"] = ex;
-                return RedirectToAction("Index");
-            });            
+            }, OnFault);            
         }
 
         [HttpPost]
@@ -380,6 +353,12 @@ namespace SORANO.WEB.Controllers
                         text = t.Name
                     })
             });
+        }
+
+        private IActionResult OnFault(string ex)
+        {
+            TempData["Error"] = ex;
+            return RedirectToAction("Index");
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Linq;
 using AutoMapper;
 using SORANO.BLL.Dtos;
 using SORANO.WEB.Mappings.Converters;
-using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.Article;
 using SORANO.WEB.ViewModels.ArticleType;
 using SORANO.WEB.ViewModels.Attachment;
@@ -29,7 +29,16 @@ namespace SORANO.WEB.Mappings
             CreateMap<RecommendationViewModel, RecommendationDto>();
 
             CreateMap<AttachmentDto, AttachmentViewModel>()
-                .ForMember(dest => dest.TypeName, source => source.MapFrom(s => s.AttachmentType.Name));
+                .ForMember(
+                    dest => dest.TypeName, 
+                    source => source.MapFrom(s => s.AttachmentType.Name)
+                )
+                .ForMember(
+                    dest => dest.MimeTypes, 
+                    source => source.MapFrom(s => !string.IsNullOrEmpty(s.AttachmentType.Extensions) 
+                        ? string.Join(",", s.AttachmentType.Extensions.Split(',').Select(MimeTypes.MimeTypeMap.GetMimeType)) 
+                        : "")
+                );
             CreateMap<AttachmentViewModel, AttachmentDto>();
 
             CreateMap<ArticleTypeDto, ArticleTypeIndexViewModel>();
@@ -38,7 +47,10 @@ namespace SORANO.WEB.Mappings
             CreateMap<ArticleTypeDto, ArticleTypeDeleteViewModel>();
 
             CreateMap<ArticleDto, ArticleIndexViewModel>()
-                .ForMember(dest => dest.TypeName, source => source.MapFrom(s => s.Type.Name));
+                .ForMember(
+                    dest => dest.TypeName, 
+                    source => source.MapFrom(s => s.Type.Name)
+                );
             CreateMap<ArticleDto, ArticleCreateUpdateViewModel>();
             CreateMap<ArticleDto, ArticleDetailsViewModel>();
             CreateMap<ArticleDto, ArticleDeleteViewModel>();

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -10,14 +9,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using MimeTypes;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.Supplier;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    public class SupplierController : EntityBaseController<SupplierModel>
+    public class SupplierController : EntityBaseController<SupplierCreateUpdateViewModel>
     {
         private readonly ISupplierService _supplierService;
 

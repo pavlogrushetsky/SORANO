@@ -141,79 +141,79 @@
   <data name="ArticleCannotBeDeletedMessage" xml:space="preserve">
     <value>Артикул не может быть удалён.</value>
   </data>
-  <data name="SupplierCannotBeNullException" xml:space="preserve">
+  <data name="SupplierCannotBeNullMessage" xml:space="preserve">
     <value>Поставщик не может быть null.</value>
   </data>
-  <data name="SupplierInvalidIdentifierException" xml:space="preserve">
+  <data name="SupplierInvalidIdentifierMessage" xml:space="preserve">
     <value>Недопустимое значение идентификатора поставщика.</value>
   </data>
-  <data name="SupplierNotFoundException" xml:space="preserve">
+  <data name="SupplierNotFoundMessage" xml:space="preserve">
     <value>Поставщик не найден.</value>
   </data>
-  <data name="SupplierCannotBeDeletedException" xml:space="preserve">
+  <data name="SupplierCannotBeDeletedMessage" xml:space="preserve">
     <value>Поставщик не может быть удалён.</value>
   </data>
-  <data name="LocationTypeCannotBeNullException" xml:space="preserve">
+  <data name="LocationTypeCannotBeNullMessage" xml:space="preserve">
     <value>Тип мест не может быть null.</value>
   </data>
-  <data name="LocationTypeInvalidIdentifierException" xml:space="preserve">
+  <data name="LocationTypeInvalidIdentifierMessage" xml:space="preserve">
     <value>Недопустимое значение идентификатора типа мест.</value>
   </data>
-  <data name="LocationTypeNotFoundException" xml:space="preserve">
+  <data name="LocationTypeNotFoundMessage" xml:space="preserve">
     <value>Тип мест не найден.</value>
   </data>
-  <data name="LocationTypeCannotBeDeletedException" xml:space="preserve">
+  <data name="LocationTypeCannotBeDeletedMessage" xml:space="preserve">
     <value>Тип мест не может быть удалён.</value>
   </data>
-  <data name="LocationCannotBeNullException" xml:space="preserve">
+  <data name="LocationCannotBeNullMessage" xml:space="preserve">
     <value>Место не может быть null.</value>
   </data>
-  <data name="LocationInvalidIdentifierException" xml:space="preserve">
+  <data name="LocationInvalidIdentifierMessage" xml:space="preserve">
     <value>Недопустимое значение идентификатора места.</value>
   </data>
-  <data name="UserInvalidIdentifierException" xml:space="preserve">
+  <data name="UserInvalidIdentifierMessage" xml:space="preserve">
     <value>Недопустимое значение идентификатора пользователя.</value>
   </data>
-  <data name="LocationNotFoundException" xml:space="preserve">
+  <data name="LocationNotFoundMessage" xml:space="preserve">
     <value>Место не найдено</value>
   </data>
-  <data name="LocationCannotBeDeletedException" xml:space="preserve">
+  <data name="LocationCannotBeDeletedMessage" xml:space="preserve">
     <value>Место не может быть удалено.</value>
   </data>
-  <data name="AttachmentTypeCannotBeNullException" xml:space="preserve">
+  <data name="AttachmentTypeCannotBeNullMessage" xml:space="preserve">
     <value>Тип вложений не может быть null.</value>
   </data>
-  <data name="AttachmentTypeInvalidIdentifierException" xml:space="preserve">
+  <data name="AttachmentTypeInvalidIdentifierMessage" xml:space="preserve">
     <value>Недопустимое значение идентификатора типа вложений.</value>
   </data>
-  <data name="AttachmentTypeNotFoundException" xml:space="preserve">
+  <data name="AttachmentTypeNotFoundMessage" xml:space="preserve">
     <value>Тип вложений не найден.</value>
   </data>
-  <data name="AttachmentTypeCannotBeDeletedException" xml:space="preserve">
+  <data name="AttachmentTypeCannotBeDeletedMessage" xml:space="preserve">
     <value>Тип вложений не может быть удалён.</value>
   </data>
-  <data name="ClientCannotBeDeletedException" xml:space="preserve">
+  <data name="ClientCannotBeDeletedMessage" xml:space="preserve">
     <value>Клиент не может быть удалён.</value>
   </data>
-  <data name="ClientCannotBeNullException" xml:space="preserve">
+  <data name="ClientCannotBeNullMessage" xml:space="preserve">
     <value>Клиент не может быть null.</value>
   </data>
-  <data name="ClientInvalidIdentifierException" xml:space="preserve">
+  <data name="ClientInvalidIdentifierMessage" xml:space="preserve">
     <value>Недопустимое значение идентификатора клиента.</value>
   </data>
-  <data name="ClientNotFoundException" xml:space="preserve">
+  <data name="ClientNotFoundMessage" xml:space="preserve">
     <value>Клиент не найден.</value>
   </data>
-  <data name="DeliveryCannotBeNullException" xml:space="preserve">
+  <data name="DeliveryCannotBeNullMessage" xml:space="preserve">
     <value>Поставка не может быть null.</value>
   </data>
-  <data name="DeliveryInvalidIdentifierException" xml:space="preserve">
+  <data name="DeliveryInvalidIdentifierMessage" xml:space="preserve">
     <value>Недопустимое значение идентификатора поставки.</value>
   </data>
-  <data name="DeliveryNotFoundException" xml:space="preserve">
+  <data name="DeliveryNotFoundMessage" xml:space="preserve">
     <value>Поставка не найден.</value>
   </data>
-  <data name="DeliveryCannotBeDeletedException" xml:space="preserve">
+  <data name="DeliveryCannotBeDeletedMessage" xml:space="preserve">
     <value>Поставка не может быть удалена.</value>
   </data>
   <data name="ArticleTypeCannotBeDeletedMessage" xml:space="preserve">
