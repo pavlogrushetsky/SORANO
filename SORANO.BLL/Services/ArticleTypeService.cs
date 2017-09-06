@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using SORANO.BLL.Dtos;
 using SORANO.BLL.Extensions;
 using SORANO.BLL.Properties;
 using SORANO.BLL.Services.Abstract;
@@ -18,13 +19,16 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<IEnumerable<ArticleType>> GetAllAsync(bool withDeleted)
+        public async Task<ServiceResponse<IEnumerable<ArticleTypeDto>>> GetAllAsync(bool withDeleted)
         {
+            var response = new SuccessResponse<IEnumerable<ArticleTypeDto>>();
+
             var articleTypes = await UnitOfWork.Get<ArticleType>().GetAllAsync();
 
             if (withDeleted)
             {
-                return articleTypes;
+                response.Result = articleTypes.Select(t => t.ToDto());
+                return response;
             }
 
             var filtered = articleTypes.Where(t => !t.IsDeleted).ToList();
@@ -34,108 +38,84 @@ namespace SORANO.BLL.Services
                 t.Articles = t.Articles.Where(a => !a.IsDeleted).ToList();
             });
 
-            return filtered;
+            response.Result = filtered.Select(t => t.ToDto());
+            return response;
         }
 
-        public async Task<ArticleType> GetAsync(int id)
+        public async Task<ServiceResponse<ArticleTypeDto>> GetAsync(int id)
         {
-            return await UnitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id);          
-        }
+            var articleType = await UnitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id);
 
-        /// <summary>
-        /// Create new article type asynchronously
-        /// </summary>
-        /// <param name="articleType">Article type to be created</param>
-        /// <param name="userId">User identifier</param>
-        /// <returns>Created article type or null</returns>
-        public async Task<ArticleType> CreateAsync(ArticleType articleType, int userId)
-        {
-            // Check passed article type
             if (articleType == null)
-            {
-                throw new ArgumentNullException(nameof(articleType), Resource.ArticleTypeCannotBeNullException);
-            }
+                return new FailResponse<ArticleTypeDto>(Resource.ArticleTypeNotFoundMessage);
 
-            // Identifier of new article type must be equal 0
+            return new SuccessResponse<ArticleTypeDto>(articleType.ToDto());          
+        }
+
+        public async Task<ServiceResponse<ArticleTypeDto>> CreateAsync(ArticleTypeDto articleType, int userId)
+        {
+            if (articleType == null)
+                return new FailResponse<ArticleTypeDto>(Resource.ArticleTypeCannotBeNullException);
+
             if (articleType.ID != 0)
-            {
-                throw new ArgumentException(Resource.ArticleTypeInvalidIdentifierException, nameof(articleType.ID));
-            }
+                return new FailResponse<ArticleTypeDto>(Resource.ArticleTypeInvalidIdentifierException);
 
-            // Get user by specified identifier
             var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
-            // Check user
             if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
-            }
+                return new FailResponse<ArticleTypeDto>(Resource.UserNotFoundMessage);
 
-            // Update created and modified fields for article type
-            articleType.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            var entity = articleType.ToEntity();
 
-            // Update created and modified fields for each article type recommendation
-            foreach (var recommendation in articleType.Recommendations)
+            entity.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+
+            foreach (var recommendation in entity.Recommendations)
             {
                 recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            foreach (var attachment in articleType.Attachments)
+            foreach (var attachment in entity.Attachments)
             {
                 attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            var saved = UnitOfWork.Get<ArticleType>().Add(articleType);
+            var saved = UnitOfWork.Get<ArticleType>().Add(entity);
 
             await UnitOfWork.SaveAsync();
 
-            return saved;           
+            return new SuccessResponse<ArticleTypeDto>(saved.ToDto());           
         }
 
-        /// <summary>
-        /// Update article type asynchronously
-        /// </summary>
-        /// <param name="articleType">Article type to be updated</param>
-        /// <param name="userId">User identifier</param>
-        /// <returns>Updated article type or null</returns>
         public async Task<ArticleType> UpdateAsync(ArticleType articleType, int userId)
         {
-            // Check passed article type
             if (articleType == null)
             {
                 throw new ArgumentNullException(nameof(articleType), Resource.ArticleTypeCannotBeNullException);
             }
 
-            // Identifier of new article type must be > 0
             if (articleType.ID <= 0)
             {
                 throw new ArgumentException(Resource.ArticleTypeInvalidIdentifierException, nameof(articleType.ID));
             }
 
-            // Get user by specified identifier
             var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
-            // Check user
             if (user == null)
             {
                 throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
             }
 
-            // Get existent article type by identifier
             var existentArticleType = await UnitOfWork.Get<ArticleType>().GetAsync(t => t.ID == articleType.ID);
 
-            // Check existent article type
             if (existentArticleType == null)
             {
-                throw new ObjectNotFoundException(Resource.ArticleTypeNotFoundException);
+                throw new ObjectNotFoundException(Resource.ArticleTypeNotFoundMessage);
             }
 
-            // Update fields
             existentArticleType.Name = articleType.Name;
             existentArticleType.Description = articleType.Description;
             existentArticleType.ParentTypeId = articleType.ParentTypeId;
 
-            // Update modified fields for existent article type
             existentArticleType.UpdateModifiedFields(userId);
 
             UpdateAttachments(articleType, existentArticleType, userId);

@@ -126,7 +126,7 @@
   <data name="ArticleTypeInvalidIdentifierException" xml:space="preserve">
     <value>Недопустимое значение идентификатора типа артикула.</value>
   </data>
-  <data name="ArticleTypeNotFoundException" xml:space="preserve">
+  <data name="ArticleTypeNotFoundMessage" xml:space="preserve">
     <value>Тип артикулов не найден.</value>
   </data>
   <data name="ArticleCannotBeNullMessage" xml:space="preserve">

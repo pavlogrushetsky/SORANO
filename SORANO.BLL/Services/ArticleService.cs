@@ -135,26 +135,26 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<bool>(articlesWithSameBarcode.Any());
         }
 
-        public async Task<ServiceResponse<IDictionary<Article, int>>> GetArticlesForLocationAsync(int? locationId)
+        public async Task<ServiceResponse<IDictionary<ArticleDto, int>>> GetArticlesForLocationAsync(int? locationId)
         {
             var goods = await UnitOfWork.Get<Goods>().GetAllAsync();
 
-            IDictionary<Article, int> result;
+            IDictionary<ArticleDto, int> result;
 
             if (!locationId.HasValue || locationId == 0)
             {                
                 result = goods.Where(g => !g.SaleDate.HasValue)
                     .GroupBy(g => g.DeliveryItem.Article)
-                    .ToDictionary(gr => gr.Key, gr => gr.Count());
+                    .ToDictionary(gr => gr.Key.ToDto(), gr => gr.Count());
             }
             else
             {
                 result = goods.Where(g => !g.SaleDate.HasValue && g.Storages.Single(s => !s.ToDate.HasValue).LocationID == locationId)
                     .GroupBy(g => g.DeliveryItem.Article)
-                    .ToDictionary(gr => gr.Key, gr => gr.Count());
+                    .ToDictionary(gr => gr.Key.ToDto(), gr => gr.Count());
             }            
 
-            return new SuccessResponse<IDictionary<Article, int>>(result);
+            return new SuccessResponse<IDictionary<ArticleDto, int>>(result);
         }
     }
 }

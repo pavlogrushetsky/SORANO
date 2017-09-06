@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SORANO.BLL.Dtos;
-using SORANO.CORE.StockEntities;
 
 namespace SORANO.BLL.Services.Abstract
 {
@@ -19,6 +18,6 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<ServiceResponse<bool>> BarcodeExistsAsync(string barcode, int articleId = 0);
 
-        Task<ServiceResponse<IDictionary<Article, int>>> GetArticlesForLocationAsync(int? locationId);
+        Task<ServiceResponse<IDictionary<ArticleDto, int>>> GetArticlesForLocationAsync(int? locationId);
     }
 }

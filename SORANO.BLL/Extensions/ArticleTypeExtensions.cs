@@ -24,5 +24,22 @@ namespace SORANO.BLL.Extensions
 
             return dto;
         }
+
+        public static ArticleType ToEntity(this ArticleTypeDto dto)
+        {
+            var entity = new ArticleType
+            {
+                ID = dto.ID,
+                Name = dto.Name,
+                Description = dto.Description,
+                ParentTypeId = dto.ParentTypeID,
+                Recommendations = dto.Recommendations.Select(r => r.ToEntity()).ToList(),
+                Attachments = dto.Attachments.Select(a => a.ToEntity()).ToList()
+            };
+
+            entity.Attachments.Add(dto.MainPicture.ToEntity());
+
+            return entity;
+        }
     }
 }

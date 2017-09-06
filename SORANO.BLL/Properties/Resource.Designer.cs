@@ -117,9 +117,9 @@ namespace SORANO.BLL.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Тип артикулов не найден..
         /// </summary>
-        internal static string ArticleTypeNotFoundException {
+        internal static string ArticleTypeNotFoundMessage {
             get {
-                return ResourceManager.GetString("ArticleTypeNotFoundException", resourceCulture);
+                return ResourceManager.GetString("ArticleTypeNotFoundMessage", resourceCulture);
             }
         }
         

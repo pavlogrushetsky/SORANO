@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using Microsoft.Extensions.Caching.Memory;
@@ -44,55 +42,76 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(string returnUrl)
         {
-            ArticleTypeCreateUpdateViewModel model;
+            return await TryGetActionResultAsync(async () =>
+            {
+                ArticleTypeCreateUpdateViewModel model;
 
-            if (TryGetCached(out ArticleTypeCreateUpdateViewModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
-            {
-                model = cachedForSelectMainPicture;
-                await CopyMainPicture(model);
-            }
-            else
-            {
-                model = new ArticleTypeCreateUpdateViewModel
+                if (TryGetCached(out var cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
                 {
-                    MainPicture = new MainPictureViewModel(),
-                    ReturnPath = returnUrl                    
-                };
-            }
+                    model = cachedForSelectMainPicture;
+                    await CopyMainPicture(model);
+                }
+                else
+                {
+                    model = new ArticleTypeCreateUpdateViewModel
+                    {
+                        MainPicture = new MainPictureViewModel(),
+                        ReturnPath = returnUrl
+                    };
+                }
 
-            return View(model);
+                return View(model);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Article");
+            });            
         }
 
         [HttpGet]
         public async Task<IActionResult> Brief(int id)
         {
-            var type = await _articleTypeService.GetAsync(id);
+            return await TryGetActionResultAsync(async () =>
+            {
+                var type = await _articleTypeService.GetAsync(id);
 
-            await ClearAttachments();
+                await ClearAttachments();
 
-            return PartialView("_Brief", type.ToModel());
+                return PartialView("_Brief", type.ToModel());
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Article");
+            });           
         }
 
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            ArticleTypeCreateUpdateViewModel model;
-
-            if (TryGetCached(out ArticleTypeCreateUpdateViewModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedForSelectMainPicture.ID == id)
+            return await TryGetActionResultAsync(async () =>
             {
-                model = cachedForSelectMainPicture;
-                await CopyMainPicture(model);
-            }
-            else
+                ArticleTypeCreateUpdateViewModel model;
+
+                if (TryGetCached(out var cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedForSelectMainPicture.ID == id)
+                {
+                    model = cachedForSelectMainPicture;
+                    await CopyMainPicture(model);
+                }
+                else
+                {
+                    var articleType = await _articleTypeService.GetAsync(id);
+
+                    model = articleType.ToModel();
+                }
+
+                ViewData["IsEdit"] = true;
+
+                return View("Create", model);
+            }, ex =>
             {
-                var articleType = await _articleTypeService.GetAsync(id);
-
-                model = articleType.ToModel();
-            }
-
-            ViewData["IsEdit"] = true;
-
-            return View("Create", model);
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Article");
+            });            
         }
 
         [HttpGet]
