@@ -60,9 +60,6 @@ namespace SORANO.WEB.Controllers
                 };
             }
 
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
-            ViewBag.ArticleTypes = await GetArticleTypes();
-
             return View(model);
         }
 
@@ -93,9 +90,6 @@ namespace SORANO.WEB.Controllers
                 model = articleType.ToModel();
             }
 
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
-            ViewBag.ArticleTypes = await GetArticleTypes(id);
-
             ViewData["IsEdit"] = true;
 
             return View("Create", model);
@@ -121,48 +115,26 @@ namespace SORANO.WEB.Controllers
 
         #region POST Actions
 
-        /// <summary>
-        /// Create new article type
-        /// </summary>
-        /// <param name="model">Article type model</param>
-        /// <param name="mainPictureFile"></param>
-        /// <param name="attachments"></param>
-        /// <returns>Action result</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ArticleTypeModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            var attachmentTypes = new List<SelectListItem>();
-            var articleTypes = new List<SelectListItem>();
-
-            // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
-                attachmentTypes = await GetAttachmentTypes();
-                articleTypes = await GetArticleTypes();
-
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ViewBag.ArticleTypes = articleTypes;
-
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
-                // Check the model
                 if (!ModelState.IsValid)
                 {
                     return View(model);
                 }
 
-                // Convert model to article type entity
                 var articleType = model.ToEntity();
 
-                // Get current user
                 var currentUser = await GetCurrentUser();
 
-                // Call correspondent service method to create new article type
                 articleType = await _articleTypeService.CreateAsync(articleType, currentUser.ID);
 
-                // If succeeded
                 if (articleType != null)
                 {
                     if (string.IsNullOrEmpty(model.ReturnPath))
@@ -190,9 +162,6 @@ namespace SORANO.WEB.Controllers
                 return View(model);
             }, ex => 
             {
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ViewBag.ArticleTypes = articleTypes;
-
                 ModelState.AddModelError("", ex);
                 return View(model);
             });            
@@ -202,52 +171,33 @@ namespace SORANO.WEB.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(ArticleTypeModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            var attachmentTypes = new List<SelectListItem>();
-            var articleTypes = new List<SelectListItem>();
-
-            // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
-                attachmentTypes = await GetAttachmentTypes();
-                articleTypes = await GetArticleTypes(model.ID);
-
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ViewBag.ArticleTypes = articleTypes;
-
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
-                // Check the model
                 if (!ModelState.IsValid)
                 {
                     ViewData["IsEdit"] = true;
                     return View("Create", model);
                 }
 
-                // Convert model to article type entity
                 var articleType = model.ToEntity();
 
-                // Get current user
                 var currentUser = await GetCurrentUser();
 
-                // Call correspondent service method to update article type
                 articleType = await _articleTypeService.UpdateAsync(articleType, currentUser.ID);
 
-                // If succeeded
                 if (articleType != null)
                 {
                     return RedirectToAction("Index", "Article");
                 }
 
-                // If failed
                 ModelState.AddModelError("", "Не удалось обновить тип артикулов.");
                 ViewData["IsEdit"] = true;
                 return View("Create", model);
             }, ex => 
             {
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ViewBag.ArticleTypes = articleTypes;
-
                 ModelState.AddModelError("", ex);
                 ViewData["IsEdit"] = true;
                 return View("Create", model);
@@ -286,28 +236,21 @@ namespace SORANO.WEB.Controllers
 
         #endregion
 
-        private async Task<List<SelectListItem>> GetArticleTypes(int currentTypeId = 0)
+        [HttpPost]
+        public async Task<JsonResult> GetArticleTypes(string term, int currentTypeId = 0)
         {
             var articleTypes = await _articleTypeService.GetAllAsync(false);
 
-            var articleTypeItems = new List<SelectListItem>
+            return Json(new
             {
-                new SelectListItem
-                {
-                    Value = "0",
-                    Text = "-- Тип артикула --"
-                }
-            };
-
-            articleTypeItems.AddRange(articleTypes.Where(t => t.ID != currentTypeId).Select(t => new SelectListItem
-            {
-                Value = t.ID.ToString(),
-                Text = t.Name
-            }));
-
-            MemoryCache.Set(CacheKeys.ArticleTypesCacheKey, articleTypeItems);
-
-            return articleTypeItems;
+                results = articleTypes
+                    .Where(t => (string.IsNullOrEmpty(term) || t.Name.Contains(term)) && t.ID != currentTypeId)
+                    .Select(t => new
+                    {
+                        id = t.ID,
+                        text = t.Name
+                    })
+            });
         }
     }
 }

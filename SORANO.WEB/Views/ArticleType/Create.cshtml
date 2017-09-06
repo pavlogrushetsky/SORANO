@@ -1,9 +1,8 @@
-﻿@model ArticleTypeModel
+﻿@model ArticleTypeCreateUpdateViewModel
 
 @{
-    var isEdit = ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"];
-    var title = isEdit ? "Редактирование" : "Создание";
-    var returnUrl = isEdit ? Url.Action("Update", "ArticleType") : Url.Action("Create", "ArticleType");
+    var title = Model.IsUpdate ? "Редактирование" : "Создание";
+    var returnUrl = Model.IsUpdate ? Url.Action("Update", "ArticleType") : Url.Action("Create", "ArticleType");
 }
 
 @{
@@ -34,12 +33,14 @@
     </ul>
 }
 
-<form asp-action="@(isEdit ? "Update" : "Create")"
+<form asp-action="@(Model.IsUpdate ? "Update" : "Create")"
       asp-controller="ArticleType"
       method="post"
       enctype="multipart/form-data">
     <input type="hidden" asp-for="ID" />
+    <input type="hidden" asp-for="TypeName" />
     <input type="hidden" asp-for="ReturnPath" />
+    <input type="hidden" asp-for="IsUpdate" />
     @for (var i = 0; i < Model.Recommendations.Count; i++)
     {
         <input type="hidden" asp-for="@Model.Recommendations[i].ID"/>
@@ -51,7 +52,7 @@
         @Html.HiddenFor(m => m.Attachments[i].IsNew)
         @Html.HiddenFor(m => m.Attachments[i].FullPath)
         @Html.HiddenFor(m => m.Attachments[i].Type.MimeTypes)
-        @Html.HiddenFor(m => m.Attachments[i].Type.Name)
+        @Html.HiddenFor(m => m.Attachments[i].TypeName)
     }
     @Html.HiddenFor(m => m.MainPicture.ID)
     @Html.HiddenFor(m => m.MainPicture.Name)
@@ -80,15 +81,14 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label" asp-for="ParentType"></label>
+                <label class="control-label" asp-for="TypeID"></label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-tags"></i></span>
-                    <select class="form-control input-sm select-type"
-                            asp-for="@Model.ParentTypeID"
-                            asp-items="@ViewBag.ArticleTypes">
+                    <select class="form-control input-sm select-article-type"
+                            asp-for="TypeID">
                     </select>
                 </div>
-                <span asp-validation-for="ParentTypeID" class="text-danger"></span>
+                <span asp-validation-for="TypeID" class="text-danger"></span>
             </div>
         </div>
         <div class="col-lg-5 col-md-12 col-sm-12">
