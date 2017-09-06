@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SORANO.BLL.DTOs;
+using SORANO.BLL.Dtos;
 using SORANO.CORE.StockEntities;
 
 namespace SORANO.BLL.Services.Abstract

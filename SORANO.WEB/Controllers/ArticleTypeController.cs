@@ -11,11 +11,13 @@ using SORANO.WEB.Infrastructure.Extensions;
 using Microsoft.Extensions.Caching.Memory;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.ArticleType;
+using SORANO.WEB.ViewModels.Attachment;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    public class ArticleTypeController : EntityBaseController<ArticleTypeModel>
+    public class ArticleTypeController : EntityBaseController<ArticleTypeCreateUpdateViewModel>
     {
         private readonly IArticleTypeService _articleTypeService;
 
@@ -42,18 +44,18 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(string returnUrl)
         {
-            ArticleTypeModel model;
+            ArticleTypeCreateUpdateViewModel model;
 
-            if (TryGetCached(out ArticleTypeModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
+            if (TryGetCached(out ArticleTypeCreateUpdateViewModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
             {
                 model = cachedForSelectMainPicture;
                 await CopyMainPicture(model);
             }
             else
             {
-                model = new ArticleTypeModel
+                model = new ArticleTypeCreateUpdateViewModel
                 {
-                    MainPicture = new AttachmentModel(),
+                    MainPicture = new MainPictureViewModel(),
                     ReturnPath = returnUrl                    
                 };
             }
@@ -77,9 +79,9 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            ArticleTypeModel model;
+            ArticleTypeCreateUpdateViewModel model;
 
-            if (TryGetCached(out ArticleTypeModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedForSelectMainPicture.ID == id)
+            if (TryGetCached(out ArticleTypeCreateUpdateViewModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedForSelectMainPicture.ID == id)
             {
                 model = cachedForSelectMainPicture;
                 await CopyMainPicture(model);

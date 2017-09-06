@@ -41,14 +41,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DTOs\AllGoodsDTO.cs" />
-    <Compile Include="DTOs\ArticleDto.cs" />
-    <Compile Include="DTOs\ArticleTypeDto.cs" />
-    <Compile Include="DTOs\AttachmentDto.cs" />
-    <Compile Include="DTOs\AttachmentTypeDto.cs" />
-    <Compile Include="DTOs\BaseDto.cs" />
-    <Compile Include="DTOs\GoodsGroupDTO.cs" />
-    <Compile Include="DTOs\RecommendationDto.cs" />
+    <Compile Include="Dtos\AllGoodsDTO.cs" />
+    <Compile Include="Dtos\ArticleDto.cs" />
+    <Compile Include="Dtos\ArticleTypeDto.cs" />
+    <Compile Include="Dtos\AttachmentDto.cs" />
+    <Compile Include="Dtos\AttachmentTypeDto.cs" />
+    <Compile Include="Dtos\BaseDto.cs" />
+    <Compile Include="Dtos\GoodsGroupDTO.cs" />
+    <Compile Include="Dtos\RecommendationDto.cs" />
     <Compile Include="Extensions\ArticleExtensions.cs" />
     <Compile Include="Extensions\ArticleTypeExtensions.cs" />
     <Compile Include="Extensions\AttachmentExtensions.cs" />

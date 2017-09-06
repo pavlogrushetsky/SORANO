@@ -1,4 +1,4 @@
-﻿namespace SORANO.BLL.DTOs
+﻿namespace SORANO.BLL.Dtos
 {
     public class AttachmentTypeDto
     {

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using Microsoft.Extensions.Caching.Memory;
-using SORANO.BLL.DTOs;
+using SORANO.BLL.Dtos;
 using SORANO.BLL.Services;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.ViewModels;
@@ -159,7 +159,9 @@ namespace SORANO.WEB.Controllers
                 var result = await _articleService.GetAsync(id);
 
                 if (result.Status != ServiceResponseStatusType.Fail)
-                    return View(/*result.Result.ToModel()*/);//todo
+                {
+                    return View(_mapper.Map<ArticleDetailsViewModel>(result.Result));
+                }
 
                 TempData["Error"] = result.Message;
                 return RedirectToAction("Index");
@@ -178,7 +180,9 @@ namespace SORANO.WEB.Controllers
                 var result = await _articleService.GetAsync(id);
 
                 if (result.Status != ServiceResponseStatusType.Fail)
+                {
                     return View(_mapper.Map<ArticleDeleteViewModel>(result.Result));
+                }
 
                 TempData["Error"] = result.Message;
                 return RedirectToAction("Index");

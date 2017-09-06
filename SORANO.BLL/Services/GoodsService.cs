@@ -5,7 +5,7 @@ using SORANO.DAL.Repositories;
 using System.Threading.Tasks;
 using SORANO.CORE.StockEntities;
 using System.Collections.Generic;
-using SORANO.BLL.DTOs;
+using SORANO.BLL.Dtos;
 using SORANO.BLL.Extensions;
 
 namespace SORANO.BLL.Services

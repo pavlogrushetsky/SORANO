@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using SORANO.BLL.DTOs;
+using SORANO.BLL.Dtos;
 using SORANO.CORE.StockEntities;
 
 namespace SORANO.BLL.Extensions

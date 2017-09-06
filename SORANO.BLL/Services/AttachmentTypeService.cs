@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using SORANO.BLL.DTOs;
+using SORANO.BLL.Dtos;
 using SORANO.BLL.Extensions;
 
 namespace SORANO.BLL.Services

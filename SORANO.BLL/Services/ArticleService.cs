@@ -6,7 +6,7 @@ using SORANO.CORE.AccountEntities;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 using System.Linq;
-using SORANO.BLL.DTOs;
+using SORANO.BLL.Dtos;
 using SORANO.BLL.Extensions;
 
 namespace SORANO.BLL.Services

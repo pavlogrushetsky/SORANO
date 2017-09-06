@@ -1,6 +1,6 @@
 ﻿using System;
 using AutoMapper;
-using SORANO.BLL.DTOs;
+using SORANO.BLL.Dtos;
 using SORANO.WEB.Mappings.Converters;
 using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.Article;
