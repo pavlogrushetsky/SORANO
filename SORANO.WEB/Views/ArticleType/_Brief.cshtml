@@ -30,31 +30,31 @@
                     <span class="label label-danger">Удалён</span>
                 </dd>
             }
-            @if (Model.ChildTypes.Any())
+            @if (Model.HasChildTypes)
             {
                 <dt>
-                    @Html.DisplayNameFor(model => model.ChildTypes)
+                    @Html.DisplayNameFor(model => model.ChildTypesCount)
                 </dt>
                 <dd>
-                    <span class="badge">@Model.ChildTypes.Count</span>
+                    <span class="badge">@Model.ChildTypesCount</span>
                 </dd>
             }        
-            @if (Model.Articles.Any())
+            @if (Model.HasArticles)
             {
                 <dt>
-                    @Html.DisplayNameFor(model => model.Articles)                    
+                    @Html.DisplayNameFor(model => model.ArticlesCount)                    
                 </dt>
                 <dd>
-                    <span class="badge">@Model.Articles.Count</span>
+                    <span class="badge">@Model.ArticlesCount</span>
                 </dd>
             }  
-            @if (Model.Recommendations.Any())
+            @if (Model.HasRecommendations)
             {
                 <dt>
-                    @Html.DisplayNameFor(model => model.Recommendations)                    
+                    @Html.DisplayNameFor(model => model.RecommendationsCount)                    
                 </dt>
                 <dd>
-                    <span class="badge">@Model.Recommendations.Count</span>
+                    <span class="badge">@Model.RecommendationsCount</span>
                 </dd>
             }
         </dl>        

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.Delivery;
 
 namespace SORANO.WEB.Controllers
@@ -66,30 +67,30 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            DeliveryModel model;
+            DeliveryCreateUpdateViewModel model;
 
-            if (TryGetCached(out DeliveryModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
+            if (TryGetCached(out DeliveryCreateUpdateViewModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
             {
                 model = cachedForSelectMainPicture;
                 await CopyMainPicture(model);
             }
-            else if (TryGetCached(out DeliveryModel cachedForCreateSupplier, CacheKeys.CreateSupplierCacheKey, CacheKeys.CreateSupplierCacheValidKey))
+            else if (TryGetCached(out DeliveryCreateUpdateViewModel cachedForCreateSupplier, CacheKeys.CreateSupplierCacheKey, CacheKeys.CreateSupplierCacheValidKey))
             {
                 model = cachedForCreateSupplier;
             }
-            else if (TryGetCached(out DeliveryModel cachedForCreateLocation, CacheKeys.CreateLocationCacheKey, CacheKeys.CreateLocationCacheValidKey))
+            else if (TryGetCached(out DeliveryCreateUpdateViewModel cachedForCreateLocation, CacheKeys.CreateLocationCacheKey, CacheKeys.CreateLocationCacheValidKey))
             {
                 model = cachedForCreateLocation;
             }
-            else if (TryGetCached(out DeliveryModel cachedForCreateArticle, CacheKeys.CreateArticleCacheKey, CacheKeys.CreateArticleCacheValidKey))
+            else if (TryGetCached(out DeliveryCreateUpdateViewModel cachedForCreateArticle, CacheKeys.CreateArticleCacheKey, CacheKeys.CreateArticleCacheValidKey))
             {
                 model = cachedForCreateArticle;
             }
             else
             {
-                model = new DeliveryModel
+                model = new DeliveryCreateUpdateViewModel
                 {
-                    MainPicture = new AttachmentModel()
+                    MainPicture = new MainPictureViewModel()
                 };
             }
 
@@ -105,22 +106,22 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            DeliveryModel model;
+            DeliveryCreateUpdateViewModel model;
 
-            if (TryGetCached(out DeliveryModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
+            if (TryGetCached(out DeliveryCreateUpdateViewModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
             {
                 model = cachedForSelectMainPicture;
                 await CopyMainPicture(model);
             }
-            else if (TryGetCached(out DeliveryModel cachedForCreateSupplier, CacheKeys.CreateSupplierCacheKey, CacheKeys.CreateSupplierCacheValidKey))
+            else if (TryGetCached(out DeliveryCreateUpdateViewModel cachedForCreateSupplier, CacheKeys.CreateSupplierCacheKey, CacheKeys.CreateSupplierCacheValidKey))
             {
                 model = cachedForCreateSupplier;
             }
-            else if (TryGetCached(out DeliveryModel cachedForCreateLocation, CacheKeys.CreateLocationCacheKey, CacheKeys.CreateLocationCacheValidKey))
+            else if (TryGetCached(out DeliveryCreateUpdateViewModel cachedForCreateLocation, CacheKeys.CreateLocationCacheKey, CacheKeys.CreateLocationCacheValidKey))
             {
                 model = cachedForCreateLocation;
             }
-            else if (TryGetCached(out DeliveryModel cachedForCreateArticle, CacheKeys.CreateArticleCacheKey, CacheKeys.CreateArticleCacheValidKey))
+            else if (TryGetCached(out DeliveryCreateUpdateViewModel cachedForCreateArticle, CacheKeys.CreateArticleCacheKey, CacheKeys.CreateArticleCacheValidKey))
             {
                 model = cachedForCreateArticle;
             }

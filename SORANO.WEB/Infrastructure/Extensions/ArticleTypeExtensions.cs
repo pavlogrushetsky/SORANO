@@ -2,6 +2,7 @@
 using SORANO.CORE.StockEntities;
 using System.Collections.Generic;
 using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.ArticleType;
 
 namespace SORANO.WEB.Infrastructure.Extensions
 {
@@ -40,7 +41,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
             return model;
         }     
         
-        public static List<ArticleTypeModel> ToTree(this List<ArticleTypeModel> types)
+        public static List<ArticleTypeIndexViewModel> ToTree(this List<ArticleTypeIndexViewModel> types)
         {
             var parents = types.Where(t => t.ParentType == null).ToList();
 
@@ -52,7 +53,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
             return parents;
         }
 
-        private static void FillChildren(this ArticleTypeModel parent, List<ArticleTypeModel> children)
+        private static void FillChildren(this ArticleTypeIndexViewModel parent, List<ArticleTypeIndexViewModel> children)
         {
             parent.ChildTypes = children.Where(c => c.ParentType?.ID == parent.ID).ToList();
 

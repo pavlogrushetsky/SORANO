@@ -1,8 +1,7 @@
 ﻿@model AttachmentTypeCreateUpdateViewModel
 
 @{
-    var isEdit = ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"];
-    var title = isEdit ? "Редактирование" : "Создание";
+    var title = Model.IsUpdate ? "Редактирование" : "Создание";
 }
 
 @{
@@ -23,7 +22,7 @@
 
 <div class="col-lg-4 col-md-12 col-sm-12">
     <div class="row" style="margin-left: 0;">
-        @if (isEdit && Model.Name.Equals("Основное изображение"))
+        @if (Model.IsUpdate && Model.Name.Equals("Основное изображение"))
         {
             <p class="text-info">
                 <i class="fa fa-fw fa-info" aria-hidden="true"></i>
@@ -32,12 +31,12 @@
         }
     </div>
     <div class="row" style="margin-left: 0;">           
-        <form asp-action="@(isEdit ? "Update" : "Create")"
+        <form asp-action="@(Model.IsUpdate ? "Update" : "Create")"
                 asp-controller="AttachmentType"
                 method="post">
             <input type="hidden" asp-for="ID" />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            @if (!isEdit || !Model.Name.Equals("Основное изображение"))
+            @if (!Model.IsUpdate || !Model.Name.Equals("Основное изображение"))
             {
                 <div class="form-group">
                     <label class="control-label" asp-for="Name"></label>
@@ -69,7 +68,7 @@
                     <i class="fa fa-fw fa-close"></i>
                     Отмена
                 </a>
-                @if (!isEdit || !Model.Name.Equals("Основное изображение"))
+                @if (!Model.IsUpdate || !Model.Name.Equals("Основное изображение"))
                 {
                     <button type="submit" class="btn btn-primary btn-sm">
                         <i class="fa fa-fw fa-check"></i>

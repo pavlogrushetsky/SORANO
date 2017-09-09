@@ -1,29 +1,27 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SORANO.CORE.AccountEntities;
+using SORANO.BLL.Dtos;
 
 namespace SORANO.BLL.Services.Abstract
 {
     public interface IUserService
     {
-        Task<User> GetAsync(string login, string password);
+        Task<ServiceResponse<UserDto>> GetAsync(string login, string password);
 
-        Task<User> GetAsync(string login);
+        Task<ServiceResponse<UserDto>> GetAsync(string login);
 
-        Task<User> GetIncludeAllAsync(int id);
+        Task<ServiceResponse<UserDto>> GetAsync(int id);
 
-        Task<User> GetAsync(int id);
+        Task<ServiceResponse<IEnumerable<UserDto>>> GetAllAsync();
 
-        Task<List<User>> GetAllIncludeAllAsync();
+        Task<ServiceResponse<UserDto>> CreateAsync(UserDto user);
 
-        Task<User> CreateAsync(User user);
+        Task<ServiceResponse<bool>> ChangePasswordAsync(string login, string newPassword);
 
-        Task ChangePasswordAsync(string login, string newPassword);
+        Task<ServiceResponse<bool>> DeleteAsync(int id);
 
-        Task DeleteAsync(int id);
+        Task<ServiceResponse<UserDto>> UpdateAsync(UserDto user);
 
-        Task<User> UpdateAsync(User user);
-
-        Task<bool> Exists(string login, int userId = 0);
+        Task<ServiceResponse<bool>> Exists(string login, int userId = 0);
     }
 }

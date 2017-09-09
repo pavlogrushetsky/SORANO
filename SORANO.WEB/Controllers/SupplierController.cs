@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.Supplier;
 
 namespace SORANO.WEB.Controllers
@@ -57,18 +58,18 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(string returnUrl)
         {
-            SupplierModel model;
+            SupplierCreateUpdateViewModel model;
 
-            if (TryGetCached(out SupplierModel cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
+            if (TryGetCached(out SupplierCreateUpdateViewModel cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
             {
                 model = cachedModel;
                 await CopyMainPicture(model);
             }
             else
             {
-                model = new SupplierModel
+                model = new SupplierCreateUpdateViewModel
                 {
-                    MainPicture = new AttachmentModel(),
+                    MainPicture = new MainPictureViewModel(),
                     ReturnPath = returnUrl
                 };
             }
@@ -80,10 +81,10 @@ namespace SORANO.WEB.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Update(int id)
-        {            
-            SupplierModel model;
+        {
+            SupplierCreateUpdateViewModel model;
 
-            if (TryGetCached(out SupplierModel cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedModel.ID == id)
+            if (TryGetCached(out SupplierCreateUpdateViewModel cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedModel.ID == id)
             {
                 model = cachedModel;
                 await CopyMainPicture(model);
@@ -125,7 +126,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SupplierModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public async Task<IActionResult> Create(SupplierCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             var attachmentTypes = new List<SelectListItem>();
 
@@ -189,7 +190,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(SupplierModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public async Task<IActionResult> Update(SupplierCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             var attachmentTypes = new List<SelectListItem>();
 

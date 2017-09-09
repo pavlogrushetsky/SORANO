@@ -270,11 +270,11 @@ namespace SORANO.WEB.Controllers
             });
         }
 
-        protected virtual async Task<string> GetMainPictureTypeID()
+        protected virtual async Task<int> GetMainPictureTypeID()
         {
-            var id = await AttachmentTypeService.GetMainPictureTypeIdAsync();
+            var result = await AttachmentTypeService.GetMainPictureTypeIdAsync();
 
-            return id.ToString();
+            return result.Result;
         }
 
         protected virtual async Task<string> Load(IFormFile file, string subfolder)

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -10,15 +9,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using MimeTypes;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.ViewModels;
-using SORANO.WEB.ViewModels.AttachmentType;
+using SORANO.WEB.ViewModels.Attachment;
+using SORANO.WEB.ViewModels.Client;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    public class ClientController : EntityBaseController<AttachmentTypeCreateUpdateViewModel>
+    public class ClientController : EntityBaseController<ClientCreateUpdateViewModel>
     {
         private readonly IClientService _clientService;
 
@@ -59,18 +58,18 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            ClientModel model;
+            ClientCreateUpdateViewModel model;
 
-            if (TryGetCached(out ClientModel cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
+            if (TryGetCached(out ClientCreateUpdateViewModel cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
             {
                 model = cachedModel;
                 await CopyMainPicture(model);
             }
             else
             {
-                model = new ClientModel
+                model = new ClientCreateUpdateViewModel
                 {
-                    MainPicture = new AttachmentModel()
+                    MainPicture = new MainPictureViewModel()
                 };
             }
 
@@ -81,10 +80,10 @@ namespace SORANO.WEB.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Update(int id)
-        {            
-            ClientModel model;
+        {
+            ClientCreateUpdateViewModel model;
 
-            if (TryGetCached(out ClientModel cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedModel.ID == id)
+            if (TryGetCached(out ClientCreateUpdateViewModel cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedModel.ID == id)
             {
                 model = cachedModel;
                 await CopyMainPicture(model);
@@ -126,11 +125,10 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ClientModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public async Task<IActionResult> Create(ClientCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             var attachmentTypes = new List<SelectListItem>();
 
-            // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
                 attachmentTypes = await GetAttachmentTypes();
@@ -139,7 +137,6 @@ namespace SORANO.WEB.Controllers
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
-                // Check the model
                 if (!ModelState.IsValid)
                 {
                     return View(model);
@@ -147,18 +144,15 @@ namespace SORANO.WEB.Controllers
 
                 var client = model.ToEntity();
 
-                // Get current user
                 var currentUser = await GetCurrentUser();
 
                 client = await _clientService.CreateAsync(client, currentUser.ID);
 
-                // If succeeded
                 if (client != null)
                 {
                     return RedirectToAction("Index", "Client");
                 }
 
-                // If failed
                 ModelState.AddModelError("", "Не удалось создать нового клиента.");
                 return View(model);
             }, ex =>
@@ -171,11 +165,10 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(ClientModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public async Task<IActionResult> Update(ClientCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             var attachmentTypes = new List<SelectListItem>();
 
-            // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
                 attachmentTypes = await GetAttachmentTypes();
@@ -184,7 +177,6 @@ namespace SORANO.WEB.Controllers
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
-                // Check the model
                 if (!ModelState.IsValid)
                 {
                     ViewData["IsEdit"] = true;
@@ -193,18 +185,15 @@ namespace SORANO.WEB.Controllers
 
                 var client = model.ToEntity();
 
-                // Get current user
                 var currentUser = await GetCurrentUser();
 
                 client = await _clientService.UpdateAsync(client, currentUser.ID);
 
-                // If succeeded
                 if (client != null)
                 {
                     return RedirectToAction("Index", "Client");
                 }
 
-                // If failed
                 ModelState.AddModelError("", "Не удалось обновить клиента.");
                 ViewData["IsEdit"] = true;
                 return View("Create", model);

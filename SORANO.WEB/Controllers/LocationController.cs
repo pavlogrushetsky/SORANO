@@ -11,14 +11,16 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Http;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.Common;
+using SORANO.WEB.ViewModels.Location;
 
 // ReSharper disable Mvc.ViewNotResolved
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    public class LocationController : EntityBaseController<BaseCreateUpdateViewModel>
+    public class LocationController : EntityBaseController<LocationCreateUpdateViewModel>
     {
         private readonly ILocationService _locationService;
         private readonly ILocationTypeService _locationTypeService;
@@ -64,22 +66,22 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(string returnUrl)
         {           
-            LocationModel model;
+            LocationCreateUpdateViewModel model;
 
-            if (TryGetCached(out LocationModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
+            if (TryGetCached(out LocationCreateUpdateViewModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
             {
                 model = cachedForSelectMainPicture;
                 await CopyMainPicture(model);
             }
-            else if (TryGetCached(out LocationModel cachedForCreateType, CacheKeys.CreateLocationTypeCacheKey, CacheKeys.CreateLocationTypeCacheValidKey))
+            else if (TryGetCached(out LocationCreateUpdateViewModel cachedForCreateType, CacheKeys.CreateLocationTypeCacheKey, CacheKeys.CreateLocationTypeCacheValidKey))
             {
                 model = cachedForCreateType;
             }
             else
             {
-                model = new LocationModel
+                model = new LocationCreateUpdateViewModel
                 {
-                    MainPicture = new AttachmentModel(),
+                    MainPicture = new MainPictureViewModel(),
                     ReturnPath = returnUrl
                 };
             }
@@ -93,14 +95,14 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {            
-            LocationModel model;
+            LocationCreateUpdateViewModel model;
 
-            if (TryGetCached(out LocationModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedForSelectMainPicture.ID == id)
+            if (TryGetCached(out LocationCreateUpdateViewModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedForSelectMainPicture.ID == id)
             {
                 model = cachedForSelectMainPicture;
                 await CopyMainPicture(model);
             }
-            else if (TryGetCached(out LocationModel cachedForCreateType, CacheKeys.CreateLocationTypeCacheKey, CacheKeys.CreateLocationTypeCacheValidKey) && cachedForCreateType.ID == id)
+            else if (TryGetCached(out LocationCreateUpdateViewModel cachedForCreateType, CacheKeys.CreateLocationTypeCacheKey, CacheKeys.CreateLocationTypeCacheValidKey) && cachedForCreateType.ID == id)
             {
                 model = cachedForCreateType;
             }

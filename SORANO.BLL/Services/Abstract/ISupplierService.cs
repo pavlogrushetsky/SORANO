@@ -1,21 +1,21 @@
-﻿using SORANO.CORE.StockEntities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using SORANO.BLL.Dtos;
 
 namespace SORANO.BLL.Services.Abstract
 {
     public interface ISupplierService
     {
-        Task<IEnumerable<Supplier>> GetAllAsync(bool withDeleted);
+        Task<ServiceResponse<IEnumerable<SupplierDto>>> GetAllAsync(bool withDeleted);
 
-        Task<Supplier> CreateAsync(Supplier supplier, int userId);
+        Task<ServiceResponse<SupplierDto>> CreateAsync(SupplierDto supplier, int userId);
 
-        Task<Supplier> GetAsync(int id);
+        Task<ServiceResponse<SupplierDto>> GetAsync(int id);
 
-        Task<Supplier> UpdateAsync(Supplier supplier, int userId);
+        Task<ServiceResponse<SupplierDto>> UpdateAsync(SupplierDto supplier, int userId);
 
-        Task DeleteAsync(int id, int userId);
+        Task<ServiceResponse<bool>> DeleteAsync(int id, int userId);
 
-        Task<Supplier> GetIncludeAllAsync(int id);
+        Task<ServiceResponse<SupplierDto>> GetIncludeAllAsync(int id);
     }
 }

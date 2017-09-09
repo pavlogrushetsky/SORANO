@@ -6,12 +6,6 @@ namespace SORANO.WEB.Infrastructure.Extensions
 {
     public static class UserExtensions
     {
-        /// <summary>
-        /// Convert user entity to user list model to display for list of users
-        /// </summary>
-        /// <param name="user">User entity</param>
-        /// <param name="isCurrent">Specifies if passed user is current logged in user</param>
-        /// <returns></returns>
         public static UserModel ToModel(this User user, bool isCurrent = false)
         {
             var hasActivities = user.CreatedEntities.Any()

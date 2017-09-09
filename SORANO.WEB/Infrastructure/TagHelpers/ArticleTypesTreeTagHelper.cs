@@ -2,41 +2,24 @@
 using System.Linq;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.ArticleType;
 
 namespace SORANO.WEB.Infrastructure.TagHelpers
 {  
     // ReSharper disable once ClassNeverInstantiated.Global
-    /// <summary>
-    /// Tag helper for rendering article types tree
-    /// </summary>
+
     public class ArticleTypesTreeTagHelper : TagHelper
     {
         // ReSharper disable once CollectionNeverUpdated.Global
-        /// <summary>
-        /// Elements to render
-        /// </summary>
-        public List<ArticleTypeModel> Elements { get; set; }
 
-        /// <summary>
-        /// Current element
-        /// </summary>
+        public List<ArticleTypeIndexViewModel> Elements { get; set; }
+
         public ArticleTypeModel CurrentElement { get; set; }
 
-        /// <summary>
-        /// Show additional features
-        /// </summary>
         public bool Detailed { get; set; }
 
-        /// <summary>
-        /// Show articles
-        /// </summary>
         public bool ShowArticles { get; set; }
 
-        /// <summary>
-        /// Process tag helper
-        /// </summary>
-        /// <param name="context">Tag helper context</param>
-        /// <param name="output">Tag helper output</param>
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             output.TagName = "ul";
@@ -51,8 +34,7 @@ namespace SORANO.WEB.Infrastructure.TagHelpers
             output.Content.SetHtmlContent(tree);
         }
 
-        // Render article type as a tree node
-        private void RenderType(ArticleTypeModel type, ref string html)
+        private void RenderType(ArticleTypeIndexViewModel type, ref string html)
         {
             if (CurrentElement != null && (type.ID == CurrentElement.ID || CurrentElement.ChildTypes.Select(e => e.ID).Contains(type.ID)))
             {

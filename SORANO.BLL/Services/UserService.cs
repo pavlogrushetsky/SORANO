@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SORANO.BLL.Dtos;
+using SORANO.BLL.Extensions;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.AccountEntities;
 using SORANO.BLL.Helpers;
@@ -20,40 +21,28 @@ namespace SORANO.BLL.Services
             _unitOfWork = unitOfWork;
         }        
 
-        /// <summary>
-        /// Get all users including all related data
-        /// </summary>
-        /// <returns>List of users with all related data</returns>
-        public async Task<List<User>> GetAllIncludeAllAsync()
+        public async Task<ServiceResponse<IEnumerable<UserDto>>> GetAllAsync()
         {
             var users = await _unitOfWork.Get<User>().GetAllAsync();
 
-            return users.ToList();       
+            return new SuccessResponse<IEnumerable<UserDto>>(users.Select(u => u.ToDto()));       
         }
 
-        public async Task<User> CreateAsync(User user)
+        public async Task<ServiceResponse<UserDto>> CreateAsync(UserDto user)
         {
             if (user.ID != 0)
-            {
-                throw new ArgumentException(Resource.UserInvalidIdentifierMessage);
-            }
+                return new FailResponse<UserDto>(Resource.UserInvalidIdentifierMessage);
 
             user.Password = CryptoHelper.Hash(user.Password);
 
-            var roles = await _unitOfWork.Get<Role>().GetAllAsync();
-
-            var rolesToAttach = roles.Where(r => user.Roles.Select(x => x.ID).Contains(r.ID));
-
-            user.Roles = rolesToAttach.ToList();
-
-            var added = _unitOfWork.Get<User>().Add(user);
+            var added = _unitOfWork.Get<User>().Add(user.ToEntity());
 
             await _unitOfWork.SaveAsync();
 
-            return added;          
+            return new SuccessResponse<UserDto>(added.ToDto());          
         }
 
-        public async Task<User> UpdateAsync(User user)
+        public async Task<ServiceResponse<UserDto>> UpdateAsync(UserDto user)
         {
             var existentUser = await _unitOfWork.Get<User>().GetAsync(user.ID);
 
@@ -67,7 +56,6 @@ namespace SORANO.BLL.Services
 
             var roles = await _unitOfWork.Get<Role>().GetAllAsync();
 
-            // Add new roles
             user.Roles.ToList().ForEach(r =>
             {
                 if (!existentUser.Roles.Select(er => er.ID).Contains(r.ID))
@@ -76,7 +64,6 @@ namespace SORANO.BLL.Services
                 }
             });
 
-            // Remove deleted roles
             existentUser.Roles.ToList().ForEach(er =>
             {
                 if (!user.Roles.Select(r => r.ID).Contains(er.ID))
@@ -89,24 +76,28 @@ namespace SORANO.BLL.Services
 
             await _unitOfWork.SaveAsync();
 
-            return updated;
+            return new SuccessResponse<UserDto>(updated.ToDto());
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<ServiceResponse<bool>> DeleteAsync(int id)
         {
             var existentUser = await _unitOfWork.Get<User>().GetAsync(u => u.ID == id);
 
             _unitOfWork.Get<User>().Delete(existentUser);
 
-            await _unitOfWork.SaveAsync();           
+            await _unitOfWork.SaveAsync(); 
+            
+            return new SuccessResponse<bool>(true);
         }
 
-        public async Task<User> GetAsync(string login)
+        public async Task<ServiceResponse<UserDto>> GetAsync(string login)
         {
-            return await _unitOfWork.Get<User>().GetAsync(u => u.Login.Equals(login));           
+            var user = await _unitOfWork.Get<User>().GetAsync(u => u.Login.Equals(login)); 
+            
+            return new SuccessResponse<UserDto>(user.ToDto());
         }
 
-        public async Task<User> GetIncludeAllAsync(int id)
+        public async Task<ServiceResponse<UserDto>> GetAsync(int id)
         {
             var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == id);
 
@@ -115,22 +106,19 @@ namespace SORANO.BLL.Services
                 g.DeliveryItem = _unitOfWork.Get<DeliveryItem>().Get(d => d.ID == g.DeliveryItemID);
             });
 
-            return user;           
+            return new SuccessResponse<UserDto>(user.ToDto());           
         }
 
-        public async Task<User> GetAsync(int id)
-        {
-            return await _unitOfWork.Get<User>().GetAsync(u => u.ID == id);         
-        }
-
-        public async Task<User> GetAsync(string login, string password)
+        public async Task<ServiceResponse<UserDto>> GetAsync(string login, string password)
         {
             var hash = CryptoHelper.Hash(password);
 
-            return await _unitOfWork.Get<User>().GetAsync(u => !u.IsBlocked && u.Login.Equals(login) && u.Password.Equals(hash));          
+            var user = await _unitOfWork.Get<User>().GetAsync(u => !u.IsBlocked && u.Login.Equals(login) && u.Password.Equals(hash));   
+            
+            return new SuccessResponse<UserDto>(user.ToDto());
         }
 
-        public async Task ChangePasswordAsync(string login, string newPassword)
+        public async Task<ServiceResponse<bool>> ChangePasswordAsync(string login, string newPassword)
         {
             var user = await _unitOfWork.Get<User>().GetAsync(u => u.Login.Equals(login));
 
@@ -138,19 +126,21 @@ namespace SORANO.BLL.Services
 
             _unitOfWork.Get<User>().Update(user);
 
-            await _unitOfWork.SaveAsync();           
+            await _unitOfWork.SaveAsync();  
+            
+            return new SuccessResponse<bool>(true);
         }
 
-        public async Task<bool> Exists(string login, int userId = 0)
+        public async Task<ServiceResponse<bool>> Exists(string login, int userId = 0)
         {
             if (string.IsNullOrEmpty(login))
             {
-                return false;
+                return new SuccessResponse<bool>(false);
             }
 
             var userWithSameLogin = await _unitOfWork.Get<User>().FindByAsync(u => u.Login.Equals(login) && u.ID != userId);
 
-            return userWithSameLogin.Any();
+            return new SuccessResponse<bool>(userWithSameLogin.Any());
         }
     }
 }

@@ -2,7 +2,6 @@
 
 @{
     var title = Model.IsUpdate ? "Редактирование" : "Создание";
-    var returnUrl = Model.IsUpdate ? Url.Action("Update", "ArticleType") : Url.Action("Create", "ArticleType");
 }
 
 @{
@@ -59,6 +58,14 @@
     @Html.HiddenFor(m => m.MainPicture.FullPath)
     @Html.HiddenFor(m => m.MainPicture.TypeID)
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-dismissible alert-info">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Информация:</strong> Поля, отмеченные символом *, являются обязательными для ввода
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-3 col-md-12 col-sm-12">
             @Html.Partial("~/Views/Shared/_MainPictureForm.cshtml", Model)

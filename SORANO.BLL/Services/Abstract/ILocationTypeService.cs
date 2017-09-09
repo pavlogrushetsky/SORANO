@@ -1,23 +1,23 @@
-﻿using SORANO.CORE.StockEntities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using SORANO.BLL.Dtos;
 
 namespace SORANO.BLL.Services.Abstract
 {
     public interface ILocationTypeService
     {
-        Task<IEnumerable<LocationType>> GetAllAsync(bool withDeleted);
+        Task<ServiceResponse<IEnumerable<LocationTypeDto>>> GetAllAsync(bool withDeleted);
 
-        Task<LocationType> CreateAsync(LocationType locationType, int userId);
+        Task<ServiceResponse<LocationTypeDto>> CreateAsync(LocationTypeDto locationType, int userId);
 
-        Task<LocationType> GetAsync(int id);
+        Task<ServiceResponse<LocationTypeDto>> GetAsync(int id);
 
-        Task<LocationType> UpdateAsync(LocationType locationType, int userId);
+        Task<ServiceResponse<LocationTypeDto>> UpdateAsync(LocationTypeDto locationType, int userId);
 
-        Task DeleteAsync(int id, int userId);
+        Task<ServiceResponse<bool>> DeleteAsync(int id, int userId);
 
-        Task<LocationType> GetIncludeAllAsync(int id);
+        Task<ServiceResponse<LocationTypeDto>> GetIncludeAllAsync(int id);
 
-        Task<bool> Exists(string name, int locationType = 0);
+        Task<ServiceResponse<bool>> Exists(string name, int locationType = 0);
     }
 }
