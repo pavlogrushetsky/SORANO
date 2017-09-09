@@ -2,6 +2,8 @@
 using SORANO.DAL.Repositories;
 using System.Linq;
 using SORANO.BLL.Extensions;
+using SORANO.CORE.AccountEntities;
+using System.Threading.Tasks;
 
 namespace SORANO.BLL.Services
 {
@@ -12,6 +14,13 @@ namespace SORANO.BLL.Services
         protected BaseService(IUnitOfWork unitOfWork)
         {
             UnitOfWork = unitOfWork;
+        }
+
+        protected async Task<bool> IsAccessDenied(int userId)
+        {
+            var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
+
+            return user == null || user.IsBlocked;
         }
 
         protected void UpdateRecommendations(StockEntity from, StockEntity to, int userId)

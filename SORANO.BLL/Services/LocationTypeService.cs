@@ -9,6 +9,7 @@ using SORANO.CORE.AccountEntities;
 using System.Data;
 using System.Linq;
 using SORANO.BLL.Extensions;
+using SORANO.BLL.Dtos;
 
 namespace SORANO.BLL.Services
 {
@@ -64,11 +65,8 @@ namespace SORANO.BLL.Services
             // Get user by specified identifier
             var user = await UnitOfWork.Get<User>().GetAsync(s => s.ID == userId);
 
-            // Check user
-            if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
-            }
+            if (user == null || user.IsBlocked)
+                return new AccessDeniedResponse<LocationTypeDto>();
 
             // Update created and modified fields for location type
             locationType.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
@@ -108,11 +106,8 @@ namespace SORANO.BLL.Services
             // Get user by specified identifier
             var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
 
-            // Check user
-            if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
-            }
+            if (user == null || user.IsBlocked)
+                return new AccessDeniedResponse<LocationTypeDto>();
 
             // Get existent location type by identifier
             var existentLocationType = await UnitOfWork.Get<LocationType>().GetAsync(t => t.ID == locationType.ID);

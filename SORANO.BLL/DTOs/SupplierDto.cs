@@ -1,6 +1,6 @@
 ﻿namespace SORANO.BLL.Dtos
 {
-    public class SupplierDto
+    public class SupplierDto : BaseDto
     {
         
     }

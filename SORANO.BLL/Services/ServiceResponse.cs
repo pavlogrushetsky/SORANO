@@ -1,4 +1,6 @@
-﻿namespace SORANO.BLL.Services
+﻿using SORANO.BLL.Properties;
+
+namespace SORANO.BLL.Services
 {
     public abstract class ServiceResponse<T>
     {
@@ -31,5 +33,15 @@
             Message = message;
             Result = default(T);
         }        
+    }
+
+    public class AccessDeniedResponse<T> : ServiceResponse<T>
+    {
+        public AccessDeniedResponse()
+        {
+            Status = ServiceResponseStatusType.AccessDenied;
+            Message = Resource.UserNotFoundMessage;
+            Result = default(T);
+        }
     }
 }

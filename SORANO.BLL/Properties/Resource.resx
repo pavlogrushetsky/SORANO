@@ -123,17 +123,11 @@
   <data name="UserNotFoundMessage" xml:space="preserve">
     <value>Указанный пользователь не найден.</value>
   </data>
-  <data name="ArticleTypeInvalidIdentifierMessage" xml:space="preserve">
-    <value>Недопустимое значение идентификатора типа артикула.</value>
-  </data>
   <data name="ArticleTypeNotFoundMessage" xml:space="preserve">
     <value>Тип артикулов не найден.</value>
   </data>
   <data name="ArticleCannotBeNullMessage" xml:space="preserve">
     <value>Артикул не может быть null.</value>
-  </data>
-  <data name="ArticleInvalidIdentifierMessage" xml:space="preserve">
-    <value>Недопустимое значение идентификатора артикула.</value>
   </data>
   <data name="ArticleNotFoundMessage" xml:space="preserve">
     <value>Артикул не найден.</value>
@@ -144,9 +138,6 @@
   <data name="SupplierCannotBeNullMessage" xml:space="preserve">
     <value>Поставщик не может быть null.</value>
   </data>
-  <data name="SupplierInvalidIdentifierMessage" xml:space="preserve">
-    <value>Недопустимое значение идентификатора поставщика.</value>
-  </data>
   <data name="SupplierNotFoundMessage" xml:space="preserve">
     <value>Поставщик не найден.</value>
   </data>
@@ -156,9 +147,6 @@
   <data name="LocationTypeCannotBeNullMessage" xml:space="preserve">
     <value>Тип мест не может быть null.</value>
   </data>
-  <data name="LocationTypeInvalidIdentifierMessage" xml:space="preserve">
-    <value>Недопустимое значение идентификатора типа мест.</value>
-  </data>
   <data name="LocationTypeNotFoundMessage" xml:space="preserve">
     <value>Тип мест не найден.</value>
   </data>
@@ -167,9 +155,6 @@
   </data>
   <data name="LocationCannotBeNullMessage" xml:space="preserve">
     <value>Место не может быть null.</value>
-  </data>
-  <data name="LocationInvalidIdentifierMessage" xml:space="preserve">
-    <value>Недопустимое значение идентификатора места.</value>
   </data>
   <data name="UserInvalidIdentifierMessage" xml:space="preserve">
     <value>Недопустимое значение идентификатора пользователя.</value>
@@ -183,9 +168,6 @@
   <data name="AttachmentTypeCannotBeNullMessage" xml:space="preserve">
     <value>Тип вложений не может быть null.</value>
   </data>
-  <data name="AttachmentTypeInvalidIdentifierMessage" xml:space="preserve">
-    <value>Недопустимое значение идентификатора типа вложений.</value>
-  </data>
   <data name="AttachmentTypeNotFoundMessage" xml:space="preserve">
     <value>Тип вложений не найден.</value>
   </data>
@@ -198,17 +180,11 @@
   <data name="ClientCannotBeNullMessage" xml:space="preserve">
     <value>Клиент не может быть null.</value>
   </data>
-  <data name="ClientInvalidIdentifierMessage" xml:space="preserve">
-    <value>Недопустимое значение идентификатора клиента.</value>
-  </data>
   <data name="ClientNotFoundMessage" xml:space="preserve">
     <value>Клиент не найден.</value>
   </data>
   <data name="DeliveryCannotBeNullMessage" xml:space="preserve">
     <value>Поставка не может быть null.</value>
-  </data>
-  <data name="DeliveryInvalidIdentifierMessage" xml:space="preserve">
-    <value>Недопустимое значение идентификатора поставки.</value>
   </data>
   <data name="DeliveryNotFoundMessage" xml:space="preserve">
     <value>Поставка не найден.</value>

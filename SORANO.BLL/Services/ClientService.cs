@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 using SORANO.BLL.Properties;
-using SORANO.CORE.AccountEntities;
 using System.Data;
 using System.Linq;
 using SORANO.BLL.Extensions;
+using SORANO.BLL.Dtos;
+using System;
 
 namespace SORANO.BLL.Services
 {
@@ -18,126 +18,109 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<Client> CreateAsync(Client client, int userId)
+        public async Task<ServiceResponse<ClientDto>> CreateAsync(ClientDto client, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<ClientDto>();
+
             if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client), Resource.ClientCannotBeNullMessage);
-            }
+                throw new ArgumentNullException(nameof(client));
 
-            if (client.ID != 0)
-            {
-                throw new ArgumentException(Resource.ClientInvalidIdentifierMessage, nameof(client.ID));
-            }
+            var entity = client.ToEntity();
 
-            var user = await UnitOfWork.Get<User>().GetAsync(s => s.ID == userId);
+            entity.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-            if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
-            }
-
-            client.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-
-            foreach (var recommendation in client.Recommendations)
+            foreach (var recommendation in entity.Recommendations)
             {
                 recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            foreach (var attachment in client.Attachments)
+            foreach (var attachment in entity.Attachments)
             {
                 attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            var saved = UnitOfWork.Get<Client>().Add(client);
+            var saved = UnitOfWork.Get<Client>().Add(entity);
 
             await UnitOfWork.SaveAsync();
 
-            return saved;
+            return new SuccessResponse<ClientDto>(saved.ToDto());
         }
 
-        public async Task<IEnumerable<Client>> GetAllAsync(bool withDeleted)
+        public async Task<ServiceResponse<IEnumerable<ClientDto>>> GetAllAsync(bool withDeleted, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<IEnumerable<ClientDto>>();
+
+            var response = new SuccessResponse<IEnumerable<ClientDto>>();
+
             var clients = await UnitOfWork.Get<Client>().GetAllAsync();
 
-            if (!withDeleted)
-            {
-                return clients.Where(s => !s.IsDeleted);
-            }
+            response.Result = !withDeleted
+                ? clients.Where(c => !c.IsDeleted).Select(c => c.ToDto())
+                : clients.Select(c => c.ToDto());
 
-            return clients;
+            return response;
         }
 
-        public async Task<Client> GetAsync(int id)
+        public async Task<ServiceResponse<ClientDto>> GetAsync(int id, int userId)
         {
-            return await UnitOfWork.Get<Client>().GetAsync(s => s.ID == id);
-        }
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<ClientDto>();
 
-        public async Task<Client> GetIncludeAllAsync(int id)
-        {
             var client = await UnitOfWork.Get<Client>().GetAsync(s => s.ID == id);
 
-            return client;
+            if (client == null)
+                return new FailResponse<ClientDto>(Resource.ClientNotFoundMessage);
+
+            return new SuccessResponse<ClientDto>(client.ToDto());
         }
 
-        public async Task<Client> UpdateAsync(Client client, int userId)
+        public async Task<ServiceResponse<ClientDto>> UpdateAsync(ClientDto client, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<ClientDto>();
+
             if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client), Resource.ClientCannotBeNullMessage);
-            }
+                throw new ArgumentNullException(nameof(client));
 
-            if (client.ID <= 0)
-            {
-                throw new ArgumentException(Resource.ClientInvalidIdentifierMessage, nameof(client.ID));
-            }
+            var existentEntity = await UnitOfWork.Get<Client>().GetAsync(t => t.ID == client.ID);
 
-            var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
+            if (existentEntity == null)
+                return new FailResponse<ClientDto>(Resource.ClientNotFoundMessage);
 
-            if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
-            }
+            var entity = client.ToEntity();
 
-            var existentClient = await UnitOfWork.Get<Client>().GetAsync(t => t.ID == client.ID);
+            existentEntity.UpdateFields(entity);        
+            existentEntity.UpdateModifiedFields(userId);
 
-            if (existentClient == null)
-            {
-                throw new ObjectNotFoundException(Resource.ClientNotFoundMessage);
-            }
+            UpdateAttachments(entity, existentEntity, userId);
+            UpdateRecommendations(entity, existentEntity, userId);
 
-            existentClient.Name = client.Name;
-            existentClient.Description = client.Description;
-            existentClient.PhoneNumber = client.PhoneNumber;
-            existentClient.CardNumber = client.CardNumber;
-
-            existentClient.UpdateModifiedFields(userId);
-
-            UpdateAttachments(client, existentClient, userId);
-
-            UpdateRecommendations(client, existentClient, userId);
-
-            var updated = UnitOfWork.Get<Client>().Update(existentClient);
+            var updated = UnitOfWork.Get<Client>().Update(existentEntity);
 
             await UnitOfWork.SaveAsync();
 
-            return updated;
+            return new SuccessResponse<ClientDto>(updated.ToDto());
         }
 
-        public async Task DeleteAsync(int id, int userId)
+        public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<int>();
+
             var existentClient = await UnitOfWork.Get<Client>().GetAsync(t => t.ID == id);
 
             if (existentClient.Goods.Any())
-            {
-                throw new Exception(Resource.ClientCannotBeDeletedMessage);
-            }
+                return new FailResponse<int>(Resource.ClientCannotBeDeletedMessage);
 
             existentClient.UpdateDeletedFields(userId);
 
             UnitOfWork.Get<Client>().Update(existentClient);
 
             await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<int>(id);
         }
     }
 }

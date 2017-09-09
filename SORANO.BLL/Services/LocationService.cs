@@ -9,6 +9,7 @@ using SORANO.BLL.Properties;
 using SORANO.CORE.AccountEntities;
 using System.Linq;
 using SORANO.BLL.Extensions;
+using SORANO.BLL.Dtos;
 
 namespace SORANO.BLL.Services
 {
@@ -18,140 +19,122 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<IEnumerable<Location>> GetAllAsync(bool withDeleted)
+        public async Task<ServiceResponse<IEnumerable<LocationDto>>> GetAllAsync(bool withDeleted, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<IEnumerable<LocationDto>>();
+
+            var response = new SuccessResponse<IEnumerable<LocationDto>>();
+
             var locations = await UnitOfWork.Get<Location>().GetAllAsync();
 
-            if (!withDeleted)
-            {
-                return locations.Where(l => !l.IsDeleted);
-            }
+            response.Result = !withDeleted
+                ? locations.Where(l => !l.IsDeleted).Select(l => l.ToDto())
+                : locations.Select(l => l.ToDto());
 
-            return locations;
+            return response;
         }
 
-        public async Task<Location> GetAsync(int id)
+        public async Task<ServiceResponse<LocationDto>> GetAsync(int id, int userId)
         {
-            return await UnitOfWork.Get<Location>().GetAsync(s => s.ID == id);
-        }
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<LocationDto>();
 
-        public async Task<Location> CreateAsync(Location location, int userId)
-        {
-            // Check passed location
+            var location = await UnitOfWork.Get<Location>().GetAsync(s => s.ID == id);
+
             if (location == null)
-            {
-                throw new ArgumentNullException(nameof(location), Resource.LocationCannotBeNullMessage);
-            }
+                return new FailResponse<LocationDto>(Resource.LocationNotFoundMessage);
 
-            // Identifier of new location must be equal 0
-            if (location.ID != 0)
-            {
-                throw new ArgumentException(Resource.LocationInvalidIdentifierMessage, nameof(location.ID));
-            }
+            return new SuccessResponse<LocationDto>(location.ToDto());
+        }
 
-            // Get user by specified identifier
-            var user = await UnitOfWork.Get<User>().GetAsync(s => s.ID == userId);
+        public async Task<ServiceResponse<LocationDto>> CreateAsync(LocationDto location, int userId)
+        {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<LocationDto>();
 
-            // Check user
-            if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
-            }
+            if (location == null)
+                throw new ArgumentNullException(nameof(location));
 
-            // Update created and modified fields for location
-            location.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            var entity = location.ToEntity();
+
+            entity.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
             var type = await UnitOfWork.Get<LocationType>().GetAsync(t => t.ID == location.TypeID);
 
             type.UpdateModifiedFields(userId);
 
-            // Update created and modified fields for each location type recommendation
-            foreach (var recommendation in location.Recommendations)
+            foreach (var recommendation in entity.Recommendations)
             {
                 recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            foreach (var attachment in location.Attachments)
+            foreach (var attachment in entity.Attachments)
             {
                 attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            var saved = UnitOfWork.Get<Location>().Add(location);
+            var saved = UnitOfWork.Get<Location>().Add(entity);
 
             await UnitOfWork.SaveAsync();
 
-            return saved;
+            return new SuccessResponse<LocationDto>(entity.ToDto());
         }
 
-        public async Task<Location> UpdateAsync(Location location, int userId)
+        public async Task<ServiceResponse<LocationDto>> UpdateAsync(LocationDto location, int userId)
         {
-            // Check passed location
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<LocationDto>();
+
             if (location == null)
-            {
-                throw new ArgumentNullException(nameof(location), Resource.LocationCannotBeNullMessage);
-            }
+                throw new ArgumentNullException(nameof(location));
 
-            // Identifier of new location must be > 0
-            if (location.ID <= 0)
-            {
-                throw new ArgumentException(Resource.LocationInvalidIdentifierMessage, nameof(location.ID));
-            }
+            var existentEntity = await UnitOfWork.Get<Location>().GetAsync(l => l.ID == location.ID);
 
-            // Get user by specified identifier
-            var user = await UnitOfWork.Get<User>().GetAsync(s => s.ID == userId);
+            if (existentEntity == null)
+                return new FailResponse<LocationDto>(Resource.LocationNotFoundMessage);
 
-            // Check user
-            if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
-            }
+            var entity = location.ToEntity();
 
-            var existentLocation = await UnitOfWork.Get<Location>().GetAsync(l => l.ID == location.ID);
-
-            if (existentLocation == null)
-            {
-                throw new ObjectNotFoundException(Resource.LocationNotFoundMessage);
-            }
-
-            existentLocation.Name = location.Name;
-            existentLocation.Comment = location.Comment; 
+            existentEntity.UpdateFields(entity);
 
             var type = await UnitOfWork.Get<LocationType>().GetAsync(t => t.ID == location.TypeID);
 
-            if (type.ID != existentLocation.TypeID)
+            if (type.ID != existentEntity.TypeID)
             {
-                existentLocation.Type = type;
+                existentEntity.Type = type;
                 type.UpdateModifiedFields(userId);
             }           
 
-            existentLocation.UpdateModifiedFields(userId);
+            existentEntity.UpdateModifiedFields(userId);
 
-            // Update recommendations
-            UpdateRecommendations(location, existentLocation, userId);
+            UpdateRecommendations(location, existentEntity, userId);
+            UpdateAttachments(location, existentEntity, userId);
 
-            UpdateAttachments(location, existentLocation, userId);
-
-            var saved = UnitOfWork.Get<Location>().Update(existentLocation);
+            var saved = UnitOfWork.Get<Location>().Update(existentEntity);
 
             await UnitOfWork.SaveAsync();
 
-            return saved;
+            return new SuccessResponse<LocationDto>(saved.ToDto());
         }
 
-        public async Task DeleteAsync(int id, int userId)
+        public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<int>();
+
             var existentLocation = await UnitOfWork.Get<Location>().GetAsync(t => t.ID == id);
 
             if (existentLocation.Storages.Any() || existentLocation.SoldGoods.Any())
-            {
-                throw new Exception(Resource.LocationCannotBeDeletedMessage);
-            }
+                return new FailResponse<int>(Resource.LocationCannotBeDeletedMessage);
 
             existentLocation.UpdateDeletedFields(userId);
 
             UnitOfWork.Get<Location>().Update(existentLocation);
 
             await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<int>(id);
         }
 
         public async Task<Dictionary<Location, int>> GetLocationsForArticleAsync(int? articleId, int? except)

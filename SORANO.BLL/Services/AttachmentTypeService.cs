@@ -1,6 +1,5 @@
 ﻿using SORANO.BLL.Properties;
 using SORANO.BLL.Services.Abstract;
-using SORANO.CORE.AccountEntities;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 using System.Collections.Generic;
@@ -8,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SORANO.BLL.Dtos;
 using SORANO.BLL.Extensions;
+using System;
 
 namespace SORANO.BLL.Services
 {
@@ -17,8 +17,11 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<ServiceResponse<IEnumerable<AttachmentTypeDto>>> GetAllAsync(bool includeMainPicture)
+        public async Task<ServiceResponse<IEnumerable<AttachmentTypeDto>>> GetAllAsync(bool includeMainPicture, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<IEnumerable<AttachmentTypeDto>>();
+
             var response = new SuccessResponse<IEnumerable<AttachmentTypeDto>>();
 
             var attachmentTypes = await UnitOfWork.Get<AttachmentType>().GetAllAsync();
@@ -30,8 +33,11 @@ namespace SORANO.BLL.Services
             return response;
         }
 
-        public async Task<ServiceResponse<AttachmentTypeDto>> GetAsync(int id)
+        public async Task<ServiceResponse<AttachmentTypeDto>> GetAsync(int id, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<AttachmentTypeDto>();
+
             var attachmentType = await UnitOfWork.Get<AttachmentType>().GetAsync(a => a.ID == id);
 
             if (attachmentType == null)
@@ -42,16 +48,11 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<AttachmentTypeDto>> CreateAsync(AttachmentTypeDto attachmentType, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<AttachmentTypeDto>();
+
             if (attachmentType == null)
-                return new FailResponse<AttachmentTypeDto>(Resource.AttachmentTypeCannotBeNullMessage);
-
-            if (attachmentType.ID != 0)
-                return new FailResponse<AttachmentTypeDto>(Resource.AttachmentTypeInvalidIdentifierMessage);          
-
-            var user = await UnitOfWork.Get<User>().GetAsync(s => s.ID == userId);
-
-            if (user == null)
-                return new FailResponse<AttachmentTypeDto>(Resource.UserNotFoundMessage);
+                throw new ArgumentNullException(nameof(attachmentType));        
 
             var entity = attachmentType.ToEntity();
 
@@ -66,16 +67,11 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<AttachmentTypeDto>> UpdateAsync(AttachmentTypeDto attachmentType, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<AttachmentTypeDto>();
+
             if (attachmentType == null)
-                return new FailResponse<AttachmentTypeDto>(Resource.AttachmentTypeCannotBeNullMessage);
-
-            if (attachmentType.ID <= 0)
-                return new FailResponse<AttachmentTypeDto>(Resource.AttachmentTypeInvalidIdentifierMessage);          
-
-            var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
-
-            if (user == null)
-                return new FailResponse<AttachmentTypeDto>(Resource.UserNotFoundMessage);
+                throw new ArgumentNullException(nameof(attachmentType));          
 
             var existentEntity = await UnitOfWork.Get<AttachmentType>().GetAsync(t => t.ID == attachmentType.ID);
 
@@ -94,12 +90,15 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<AttachmentTypeDto>(updated.ToDto());
         }
 
-        public async Task<ServiceResponse<bool>> DeleteAsync(int id, int userId)
+        public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<int>();
+
             var existentAttachmentType = await UnitOfWork.Get<AttachmentType>().GetAsync(t => t.ID == id);
 
             if (existentAttachmentType.Attachments.Any())
-                return new FailResponse<bool>(Resource.AttachmentTypeCannotBeDeletedMessage);
+                return new FailResponse<int>(Resource.AttachmentTypeCannotBeDeletedMessage);
 
             existentAttachmentType.UpdateDeletedFields(userId);
 
@@ -107,18 +106,24 @@ namespace SORANO.BLL.Services
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<bool>(true);
+            return new SuccessResponse<int>(id);
         }
 
-        public async Task<ServiceResponse<int>> GetMainPictureTypeIdAsync()
+        public async Task<ServiceResponse<int>> GetMainPictureTypeIdAsync(int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<int>();
+
             var type = await UnitOfWork.Get<AttachmentType>().GetAsync(t => t.Name.Equals("Основное изображение"));
 
             return new SuccessResponse<int>(type.ID);
         }
 
-        public async Task<ServiceResponse<bool>> Exists(string name, int attachmentTypeId = 0)
+        public async Task<ServiceResponse<bool>> Exists(string name, int? attachmentTypeId, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<bool>();
+
             if (string.IsNullOrEmpty(name))
             {
                 return new SuccessResponse<bool>(false);

@@ -1,23 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using SORANO.BLL.Dtos;
 
 namespace SORANO.BLL.Services.Abstract
 {
-    public interface IDeliveryService
+    public interface IDeliveryService : IBaseService<DeliveryDto>
     {
-        Task<ServiceResponse<IEnumerable<DeliveryDto>>> GetAllAsync(bool withDeleted);
+        Task<ServiceResponse<int>> GetUnsubmittedCountAsync(int userId);
 
-        Task<ServiceResponse<DeliveryDto>> GetIncludeAllAsync(int id);
-
-        Task<ServiceResponse<DeliveryDto>> CreateAsync(DeliveryDto delivery, int userId);
-
-        Task<ServiceResponse<DeliveryDto>> UpdateAsync(DeliveryDto delivery, int userId);
-
-        Task<ServiceResponse<bool>> DeleteAsync(int id, int userId);
-
-        Task<ServiceResponse<int>> GetUnsubmittedCountAsync();
-
-        Task<ServiceResponse<int>> GetSubmittedCountAsync();
+        Task<ServiceResponse<int>> GetSubmittedCountAsync(int userId);
     }
 }

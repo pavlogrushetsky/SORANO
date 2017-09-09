@@ -1,6 +1,6 @@
 ﻿namespace SORANO.BLL.Dtos
 {
-    public class LocationDto
+    public class LocationDto : BaseDto
     {
         
     }

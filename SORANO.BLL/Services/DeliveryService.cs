@@ -6,9 +6,9 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 using SORANO.BLL.Properties;
-using SORANO.CORE.AccountEntities;
 using System.Data;
 using SORANO.BLL.Extensions;
+using SORANO.BLL.Dtos;
 
 namespace SORANO.BLL.Services
 {
@@ -18,26 +18,20 @@ namespace SORANO.BLL.Services
         {            
         }
 
-        public async Task<Delivery> CreateAsync(Delivery delivery, int userId)
+        public async Task<ServiceResponse<DeliveryDto>> CreateAsync(DeliveryDto delivery, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<DeliveryDto>();
+
             if (delivery == null)
-            {
-                throw new ArgumentNullException(nameof(delivery), Resource.DeliveryCannotBeNullMessage);
-            }
+                return new FailResponse<DeliveryDto>(Resource.DeliveryCannotBeNullMessage);
 
             if (delivery.ID != 0)
-            {
-                throw new ArgumentException(Resource.DeliveryInvalidIdentifierMessage, nameof(delivery.ID));
-            }
+                return new FailResponse<DeliveryDto>(Resource.DeliveryInvalidIdentifierMessage);
 
-            var user = await UnitOfWork.Get<User>().GetAsync(s => s.ID == userId);
+            var entity = delivery.ToEntity();
 
-            if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
-            }
-
-            delivery.UpdateCreatedFields(userId).UpdateModifiedFields(userId);            
+            entity.UpdateCreatedFields(userId).UpdateModifiedFields(userId);            
 
             var supplier = await UnitOfWork.Get<Supplier>().GetAsync(s => s.ID == delivery.SupplierID);
 
@@ -86,54 +80,35 @@ namespace SORANO.BLL.Services
                 }
             }
 
-            var saved = UnitOfWork.Get<Delivery>().Add(delivery);
+            var saved = UnitOfWork.Get<Delivery>().Add(entity);
 
             await UnitOfWork.SaveAsync();
 
-            return saved;
+            return new SuccessResponse<DeliveryDto>(saved.ToDto());
         }
 
-        public async Task<Delivery> UpdateAsync(Delivery delivery, int userId)
+        public async Task<ServiceResponse<DeliveryDto>> UpdateAsync(DeliveryDto delivery, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<DeliveryDto>();
+
             if (delivery == null)
-            {
-                throw new ArgumentNullException(nameof(delivery), Resource.DeliveryCannotBeNullMessage);
-            }
+                return new FailResponse<DeliveryDto>(Resource.DeliveryCannotBeNullMessage);
 
             if (delivery.ID <= 0)
-            {
-                throw new ArgumentException(Resource.DeliveryInvalidIdentifierMessage, nameof(delivery.ID));
-            }
+                return new FailResponse<DeliveryDto>(Resource.DeliveryInvalidIdentifierMessage);
 
-            var user = await UnitOfWork.Get<User>().GetAsync(s => s.ID == userId);
+            var existentEntity = await UnitOfWork.Get<Delivery>().GetAsync(d => d.ID == delivery.ID);
 
-            if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundMessage);
-            }
+            if (existentEntity == null)
+                return new FailResponse<DeliveryDto>(Resource.DeliveryNotFoundMessage);
 
-            var existentDelivery = await UnitOfWork.Get<Delivery>().GetAsync(d => d.ID == delivery.ID);
+            var entity = delivery.ToEntity();
 
-            if (existentDelivery == null)
-            {
-                throw new ObjectNotFoundException(Resource.DeliveryNotFoundMessage);
-            }
+            existentEntity.UpdateFields(entity);
+            existentEntity.UpdateModifiedFields(userId);
 
-            existentDelivery.BillNumber = delivery.BillNumber;
-            existentDelivery.DeliveryDate = delivery.DeliveryDate;
-            existentDelivery.LocationID = delivery.LocationID;
-            existentDelivery.DollarRate = delivery.DollarRate;
-            existentDelivery.EuroRate = delivery.EuroRate;
-            existentDelivery.IsSubmitted = delivery.IsSubmitted;
-            existentDelivery.PaymentDate = delivery.PaymentDate;
-            existentDelivery.SupplierID = delivery.SupplierID;
-            existentDelivery.TotalDiscount = delivery.TotalDiscount;
-            existentDelivery.TotalDiscountedPrice = delivery.TotalDiscountedPrice;
-            existentDelivery.TotalGrossPrice = delivery.TotalGrossPrice;
-
-            existentDelivery.UpdateModifiedFields(userId);
-
-            UpdateDeliveryItems(delivery, existentDelivery, userId);
+            UpdateDeliveryItems(delivery, existentEntity, userId);
 
             if (delivery.IsSubmitted)
             {
@@ -159,57 +134,60 @@ namespace SORANO.BLL.Services
                 }
             }
 
-            UpdateAttachments(delivery, existentDelivery, userId);
+            UpdateAttachments(delivery, existentEntity, userId);
 
-            UpdateRecommendations(delivery, existentDelivery, userId);
+            UpdateRecommendations(delivery, existentEntity, userId);
 
-            var updated = UnitOfWork.Get<Delivery>().Update(existentDelivery);
+            var updated = UnitOfWork.Get<Delivery>().Update(existentEntity);
 
             await UnitOfWork.SaveAsync();
 
-            return updated;
+            return new SuccessResponse<DeliveryDto>(updated.ToDto());
         }
 
-        public async Task<IEnumerable<Delivery>> GetAllAsync(bool withDeleted)
+        public async Task<ServiceResponse<IEnumerable<DeliveryDto>>> GetAllAsync(bool withDeleted, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<IEnumerable<DeliveryDto>>();
+
+            var response = new SuccessResponse<IEnumerable<DeliveryDto>>();
+
             var deliveries = await UnitOfWork.Get<Delivery>().GetAllAsync();
 
-            if (!withDeleted)
-            {
-                return deliveries.Where(d => !d.IsDeleted);
-            }
+            response.Result = !withDeleted
+                ? deliveries.Where(d => !d.IsDeleted).Select(d => d.ToDto())
+                : deliveries.Select(d => d.ToDto());
 
-            return deliveries;
+            return response;
         }
 
-        public async Task<Delivery> GetIncludeAllAsync(int id)
+        public async Task<ServiceResponse<int>> GetUnsubmittedCountAsync(int userId)
         {
-            var delivery = await UnitOfWork.Get<Delivery>().GetAsync(s => s.ID == id);
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<int>();
 
-            return delivery;
-        }
-
-        public async Task<int> GetUnsubmittedCountAsync()
-        {
             var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(d => !d.IsSubmitted && !d.IsDeleted);
 
-            return deliveries.Count();
+            return new SuccessResponse<int>(deliveries.Count());
         }
 
-        public async Task DeleteAsync(int id, int userId)
+        public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<int>();
+
             var existentDelivery = await UnitOfWork.Get<Delivery>().GetAsync(t => t.ID == id);
 
             if (existentDelivery.IsSubmitted)
-            {
-                throw new Exception(Resource.DeliveryCannotBeDeletedMessage);
-            }
+                return new FailResponse<int>(Resource.DeliveryCannotBeDeletedMessage);
 
             existentDelivery.UpdateDeletedFields(userId);
 
             UnitOfWork.Get<Delivery>().Update(existentDelivery);
 
             await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<int>(id);
         }
 
         private void UpdateDeliveryItems(Delivery from, Delivery to, int userId)
@@ -255,11 +233,14 @@ namespace SORANO.BLL.Services
                 });
         }
 
-        public async Task<int> GetSubmittedCountAsync()
+        public async Task<ServiceResponse<int>> GetSubmittedCountAsync(int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<int>();
+
             var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(d => d.IsSubmitted && !d.IsDeleted);
 
-            return deliveries.Count();
+            return new SuccessResponse<int>(deliveries.Count());
         }
     }
 }

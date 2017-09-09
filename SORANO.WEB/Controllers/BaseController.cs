@@ -5,45 +5,31 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.AccountEntities;
+using SORANO.BLL.Services;
 
 namespace SORANO.WEB.Controllers
 {
-    /// <summary>
-    /// Controller to perform controllers' base functionality
-    /// </summary>
     public class BaseController : Controller
     {
         protected readonly IUserService _userService;
 
-        /// <summary>
-        /// Controller to perform controllers' base functionality
-        /// </summary>
-        /// <param name="userService">Users' service</param>
         public BaseController(IUserService userService)
         {
             _userService = userService;
         }
 
-        /// <summary>
-        /// Context session
-        /// </summary>
         protected ISession Session => HttpContext.Session;
 
-        /// <summary>
-        /// Get currently logged in user
-        /// </summary>
-        /// <returns></returns>
-        protected async Task<User> GetCurrentUser()
+        protected async Task<int> GetCurrentUserId()
         {
-            return await _userService.GetAsync(HttpContext.User.FindFirst(ClaimTypes.Name)?.Value);
+            var result = await _userService.GetAsync(HttpContext.User.FindFirst(ClaimTypes.Name)?.Value);
+
+            if (result.Status == ServiceResponseStatusType.Success)
+                return result.Result.ID;
+
+            return 0;
         }
 
-        /// <summary>
-        /// Try to perform controller logic asynchronously
-        /// </summary>
-        /// <param name="function">Function to try to perform</param>
-        /// <param name="onFault">Function to perform if failed</param>
-        /// <returns>Result</returns>
         protected async Task<IActionResult> TryGetActionResultAsync(Func<Task<IActionResult>> function, Func<string, IActionResult> onFault)
         {
             IActionResult result;
@@ -60,12 +46,6 @@ namespace SORANO.WEB.Controllers
             return result;
         }
 
-        /// <summary>
-        /// Try to perform controller logic
-        /// </summary>
-        /// <param name="function">Function to try to perform</param>
-        /// <param name="onFault">Function to perform if failed</param>
-        /// <returns>Result</returns>
         protected IActionResult TryGetActionResult(Func<IActionResult> function, Func<string, IActionResult> onFault)
         {
             IActionResult result;

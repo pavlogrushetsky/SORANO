@@ -1,6 +1,6 @@
 ﻿namespace SORANO.BLL.Dtos
 {
-    public class AttachmentTypeDto
+    public class AttachmentTypeDto : BaseDto
     {
         public int ID { get; set; }
 

@@ -5,9 +5,9 @@ using SORANO.BLL.Dtos;
 using SORANO.BLL.Extensions;
 using SORANO.BLL.Properties;
 using SORANO.BLL.Services.Abstract;
-using SORANO.CORE.AccountEntities;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
+using System;
 
 namespace SORANO.BLL.Services
 {
@@ -17,8 +17,11 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<ServiceResponse<IEnumerable<ArticleTypeDto>>> GetAllAsync(bool withDeleted)
+        public async Task<ServiceResponse<IEnumerable<ArticleTypeDto>>> GetAllAsync(bool withDeleted, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<IEnumerable<ArticleTypeDto>>();
+
             var response = new SuccessResponse<IEnumerable<ArticleTypeDto>>();
 
             var articleTypes = await UnitOfWork.Get<ArticleType>().GetAllAsync();
@@ -40,8 +43,11 @@ namespace SORANO.BLL.Services
             return response;
         }
 
-        public async Task<ServiceResponse<ArticleTypeDto>> GetAsync(int id)
+        public async Task<ServiceResponse<ArticleTypeDto>> GetAsync(int id, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<ArticleTypeDto>();
+
             var articleType = await UnitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id);
 
             if (articleType == null)
@@ -52,16 +58,11 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<ArticleTypeDto>> CreateAsync(ArticleTypeDto articleType, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<ArticleTypeDto>();
+
             if (articleType == null)
-                return new FailResponse<ArticleTypeDto>(Resource.ArticleTypeCannotBeNullMessage);
-
-            if (articleType.ID != 0)
-                return new FailResponse<ArticleTypeDto>(Resource.ArticleTypeInvalidIdentifierMessage);
-
-            var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
-
-            if (user == null)
-                return new FailResponse<ArticleTypeDto>(Resource.UserNotFoundMessage);
+                throw new ArgumentNullException(nameof(articleType));
 
             var entity = articleType.ToEntity();
 
@@ -86,16 +87,11 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<ArticleTypeDto>> UpdateAsync(ArticleTypeDto articleType, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<ArticleTypeDto>();
+
             if (articleType == null)
-                return new FailResponse<ArticleTypeDto>(Resource.ArticleTypeCannotBeNullMessage);
-
-            if (articleType.ID <= 0)
-                return new FailResponse<ArticleTypeDto>(Resource.ArticleTypeInvalidIdentifierMessage);
-
-            var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
-
-            if (user == null)
-                return new FailResponse<ArticleTypeDto>(Resource.UserNotFoundMessage);
+                throw new ArgumentNullException(nameof(articleType));
 
             var existentEntity = await UnitOfWork.Get<ArticleType>().GetAsync(t => t.ID == articleType.ID);
 
@@ -117,12 +113,15 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<ArticleTypeDto>(updated.ToDto());          
         }
 
-        public async Task<ServiceResponse<bool>> DeleteAsync(int id, int userId)
+        public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<int>();
+
             var existentArticleType = await UnitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id);
 
             if (existentArticleType.Articles.Any())
-                return new FailResponse<bool>(Resource.ArticleTypeCannotBeDeletedMessage);
+                return new FailResponse<int>(Resource.ArticleTypeCannotBeDeletedMessage);
 
             existentArticleType.ChildTypes.ToList().ForEach(t =>
             {
@@ -137,7 +136,7 @@ namespace SORANO.BLL.Services
 
             await UnitOfWork.SaveAsync(); 
             
-            return new SuccessResponse<bool>(true);
+            return new SuccessResponse<int>(id);
         }
     }
 }
