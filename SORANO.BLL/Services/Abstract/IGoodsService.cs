@@ -14,6 +14,6 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<ServiceResponse<decimal>> GetTotalIncomeAsync(int userId);
 
-        Task<ServiceResponse<IEnumerable<AllGoodsDTO>>> GetAllAsync(int userId);
+        Task<ServiceResponse<IEnumerable<AllGoodsDto>>> GetAllAsync(int userId);
     }
 }

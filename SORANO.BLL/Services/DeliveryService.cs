@@ -6,7 +6,6 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 using SORANO.BLL.Properties;
-using System.Data;
 using SORANO.BLL.Extensions;
 using SORANO.BLL.Dtos;
 
@@ -24,10 +23,7 @@ namespace SORANO.BLL.Services
                 return new AccessDeniedResponse<DeliveryDto>();
 
             if (delivery == null)
-                return new FailResponse<DeliveryDto>(Resource.DeliveryCannotBeNullMessage);
-
-            if (delivery.ID != 0)
-                return new FailResponse<DeliveryDto>(Resource.DeliveryInvalidIdentifierMessage);
+                throw new ArgumentNullException(nameof(delivery));
 
             var entity = delivery.ToEntity();
 
@@ -41,24 +37,24 @@ namespace SORANO.BLL.Services
 
             location.UpdateModifiedFields(userId);
 
-            foreach (var item in delivery.Items)
+            foreach (var item in entity.Items)
             {
                 item.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            foreach (var recommendation in delivery.Recommendations)
+            foreach (var recommendation in entity.Recommendations)
             {
                 recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            foreach (var attachment in delivery.Attachments)
+            foreach (var attachment in entity.Attachments)
             {
                 attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            if (delivery.IsSubmitted)
+            if (entity.IsSubmitted)
             {
-                foreach (var item in delivery.Items)
+                foreach (var item in entity.Items)
                 {
                     for (var i = 0; i < item.Quantity; i++)
                     {
@@ -93,10 +89,7 @@ namespace SORANO.BLL.Services
                 return new AccessDeniedResponse<DeliveryDto>();
 
             if (delivery == null)
-                return new FailResponse<DeliveryDto>(Resource.DeliveryCannotBeNullMessage);
-
-            if (delivery.ID <= 0)
-                return new FailResponse<DeliveryDto>(Resource.DeliveryInvalidIdentifierMessage);
+                throw new ArgumentNullException(nameof(delivery));
 
             var existentEntity = await UnitOfWork.Get<Delivery>().GetAsync(d => d.ID == delivery.ID);
 
@@ -108,11 +101,11 @@ namespace SORANO.BLL.Services
             existentEntity.UpdateFields(entity);
             existentEntity.UpdateModifiedFields(userId);
 
-            UpdateDeliveryItems(delivery, existentEntity, userId);
+            UpdateDeliveryItems(entity, existentEntity, userId);
 
-            if (delivery.IsSubmitted)
+            if (entity.IsSubmitted)
             {
-                foreach (var item in delivery.Items)
+                foreach (var item in entity.Items)
                 {
                     for (var i = 0; i < item.Quantity; i++)
                     {
@@ -134,9 +127,8 @@ namespace SORANO.BLL.Services
                 }
             }
 
-            UpdateAttachments(delivery, existentEntity, userId);
-
-            UpdateRecommendations(delivery, existentEntity, userId);
+            UpdateAttachments(entity, existentEntity, userId);
+            UpdateRecommendations(entity, existentEntity, userId);
 
             var updated = UnitOfWork.Get<Delivery>().Update(existentEntity);
 
@@ -192,7 +184,6 @@ namespace SORANO.BLL.Services
 
         private void UpdateDeliveryItems(Delivery from, Delivery to, int userId)
         {
-            // Remove deleted items for existent entity
             to.Items
                 .Where(d => !from.Items.Select(x => x.ID).Contains(d.ID))
                 .ToList()
@@ -202,7 +193,6 @@ namespace SORANO.BLL.Services
                     UnitOfWork.Get<DeliveryItem>().Delete(d);
                 });
 
-            // Update existent items
             from.Items
                 .Where(d => to.Attachments.Select(x => x.ID).Contains(d.ID))
                 .ToList()
@@ -222,7 +212,6 @@ namespace SORANO.BLL.Services
                     di.UpdateModifiedFields(userId);
                 });
 
-            // Add newly created items to existent entity
             from.Items
                 .Where(d => !to.Attachments.Select(x => x.ID).Contains(d.ID))
                 .ToList()
@@ -241,6 +230,19 @@ namespace SORANO.BLL.Services
             var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(d => d.IsSubmitted && !d.IsDeleted);
 
             return new SuccessResponse<int>(deliveries.Count());
+        }
+
+        public async Task<ServiceResponse<DeliveryDto>> GetAsync(int id, int userId)
+        {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<DeliveryDto>();
+
+            var delivery = await UnitOfWork.Get<Delivery>().GetAsync(d => d.ID == id);
+
+            if (delivery == null)
+                return new FailResponse<DeliveryDto>(Resource.DeliveryNotFoundMessage);
+
+            return new SuccessResponse<DeliveryDto>(delivery.ToDto());
         }
     }
 }

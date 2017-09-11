@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace SORANO.CORE.StockEntities
+namespace SORANO.BLL.Dtos
 {
-    public class DeliveryItem : StockEntity
+    public class DeliveryItemDto : BaseDto
     {
         public int DeliveryID { get; set; }
 
@@ -18,10 +18,10 @@ namespace SORANO.CORE.StockEntities
 
         public decimal DiscountedPrice { get; set; }
 
-        public virtual Delivery Delivery { get; set; }
+        public DeliveryDto Delivery { get; set; }
 
-        public virtual Article Article { get; set; }
+        public ArticleDto Article { get; set; }
 
-        public virtual ICollection<Goods> Goods { get; set; } = new HashSet<Goods>();
+        public IEnumerable<GoodsDto> Goods { get; set; }
     }
 }

@@ -117,17 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ArticleTypeCannotBeNullMessage" xml:space="preserve">
-    <value>Тип артикула не может быть null.</value>
-  </data>
   <data name="UserNotFoundMessage" xml:space="preserve">
     <value>Указанный пользователь не найден.</value>
   </data>
   <data name="ArticleTypeNotFoundMessage" xml:space="preserve">
     <value>Тип артикулов не найден.</value>
-  </data>
-  <data name="ArticleCannotBeNullMessage" xml:space="preserve">
-    <value>Артикул не может быть null.</value>
   </data>
   <data name="ArticleNotFoundMessage" xml:space="preserve">
     <value>Артикул не найден.</value>
@@ -135,26 +129,17 @@
   <data name="ArticleCannotBeDeletedMessage" xml:space="preserve">
     <value>Артикул не может быть удалён.</value>
   </data>
-  <data name="SupplierCannotBeNullMessage" xml:space="preserve">
-    <value>Поставщик не может быть null.</value>
-  </data>
   <data name="SupplierNotFoundMessage" xml:space="preserve">
     <value>Поставщик не найден.</value>
   </data>
   <data name="SupplierCannotBeDeletedMessage" xml:space="preserve">
     <value>Поставщик не может быть удалён.</value>
   </data>
-  <data name="LocationTypeCannotBeNullMessage" xml:space="preserve">
-    <value>Тип мест не может быть null.</value>
-  </data>
   <data name="LocationTypeNotFoundMessage" xml:space="preserve">
     <value>Тип мест не найден.</value>
   </data>
   <data name="LocationTypeCannotBeDeletedMessage" xml:space="preserve">
     <value>Тип мест не может быть удалён.</value>
-  </data>
-  <data name="LocationCannotBeNullMessage" xml:space="preserve">
-    <value>Место не может быть null.</value>
   </data>
   <data name="UserInvalidIdentifierMessage" xml:space="preserve">
     <value>Недопустимое значение идентификатора пользователя.</value>
@@ -165,9 +150,6 @@
   <data name="LocationCannotBeDeletedMessage" xml:space="preserve">
     <value>Место не может быть удалено.</value>
   </data>
-  <data name="AttachmentTypeCannotBeNullMessage" xml:space="preserve">
-    <value>Тип вложений не может быть null.</value>
-  </data>
   <data name="AttachmentTypeNotFoundMessage" xml:space="preserve">
     <value>Тип вложений не найден.</value>
   </data>
@@ -177,14 +159,8 @@
   <data name="ClientCannotBeDeletedMessage" xml:space="preserve">
     <value>Клиент не может быть удалён.</value>
   </data>
-  <data name="ClientCannotBeNullMessage" xml:space="preserve">
-    <value>Клиент не может быть null.</value>
-  </data>
   <data name="ClientNotFoundMessage" xml:space="preserve">
     <value>Клиент не найден.</value>
-  </data>
-  <data name="DeliveryCannotBeNullMessage" xml:space="preserve">
-    <value>Поставка не может быть null.</value>
   </data>
   <data name="DeliveryNotFoundMessage" xml:space="preserve">
     <value>Поставка не найден.</value>

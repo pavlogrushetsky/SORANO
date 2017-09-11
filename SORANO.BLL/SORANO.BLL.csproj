@@ -41,7 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dtos\AllGoodsDTO.cs" />
+    <Compile Include="Dtos\AllGoodsDto.cs" />
     <Compile Include="Dtos\ArticleDto.cs" />
     <Compile Include="Dtos\ArticleTypeDto.cs" />
     <Compile Include="Dtos\AttachmentDto.cs" />
@@ -49,8 +49,9 @@
     <Compile Include="Dtos\BaseDto.cs" />
     <Compile Include="Dtos\ClientDto.cs" />
     <Compile Include="Dtos\DeliveryDto.cs" />
+    <Compile Include="Dtos\DeliveryItemDto.cs" />
     <Compile Include="Dtos\GoodsDto.cs" />
-    <Compile Include="Dtos\GoodsGroupDTO.cs" />
+    <Compile Include="Dtos\GoodsGroupDto.cs" />
     <Compile Include="Dtos\LocationDto.cs" />
     <Compile Include="Dtos\LocationTypeDto.cs" />
     <Compile Include="Dtos\RecommendationDto.cs" />
@@ -66,6 +67,9 @@
     <Compile Include="Extensions\LocationExtensions.cs" />
     <Compile Include="Extensions\RecommendationExtensions.cs" />
     <Compile Include="Extensions\RoleExtensions.cs" />
+    <Compile Include="Extensions\LocationTypeExtensions.cs" />
+    <Compile Include="Extensions\GoodsExtensions.cs" />
+    <Compile Include="Extensions\SupplierExtensions.cs" />
     <Compile Include="Extensions\UserExtensions.cs" />
     <Compile Include="Helpers\CryptoHelper.cs" />
     <Compile Include="Extensions\CommonExtensions.cs" />

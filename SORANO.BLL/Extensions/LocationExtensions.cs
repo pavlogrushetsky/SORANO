@@ -1,4 +1,5 @@
-﻿using SORANO.BLL.Dtos;
+﻿using System.Linq;
+using SORANO.BLL.Dtos;
 using SORANO.CORE.StockEntities;
 
 namespace SORANO.BLL.Extensions
@@ -7,18 +8,35 @@ namespace SORANO.BLL.Extensions
     {
         public static LocationDto ToDto(this Location model)
         {
-            return new LocationDto
+            var dto = new LocationDto
             {
-
+                ID = model.ID,
+                Name = model.Name,
+                Comment = model.Comment,
+                TypeID = model.TypeID,
+                Type = model.Type.ToDto()
             };
+
+            dto.MapDetails(model);
+
+            return dto;
         }
 
         public static Location ToEntity(this LocationDto dto)
         {
-            return new Location
+            var entity = new Location
             {
-
+                ID = dto.ID,
+                Name = dto.Name,
+                Comment = dto.Comment,
+                TypeID = dto.TypeID,
+                Recommendations = dto.Recommendations.Select(r => r.ToEntity()).ToList(),
+                Attachments = dto.Attachments.Select(a => a.ToEntity()).ToList()
             };
+
+            entity.Attachments.Add(dto.MainPicture.ToEntity());
+
+            return entity;
         }
 
         public static void UpdateFields(this Location existentLocation, Location newLocation)

@@ -5,8 +5,6 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 using SORANO.BLL.Properties;
-using SORANO.CORE.AccountEntities;
-using System.Data;
 using System.Linq;
 using SORANO.BLL.Extensions;
 using SORANO.BLL.Dtos;
@@ -19,132 +17,109 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<Supplier> CreateAsync(Supplier supplier, int userId)
+        public async Task<ServiceResponse<SupplierDto>> CreateAsync(SupplierDto supplier, int userId)
         {
-            // Check passed supplier
-            if (supplier == null)
-            {
-                throw new ArgumentNullException(nameof(supplier), Resource.SupplierCannotBeNullMessage);
-            }
-
-            // Identifier of new supplier must be equal 0
-            if (supplier.ID != 0)
-            {
-                throw new ArgumentException(Resource.SupplierInvalidIdentifierMessage, nameof(supplier.ID));
-            }
-
-            // Get user by specified identifier
-            var user = await UnitOfWork.Get<User>().GetAsync(s => s.ID == userId);
-
-            if (user == null || user.IsBlocked)
+            if (await IsAccessDenied(userId))
                 return new AccessDeniedResponse<SupplierDto>();
 
-            // Update created and modified fields for supplier
-            supplier.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            if (supplier == null)
+                throw new ArgumentNullException(nameof(supplier));
 
-            // Update created and modified fields for each supplier recommendation
-            foreach (var recommendation in supplier.Recommendations)
+            var entity = supplier.ToEntity();
+
+            entity.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+
+            foreach (var recommendation in entity.Recommendations)
             {
                 recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            foreach (var attachment in supplier.Attachments)
+            foreach (var attachment in entity.Attachments)
             {
                 attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            var saved = UnitOfWork.Get<Supplier>().Add(supplier);
+            var saved = UnitOfWork.Get<Supplier>().Add(entity);
 
             await UnitOfWork.SaveAsync();
 
-            return saved;
+            return new SuccessResponse<SupplierDto>(saved.ToDto());
         }
 
-        public async Task<IEnumerable<Supplier>> GetAllAsync(bool withDeleted)
+        public async Task<ServiceResponse<IEnumerable<SupplierDto>>> GetAllAsync(bool withDeleted, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<IEnumerable<SupplierDto>>();
+
+            var response = new SuccessResponse<IEnumerable<SupplierDto>>();
+
             var suppliers = await UnitOfWork.Get<Supplier>().GetAllAsync();
 
-            if (!withDeleted)
-            {
-                return suppliers.Where(s => !s.IsDeleted);
-            }
+            response.Result = !withDeleted
+                ? suppliers.Where(s => !s.IsDeleted).Select(s => s.ToDto())
+                : suppliers.Select(a => a.ToDto());
 
-            return suppliers;
+            return response;
         }
 
-        public async Task<Supplier> GetAsync(int id)
+        public async Task<ServiceResponse<SupplierDto>> GetAsync(int id, int userId)
         {
-            return await UnitOfWork.Get<Supplier>().GetAsync(s => s.ID == id);
-        }
-
-        public async Task<Supplier> GetIncludeAllAsync(int id)
-        {
-            var supplier = await UnitOfWork.Get<Supplier>().GetAsync(s => s.ID == id);
-
-            return supplier;
-        }
-
-        public async Task<Supplier> UpdateAsync(Supplier supplier, int userId)
-        {
-            // Check passed supplier
-            if (supplier == null)
-            {
-                throw new ArgumentNullException(nameof(supplier), Resource.SupplierCannotBeNullMessage);
-            }
-
-            // Identifier of supplier must be > 0
-            if (supplier.ID <= 0)
-            {
-                throw new ArgumentException(Resource.SupplierInvalidIdentifierMessage, nameof(supplier.ID));
-            }
-
-            // Get user by specified identifier
-            var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
-
-            if (user == null || user.IsBlocked)
+            if (await IsAccessDenied(userId))
                 return new AccessDeniedResponse<SupplierDto>();
 
-            // Get existent supplier by identifier
-            var existentSupplier = await UnitOfWork.Get<Supplier>().GetAsync(t => t.ID == supplier.ID);
+            var supplier = await UnitOfWork.Get<Supplier>().GetAsync(s => s.ID == id);
 
-            // Check existent supplier
-            if (existentSupplier == null)
-            {
-                throw new ObjectNotFoundException(Resource.SupplierNotFoundMessage);
-            }
+            if (supplier == null)
+                return new FailResponse<SupplierDto>(Resource.SupplierNotFoundMessage);
 
-            // Update fields
-            existentSupplier.Name = supplier.Name;
-            existentSupplier.Description = supplier.Description;
+            return new SuccessResponse<SupplierDto>(supplier.ToDto());
+        }
 
-            // Update modified fields for existent article
-            existentSupplier.UpdateModifiedFields(userId);
+        public async Task<ServiceResponse<SupplierDto>> UpdateAsync(SupplierDto supplier, int userId)
+        {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<SupplierDto>();
 
-            UpdateAttachments(supplier, existentSupplier, userId);
+            if (supplier == null)
+                throw new ArgumentNullException(nameof(supplier));
 
-            UpdateRecommendations(supplier, existentSupplier, userId);
+            var existentEntity = await UnitOfWork.Get<Supplier>().GetAsync(t => t.ID == supplier.ID);
 
-            var updated = UnitOfWork.Get<Supplier>().Update(existentSupplier);
+            if (existentEntity == null)
+                return new FailResponse<SupplierDto>(Resource.SupplierNotFoundMessage);
+
+            var entity = supplier.ToEntity();
+
+            existentEntity.UpdateFields(entity);
+            existentEntity.UpdateModifiedFields(userId);
+
+            UpdateAttachments(entity, existentEntity, userId);
+            UpdateRecommendations(entity, existentEntity, userId);
+
+            var updated = UnitOfWork.Get<Supplier>().Update(existentEntity);
 
             await UnitOfWork.SaveAsync();
 
-            return updated;
+            return new SuccessResponse<SupplierDto>(updated.ToDto());
         }
 
-        public async Task DeleteAsync(int id, int userId)
+        public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<int>();
+
             var existentSupplier = await UnitOfWork.Get<Supplier>().GetAsync(t => t.ID == id);
 
             if (existentSupplier.Deliveries.Any())
-            {
-                throw new Exception(Resource.SupplierCannotBeDeletedMessage);
-            }
+                return new FailResponse<int>(Resource.SupplierCannotBeDeletedMessage);
 
             existentSupplier.UpdateDeletedFields(userId);
 
             UnitOfWork.Get<Supplier>().Update(existentSupplier);
 
             await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<int>(id);
         }
     }
 }

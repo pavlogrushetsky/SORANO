@@ -3,10 +3,8 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
 using SORANO.BLL.Properties;
-using SORANO.CORE.AccountEntities;
 using System.Linq;
 using SORANO.BLL.Extensions;
 using SORANO.BLL.Dtos;
@@ -78,7 +76,7 @@ namespace SORANO.BLL.Services
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<LocationDto>(entity.ToDto());
+            return new SuccessResponse<LocationDto>(saved.ToDto());
         }
 
         public async Task<ServiceResponse<LocationDto>> UpdateAsync(LocationDto location, int userId)
@@ -108,8 +106,8 @@ namespace SORANO.BLL.Services
 
             existentEntity.UpdateModifiedFields(userId);
 
-            UpdateRecommendations(location, existentEntity, userId);
-            UpdateAttachments(location, existentEntity, userId);
+            UpdateRecommendations(entity, existentEntity, userId);
+            UpdateAttachments(entity, existentEntity, userId);
 
             var saved = UnitOfWork.Get<Location>().Update(existentEntity);
 
@@ -137,27 +135,30 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<int>(id);
         }
 
-        public async Task<Dictionary<Location, int>> GetLocationsForArticleAsync(int? articleId, int? except)
+        public async Task<ServiceResponse<Dictionary<LocationDto, int>>> GetLocationsForArticleAsync(int? articleId, int? except, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<Dictionary<LocationDto, int>>();
+
             var allGoods = await UnitOfWork.Get<Goods>().GetAllAsync();
-            Dictionary<Location, int> locations;
+            Dictionary<LocationDto, int> locations;
 
             if (!articleId.HasValue || articleId == 0)
             {
                 locations = allGoods.Where(g => !g.SaleDate.HasValue)
                     .GroupBy(g => g.Storages.Single(s => !s.ToDate.HasValue).Location)
-                    .ToDictionary(gr => gr.Key, gr => gr.Count());
+                    .ToDictionary(gr => gr.Key.ToDto(), gr => gr.Count());
             }
             else
             {
                 locations = allGoods.Where(g => !g.SaleDate.HasValue && g.DeliveryItem.ArticleID == articleId)
                         .GroupBy(g => g.Storages.Single(s => !s.ToDate.HasValue).Location)
-                        .ToDictionary(gr => gr.Key, gr => gr.Count());
+                        .ToDictionary(gr => gr.Key.ToDto(), gr => gr.Count());
             }
 
             return !except.HasValue 
-                ? locations 
-                : locations.Where(l => l.Key.ID != except).ToDictionary(l => l.Key, l => l.Value);
+                ? new SuccessResponse<Dictionary<LocationDto, int>>(locations) 
+                : new SuccessResponse<Dictionary<LocationDto, int>>(locations.Where(l => l.Key.ID != except).ToDictionary(l => l.Key, l => l.Value));
         }
     }
 }

@@ -5,6 +5,8 @@ namespace SORANO.BLL.Dtos
 {
     public abstract class BaseDto
     {
+        public int ID { get; set; }
+
         public bool IsDeleted { get; internal set; }
 
         public bool CanBeDeleted { get; internal set; }

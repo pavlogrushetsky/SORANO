@@ -19,7 +19,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
             };
         }
 
-        public static GoodsIndexModel ToIndexModel(this AllGoodsDTO goodsDto)
+        public static GoodsIndexModel ToIndexModel(this AllGoodsDto goodsDto)
         {
             return new GoodsIndexModel
             {
@@ -30,7 +30,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
             };
         }
 
-        public static GoodsGroupModel ToGroupModel(this GoodsGroupDTO groupDto)
+        public static GoodsGroupModel ToGroupModel(this GoodsGroupDto groupDto)
         {
             var price = groupDto.DeliveryPrice.ToString("0.00");
 

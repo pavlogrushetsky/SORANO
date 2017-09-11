@@ -24,8 +24,8 @@ namespace SORANO.BLL.Extensions
                 .Where(a => a.IsDeleted && !a.Type.Name.Equals("Основное изображение"))
                 .Select(a => a.ToDto());
             dto.MainPicture = model.Attachments?
-                                  .SingleOrDefault(a => !a.IsDeleted && a.Type.Name.Equals("Основное изображение"))?
-                                  .ToDto() ?? new AttachmentDto();
+                .SingleOrDefault(a => !a.IsDeleted && a.Type.Name.Equals("Основное изображение"))?
+                .ToDto() ?? new AttachmentDto();
         }
 
         public static StockEntity UpdateCreatedFields(this StockEntity entity, int userId)

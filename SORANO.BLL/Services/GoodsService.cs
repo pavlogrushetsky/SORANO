@@ -16,8 +16,11 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task ChangeLocationAsync(int articleId, int currentLocationId, int targetLocationId, int num, int userId)
+        public async Task<ServiceResponse<int>> ChangeLocationAsync(int articleId, int currentLocationId, int targetLocationId, int num, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<int>();
+
             var storages = await UnitOfWork.Get<Storage>().GetAllAsync();
 
             var currentStorages = storages
@@ -51,13 +54,18 @@ namespace SORANO.BLL.Services
             });
             
             await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<int>(targetLocationId);
         }
 
-        public async Task<List<AllGoodsDTO>> GetAllAsync()
+        public async Task<ServiceResponse<IEnumerable<AllGoodsDto>>> GetAllAsync(int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<IEnumerable<AllGoodsDto>>();
+
             var goods = await UnitOfWork.Get<Goods>().GetAllAsync();
 
-            return goods
+            var result = goods
                 .Where(g => !g.SaleDate.HasValue)
                 .GroupBy(g => new
                 {
@@ -69,13 +77,13 @@ namespace SORANO.BLL.Services
                     g.DeliveryItem.Delivery.EuroRate
                 })
                 .GroupBy(g => g.Key.Article)
-                .Select(g => new AllGoodsDTO
+                .Select(g => new AllGoodsDto
                 {
                     ArticleId = g.Key.ID,
                     ArticleName = g.Key.Name,
                     ArticleImage = g.Key.Attachments.FirstOrDefault(a => a.Type.Name.Equals("Основное изображение"))
                         ?.FullPath,
-                    Goods = g.Select(gr => new GoodsGroupDTO
+                    Goods = g.Select(gr => new GoodsGroupDto
                         {
                             BillNumber = gr.Key.Delivery.BillNumber,
                             Count = gr.Count(),
@@ -89,24 +97,37 @@ namespace SORANO.BLL.Services
                         .ToList()
                 })
                 .ToList();
+
+            return new SuccessResponse<IEnumerable<AllGoodsDto>>(result);
         }
 
-        public async Task<List<Goods>> GetSoldGoodsAsync()
+        public async Task<ServiceResponse<IEnumerable<GoodsDto>>> GetSoldGoodsAsync(int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<IEnumerable<GoodsDto>>();
+
             var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
 
-            return goods.ToList();
+            return new SuccessResponse<IEnumerable<GoodsDto>>(goods.Select(g => g.ToDto()));
         }
 
-        public async Task<decimal> GetTotalIncomeAsync()
+        public async Task<ServiceResponse<decimal>> GetTotalIncomeAsync(int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<decimal>();
+
             var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
 
-            return goods.Sum(g => g.SalePrice.Value);
+            var sum = goods.Sum(g => g.SalePrice.Value);
+
+            return new SuccessResponse<decimal>(sum);
         }
 
-        public async Task SaleAsync(int articleId, int locationId, int clientId, int num, decimal price, int userId)
+        public async Task<ServiceResponse<int>> SaleAsync(int articleId, int locationId, int clientId, int num, decimal price, int userId)
         {
+            if (await IsAccessDenied(userId))
+                return new AccessDeniedResponse<int>();
+
             var storages = await UnitOfWork.Get<Storage>().GetAllAsync();
 
             var currentStorages = storages
@@ -136,6 +157,8 @@ namespace SORANO.BLL.Services
             });
 
             await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<int>(num);
         }
     }
 }

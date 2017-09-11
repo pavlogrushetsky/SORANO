@@ -1,6 +1,6 @@
 ﻿namespace SORANO.BLL.Dtos
 {
-    public class GoodsGroupDTO
+    public class GoodsGroupDto
     {
         public int Count { get; set; }
 
