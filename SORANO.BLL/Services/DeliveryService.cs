@@ -42,15 +42,8 @@ namespace SORANO.BLL.Services
                 item.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            foreach (var recommendation in entity.Recommendations)
-            {
-                recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            }
-
-            foreach (var attachment in entity.Attachments)
-            {
-                attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            }
+            entity.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            entity.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
             if (entity.IsSubmitted)
             {

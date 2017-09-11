@@ -4,7 +4,6 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 using SORANO.BLL.Properties;
-using System.Data;
 using System.Linq;
 using SORANO.BLL.Extensions;
 using SORANO.BLL.Dtos;
@@ -29,16 +28,8 @@ namespace SORANO.BLL.Services
             var entity = client.ToEntity();
 
             entity.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-
-            foreach (var recommendation in entity.Recommendations)
-            {
-                recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            }
-
-            foreach (var attachment in entity.Attachments)
-            {
-                attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            }
+            entity.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            entity.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
             var saved = UnitOfWork.Get<Client>().Add(entity);
 

@@ -67,16 +67,8 @@ namespace SORANO.BLL.Services
             var entity = articleType.ToEntity();
 
             entity.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-
-            foreach (var recommendation in entity.Recommendations)
-            {
-                recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            }
-
-            foreach (var attachment in entity.Attachments)
-            {
-                attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            }
+            entity.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            entity.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
             var saved = UnitOfWork.Get<ArticleType>().Add(entity);
 

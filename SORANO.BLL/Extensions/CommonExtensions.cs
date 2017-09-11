@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SORANO.BLL.Dtos;
 using SORANO.CORE.StockEntities;
@@ -51,6 +52,38 @@ namespace SORANO.BLL.Extensions
             entity.IsDeleted = true;
 
             return entity;
+        }
+
+        public static ICollection<Recommendation> UpdateCreatedFields(this ICollection<Recommendation> recommendations, int userId)
+        {
+            foreach (var recommendation in recommendations)
+                recommendation.UpdateCreatedFields(userId);
+
+            return recommendations;
+        }
+
+        public static ICollection<Recommendation> UpdateModifiedFields(this ICollection<Recommendation> recommendations, int userId)
+        {
+            foreach (var recommendation in recommendations)
+                recommendation.UpdateCreatedFields(userId);
+
+            return recommendations;
+        }
+
+        public static ICollection<Attachment> UpdateCreatedFields(this ICollection<Attachment> attachments, int userId)
+        {
+            foreach (var attachment in attachments)
+                attachment.UpdateCreatedFields(userId);
+
+            return attachments;
+        }
+
+        public static ICollection<Attachment> UpdateModifiedFields(this ICollection<Attachment> attachments, int userId)
+        {
+            foreach (var attachment in attachments)
+                attachment.UpdateCreatedFields(userId);
+
+            return attachments;
         }
     }
 }
