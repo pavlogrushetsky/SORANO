@@ -38,7 +38,7 @@ namespace SORANO.WEB.Controllers
         {
             bool showDeleted = Session.GetBool("ShowDeletedClients");
 
-            var clients = await _clientService.GetAllAsync(showDeleted);
+            var clients = await _clientService.GetAllAsync(showDeleted, UserId);
 
             ViewBag.ShowDeleted = showDeleted;
 
@@ -90,7 +90,7 @@ namespace SORANO.WEB.Controllers
             }
             else
             {
-                var client = await _clientService.GetAsync(id);
+                var client = await _clientService.GetAsync(id, UserId);
 
                 model = client.ToModel();
             }
@@ -106,7 +106,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var client = await _clientService.GetAsync(id);
+            var client = await _clientService.GetAsync(id, UserId);
 
             return View(client.ToModel());
         }
@@ -144,9 +144,7 @@ namespace SORANO.WEB.Controllers
 
                 var client = model.ToEntity();
 
-                var currentUser = await GetCurrentUser();
-
-                client = await _clientService.CreateAsync(client, currentUser.ID);
+                client = await _clientService.CreateAsync(client, UserId);
 
                 if (client != null)
                 {
@@ -185,9 +183,7 @@ namespace SORANO.WEB.Controllers
 
                 var client = model.ToEntity();
 
-                var currentUser = await GetCurrentUser();
-
-                client = await _clientService.UpdateAsync(client, currentUser.ID);
+                client = await _clientService.UpdateAsync(client, UserId);
 
                 if (client != null)
                 {
@@ -211,9 +207,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var currentUser = await GetCurrentUser();
-
-                await _clientService.DeleteAsync(model.ID, currentUser.ID);
+                await _clientService.DeleteAsync(model.ID, UserId);
 
                 return RedirectToAction("Index", "Client");
             }, ex => RedirectToAction("Index", "Client"));

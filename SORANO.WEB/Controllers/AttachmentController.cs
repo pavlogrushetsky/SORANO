@@ -30,7 +30,7 @@ namespace SORANO.WEB.Controllers
                 return BadRequest();
             }
 
-            var attachments = await _attachmentService.GetPicturesExceptAsync(currentMainPictureId);
+            var attachments = await _attachmentService.GetPicturesExceptAsync(currentMainPictureId, UserId);
 
             var model = new SelectMainPictureModel
             {

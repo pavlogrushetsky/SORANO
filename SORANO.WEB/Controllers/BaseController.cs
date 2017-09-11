@@ -4,31 +4,25 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
-using SORANO.CORE.AccountEntities;
 using SORANO.BLL.Services;
 
 namespace SORANO.WEB.Controllers
 {
     public class BaseController : Controller
     {
-        protected readonly IUserService _userService;
+        protected readonly IUserService UserService;
+
+        protected int UserId { get; }
 
         public BaseController(IUserService userService)
         {
-            _userService = userService;
+            UserService = userService;
+            
+            var userResult = UserService.Get(HttpContext.User.FindFirst(ClaimTypes.Name)?.Value);
+            UserId = userResult.Status == ServiceResponseStatusType.Success ? userResult.Result.ID : 0;
         }
 
         protected ISession Session => HttpContext.Session;
-
-        protected async Task<int> GetCurrentUserId()
-        {
-            var result = await _userService.GetAsync(HttpContext.User.FindFirst(ClaimTypes.Name)?.Value);
-
-            if (result.Status == ServiceResponseStatusType.Success)
-                return result.Result.ID;
-
-            return 0;
-        }
 
         protected async Task<IActionResult> TryGetActionResultAsync(Func<Task<IActionResult>> function, Func<string, IActionResult> onFault)
         {

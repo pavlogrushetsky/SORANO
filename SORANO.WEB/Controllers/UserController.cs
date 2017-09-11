@@ -22,70 +22,43 @@ namespace SORANO.WEB.Controllers
 
         #region GET Actions
 
-        /// <summary>
-        /// Get all users
-        /// </summary>
-        /// <returns>List view</returns>
         [HttpGet]
         public async Task<IActionResult> List()
         {
-            var users = await _userService.GetAllIncludeAllAsync();
+            var users = await UserService.GetAllAsync();
 
             var models = new List<UserModel>();
 
-            var currentUser = await GetCurrentUser();
-
             users.ForEach(u =>
             {
-                models.Add(u.ToModel(u.ID == currentUser.ID));
+                models.Add(u.ToModel(u.ID == UserId));
             });
 
             return View(models);
         }
 
-        /// <summary>
-        /// Delete specified user
-        /// </summary>
-        /// <param name="id">User identifier</param>
-        /// <returns>Delete view</returns>
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var user = await _userService.GetIncludeAllAsync(id);
+            var user = await UserService.GetAsync(id);
 
-            var currentUser = await GetCurrentUser();
-
-            return View(user.ToModel(user.ID == currentUser.ID));
+            return View(user.ToModel(user.ID == UserId));
         }
 
-        /// <summary>
-        /// Block specified user
-        /// </summary>
-        /// <param name="id">User identifier</param>
-        /// <returns>Block view</returns>
         [HttpGet]
         public async Task<IActionResult> Block(int id)
         {
-            var user = await _userService.GetAsync(id);
+            var user = await UserService.GetAsync(id);
 
-            var currentUser = await GetCurrentUser();
-
-            return View(user.ToModel(user.ID == currentUser.ID));
+            return View(user.ToModel(user.ID == UserId));
         }
 
-        /// <summary>
-        /// Update specified user
-        /// </summary>
-        /// <param name="id">User identifier</param>
-        /// <returns>Update view</returns>
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {           
-            var user = await _userService.GetAsync(id);
+            var user = await UserService.GetAsync(id);
 
-            var currentUser = await GetCurrentUser();
-
-            var model = user.ToModel(user.ID == currentUser.ID);
+            var model = user.ToModel(user.ID == UserId);
 
             var roles = await _roleService.GetAllAsync();
 
@@ -103,10 +76,6 @@ namespace SORANO.WEB.Controllers
             return View("Create", model);
         }
 
-        /// <summary>
-        /// Create new user
-        /// </summary>
-        /// <returns>Create view</returns>
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -123,19 +92,12 @@ namespace SORANO.WEB.Controllers
             return View(new UserModel());
         }
 
-        /// <summary>
-        /// Get user details
-        /// </summary>
-        /// <param name="id">User identifier</param>
-        /// <returns>Details view</returns>
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var user = await _userService.GetIncludeAllAsync(id);
+            var user = await UserService.GetAsync(id);
 
-            var currentUser = await GetCurrentUser();
-
-            return View(user.ToModel(user.ID == currentUser.ID));
+            return View(user.ToModel(user.ID == UserId));
         }
 
         #endregion
@@ -146,7 +108,7 @@ namespace SORANO.WEB.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete([Bind("ID")]UserModel model)
         {
-            await _userService.DeleteAsync(model.ID);
+            await UserService.DeleteAsync(model.ID);
 
             return RedirectToAction("List");
         }
@@ -155,11 +117,11 @@ namespace SORANO.WEB.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Block([Bind("ID")]UserModel model)
         {
-            var user = await _userService.GetAsync(model.ID);
+            var user = await UserService.GetAsync(model.ID);
 
             user.IsBlocked = !user.IsBlocked;
 
-            await _userService.UpdateAsync(user);
+            await UserService.UpdateAsync(user);
 
             return RedirectToAction("List");
         }
@@ -180,7 +142,7 @@ namespace SORANO.WEB.Controllers
 
                 ViewBag.Roles = userRoles;
 
-                var exists = await _userService.Exists(model.Login, model.ID);
+                var exists = await UserService.Exists(model.Login, model.ID);
 
                 if (exists)
                 {
@@ -195,7 +157,7 @@ namespace SORANO.WEB.Controllers
 
                 var user = model.ToEntity();
 
-                user = await _userService.UpdateAsync(user);
+                user = await UserService.UpdateAsync(user);
 
                 if (user != null)
                 {
@@ -229,7 +191,7 @@ namespace SORANO.WEB.Controllers
 
                 ViewBag.Roles = userRoles;
 
-                var exists = await _userService.Exists(model.Login);
+                var exists = await UserService.Exists(model.Login);
 
                 if (exists)
                 {
@@ -243,7 +205,7 @@ namespace SORANO.WEB.Controllers
 
                 var user = model.ToEntity();
 
-                user = await _userService.CreateAsync(user);
+                user = await UserService.CreateAsync(user);
 
                 if (user != null)
                 {

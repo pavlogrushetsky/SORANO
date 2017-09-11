@@ -45,7 +45,7 @@ namespace SORANO.WEB.Controllers
             var showDeletedLocations = Session.GetBool("ShowDeletedLocations");
             var showDeletedLocationTypes = Session.GetBool("ShowDeletedLocationTypes");
 
-            var locations = await _locationService.GetAllAsync(showDeletedLocations);
+            var locations = await _locationService.GetAllAsync(showDeletedLocations, UserId);
 
             ViewBag.ShowDeletedLocations = showDeletedLocations;
             ViewBag.ShowDeletedLocationTypes = showDeletedLocationTypes;
@@ -108,7 +108,7 @@ namespace SORANO.WEB.Controllers
             }
             else
             {
-                var location = await _locationService.GetAsync(id);
+                var location = await _locationService.GetAsync(id, UserId);
 
                 model = location.ToModel();
             }
@@ -124,7 +124,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var location = await _locationService.GetAsync(id);
+            var location = await _locationService.GetAsync(id, UserId);
 
             return View(location.ToModel());
         }
@@ -132,7 +132,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var location = await _locationService.GetAsync(id);
+            var location = await _locationService.GetAsync(id, UserId);
 
             return View(location.ToModel());
         }
@@ -148,7 +148,6 @@ namespace SORANO.WEB.Controllers
             var attachmentTypes = new List<SelectListItem>();
             var locationTypes = new List<SelectListItem>();
 
-            // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
                 attachmentTypes = await GetAttachmentTypes();
@@ -160,22 +159,15 @@ namespace SORANO.WEB.Controllers
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
-                // Check the model
                 if (!ModelState.IsValid)
                 {
                     return View(model);
                 }                
 
-                // Convert model to location entity
                 var location = model.ToEntity();
 
-                // Get current user
-                var currentUser = await GetCurrentUser();
+                location = await _locationService.CreateAsync(location, UserId);
 
-                // Call correspondent service method to create new location
-                location = await _locationService.CreateAsync(location, currentUser.ID);
-
-                // If succeeded
                 if (location != null)
                 {
                     if (string.IsNullOrEmpty(model.ReturnPath))
@@ -227,29 +219,21 @@ namespace SORANO.WEB.Controllers
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
-                // Check the model
                 if (!ModelState.IsValid)
                 {
                     ViewData["IsEdit"] = true;
                     return View(model);
                 }
 
-                // Convert model to location entity
                 var location = model.ToEntity();
 
-                // Get current user
-                var currentUser = await GetCurrentUser();
+                location = await _locationService.UpdateAsync(location, UserId);
 
-                // Call correspondent service method to update location
-                location = await _locationService.UpdateAsync(location, currentUser.ID);
-
-                // If succeeded
                 if (location != null)
                 {
                     return RedirectToAction("Index", "Location");
                 }
 
-                // If failed
                 ModelState.AddModelError("", "Не удалось обновить место.");
                 ViewData["IsEdit"] = true;
                 return View(model);
@@ -268,9 +252,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var currentUser = await GetCurrentUser();
-
-                await _locationService.DeleteAsync(model.ID, currentUser.ID);
+                await _locationService.DeleteAsync(model.ID, UserId);
 
                 return RedirectToAction("Index", "Location");
             }, ex => RedirectToAction("Index", "Location"));
@@ -309,7 +291,7 @@ namespace SORANO.WEB.Controllers
 
         private async Task<List<SelectListItem>> GetLocationTypes()
         {
-            var types = await _locationTypeService.GetAllAsync(false);
+            var types = await _locationTypeService.GetAllAsync(false, UserId);
 
             var locationTypes = new List<SelectListItem>
             {

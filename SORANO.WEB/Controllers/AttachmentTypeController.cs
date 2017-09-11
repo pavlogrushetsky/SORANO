@@ -34,7 +34,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var result = await AttachmentTypeService.GetAllAsync(true);
+                var result = await AttachmentTypeService.GetAllAsync(true, UserId);
 
                 if (result.Status != ServiceResponseStatusType.Fail)
                 {
@@ -61,7 +61,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var result = await AttachmentTypeService.GetAsync(id);
+                var result = await AttachmentTypeService.GetAsync(id, UserId);
 
                 if (result.Status == ServiceResponseStatusType.Fail)
                 {
@@ -81,7 +81,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var result = await AttachmentTypeService.GetAsync(id);
+                var result = await AttachmentTypeService.GetAsync(id, UserId);
 
                 if (result.Status != ServiceResponseStatusType.Fail)
                 {
@@ -118,9 +118,7 @@ namespace SORANO.WEB.Controllers
 
                 var attachmentType = _mapper.Map<AttachmentTypeDto>(model);
 
-                var currentUser = await GetCurrentUser();
-
-                var result = await AttachmentTypeService.CreateAsync(attachmentType, currentUser.ID);
+                var result = await AttachmentTypeService.CreateAsync(attachmentType, UserId);
 
                 if (result.Status == ServiceResponseStatusType.Success)
                 {
@@ -154,9 +152,7 @@ namespace SORANO.WEB.Controllers
 
                 var attachmentType = _mapper.Map<AttachmentTypeDto>(model);
 
-                var currentUser = await GetCurrentUser();
-
-                var result = await AttachmentTypeService.UpdateAsync(attachmentType, currentUser.ID);
+                var result = await AttachmentTypeService.UpdateAsync(attachmentType, UserId);
 
                 if (result.Status == ServiceResponseStatusType.Success)
                 {
@@ -174,9 +170,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var currentUser = await GetCurrentUser();
-
-                var result = await AttachmentTypeService.DeleteAsync(model.ID, currentUser.ID);
+                var result = await AttachmentTypeService.DeleteAsync(model.ID, UserId);
 
                 if (result.Status == ServiceResponseStatusType.Success)
                 {

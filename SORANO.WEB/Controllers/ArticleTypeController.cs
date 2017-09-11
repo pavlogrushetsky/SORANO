@@ -75,7 +75,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var result = await _articleTypeService.GetAsync(id);
+                var result = await _articleTypeService.GetAsync(id, UserId);
 
                 if (result.Status == ServiceResponseStatusType.Fail)
                 {
@@ -103,7 +103,7 @@ namespace SORANO.WEB.Controllers
                 }
                 else
                 {
-                    var result = await _articleTypeService.GetAsync(id);
+                    var result = await _articleTypeService.GetAsync(id, UserId);
 
                     if (result.Status == ServiceResponseStatusType.Fail)
                     {
@@ -124,7 +124,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var result = await _articleTypeService.GetAsync(id);
+                var result = await _articleTypeService.GetAsync(id, UserId);
 
                 if (result.Status != ServiceResponseStatusType.Fail)
                 {
@@ -141,7 +141,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var result = await _articleTypeService.GetAsync(id);
+                var result = await _articleTypeService.GetAsync(id, UserId);
 
                 if (result.Status != ServiceResponseStatusType.Fail)
                 {
@@ -173,9 +173,7 @@ namespace SORANO.WEB.Controllers
 
                 var articleType = _mapper.Map<ArticleTypeDto>(model);
 
-                var currentUser = await GetCurrentUser();
-
-                var result = await _articleTypeService.CreateAsync(articleType, currentUser.ID);
+                var result = await _articleTypeService.CreateAsync(articleType, UserId);
 
                 if (result.Status == ServiceResponseStatusType.Success && result.Result != null)
                 {
@@ -222,9 +220,7 @@ namespace SORANO.WEB.Controllers
 
                 var articleType = _mapper.Map<ArticleTypeDto>(model);
 
-                var currentUser = await GetCurrentUser();
-
-                var result = await _articleTypeService.UpdateAsync(articleType, currentUser.ID);
+                var result = await _articleTypeService.UpdateAsync(articleType, UserId);
 
                 if (result.Status == ServiceResponseStatusType.Success)
                 {
@@ -242,9 +238,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var currentUser = await GetCurrentUser();
-
-                var result = await _articleTypeService.DeleteAsync(model.ID, currentUser.ID);
+                var result = await _articleTypeService.DeleteAsync(model.ID, UserId);
 
                 if (result.Status == ServiceResponseStatusType.Success)
                 {
@@ -281,7 +275,7 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         public async Task<JsonResult> GetArticleTypes(string term, int currentTypeId = 0)
         {
-            var articleTypes = await _articleTypeService.GetAllAsync(false);
+            var articleTypes = await _articleTypeService.GetAllAsync(false, UserId);
 
             return Json(new
             {

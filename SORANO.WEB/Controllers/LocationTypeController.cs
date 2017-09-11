@@ -80,7 +80,7 @@ namespace SORANO.WEB.Controllers
             }
             else
             {
-                var locationType = await _locationTypeService.GetAsync(id);
+                var locationType = await _locationTypeService.GetAsync(id, UserId);
 
                 model = locationType.ToModel();
             }
@@ -97,7 +97,7 @@ namespace SORANO.WEB.Controllers
         {
             await ClearAttachments();
 
-            var locationType = await _locationTypeService.GetAsync(id);
+            var locationType = await _locationTypeService.GetAsync(id, UserId);
 
             return View(locationType.ToModel());
         }
@@ -107,7 +107,7 @@ namespace SORANO.WEB.Controllers
         {
             await ClearAttachments();
 
-            var locationType = await _locationTypeService.GetIncludeAllAsync(id);
+            var locationType = await _locationTypeService.GetAsync(id, UserId);
 
             return View(locationType.ToModel());
         }
@@ -122,7 +122,6 @@ namespace SORANO.WEB.Controllers
         {
             var attachmentTypes = new List<SelectListItem>();
 
-            // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
                 attachmentTypes = await GetAttachmentTypes();
@@ -138,22 +137,15 @@ namespace SORANO.WEB.Controllers
                     ModelState.AddModelError("Name", "Тип места с таким названием уже существует");
                 }
 
-                // Check the model
                 if (!ModelState.IsValid)
                 {
                     return View(model);
                 }
 
-                // Convert model to location type entity
                 var locationType = model.ToEntity();
 
-                // Get current user
-                var currentUser = await GetCurrentUser();
+                locationType = await _locationTypeService.CreateAsync(locationType, UserId);
 
-                // Call correspondent service method to create new location type
-                locationType = await _locationTypeService.CreateAsync(locationType, currentUser.ID);
-
-                // If succeeded
                 if (locationType != null)
                 {
                     if (string.IsNullOrEmpty(model.ReturnPath))
@@ -209,29 +201,21 @@ namespace SORANO.WEB.Controllers
                     ModelState.AddModelError("Name", "Тип места с таким названием уже существует");
                 }
 
-                // Check the model
                 if (!ModelState.IsValid)
                 {
                     ViewData["IsEdit"] = true;
                     return View("Create", model);
                 }
 
-                // Convert model to location type entity
                 var locationType = model.ToEntity();
 
-                // Get current user
-                var currentUser = await GetCurrentUser();
+                locationType = await _locationTypeService.UpdateAsync(locationType, UserId);
 
-                // Call correspondent service method to update location type
-                locationType = await _locationTypeService.UpdateAsync(locationType, currentUser.ID);
-
-                // If succeeded
                 if (locationType != null)
                 {
                     return RedirectToAction("Index", "Location");
                 }
 
-                // If failed
                 ModelState.AddModelError("", "Не удалось обновить тип мест.");
                 ViewData["IsEdit"] = true;
                 return View("Create", model);
@@ -249,9 +233,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var currentUser = await GetCurrentUser();
-
-                await _locationTypeService.DeleteAsync(model.ID, currentUser.ID);
+                await _locationTypeService.DeleteAsync(model.ID, UserId);
 
                 return RedirectToAction("Index", "Location");
             }, ex => RedirectToAction("Index", "Location"));

@@ -142,5 +142,12 @@ namespace SORANO.BLL.Services
 
             return new SuccessResponse<bool>(userWithSameLogin.Any());
         }
+
+        public ServiceResponse<UserDto> Get(string login)
+        {
+            var user = _unitOfWork.Get<User>().Get(u => u.Login.Equals(login));
+
+            return new SuccessResponse<UserDto>(user.ToDto());
+        }
     }
 }

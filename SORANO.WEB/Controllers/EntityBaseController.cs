@@ -66,7 +66,7 @@ namespace SORANO.WEB.Controllers
 
             if (cachedModel.MainPicture.ID > 0)
             {
-                hasThisMainPicture = await AttachmentService.HasMainPictureAsync(cachedModel.ID, cachedModel.MainPicture.ID);
+                hasThisMainPicture = await AttachmentService.HasMainPictureAsync(cachedModel.ID, cachedModel.MainPicture.ID, );
             }
                                 
             if (hasThisMainPicture)
@@ -154,7 +154,7 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         public virtual async Task<string> GetMimeType(int id)
         {
-            var type = await AttachmentTypeService.GetAsync(id);
+            var type = await AttachmentTypeService.GetAsync(id, UserId);
 
             return type.ToModel().MimeTypes;
         }
@@ -256,7 +256,7 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         public async Task<JsonResult> GetAttachmentTypes(string term)
         {
-            var attachmentTypes = await AttachmentTypeService.GetAllAsync(false);
+            var attachmentTypes = await AttachmentTypeService.GetAllAsync(false, UserId);
 
             return Json(new
             {
@@ -272,7 +272,7 @@ namespace SORANO.WEB.Controllers
 
         protected virtual async Task<int> GetMainPictureTypeID()
         {
-            var result = await AttachmentTypeService.GetMainPictureTypeIdAsync();
+            var result = await AttachmentTypeService.GetMainPictureTypeIdAsync(UserId);
 
             return result.Result;
         }
@@ -345,7 +345,7 @@ namespace SORANO.WEB.Controllers
             }
 
             var files = Directory.GetFiles(path);
-            var attachments = await AttachmentService.GetAllForAsync(_entityTypeName);
+            var attachments = await AttachmentService.GetAllForAsync(_entityTypeName, UserId);
             var fileNames = attachments.Select(Path.GetFileName).ToList();
 
             foreach (var file in files)

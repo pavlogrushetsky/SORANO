@@ -38,7 +38,7 @@ namespace SORANO.WEB.Controllers
         {
             bool showDeleted = Session.GetBool("ShowDeletedSuppliers");
 
-            var suppliers = await _supplierService.GetAllAsync(showDeleted);
+            var suppliers = await _supplierService.GetAllAsync(showDeleted, UserId);
 
             ViewBag.ShowDeleted = showDeleted;
 
@@ -91,7 +91,7 @@ namespace SORANO.WEB.Controllers
             }
             else
             {
-                var supplier = await _supplierService.GetAsync(id);
+                var supplier = await _supplierService.GetAsync(id, UserId);
 
                 model = supplier.ToModel();
             }
@@ -107,7 +107,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var supplier = await _supplierService.GetAsync(id);
+            var supplier = await _supplierService.GetAsync(id, UserId);
 
             return View(supplier.ToModel());
         }
@@ -115,7 +115,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var supplier = await _supplierService.GetIncludeAllAsync(id);
+            var supplier = await _supplierService.GetAsync(id, UserId);
 
             return View(supplier.ToModel());
         }
@@ -148,11 +148,7 @@ namespace SORANO.WEB.Controllers
                 // Convert model to supplier entity
                 var supplier = model.ToEntity();
 
-                // Get current user
-                var currentUser = await GetCurrentUser();
-
-                // Call correspondent service method to create new supplier
-                supplier = await _supplierService.CreateAsync(supplier, currentUser.ID);
+                supplier = await _supplierService.CreateAsync(supplier, UserId);
 
                 // If succeeded
                 if (supplier != null)
@@ -194,7 +190,6 @@ namespace SORANO.WEB.Controllers
         {
             var attachmentTypes = new List<SelectListItem>();
 
-            // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
                 attachmentTypes = await GetAttachmentTypes();
@@ -203,29 +198,21 @@ namespace SORANO.WEB.Controllers
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
-                // Check the model
                 if (!ModelState.IsValid)
                 {
                     ViewData["IsEdit"] = true;
                     return View("Create", model);
                 }
 
-                // Convert model to supplier entity
                 var supplier = model.ToEntity();
 
-                // Get current user
-                var currentUser = await GetCurrentUser();
+                supplier = await _supplierService.UpdateAsync(supplier, UserId);
 
-                // Call correspondent service method to update supplier
-                supplier = await _supplierService.UpdateAsync(supplier, currentUser.ID);
-
-                // If succeeded
                 if (supplier != null)
                 {
                     return RedirectToAction("Index", "Supplier");
                 }
 
-                // If failed
                 ModelState.AddModelError("", "Не удалось обновить поставщика.");
                 ViewData["IsEdit"] = true;
                 return View("Create", model);
@@ -243,9 +230,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var currentUser = await GetCurrentUser();
-
-                await _supplierService.DeleteAsync(model.ID, currentUser.ID);
+                await _supplierService.DeleteAsync(model.ID, UserId);
 
                 return RedirectToAction("Index", "Supplier");
             }, ex => RedirectToAction("Index", "Supplier"));

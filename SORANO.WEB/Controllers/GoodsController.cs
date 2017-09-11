@@ -32,7 +32,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var goods = await _goodsService.GetAllAsync();
+            var goods = await _goodsService.GetAllAsync(await UserId());
 
             return View(goods.Select(g => g.ToIndexModel()).ToList());
         }
@@ -40,7 +40,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Sales()
         {
-            var goods = await _goodsService.GetSoldGoodsAsync();
+            var goods = await _goodsService.GetSoldGoodsAsync(await UserId());
 
             var sales = goods.GroupBy(g => new { g.ClientID, g.DeliveryItem.ArticleID, g.SaleLocationID, g.SaleDate.Value.Date, g.SalePrice })
                     .Select(g => new SaleModel
@@ -65,14 +65,14 @@ namespace SORANO.WEB.Controllers
             var locationName = string.Empty;
             if (currentLocationId.HasValue)
             {
-                var location = await _locationService.GetAsync(currentLocationId.Value);
+                var location = await _locationService.GetAsync(currentLocationId.Value, UserId);
                 locationName = location?.Name;
             }
 
             var articleName = string.Empty;
             if (articleId.HasValue)
             {
-                var article = await _articleService.GetAsync(articleId.Value);
+                var article = await _articleService.GetAsync(articleId.Value, UserId);
                 articleName = article.Result?.Name;//TODO
             }
 
@@ -93,8 +93,8 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> ChangeLocation(int articleId, int currentLocationId, int maxCount, string returnUrl)
         {
-            var currentLocation = await _locationService.GetAsync(currentLocationId);
-            var article = await _articleService.GetAsync(articleId);
+            var currentLocation = await _locationService.GetAsync(currentLocationId, UserId);
+            var article = await _articleService.GetAsync(articleId, UserId);
 
             return View(new GoodsChangeLocationModel
             {
@@ -122,9 +122,7 @@ namespace SORANO.WEB.Controllers
                     return View(model);
                 }
 
-                var currentUser = await GetCurrentUser();
-
-                await _goodsService.ChangeLocationAsync(model.ArticleID, model.CurrentLocationID, model.TargetLocationID, model.Count, currentUser.ID);
+                await _goodsService.ChangeLocationAsync(model.ArticleID, model.CurrentLocationID, model.TargetLocationID, model.Count, UserId);
 
                 return Redirect(model.ReturnUrl);
             }, ex =>
@@ -145,11 +143,9 @@ namespace SORANO.WEB.Controllers
                     return View(model);
                 }
 
-                var currentUser = await GetCurrentUser();
-
                 var parsed = decimal.TryParse(model.SalePrice, NumberStyles.Any, new CultureInfo("en-US"), out decimal salePrice);
 
-                await _goodsService.SaleAsync(model.ArticleID, model.LocationID, model.ClientID, model.Count, salePrice, currentUser.ID);
+                await _goodsService.SaleAsync(model.ArticleID, model.LocationID, model.ClientID, model.Count, salePrice, UserId);
 
                 return Redirect(model.ReturnUrl);
             }, ex =>
@@ -165,7 +161,7 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         public async Task<JsonResult> GetClients(string term)
         {
-            var clients = await _clientService.GetAllAsync(false);
+            var clients = await _clientService.GetAllAsync(false, UserId);
 
             return Json(new
             {
@@ -182,7 +178,7 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         public async Task<JsonResult> GetArticles(string term, int? locationId)
         {
-            var articles = await _articleService.GetArticlesForLocationAsync(locationId);
+            var articles = await _articleService.GetArticlesForLocationAsync(locationId, UserId);
 
             return Json(new
             {
@@ -200,7 +196,7 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         public async Task<JsonResult> GetLocations(string term, int? articleId, int? except)
         {
-            var locations = await _locationService.GetLocationsForArticleAsync(articleId, except);
+            var locations = await _locationService.GetLocationsForArticleAsync(articleId, except, await UserId());
 
             return Json(new
             {

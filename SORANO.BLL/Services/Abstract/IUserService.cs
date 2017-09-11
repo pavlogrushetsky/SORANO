@@ -12,6 +12,8 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<ServiceResponse<UserDto>> GetAsync(int id);
 
+        ServiceResponse<UserDto> Get(string login);
+
         Task<ServiceResponse<IEnumerable<UserDto>>> GetAllAsync();
 
         Task<ServiceResponse<UserDto>> CreateAsync(UserDto user);

@@ -47,7 +47,7 @@ namespace SORANO.WEB.Controllers
         {
             var showDeleted = Session.GetBool("ShowDeletedDeliveries");
 
-            var deliveries = await _deliveryService.GetAllAsync(showDeleted);
+            var deliveries = await _deliveryService.GetAllAsync(showDeleted, UserId);
 
             ViewBag.ShowDeleted = showDeleted;
 
@@ -290,9 +290,7 @@ namespace SORANO.WEB.Controllers
 
                 var delivery = model.ToEntity();
 
-                var currentUser = await GetCurrentUser();
-
-                delivery = await _deliveryService.CreateAsync(delivery, currentUser.ID);
+                delivery = await _deliveryService.CreateAsync(delivery, UserId);
 
                 if (delivery != null)
                 {
@@ -357,9 +355,7 @@ namespace SORANO.WEB.Controllers
 
                 var delivery = model.ToEntity();
 
-                var currentUser = await GetCurrentUser();
-
-                delivery = await _deliveryService.UpdateAsync(delivery, currentUser.ID);
+                delivery = await _deliveryService.UpdateAsync(delivery, UserId);
 
                 if (delivery != null)
                 {
@@ -392,9 +388,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var currentUser = await GetCurrentUser();
-
-                await _deliveryService.DeleteAsync(model.ID, currentUser.ID);
+                await _deliveryService.DeleteAsync(model.ID, UserId);
 
                 return RedirectToAction("Index", "Delivery");
             }, ex => RedirectToAction("Index", "Delivery"));
@@ -404,7 +398,7 @@ namespace SORANO.WEB.Controllers
 
         private async Task<List<SelectListItem>> GetSuppliers()
         {
-            var suppliers = await _supplierService.GetAllAsync(false);
+            var suppliers = await _supplierService.GetAllAsync(false, UserId);
 
             var supplierItems = new List<SelectListItem>
             {
@@ -428,7 +422,7 @@ namespace SORANO.WEB.Controllers
 
         private async Task<List<SelectListItem>> GetLocations()
         {
-            var locations = await _locationService.GetAllAsync(false);
+            var locations = await _locationService.GetAllAsync(false, UserId);
 
             var locationItems = new List<SelectListItem>
             {
@@ -452,7 +446,7 @@ namespace SORANO.WEB.Controllers
 
         private async Task<List<SelectListItem>> GetArticles()
         {
-            var articles = await _articleService.GetAllAsync(false);
+            var articles = await _articleService.GetAllAsync(false, UserId);
 
             var articleItems = new List<SelectListItem>
             {
