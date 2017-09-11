@@ -200,7 +200,7 @@ namespace SORANO.WEB.Controllers
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
-                var barcodeExists = await _articleService.BarcodeExistsAsync(model.Barcode);
+                var barcodeExists = await _articleService.BarcodeExistsAsync(model.Barcode, null, UserId);
 
                 if (barcodeExists.Status == ServiceResponseStatusType.Fail)
                 {

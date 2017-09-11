@@ -32,7 +32,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var goods = await _goodsService.GetAllAsync(await UserId());
+            var goods = await _goodsService.GetAllAsync(UserId);
 
             return View(goods.Select(g => g.ToIndexModel()).ToList());
         }
@@ -40,7 +40,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Sales()
         {
-            var goods = await _goodsService.GetSoldGoodsAsync(await UserId());
+            var goods = await _goodsService.GetSoldGoodsAsync(UserId);
 
             var sales = goods.GroupBy(g => new { g.ClientID, g.DeliveryItem.ArticleID, g.SaleLocationID, g.SaleDate.Value.Date, g.SalePrice })
                     .Select(g => new SaleModel
@@ -196,7 +196,7 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         public async Task<JsonResult> GetLocations(string term, int? articleId, int? except)
         {
-            var locations = await _locationService.GetLocationsForArticleAsync(articleId, except, await UserId());
+            var locations = await _locationService.GetLocationsForArticleAsync(articleId, except, UserId);
 
             return Json(new
             {

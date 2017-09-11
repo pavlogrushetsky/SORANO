@@ -66,7 +66,7 @@ namespace SORANO.WEB.Controllers
 
             if (cachedModel.MainPicture.ID > 0)
             {
-                hasThisMainPicture = await AttachmentService.HasMainPictureAsync(cachedModel.ID, cachedModel.MainPicture.ID, );
+                hasThisMainPicture = await AttachmentService.HasMainPictureAsync(cachedModel.ID, cachedModel.MainPicture.ID, UserId);
             }
                                 
             if (hasThisMainPicture)

@@ -21,8 +21,8 @@ namespace SORANO.WEB.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var deliveriesCount = await _deliveryService.GetSubmittedCountAsync(await UserId());
-            var totalIncome = await _goodsService.GetTotalIncomeAsync(await UserId());
+            var deliveriesCount = await _deliveryService.GetSubmittedCountAsync(UserId);
+            var totalIncome = await _goodsService.GetTotalIncomeAsync(UserId);
 
             return View(new DashboardModel
             {
