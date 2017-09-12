@@ -276,7 +276,7 @@ namespace SORANO.WEB.Controllers
                 }
 
                 TempData["Success"] = $"Артикул \"{model.Name}\" был успешно обновлён";
-                return RedirectToAction("Index", "Article");
+                return RedirectToAction("Index");
             }, OnFault);
         }
 

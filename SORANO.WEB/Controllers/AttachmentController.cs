@@ -2,12 +2,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
-using System.Linq;
+using AutoMapper;
 using Microsoft.Extensions.Caching.Memory;
+using SORANO.BLL.Services;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.Attachment;
 
 namespace SORANO.WEB.Controllers
 {
@@ -17,64 +19,95 @@ namespace SORANO.WEB.Controllers
     {
         private readonly IAttachmentService _attachmentService;
         private readonly IMemoryCache _memoryCache;
+        private readonly IMapper _mapper;
 
-        public AttachmentController(IAttachmentService attachmentService, IUserService userService, IMemoryCache memoryCache) : base(userService)
+        public AttachmentController(IAttachmentService attachmentService, 
+            IUserService userService, 
+            IMemoryCache memoryCache, 
+            IMapper mapper) : base(userService)
         {
             _attachmentService = attachmentService;
             _memoryCache = memoryCache;
+            _mapper = mapper;
         }
+
+        #region GET Actions
 
         [HttpGet]
         public async Task<IActionResult> SelectMainPicture(int currentMainPictureId, string returnUrl)
         {
-            if (string.IsNullOrEmpty(returnUrl))
+            return await TryGetActionResultAsync(async () =>
             {
-                return BadRequest();
-            }
-
-            var attachments = await _attachmentService.GetPicturesExceptAsync(currentMainPictureId, UserId);
-
-            var model = new SelectMainPictureModel
-            {
-                ReturnUrl = returnUrl,
-                Pictures = attachments.Select(a => a.ToModel()).ToList()
-            };
-
-            return View(model);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Select(SelectMainPictureModel model)
-        {
-            if (model.SelectedID > 0)
-            {
-                if (_memoryCache.TryGetValue(CacheKeys.SelectMainPictureCacheKey, out EntityBaseModel cachedModel))
-                {
-                    cachedModel.MainPicture = model.Pictures.Single(p => p.ID == model.SelectedID);
-                    _memoryCache.Set(CacheKeys.SelectMainPictureCacheKey, cachedModel);
-                    Session.SetBool(CacheKeys.SelectMainPictureCacheValidKey, true);
-                }
-                else
+                if (string.IsNullOrEmpty(returnUrl))
                 {
                     return BadRequest();
                 }
-            }
-            else
-            {
-                Session.SetBool(CacheKeys.SelectMainPictureCacheValidKey, true);
-            }
 
-            return Redirect(model.ReturnUrl);
+                var picturesResult = await _attachmentService.GetPicturesExceptAsync(currentMainPictureId);
+
+                if (picturesResult.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось получить изображения.";
+                    return Redirect(returnUrl);
+                }
+
+                var viewModel = _mapper.Map<SelectMainPictureViewModel>(picturesResult.Result);
+                viewModel.ReturnUrl = returnUrl;
+
+                return View(viewModel);
+            }, ex =>
+            {
+                TempData["Error"] = "Не удалось получить изображения.";
+                return Redirect(returnUrl);
+            });
+        }
+
+        #endregion
+
+        #region POST Actions
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Select(SelectMainPictureViewModel model)
+        {
+            return TryGetActionResult(() =>
+            {
+                if (model.SelectedID > 0)
+                {
+                    if (_memoryCache.TryGetValue(CacheKeys.SelectMainPictureCacheKey, out EntityBaseModel cachedModel))
+                    {
+                        // TODO
+                        //cachedModel.MainPicture = model.Pictures.Single(p => p.ID == model.SelectedID);
+                        _memoryCache.Set(CacheKeys.SelectMainPictureCacheKey, cachedModel);
+                        Session.SetBool(CacheKeys.SelectMainPictureCacheValidKey, true);
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
+                }
+                else
+                {
+                    Session.SetBool(CacheKeys.SelectMainPictureCacheValidKey, true);
+                }
+
+                return Redirect(model.ReturnUrl);
+            }, ex =>
+            {
+                TempData["Error"] = "Не удалось выбрать изображение.";
+                return Redirect(model.ReturnUrl);
+            });            
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Cancel(SelectMainPictureModel model)
+        public IActionResult Cancel(SelectMainPictureViewModel model)
         {
             Session.SetBool(CacheKeys.SelectMainPictureCacheValidKey, true);
 
             return Redirect(model.ReturnUrl);
         }
+
+        #endregion
     }
 }

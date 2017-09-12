@@ -43,7 +43,12 @@ namespace SORANO.BLL.Services
         public async Task<ServiceResponse<AttachmentTypeDto>> CreateAsync(AttachmentTypeDto attachmentType, int userId)
         {
             if (attachmentType == null)
-                throw new ArgumentNullException(nameof(attachmentType));        
+                throw new ArgumentNullException(nameof(attachmentType));
+
+            var attachmentTypes = await UnitOfWork.Get<AttachmentType>().FindByAsync(t => t.Name.Equals(attachmentType.Name) && t.ID != attachmentType.ID);
+
+            if (attachmentTypes.Any())
+                return new ServiceResponse<AttachmentTypeDto>(ServiceResponseStatus.AlreadyExists);
 
             var entity = attachmentType.ToEntity();
 
@@ -65,6 +70,11 @@ namespace SORANO.BLL.Services
 
             if (existentEntity == null)
                 return new ServiceResponse<AttachmentTypeDto>(ServiceResponseStatus.NotFound);
+
+            var attachmentTypes = await UnitOfWork.Get<AttachmentType>().FindByAsync(t => t.Name.Equals(attachmentType.Name) && t.ID != attachmentType.ID);
+
+            if (attachmentTypes.Any())
+                return new ServiceResponse<AttachmentTypeDto>(ServiceResponseStatus.AlreadyExists);
 
             var entity = attachmentType.ToEntity();
 
@@ -104,18 +114,6 @@ namespace SORANO.BLL.Services
             var type = await UnitOfWork.Get<AttachmentType>().GetAsync(t => t.Name.Equals("Основное изображение"));
 
             return new SuccessResponse<int>(type.ID);
-        }
-
-        public async Task<ServiceResponse<bool>> Exists(string name, int? attachmentTypeId, int userId)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                return new SuccessResponse<bool>(false);
-            }
-
-            var attachmentTypes = await UnitOfWork.Get<AttachmentType>().FindByAsync(t => t.Name.Equals(name) && t.ID != attachmentTypeId);
-
-            return new SuccessResponse<bool>(attachmentTypes.Any());
         }
     }
 }

@@ -74,6 +74,12 @@ namespace SORANO.BLL.Services
             if (existentEntity == null)
                 return new ServiceResponse<ArticleDto>(ServiceResponseStatus.NotFound);
 
+            var articlesWithSameBarcode = await UnitOfWork.Get<Article>()
+                .FindByAsync(a => a.Barcode.Equals(article.Barcode) && a.ID != article.ID);
+
+            if (articlesWithSameBarcode.Any())
+                return new ServiceResponse<ArticleDto>(ServiceResponseStatus.AlreadyExists);
+
             var entity = article.ToEntity();
 
             existentEntity.UpdateFields(entity);

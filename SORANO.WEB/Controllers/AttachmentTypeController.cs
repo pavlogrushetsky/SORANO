@@ -36,15 +36,15 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var result = await AttachmentTypeService.GetAllAsync(true, UserId);
+                var result = await AttachmentTypeService.GetAllAsync(true);
 
-                if (result.Status != ServiceResponseStatus.Fail)
+                if (result.Status != ServiceResponseStatus.Success)
                 {
-                    return View(_mapper.Map<IEnumerable<AttachmentTypeIndexViewModel>>(result.Result));
+                    TempData["Error"] = "Не удалось получить список типов вложений.";
+                    return RedirectToAction("Index", "Home");
                 }
-
-                TempData["Error"] = result.Message;
-                return RedirectToAction("Index", "Home");
+               
+                return View(_mapper.Map<IEnumerable<AttachmentTypeIndexViewModel>>(result.Result));
             }, ex =>
             {
                 TempData["Error"] = ex;
@@ -63,11 +63,11 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var result = await AttachmentTypeService.GetAsync(id, UserId);
+                var result = await AttachmentTypeService.GetAsync(id);
 
-                if (result.Status == ServiceResponseStatus.Fail)
+                if (result.Status != ServiceResponseStatus.Success)
                 {
-                    TempData["Error"] = result.Message;
+                    TempData["Error"] = "Не удалось найти указанный тип вложений.";
                     return RedirectToAction("Index");
                 }
 
@@ -83,15 +83,15 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var result = await AttachmentTypeService.GetAsync(id, UserId);
+                var result = await AttachmentTypeService.GetAsync(id);
 
-                if (result.Status != ServiceResponseStatus.Fail)
+                if (result.Status != ServiceResponseStatus.Success)
                 {
-                    return View(_mapper.Map<AttachmentTypeDeleteViewModel>(result.Result));
+                    TempData["Error"] = "Не удалось найти указанный тип вложений.";
+                    return RedirectToAction("Index");
                 }
-
-                TempData["Error"] = result.Message;
-                return RedirectToAction("Index");
+                
+                return View(_mapper.Map<AttachmentTypeDeleteViewModel>(result.Result));
             }, OnFault);            
         }
 
@@ -105,14 +105,6 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                // TODO Move to service
-                //var exists = await AttachmentTypeService.Exists(model.Name);
-
-                //if (exists)
-                //{
-                //    ModelState.AddModelError("Name", "Тип вложений с таким названием уже существует");
-                //}
-
                 if (!ModelState.IsValid)
                 {
                     return View(model);
@@ -122,14 +114,19 @@ namespace SORANO.WEB.Controllers
 
                 var result = await AttachmentTypeService.CreateAsync(attachmentType, UserId);
 
-                if (result.Status == ServiceResponseStatus.Success)
+                switch (result.Status)
                 {
-                    TempData["Success"] = $"Тип вложений \"{model.Name}\" был успешно создан";
-                    return RedirectToAction("Index");
+                    case ServiceResponseStatus.NotFound:
+                    case ServiceResponseStatus.InvalidOperation:
+                        TempData["Error"] = "Не удалось создать тип вложений.";
+                        return RedirectToAction("Index");
+                    case ServiceResponseStatus.AlreadyExists:
+                        ModelState.AddModelError("Name", "Тип вложений с таким названием уже существует.");
+                        return View(model);
                 }
 
-                TempData["Error"] = result.Message;
-                return View(model);
+                TempData["Success"] = $"Тип вложений \"{model.Name}\" был успешно создан.";
+                return RedirectToAction("Index");
             }, OnFault);
         }
 
@@ -139,14 +136,6 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                // TODO Move to service
-                //var exists = await AttachmentTypeService.Exists(model.Name, model.ID);
-
-                //if (exists)
-                //{
-                //    ModelState.AddModelError("Name", "Тип вложений с таким названием уже существует");
-                //}
-
                 if (!ModelState.IsValid)
                 {
                     return View("Create", model);
@@ -156,14 +145,19 @@ namespace SORANO.WEB.Controllers
 
                 var result = await AttachmentTypeService.UpdateAsync(attachmentType, UserId);
 
-                if (result.Status == ServiceResponseStatus.Success)
+                switch (result.Status)
                 {
-                    TempData["Success"] = $"Тип вложений \"{model.Name}\" был успешно обновлён";
-                    return RedirectToAction("Index");
+                    case ServiceResponseStatus.NotFound:
+                    case ServiceResponseStatus.InvalidOperation:
+                        TempData["Error"] = "Не удалось обновить тип вложений.";
+                        return RedirectToAction("Index");
+                    case ServiceResponseStatus.AlreadyExists:
+                        ModelState.AddModelError("Name", "Тип вложений с таким названием уже существует.");
+                        return View("Create", model);
                 }
 
-                TempData["Error"] = result.Message;
-                return View("Create", model);
+                TempData["Success"] = $"Тип вложений \"{model.Name}\" был успешно обновлён.";
+                return RedirectToAction("Index");
             }, OnFault);
         }
 
@@ -176,11 +170,11 @@ namespace SORANO.WEB.Controllers
 
                 if (result.Status == ServiceResponseStatus.Success)
                 {
-                    TempData["Success"] = $"Тип вложений \"{model.Name}\" был успешно помечен как удалённый";
+                    TempData["Success"] = $"Тип вложений \"{model.Name}\" был успешно помечен как удалённый.";
                 }
                 else
                 {
-                    TempData["Error"] = result.Message;
+                    TempData["Error"] = "Не удалось удалить тип вложений.";
                 }
 
                 return RedirectToAction("Index");
