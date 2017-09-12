@@ -26,14 +26,12 @@ namespace SORANO.WEB.Infrastructure.Filters
             {
                 var userResult = await _userService.GetAsync(context.HttpContext.User.FindFirst(ClaimTypes.Name)?.Value);
 
-                var isBlocked = userResult.Status == ServiceResponseStatus.Fail
+                var isBlocked = userResult.Status != ServiceResponseStatus.Success
                                 || userResult.Result == null
                                 || userResult.Result.IsBlocked;
 
                 if (isBlocked)
                     context.Result = new RedirectToActionResult("Logout", "Account", null);
-
-                await next();
             }
         }
     }

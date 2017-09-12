@@ -6,8 +6,6 @@ namespace SORANO.BLL.Services.Abstract
 {
     public interface IArticleService : IBaseService<ArticleDto>
     {
-        Task<ServiceResponse<bool>> BarcodeExistsAsync(string barcode, int? articleId);
-
         Task<ServiceResponse<IDictionary<ArticleDto, int>>> GetArticlesForLocationAsync(int? locationId);
     }
 }

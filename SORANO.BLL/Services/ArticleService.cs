@@ -45,6 +45,12 @@ namespace SORANO.BLL.Services
             if (article == null)
                 throw new ArgumentNullException(nameof(article));
 
+            var articlesWithSameBarcode = await UnitOfWork.Get<Article>()
+                .FindByAsync(a => a.Barcode.Equals(article.Barcode) && a.ID != article.ID);
+
+            if (articlesWithSameBarcode.Any())
+                return new ServiceResponse<ArticleDto>(ServiceResponseStatus.AlreadyExists);
+
             var entity = article.ToEntity();
 
             entity.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
@@ -103,18 +109,6 @@ namespace SORANO.BLL.Services
         }
 
         #endregion
-
-        public async Task<ServiceResponse<bool>> BarcodeExistsAsync(string barcode, int? articleId)
-        {
-            if (string.IsNullOrEmpty(barcode))
-            {
-                return new SuccessResponse<bool>();
-            }
-
-            var articlesWithSameBarcode = await UnitOfWork.Get<Article>().FindByAsync(a => a.Barcode.Equals(barcode) && a.ID != articleId);
-
-            return new SuccessResponse<bool>(articlesWithSameBarcode.Any());
-        }
 
         public async Task<ServiceResponse<IDictionary<ArticleDto, int>>> GetArticlesForLocationAsync(int? locationId)
         {

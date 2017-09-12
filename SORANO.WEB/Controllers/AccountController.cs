@@ -38,20 +38,22 @@ namespace SORANO.WEB.Controllers
 
             var result = await UserService.GetAsync(model.Login, model.Password);
 
-            if (result.Status == ServiceResponseStatus.Success)
+            if (result.Status != ServiceResponseStatus.Success)
             {
-                if (result.Result != null)
-                {
-                    await Authenticate(result.Result, model.RememberMe);
-
-                    return string.IsNullOrEmpty(model.ReturnUrl) || model.ReturnUrl.Equals("/")
-                        ? RedirectToAction("Index", "Home")
-                        : (IActionResult)Redirect(model.ReturnUrl);
-                }
-
-                ModelState.AddModelError(nameof(model.Login), "Некорректные логин и/или пароль");
-                ModelState.AddModelError(nameof(model.Password), "Некорректные логин и/или пароль");
+                return View(model);
             }
+
+            if (result.Result != null)
+            {
+                await Authenticate(result.Result, model.RememberMe);
+
+                return string.IsNullOrEmpty(model.ReturnUrl) || model.ReturnUrl.Equals("/")
+                    ? RedirectToAction("Index", "Home")
+                    : (IActionResult)Redirect(model.ReturnUrl);
+            }
+
+            ModelState.AddModelError(nameof(model.Login), "Некорректные логин и/или пароль");
+            ModelState.AddModelError(nameof(model.Password), "Некорректные логин и/или пароль");
 
             return View(model);
         }
@@ -82,7 +84,7 @@ namespace SORANO.WEB.Controllers
         public async Task<IActionResult> ChangePassword(int id, string returnUrl = null)
         {
             var result = await UserService.GetAsync(id);
-            if (result.Status == ServiceResponseStatus.Fail || result.Result == null)
+            if (result.Status != ServiceResponseStatus.Success || result.Result == null)
             {
                 return NotFound();
             }

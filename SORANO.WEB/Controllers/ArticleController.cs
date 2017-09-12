@@ -51,11 +51,11 @@ namespace SORANO.WEB.Controllers
                 var showDeletedArticles = Session.GetBool("ShowDeletedArticles");
                 var showDeletedArticleTypes = Session.GetBool("ShowDeletedArticleTypes");
 
-                var result = await _articleService.GetAllAsync(showDeletedArticles, UserId);
+                var articlesResult = await _articleService.GetAllAsync(showDeletedArticles);
 
-                if (result.Status == ServiceResponseStatus.Fail)
+                if (articlesResult.Status != ServiceResponseStatus.Success)
                 {
-                    TempData["Error"] = result.Message;
+                    TempData["Error"] = "Не удалось получить список артикулов.";
                     return RedirectToAction("Index", "Home");
                 }
 
@@ -64,7 +64,7 @@ namespace SORANO.WEB.Controllers
 
                 await ClearAttachments();
 
-                return View(_mapper.Map<IEnumerable<ArticleIndexViewModel>>(result.Result));
+                return View(_mapper.Map<IEnumerable<ArticleIndexViewModel>>(articlesResult.Result));
             }, ex =>
             {
                 TempData["Error"] = ex;
@@ -127,11 +127,11 @@ namespace SORANO.WEB.Controllers
                 }
                 else
                 {
-                    var result = await _articleService.GetAsync(id, UserId);
+                    var result = await _articleService.GetAsync(id);
 
-                    if (result.Status == ServiceResponseStatus.Fail)
+                    if (result.Status != ServiceResponseStatus.Success)
                     {
-                        TempData["Error"] = result.Message;
+                        TempData["Error"] = "Не удалось найти указанный артикул.";
                         return RedirectToAction("Index");
                     }
                     
@@ -148,15 +148,15 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var result = await _articleService.GetAsync(id, UserId);
+                var result = await _articleService.GetAsync(id);
 
-                if (result.Status != ServiceResponseStatus.Fail)
+                if (result.Status != ServiceResponseStatus.Success)
                 {
-                    return View(_mapper.Map<ArticleDetailsViewModel>(result.Result));
-                }
+                    TempData["Error"] = "Не удалось найти указанный артикул.";
+                    return RedirectToAction("Index");
+                }               
 
-                TempData["Error"] = result.Message;
-                return RedirectToAction("Index");
+                return View(_mapper.Map<ArticleDetailsViewModel>(result.Result));
             }, OnFault);            
         }
 
@@ -165,15 +165,15 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var result = await _articleService.GetAsync(id, UserId);
+                var result = await _articleService.GetAsync(id);
 
-                if (result.Status != ServiceResponseStatus.Fail)
+                if (result.Status != ServiceResponseStatus.Success)
                 {
-                    return View(_mapper.Map<ArticleDeleteViewModel>(result.Result));
-                }
+                    TempData["Error"] = "Не удалось найти указанный артикул.";
+                    return RedirectToAction("Index");
+                }               
 
-                TempData["Error"] = result.Message;
-                return RedirectToAction("Index");
+                return View(_mapper.Map<ArticleDeleteViewModel>(result.Result));
             }, OnFault);            
         }        
 
@@ -202,19 +202,6 @@ namespace SORANO.WEB.Controllers
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
-                var barcodeExists = await _articleService.BarcodeExistsAsync(model.Barcode, null, UserId);
-
-                if (barcodeExists.Status == ServiceResponseStatus.Fail)
-                {
-                    TempData["Error"] = barcodeExists.Message;
-                    return RedirectToAction("Index");
-                }
-
-                if (barcodeExists.Result)
-                {
-                    ModelState.AddModelError("Barcode", "Артикул с таким штрих-кодом уже существует");
-                }
-
                 if (!ModelState.IsValid)
                 {                   
                     return View(model);
@@ -224,32 +211,38 @@ namespace SORANO.WEB.Controllers
 
                 var result = await _articleService.CreateAsync(article, UserId);
 
-                if (result.Status == ServiceResponseStatus.Success && result.Result != null)
+                switch (result.Status)
                 {
-                    if (string.IsNullOrEmpty(model.ReturnPath))
-                    {
-                        TempData["Success"] = $"Артикул \"{model.Name}\" был успешно создан";
+                    case ServiceResponseStatus.NotFound:
+                    case ServiceResponseStatus.InvalidOperation:
+                        TempData["Error"] = "Не удалось создать артикул.";
                         return RedirectToAction("Index");
-                    }
-
-                    // TODO
-                    //if (MemoryCache.TryGetValue(CacheKeys.CreateArticleCacheKey, out DeliveryModel cachedDelivery))
-                    //{
-                    //    cachedDelivery.DeliveryItems[cachedDelivery.CurrentItemNumber].Article = model;
-                    //    cachedDelivery.DeliveryItems[cachedDelivery.CurrentItemNumber].ArticleID = article.ID.ToString();
-                    //    MemoryCache.Set(CacheKeys.CreateArticleCacheKey, cachedDelivery);
-                    //    Session.SetBool(CacheKeys.CreateArticleCacheValidKey, true);
-                    //}
-                    //else
-                    //{
-                    //    return BadRequest();
-                    //}
-
-                    return Redirect(model.ReturnPath);
+                    case ServiceResponseStatus.AlreadyExists:
+                        ModelState.AddModelError("Barcode", "Артикул с таким штрих-кодом уже существует.");
+                        return View(model);
                 }
 
-                TempData["Error"] = result.Message;
-                return View(model);
+                TempData["Success"] = $"Артикул \"{model.Name}\" был успешно создан.";
+
+                if (string.IsNullOrEmpty(model.ReturnPath))
+                {
+                    return RedirectToAction("Index");
+                }
+
+                // TODO
+                //if (MemoryCache.TryGetValue(CacheKeys.CreateArticleCacheKey, out DeliveryModel cachedDelivery))
+                //{
+                //    cachedDelivery.DeliveryItems[cachedDelivery.CurrentItemNumber].Article = model;
+                //    cachedDelivery.DeliveryItems[cachedDelivery.CurrentItemNumber].ArticleID = article.ID.ToString();
+                //    MemoryCache.Set(CacheKeys.CreateArticleCacheKey, cachedDelivery);
+                //    Session.SetBool(CacheKeys.CreateArticleCacheValidKey, true);
+                //}
+                //else
+                //{
+                //    return BadRequest();
+                //}
+
+                return Redirect(model.ReturnPath);
             }, OnFault);
         }
 
@@ -262,19 +255,6 @@ namespace SORANO.WEB.Controllers
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
-                var barcodeExists = await _articleService.BarcodeExistsAsync(model.Barcode, model.ID, UserId);
-
-                if (barcodeExists.Status == ServiceResponseStatus.Fail)
-                {
-                    TempData["Error"] = barcodeExists.Message;
-                    return RedirectToAction("Index");
-                }
-
-                if (barcodeExists.Result)
-                {
-                    ModelState.AddModelError("Barcode", "Артикул с таким штрих-кодом уже существует");
-                }
-
                 if (!ModelState.IsValid)
                 {
                     return View("Create", model);
@@ -284,14 +264,19 @@ namespace SORANO.WEB.Controllers
 
                 var result = await _articleService.UpdateAsync(article, UserId);
 
-                if (result.Status == ServiceResponseStatus.Success)
+                switch (result.Status)
                 {
-                    TempData["Success"] = $"Артикул \"{model.Name}\" был успешно обновлён";
-                    return RedirectToAction("Index", "Article");
+                    case ServiceResponseStatus.NotFound:
+                    case ServiceResponseStatus.InvalidOperation:
+                        TempData["Error"] = "Не удалось обновить артикул.";
+                        return RedirectToAction("Index");
+                    case ServiceResponseStatus.AlreadyExists:
+                        ModelState.AddModelError("Barcode", "Артикул с таким штрих-кодом уже существует.");
+                        return View("Create", model);
                 }
 
-                TempData["Error"] = result.Message;
-                return View("Create", model);
+                TempData["Success"] = $"Артикул \"{model.Name}\" был успешно обновлён";
+                return RedirectToAction("Index", "Article");
             }, OnFault);
         }
 
@@ -300,15 +285,15 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var result = await _articleService.DeleteAsync(model.ID, UserId);
+                var result = await _articleService.DeleteAsync(model.ID, UserId);               
 
                 if (result.Status == ServiceResponseStatus.Success)
                 {
-                    TempData["Success"] = $"Артикул \"{model.Name}\" был успешно помечен как удалённый";
+                    TempData["Success"] = $"Артикул \"{model.Name}\" был успешно помечен как удалённый.";
                 }
                 else
                 {
-                    TempData["Error"] = result.Message;
+                    TempData["Error"] = "Не удалось удалить артикул.";
                 }
                 
                 return RedirectToAction("Index");
@@ -337,7 +322,7 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         public async Task<JsonResult> GetArticleTypes(string term)
         {
-            var articleTypes = await _articleTypeService.GetAllAsync(false, UserId);
+            var articleTypes = await _articleTypeService.GetAllAsync(false);
 
             return Json(new
             {

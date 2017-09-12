@@ -4,7 +4,8 @@
     {
         Success,
         NotFound,
-        InvalidOperation
+        InvalidOperation,
+        AlreadyExists
     }
 
     public class ServiceResponse<T>
