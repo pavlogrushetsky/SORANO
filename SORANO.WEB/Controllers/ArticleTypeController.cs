@@ -40,6 +40,25 @@ namespace SORANO.WEB.Controllers
         #region GET Actions
 
         [HttpGet]
+        public async Task<IActionResult> Brief(int id)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _articleTypeService.GetAsync(id);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанный тип артикулов.";
+                    return RedirectToAction("Index", "Article");
+                }
+
+                await ClearAttachments();
+
+                return PartialView("_Brief", _mapper.Map<ArticleTypeBriefViewModel>(result.Result));
+            }, OnFault);
+        }
+
+        [HttpGet]
         public IActionResult ShowDeleted(bool show)
         {
             Session.SetBool("ShowDeletedArticleTypes", show);
@@ -70,26 +89,7 @@ namespace SORANO.WEB.Controllers
 
                 return View(model);
             }, OnFault);            
-        }        
-
-        [HttpGet]
-        public async Task<IActionResult> Brief(int id)
-        {
-            return await TryGetActionResultAsync(async () =>
-            {
-                var result = await _articleTypeService.GetAsync(id, UserId);
-
-                if (result.Status == ServiceResponseStatus.Fail)
-                {
-                    TempData["Error"] = result.Message;
-                    return RedirectToAction("Index", "Article");
-                }
-
-                await ClearAttachments();
-
-                return PartialView("_Brief", _mapper.Map<ArticleTypeBriefViewModel>(result.Result));
-            }, OnFault);           
-        }
+        }                
 
         [HttpGet]
         public async Task<IActionResult> Update(int id)
@@ -105,11 +105,11 @@ namespace SORANO.WEB.Controllers
                 }
                 else
                 {
-                    var result = await _articleTypeService.GetAsync(id, UserId);
+                    var result = await _articleTypeService.GetAsync(id);
 
-                    if (result.Status == ServiceResponseStatus.Fail)
+                    if (result.Status != ServiceResponseStatus.Success)
                     {
-                        TempData["Error"] = result.Message;
+                        TempData["Error"] = "Не удалось найти указанный тип артикулов.";
                         return RedirectToAction("Index", "Article");
                     }
 
@@ -122,38 +122,38 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Delete(int id)
-        {
-            return await TryGetActionResultAsync(async () =>
-            {
-                var result = await _articleTypeService.GetAsync(id, UserId);
-
-                if (result.Status != ServiceResponseStatus.Fail)
-                {
-                    return View(_mapper.Map<ArticleTypeDeleteViewModel>(result.Result));
-                }
-
-                TempData["Error"] = result.Message;
-                return RedirectToAction("Index", "Article");
-            }, OnFault);
-        }
-
-        [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var result = await _articleTypeService.GetAsync(id, UserId);
+                var result = await _articleTypeService.GetAsync(id);
 
-                if (result.Status != ServiceResponseStatus.Fail)
+                if (result.Status != ServiceResponseStatus.Success)
                 {
-                    return View(_mapper.Map<ArticleTypeDetailsViewModel>(result.Result));
+                    TempData["Error"] = "Не удалось найти указанный тип артикулов.";
+                    return RedirectToAction("Index", "Article");
                 }
-
-                TempData["Error"] = result.Message;
-                return RedirectToAction("Index", "Article");
-            }, OnFault);           
+               
+                return View(_mapper.Map<ArticleTypeDetailsViewModel>(result.Result));
+            }, OnFault);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _articleTypeService.GetAsync(id);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанный тип артикулов.";
+                    return RedirectToAction("Index", "Article");
+                }
+               
+                return View(_mapper.Map<ArticleTypeDeleteViewModel>(result.Result));
+            }, OnFault);
+        }        
 
         #endregion
 
@@ -177,32 +177,34 @@ namespace SORANO.WEB.Controllers
 
                 var result = await _articleTypeService.CreateAsync(articleType, UserId);
 
-                if (result.Status == ServiceResponseStatus.Success && result.Result != null)
+                if (result.Status == ServiceResponseStatus.NotFound ||
+                    result.Status == ServiceResponseStatus.InvalidOperation)
                 {
-                    if (string.IsNullOrEmpty(model.ReturnPath))
-                    {
-                        TempData["Success"] = $"Тип артикула \"{model.Name}\" был успешно создан";
-                        return RedirectToAction("Index", "Article");
-                    }
-
-                    // TODO
-                    //if (MemoryCache.TryGetValue(CacheKeys.CreateArticleTypeCacheKey, out ArticleModel cachedArticle))
-                    //{
-                    //    cachedArticle.TypeID = articleType.ID.ToString();
-                    //    cachedArticle.Type = articleType.ToModel();
-                    //    MemoryCache.Set(CacheKeys.CreateArticleTypeCacheKey, cachedArticle);
-                    //    Session.SetBool(CacheKeys.CreateArticleTypeCacheValidKey, true);
-                    //}
-                    //else
-                    //{
-                    //    return BadRequest();
-                    //}
-
-                    return Redirect(model.ReturnPath);
+                    TempData["Error"] = "Не удалось создать тип артикулов.";
+                    return RedirectToAction("Index", "Article");
                 }
 
-                TempData["Error"] = result.Message;
-                return View(model);
+                TempData["Success"] = $"Тип артикулов \"{model.Name}\" был успешно создан.";
+
+                if (string.IsNullOrEmpty(model.ReturnPath))
+                {
+                    return RedirectToAction("Index", "Article");
+                }
+
+                // TODO
+                //if (MemoryCache.TryGetValue(CacheKeys.CreateArticleTypeCacheKey, out ArticleModel cachedArticle))
+                //{
+                //    cachedArticle.TypeID = articleType.ID.ToString();
+                //    cachedArticle.Type = articleType.ToModel();
+                //    MemoryCache.Set(CacheKeys.CreateArticleTypeCacheKey, cachedArticle);
+                //    Session.SetBool(CacheKeys.CreateArticleTypeCacheValidKey, true);
+                //}
+                //else
+                //{
+                //    return BadRequest();
+                //}
+
+                return Redirect(model.ReturnPath);
             }, OnFault);            
         }
 
@@ -224,14 +226,15 @@ namespace SORANO.WEB.Controllers
 
                 var result = await _articleTypeService.UpdateAsync(articleType, UserId);
 
-                if (result.Status == ServiceResponseStatus.Success)
+                if (result.Status == ServiceResponseStatus.NotFound ||
+                    result.Status == ServiceResponseStatus.InvalidOperation)
                 {
-                    TempData["Success"] = $"Тип артикула \"{model.Name}\" был успешно обновлён";
+                    TempData["Error"] = "Не удалось обновить тип артикулов.";
                     return RedirectToAction("Index", "Article");
                 }
 
-                TempData["Error"] = result.Message;
-                return View("Create", model);
+                TempData["Success"] = $"Тип артикулов \"{model.Name}\" был успешно обновлён.";
+                return RedirectToAction("Index", "Article");
             }, OnFault);            
         }
 
@@ -244,11 +247,11 @@ namespace SORANO.WEB.Controllers
 
                 if (result.Status == ServiceResponseStatus.Success)
                 {
-                    TempData["Success"] = $"Тип артикула \"{model.Name}\" был успешно помечен как удалённый";
+                    TempData["Success"] = $"Тип артикулов \"{model.Name}\" был успешно помечен как удалённый.";
                 }
                 else
                 {
-                    TempData["Error"] = result.Message;
+                    TempData["Error"] = "Не удалось обновить тип артикулов.";
                 }
 
                 return RedirectToAction("Index", "Article");
@@ -277,7 +280,7 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         public async Task<JsonResult> GetArticleTypes(string term, int currentTypeId = 0)
         {
-            var articleTypes = await _articleTypeService.GetAllAsync(false, UserId);
+            var articleTypes = await _articleTypeService.GetAllAsync(false);
 
             return Json(new
             {
