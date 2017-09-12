@@ -5,8 +5,8 @@ namespace SORANO.BLL.Services.Abstract
 {
     public interface IDeliveryService : IBaseService<DeliveryDto>
     {
-        Task<ServiceResponse<int>> GetUnsubmittedCountAsync(int userId);
+        Task<ServiceResponse<int>> GetUnsubmittedCountAsync();
 
-        Task<ServiceResponse<int>> GetSubmittedCountAsync(int userId);
+        Task<ServiceResponse<int>> GetSubmittedCountAsync();
     }
 }

@@ -6,11 +6,13 @@ using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Extensions;
+using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
+    [CheckUserFilter]
     public class AttachmentController : BaseController
     {
         private readonly IAttachmentService _attachmentService;

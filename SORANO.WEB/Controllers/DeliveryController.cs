@@ -10,6 +10,7 @@ using SORANO.WEB.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.Delivery;
@@ -17,6 +18,7 @@ using SORANO.WEB.ViewModels.Delivery;
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager,editor,user")]
+    [CheckUserFilter]
     public class DeliveryController : EntityBaseController<DeliveryCreateUpdateViewModel>
     {
         private readonly IDeliveryService _deliveryService;

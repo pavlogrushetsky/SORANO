@@ -19,9 +19,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<DeliveryDto>> CreateAsync(DeliveryDto delivery, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<DeliveryDto>();
-
             if (delivery == null)
                 throw new ArgumentNullException(nameof(delivery));
 
@@ -78,9 +75,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<DeliveryDto>> UpdateAsync(DeliveryDto delivery, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<DeliveryDto>();
-
             if (delivery == null)
                 throw new ArgumentNullException(nameof(delivery));
 
@@ -130,11 +124,8 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<DeliveryDto>(updated.ToDto());
         }
 
-        public async Task<ServiceResponse<IEnumerable<DeliveryDto>>> GetAllAsync(bool withDeleted, int userId)
+        public async Task<ServiceResponse<IEnumerable<DeliveryDto>>> GetAllAsync(bool withDeleted)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<IEnumerable<DeliveryDto>>();
-
             var response = new SuccessResponse<IEnumerable<DeliveryDto>>();
 
             var deliveries = await UnitOfWork.Get<Delivery>().GetAllAsync();
@@ -146,11 +137,8 @@ namespace SORANO.BLL.Services
             return response;
         }
 
-        public async Task<ServiceResponse<int>> GetUnsubmittedCountAsync(int userId)
+        public async Task<ServiceResponse<int>> GetUnsubmittedCountAsync()
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<int>();
-
             var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(d => !d.IsSubmitted && !d.IsDeleted);
 
             return new SuccessResponse<int>(deliveries.Count());
@@ -158,9 +146,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<int>();
-
             var existentDelivery = await UnitOfWork.Get<Delivery>().GetAsync(t => t.ID == id);
 
             if (existentDelivery.IsSubmitted)
@@ -215,21 +200,15 @@ namespace SORANO.BLL.Services
                 });
         }
 
-        public async Task<ServiceResponse<int>> GetSubmittedCountAsync(int userId)
+        public async Task<ServiceResponse<int>> GetSubmittedCountAsync()
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<int>();
-
             var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(d => d.IsSubmitted && !d.IsDeleted);
 
             return new SuccessResponse<int>(deliveries.Count());
         }
 
-        public async Task<ServiceResponse<DeliveryDto>> GetAsync(int id, int userId)
+        public async Task<ServiceResponse<DeliveryDto>> GetAsync(int id)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<DeliveryDto>();
-
             var delivery = await UnitOfWork.Get<Delivery>().GetAsync(d => d.ID == id);
 
             if (delivery == null)

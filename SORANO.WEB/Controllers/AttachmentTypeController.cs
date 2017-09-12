@@ -8,11 +8,13 @@ using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using SORANO.BLL.Dtos;
 using SORANO.BLL.Services;
+using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels.AttachmentType;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
+    [CheckUserFilter]
     public class AttachmentTypeController : EntityBaseController<AttachmentTypeCreateUpdateViewModel>
     {
         private readonly IMapper _mapper;

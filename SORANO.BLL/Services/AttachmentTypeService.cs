@@ -17,11 +17,8 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<ServiceResponse<IEnumerable<AttachmentTypeDto>>> GetAllAsync(bool includeMainPicture, int userId)
+        public async Task<ServiceResponse<IEnumerable<AttachmentTypeDto>>> GetAllAsync(bool includeMainPicture)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<IEnumerable<AttachmentTypeDto>>();
-
             var response = new SuccessResponse<IEnumerable<AttachmentTypeDto>>();
 
             var attachmentTypes = await UnitOfWork.Get<AttachmentType>().GetAllAsync();
@@ -33,11 +30,8 @@ namespace SORANO.BLL.Services
             return response;
         }
 
-        public async Task<ServiceResponse<AttachmentTypeDto>> GetAsync(int id, int userId)
+        public async Task<ServiceResponse<AttachmentTypeDto>> GetAsync(int id)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<AttachmentTypeDto>();
-
             var attachmentType = await UnitOfWork.Get<AttachmentType>().GetAsync(a => a.ID == id);
 
             if (attachmentType == null)
@@ -48,9 +42,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<AttachmentTypeDto>> CreateAsync(AttachmentTypeDto attachmentType, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<AttachmentTypeDto>();
-
             if (attachmentType == null)
                 throw new ArgumentNullException(nameof(attachmentType));        
 
@@ -67,9 +58,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<AttachmentTypeDto>> UpdateAsync(AttachmentTypeDto attachmentType, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<AttachmentTypeDto>();
-
             if (attachmentType == null)
                 throw new ArgumentNullException(nameof(attachmentType));          
 
@@ -92,9 +80,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<int>();
-
             var existentAttachmentType = await UnitOfWork.Get<AttachmentType>().GetAsync(t => t.ID == id);
 
             if (existentAttachmentType.Attachments.Any())
@@ -111,9 +96,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<int>> GetMainPictureTypeIdAsync(int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<int>();
-
             var type = await UnitOfWork.Get<AttachmentType>().GetAsync(t => t.Name.Equals("Основное изображение"));
 
             return new SuccessResponse<int>(type.ID);
@@ -121,9 +103,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<bool>> Exists(string name, int? attachmentTypeId, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<bool>();
-
             if (string.IsNullOrEmpty(name))
             {
                 return new SuccessResponse<bool>(false);

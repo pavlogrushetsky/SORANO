@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
+using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer, administrator")]
+    [CheckUserFilter]
     public class UserController : BaseController
     {
         private readonly IRoleService _roleService;

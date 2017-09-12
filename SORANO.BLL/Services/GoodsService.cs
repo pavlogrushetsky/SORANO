@@ -18,9 +18,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<int>> ChangeLocationAsync(int articleId, int currentLocationId, int targetLocationId, int num, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<int>();
-
             var storages = await UnitOfWork.Get<Storage>().GetAllAsync();
 
             var currentStorages = storages
@@ -58,11 +55,8 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<int>(targetLocationId);
         }
 
-        public async Task<ServiceResponse<IEnumerable<AllGoodsDto>>> GetAllAsync(int userId)
+        public async Task<ServiceResponse<IEnumerable<AllGoodsDto>>> GetAllAsync()
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<IEnumerable<AllGoodsDto>>();
-
             var goods = await UnitOfWork.Get<Goods>().GetAllAsync();
 
             var result = goods
@@ -101,21 +95,15 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<IEnumerable<AllGoodsDto>>(result);
         }
 
-        public async Task<ServiceResponse<IEnumerable<GoodsDto>>> GetSoldGoodsAsync(int userId)
+        public async Task<ServiceResponse<IEnumerable<GoodsDto>>> GetSoldGoodsAsync()
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<IEnumerable<GoodsDto>>();
-
             var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
 
             return new SuccessResponse<IEnumerable<GoodsDto>>(goods.Select(g => g.ToDto()));
         }
 
-        public async Task<ServiceResponse<decimal>> GetTotalIncomeAsync(int userId)
+        public async Task<ServiceResponse<decimal>> GetTotalIncomeAsync()
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<decimal>();
-
             var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
 
             var sum = goods.Sum(g => g.SalePrice.Value);
@@ -125,9 +113,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<int>> SaleAsync(int articleId, int locationId, int clientId, int num, decimal price, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<int>();
-
             var storages = await UnitOfWork.Get<Storage>().GetAllAsync();
 
             var currentStorages = storages

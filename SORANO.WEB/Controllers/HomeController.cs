@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
 using System;
 using System.Threading.Tasks;
+using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager,editor,user")]
+    [CheckUserFilter]
     public class HomeController : BaseController
     {
         private readonly IDeliveryService _deliveryService;

@@ -11,6 +11,7 @@ using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Dtos;
 using SORANO.BLL.Services;
 using SORANO.WEB.Infrastructure;
+using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.ArticleType;
 using SORANO.WEB.ViewModels.Attachment;
@@ -18,6 +19,7 @@ using SORANO.WEB.ViewModels.Attachment;
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
+    [CheckUserFilter]
     public class ArticleTypeController : EntityBaseController<ArticleTypeCreateUpdateViewModel>
     {
         private readonly IArticleTypeService _articleTypeService;

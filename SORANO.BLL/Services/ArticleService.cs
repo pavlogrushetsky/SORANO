@@ -17,11 +17,8 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<ServiceResponse<IEnumerable<ArticleDto>>> GetAllAsync(bool withDeleted, int userId)
+        public async Task<ServiceResponse<IEnumerable<ArticleDto>>> GetAllAsync(bool withDeleted)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<IEnumerable<ArticleDto>>();
-
             var response = new SuccessResponse<IEnumerable<ArticleDto>>();
 
             var articles = await UnitOfWork.Get<Article>().GetAllAsync();
@@ -33,11 +30,8 @@ namespace SORANO.BLL.Services
             return response;
         }
 
-        public async Task<ServiceResponse<ArticleDto>> GetAsync(int id, int userId)
+        public async Task<ServiceResponse<ArticleDto>> GetAsync(int id)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<ArticleDto>();
-
             var article = await UnitOfWork.Get<Article>().GetAsync(a => a.ID == id);
 
             if (article == null)
@@ -48,9 +42,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<ArticleDto>> CreateAsync(ArticleDto article, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<ArticleDto>();
-
             if (article == null)
                 throw new ArgumentNullException(nameof(article));
 
@@ -69,9 +60,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<ArticleDto>> UpdateAsync(ArticleDto article, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<ArticleDto>();
-
             if (article == null)
                 throw new ArgumentNullException(nameof(article));
 
@@ -97,9 +85,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<int>();
-
             var existentArticle = await UnitOfWork.Get<Article>().GetAsync(t => t.ID == id);
 
             if (existentArticle.DeliveryItems.Any())
@@ -114,11 +99,8 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<int>(id);
         }
 
-        public async Task<ServiceResponse<bool>> BarcodeExistsAsync(string barcode, int? articleId, int userId)
+        public async Task<ServiceResponse<bool>> BarcodeExistsAsync(string barcode, int? articleId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<bool>();
-
             if (string.IsNullOrEmpty(barcode))
             {
                 return new SuccessResponse<bool>(false);
@@ -129,11 +111,8 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<bool>(articlesWithSameBarcode.Any());
         }
 
-        public async Task<ServiceResponse<IDictionary<ArticleDto, int>>> GetArticlesForLocationAsync(int? locationId, int userId)
+        public async Task<ServiceResponse<IDictionary<ArticleDto, int>>> GetArticlesForLocationAsync(int? locationId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<IDictionary<ArticleDto, int>>();
-
             var goods = await UnitOfWork.Get<Goods>().GetAllAsync();
 
             IDictionary<ArticleDto, int> result;

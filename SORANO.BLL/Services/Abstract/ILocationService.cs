@@ -6,6 +6,6 @@ namespace SORANO.BLL.Services.Abstract
 {
     public interface ILocationService : IBaseService<LocationDto>
     {
-        Task<ServiceResponse<Dictionary<LocationDto, int>>> GetLocationsForArticleAsync(int? articleId, int? except, int userId);
+        Task<ServiceResponse<Dictionary<LocationDto, int>>> GetLocationsForArticleAsync(int? articleId, int? except);
     }
 }

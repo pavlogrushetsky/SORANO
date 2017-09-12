@@ -10,10 +10,10 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<ServiceResponse<int>> SaleAsync(int articleId, int locationId, int clientId, int num, decimal price, int userId);
 
-        Task<ServiceResponse<IEnumerable<GoodsDto>>> GetSoldGoodsAsync(int userId);       
+        Task<ServiceResponse<IEnumerable<GoodsDto>>> GetSoldGoodsAsync();       
 
-        Task<ServiceResponse<decimal>> GetTotalIncomeAsync(int userId);
+        Task<ServiceResponse<decimal>> GetTotalIncomeAsync();
 
-        Task<ServiceResponse<IEnumerable<AllGoodsDto>>> GetAllAsync(int userId);
+        Task<ServiceResponse<IEnumerable<AllGoodsDto>>> GetAllAsync();
     }
 }

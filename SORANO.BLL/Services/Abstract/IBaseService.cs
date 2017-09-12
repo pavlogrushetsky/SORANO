@@ -6,9 +6,9 @@ namespace SORANO.BLL.Services.Abstract
 {
     public interface IBaseService<T> where T : BaseDto
     {
-        Task<ServiceResponse<IEnumerable<T>>> GetAllAsync(bool withDeleted, int userId);
+        Task<ServiceResponse<IEnumerable<T>>> GetAllAsync(bool withDeleted);
 
-        Task<ServiceResponse<T>> GetAsync(int id, int userId);
+        Task<ServiceResponse<T>> GetAsync(int id);
 
         Task<ServiceResponse<T>> CreateAsync(T article, int userId);      
 

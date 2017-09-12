@@ -17,11 +17,8 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<ServiceResponse<IEnumerable<LocationDto>>> GetAllAsync(bool withDeleted, int userId)
+        public async Task<ServiceResponse<IEnumerable<LocationDto>>> GetAllAsync(bool withDeleted)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<IEnumerable<LocationDto>>();
-
             var response = new SuccessResponse<IEnumerable<LocationDto>>();
 
             var locations = await UnitOfWork.Get<Location>().GetAllAsync();
@@ -33,11 +30,8 @@ namespace SORANO.BLL.Services
             return response;
         }
 
-        public async Task<ServiceResponse<LocationDto>> GetAsync(int id, int userId)
+        public async Task<ServiceResponse<LocationDto>> GetAsync(int id)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<LocationDto>();
-
             var location = await UnitOfWork.Get<Location>().GetAsync(s => s.ID == id);
 
             if (location == null)
@@ -48,9 +42,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<LocationDto>> CreateAsync(LocationDto location, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<LocationDto>();
-
             if (location == null)
                 throw new ArgumentNullException(nameof(location));
 
@@ -74,9 +65,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<LocationDto>> UpdateAsync(LocationDto location, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<LocationDto>();
-
             if (location == null)
                 throw new ArgumentNullException(nameof(location));
 
@@ -111,9 +99,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<int>();
-
             var existentLocation = await UnitOfWork.Get<Location>().GetAsync(t => t.ID == id);
 
             if (existentLocation.Storages.Any() || existentLocation.SoldGoods.Any())
@@ -128,11 +113,8 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<int>(id);
         }
 
-        public async Task<ServiceResponse<Dictionary<LocationDto, int>>> GetLocationsForArticleAsync(int? articleId, int? except, int userId)
+        public async Task<ServiceResponse<Dictionary<LocationDto, int>>> GetLocationsForArticleAsync(int? articleId, int? except)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<Dictionary<LocationDto, int>>();
-
             var allGoods = await UnitOfWork.Get<Goods>().GetAllAsync();
             Dictionary<LocationDto, int> locations;
 

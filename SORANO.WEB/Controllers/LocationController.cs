@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Http;
 using SORANO.WEB.Infrastructure;
+using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.Common;
@@ -20,6 +21,7 @@ using SORANO.WEB.ViewModels.Location;
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
+    [CheckUserFilter]
     public class LocationController : EntityBaseController<LocationCreateUpdateViewModel>
     {
         private readonly ILocationService _locationService;

@@ -19,9 +19,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<ClientDto>> CreateAsync(ClientDto client, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<ClientDto>();
-
             if (client == null)
                 throw new ArgumentNullException(nameof(client));
 
@@ -38,11 +35,8 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<ClientDto>(saved.ToDto());
         }
 
-        public async Task<ServiceResponse<IEnumerable<ClientDto>>> GetAllAsync(bool withDeleted, int userId)
+        public async Task<ServiceResponse<IEnumerable<ClientDto>>> GetAllAsync(bool withDeleted)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<IEnumerable<ClientDto>>();
-
             var response = new SuccessResponse<IEnumerable<ClientDto>>();
 
             var clients = await UnitOfWork.Get<Client>().GetAllAsync();
@@ -54,11 +48,8 @@ namespace SORANO.BLL.Services
             return response;
         }
 
-        public async Task<ServiceResponse<ClientDto>> GetAsync(int id, int userId)
+        public async Task<ServiceResponse<ClientDto>> GetAsync(int id)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<ClientDto>();
-
             var client = await UnitOfWork.Get<Client>().GetAsync(s => s.ID == id);
 
             if (client == null)
@@ -69,9 +60,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<ClientDto>> UpdateAsync(ClientDto client, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<ClientDto>();
-
             if (client == null)
                 throw new ArgumentNullException(nameof(client));
 
@@ -97,9 +85,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<int>();
-
             var existentClient = await UnitOfWork.Get<Client>().GetAsync(t => t.ID == id);
 
             if (existentClient.Goods.Any())

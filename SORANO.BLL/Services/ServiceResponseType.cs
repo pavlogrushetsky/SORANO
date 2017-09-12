@@ -3,7 +3,6 @@
     public enum ServiceResponseStatusType
     {
         Success,
-        Fail,
-        AccessDenied
+        Fail
     }
 }

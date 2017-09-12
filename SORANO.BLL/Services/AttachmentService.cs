@@ -16,11 +16,8 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<ServiceResponse<IEnumerable<string>>> GetAllForAsync(string type, int userId)
+        public async Task<ServiceResponse<IEnumerable<string>>> GetAllForAsync(string type)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<IEnumerable<string>>();
-
             var attachments = await UnitOfWork.Get<Attachment>().GetAllAsync();
             
             return new SuccessResponse<IEnumerable<string>>(attachments.Where(a => a.ParentEntities.Any(p =>
@@ -30,11 +27,8 @@ namespace SORANO.BLL.Services
             })).Select(a => a.FullPath));
         }
 
-        public async Task<ServiceResponse<bool>> HasMainPictureAsync(int id, int mainPictureId, int userId)
+        public async Task<ServiceResponse<bool>> HasMainPictureAsync(int id, int mainPictureId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<bool>();
-
             var existentMainPicture = await UnitOfWork.Get<Attachment>()
                 .GetAsync(a => a.Type.Name.Equals("Основное изображение") &&
                                a.ParentEntities.Select(p => p.ID).Contains(id));
@@ -42,11 +36,8 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<bool>(existentMainPicture != null && existentMainPicture.ID == mainPictureId);
         }
 
-        public async Task<ServiceResponse<IEnumerable<AttachmentDto>>> GetPicturesExceptAsync(int currentMainPictureId, int userId)
+        public async Task<ServiceResponse<IEnumerable<AttachmentDto>>> GetPicturesExceptAsync(int currentMainPictureId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<IEnumerable<AttachmentDto>>();
-
             var attachments = await UnitOfWork.Get<Attachment>().GetAllAsync();
 
             var extensions = "png,bmp,dwg,gif,ico,jpeg,jpg,pic,tif,tiff".Split(',');

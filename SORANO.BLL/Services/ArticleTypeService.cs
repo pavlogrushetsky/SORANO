@@ -17,11 +17,8 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<ServiceResponse<IEnumerable<ArticleTypeDto>>> GetAllAsync(bool withDeleted, int userId)
+        public async Task<ServiceResponse<IEnumerable<ArticleTypeDto>>> GetAllAsync(bool withDeleted)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<IEnumerable<ArticleTypeDto>>();
-
             var response = new SuccessResponse<IEnumerable<ArticleTypeDto>>();
 
             var articleTypes = await UnitOfWork.Get<ArticleType>().GetAllAsync();
@@ -43,11 +40,8 @@ namespace SORANO.BLL.Services
             return response;
         }
 
-        public async Task<ServiceResponse<ArticleTypeDto>> GetAsync(int id, int userId)
+        public async Task<ServiceResponse<ArticleTypeDto>> GetAsync(int id)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<ArticleTypeDto>();
-
             var articleType = await UnitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id);
 
             if (articleType == null)
@@ -58,9 +52,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<ArticleTypeDto>> CreateAsync(ArticleTypeDto articleType, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<ArticleTypeDto>();
-
             if (articleType == null)
                 throw new ArgumentNullException(nameof(articleType));
 
@@ -79,9 +70,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<ArticleTypeDto>> UpdateAsync(ArticleTypeDto articleType, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<ArticleTypeDto>();
-
             if (articleType == null)
                 throw new ArgumentNullException(nameof(articleType));
 
@@ -107,9 +95,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<int>();
-
             var existentArticleType = await UnitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id);
 
             if (existentArticleType.Articles.Any())

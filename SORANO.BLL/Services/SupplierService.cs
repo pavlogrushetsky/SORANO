@@ -19,9 +19,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<SupplierDto>> CreateAsync(SupplierDto supplier, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<SupplierDto>();
-
             if (supplier == null)
                 throw new ArgumentNullException(nameof(supplier));
 
@@ -38,11 +35,8 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<SupplierDto>(saved.ToDto());
         }
 
-        public async Task<ServiceResponse<IEnumerable<SupplierDto>>> GetAllAsync(bool withDeleted, int userId)
+        public async Task<ServiceResponse<IEnumerable<SupplierDto>>> GetAllAsync(bool withDeleted)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<IEnumerable<SupplierDto>>();
-
             var response = new SuccessResponse<IEnumerable<SupplierDto>>();
 
             var suppliers = await UnitOfWork.Get<Supplier>().GetAllAsync();
@@ -54,11 +48,8 @@ namespace SORANO.BLL.Services
             return response;
         }
 
-        public async Task<ServiceResponse<SupplierDto>> GetAsync(int id, int userId)
+        public async Task<ServiceResponse<SupplierDto>> GetAsync(int id)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<SupplierDto>();
-
             var supplier = await UnitOfWork.Get<Supplier>().GetAsync(s => s.ID == id);
 
             if (supplier == null)
@@ -69,9 +60,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<SupplierDto>> UpdateAsync(SupplierDto supplier, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<SupplierDto>();
-
             if (supplier == null)
                 throw new ArgumentNullException(nameof(supplier));
 
@@ -97,9 +85,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
         {
-            if (await IsAccessDenied(userId))
-                return new AccessDeniedResponse<int>();
-
             var existentSupplier = await UnitOfWork.Get<Supplier>().GetAsync(t => t.ID == id);
 
             if (existentSupplier.Deliveries.Any())
