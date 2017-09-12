@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SORANO.BLL.Services.Abstract;
-using SORANO.BLL.Properties;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 using System;
@@ -16,6 +15,8 @@ namespace SORANO.BLL.Services
         public LocationTypeService(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
+
+        #region CRUD methods
 
         public async Task<ServiceResponse<IEnumerable<LocationTypeDto>>> GetAllAsync(bool withDeleted)
         {
@@ -44,7 +45,7 @@ namespace SORANO.BLL.Services
             var locationType = await UnitOfWork.Get<LocationType>().GetAsync(t => t.ID == id);
 
             if (locationType == null)
-                return new FailResponse<LocationTypeDto>(Resource.LocationTypeNotFoundMessage);
+                return new ServiceResponse<LocationTypeDto>(ServiceResponseStatus.NotFound);
 
             return new SuccessResponse<LocationTypeDto>(locationType.ToDto());
         }
@@ -75,7 +76,7 @@ namespace SORANO.BLL.Services
             var existentEntity = await UnitOfWork.Get<LocationType>().GetAsync(t => t.ID == locationType.ID);
 
             if (existentEntity == null)
-                return new FailResponse<LocationTypeDto>(Resource.LocationTypeNotFoundMessage);
+                return new ServiceResponse<LocationTypeDto>(ServiceResponseStatus.NotFound);
 
             var entity = locationType.ToEntity();
 
@@ -96,8 +97,11 @@ namespace SORANO.BLL.Services
         {
             var existentLocationType = await UnitOfWork.Get<LocationType>().GetAsync(t => t.ID == id);
 
+            if (existentLocationType == null)
+                return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
+
             if (existentLocationType.Locations.Any())
-                return new FailResponse<int>(Resource.LocationCannotBeDeletedMessage);
+                return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
             existentLocationType.UpdateDeletedFields(userId);
 
@@ -108,11 +112,13 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<int>(id);
         }
 
+        #endregion
+
         public async Task<ServiceResponse<bool>> Exists(string name, int? locationTypeId)
         {
             if (string.IsNullOrEmpty(name))
             {
-                return new SuccessResponse<bool>(false);
+                return new SuccessResponse<bool>();
             }
 
             var locationTypes = await UnitOfWork.Get<LocationType>().FindByAsync(t => t.Name.Equals(name) && t.ID != locationTypeId);

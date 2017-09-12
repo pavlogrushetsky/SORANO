@@ -104,7 +104,6 @@
     <Compile Include="Services\RoleService.cs" />
     <Compile Include="Services\ClientService.cs" />
     <Compile Include="Services\ServiceResponse.cs" />
-    <Compile Include="Services\ServiceResponseType.cs" />
     <Compile Include="Services\SupplierService.cs" />
     <Compile Include="Services\UserService.cs" />
   </ItemGroup>

@@ -38,7 +38,7 @@ namespace SORANO.WEB.Controllers
 
             var result = await UserService.GetAsync(model.Login, model.Password);
 
-            if (result.Status == ServiceResponseStatusType.Success)
+            if (result.Status == ServiceResponseStatus.Success)
             {
                 if (result.Result != null)
                 {
@@ -82,7 +82,7 @@ namespace SORANO.WEB.Controllers
         public async Task<IActionResult> ChangePassword(int id, string returnUrl = null)
         {
             var result = await UserService.GetAsync(id);
-            if (result.Status == ServiceResponseStatusType.Fail || result.Result == null)
+            if (result.Status == ServiceResponseStatus.Fail || result.Result == null)
             {
                 return NotFound();
             }
@@ -104,7 +104,7 @@ namespace SORANO.WEB.Controllers
 
             var result = await UserService.GetAsync(model.Login, model.OldPassword);
 
-            if (result.Status == ServiceResponseStatusType.Success)
+            if (result.Status == ServiceResponseStatus.Success)
             {
                 await UserService.ChangePasswordAsync(model.Login, model.NewPassword);
 

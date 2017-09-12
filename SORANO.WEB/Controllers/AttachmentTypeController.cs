@@ -38,7 +38,7 @@ namespace SORANO.WEB.Controllers
             {
                 var result = await AttachmentTypeService.GetAllAsync(true, UserId);
 
-                if (result.Status != ServiceResponseStatusType.Fail)
+                if (result.Status != ServiceResponseStatus.Fail)
                 {
                     return View(_mapper.Map<IEnumerable<AttachmentTypeIndexViewModel>>(result.Result));
                 }
@@ -65,7 +65,7 @@ namespace SORANO.WEB.Controllers
             {
                 var result = await AttachmentTypeService.GetAsync(id, UserId);
 
-                if (result.Status == ServiceResponseStatusType.Fail)
+                if (result.Status == ServiceResponseStatus.Fail)
                 {
                     TempData["Error"] = result.Message;
                     return RedirectToAction("Index");
@@ -85,7 +85,7 @@ namespace SORANO.WEB.Controllers
             {
                 var result = await AttachmentTypeService.GetAsync(id, UserId);
 
-                if (result.Status != ServiceResponseStatusType.Fail)
+                if (result.Status != ServiceResponseStatus.Fail)
                 {
                     return View(_mapper.Map<AttachmentTypeDeleteViewModel>(result.Result));
                 }
@@ -122,7 +122,7 @@ namespace SORANO.WEB.Controllers
 
                 var result = await AttachmentTypeService.CreateAsync(attachmentType, UserId);
 
-                if (result.Status == ServiceResponseStatusType.Success)
+                if (result.Status == ServiceResponseStatus.Success)
                 {
                     TempData["Success"] = $"Тип вложений \"{model.Name}\" был успешно создан";
                     return RedirectToAction("Index");
@@ -156,7 +156,7 @@ namespace SORANO.WEB.Controllers
 
                 var result = await AttachmentTypeService.UpdateAsync(attachmentType, UserId);
 
-                if (result.Status == ServiceResponseStatusType.Success)
+                if (result.Status == ServiceResponseStatus.Success)
                 {
                     TempData["Success"] = $"Тип вложений \"{model.Name}\" был успешно обновлён";
                     return RedirectToAction("Index");
@@ -174,7 +174,7 @@ namespace SORANO.WEB.Controllers
             {
                 var result = await AttachmentTypeService.DeleteAsync(model.ID, UserId);
 
-                if (result.Status == ServiceResponseStatusType.Success)
+                if (result.Status == ServiceResponseStatus.Success)
                 {
                     TempData["Success"] = $"Тип вложений \"{model.Name}\" был успешно помечен как удалённый";
                 }

@@ -1,5 +1,4 @@
-﻿using SORANO.BLL.Properties;
-using SORANO.BLL.Services.Abstract;
+﻿using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 using System.Collections.Generic;
@@ -16,6 +15,8 @@ namespace SORANO.BLL.Services
         public AttachmentTypeService(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
+
+        #region CRUD methods
 
         public async Task<ServiceResponse<IEnumerable<AttachmentTypeDto>>> GetAllAsync(bool includeMainPicture)
         {
@@ -34,10 +35,9 @@ namespace SORANO.BLL.Services
         {
             var attachmentType = await UnitOfWork.Get<AttachmentType>().GetAsync(a => a.ID == id);
 
-            if (attachmentType == null)
-                return new FailResponse<AttachmentTypeDto>(Resource.AttachmentTypeNotFoundMessage);
-
-            return new SuccessResponse<AttachmentTypeDto>(attachmentType.ToDto());
+            return attachmentType == null 
+                ? new ServiceResponse<AttachmentTypeDto>(ServiceResponseStatus.NotFound) 
+                : new SuccessResponse<AttachmentTypeDto>(attachmentType.ToDto());
         }
 
         public async Task<ServiceResponse<AttachmentTypeDto>> CreateAsync(AttachmentTypeDto attachmentType, int userId)
@@ -64,7 +64,7 @@ namespace SORANO.BLL.Services
             var existentEntity = await UnitOfWork.Get<AttachmentType>().GetAsync(t => t.ID == attachmentType.ID);
 
             if (existentEntity == null)
-                return new FailResponse<AttachmentTypeDto>(Resource.AttachmentTypeNotFoundMessage);
+                return new ServiceResponse<AttachmentTypeDto>(ServiceResponseStatus.NotFound);
 
             var entity = attachmentType.ToEntity();
 
@@ -82,8 +82,11 @@ namespace SORANO.BLL.Services
         {
             var existentAttachmentType = await UnitOfWork.Get<AttachmentType>().GetAsync(t => t.ID == id);
 
+            if (existentAttachmentType == null)
+                return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
+
             if (existentAttachmentType.Attachments.Any())
-                return new FailResponse<int>(Resource.AttachmentTypeCannotBeDeletedMessage);
+                return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
             existentAttachmentType.UpdateDeletedFields(userId);
 
@@ -93,6 +96,8 @@ namespace SORANO.BLL.Services
 
             return new SuccessResponse<int>(id);
         }
+
+        #endregion
 
         public async Task<ServiceResponse<int>> GetMainPictureTypeIdAsync(int userId)
         {

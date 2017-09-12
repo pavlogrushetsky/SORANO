@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using SORANO.BLL.Dtos;
 using SORANO.BLL.Extensions;
-using SORANO.BLL.Properties;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
@@ -16,6 +15,8 @@ namespace SORANO.BLL.Services
         public ArticleTypeService(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
+
+        #region CRUD methods
 
         public async Task<ServiceResponse<IEnumerable<ArticleTypeDto>>> GetAllAsync(bool withDeleted)
         {
@@ -44,10 +45,9 @@ namespace SORANO.BLL.Services
         {
             var articleType = await UnitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id);
 
-            if (articleType == null)
-                return new FailResponse<ArticleTypeDto>(Resource.ArticleTypeNotFoundMessage);
-
-            return new SuccessResponse<ArticleTypeDto>(articleType.ToDto());          
+            return articleType == null 
+                ? new ServiceResponse<ArticleTypeDto>(ServiceResponseStatus.NotFound) 
+                : new SuccessResponse<ArticleTypeDto>(articleType.ToDto());
         }
 
         public async Task<ServiceResponse<ArticleTypeDto>> CreateAsync(ArticleTypeDto articleType, int userId)
@@ -76,7 +76,7 @@ namespace SORANO.BLL.Services
             var existentEntity = await UnitOfWork.Get<ArticleType>().GetAsync(t => t.ID == articleType.ID);
 
             if (existentEntity == null)
-                return new FailResponse<ArticleTypeDto>(Resource.ArticleTypeNotFoundMessage);
+                return new ServiceResponse<ArticleTypeDto>(ServiceResponseStatus.NotFound);
 
             var entity = articleType.ToEntity();
 
@@ -97,8 +97,11 @@ namespace SORANO.BLL.Services
         {
             var existentArticleType = await UnitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id);
 
+            if (existentArticleType == null)
+                return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
+
             if (existentArticleType.Articles.Any())
-                return new FailResponse<int>(Resource.ArticleTypeCannotBeDeletedMessage);
+                return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
             existentArticleType.ChildTypes.ToList().ForEach(t =>
             {
@@ -115,5 +118,7 @@ namespace SORANO.BLL.Services
             
             return new SuccessResponse<int>(id);
         }
+
+        #endregion
     }
 }

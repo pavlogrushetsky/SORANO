@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
-using SORANO.BLL.Properties;
 using System.Linq;
 using SORANO.BLL.Extensions;
 using SORANO.BLL.Dtos;
@@ -17,23 +16,7 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<ServiceResponse<ClientDto>> CreateAsync(ClientDto client, int userId)
-        {
-            if (client == null)
-                throw new ArgumentNullException(nameof(client));
-
-            var entity = client.ToEntity();
-
-            entity.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            entity.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            entity.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-
-            var saved = UnitOfWork.Get<Client>().Add(entity);
-
-            await UnitOfWork.SaveAsync();
-
-            return new SuccessResponse<ClientDto>(saved.ToDto());
-        }
+        #region CRUD methods
 
         public async Task<ServiceResponse<IEnumerable<ClientDto>>> GetAllAsync(bool withDeleted)
         {
@@ -52,11 +35,28 @@ namespace SORANO.BLL.Services
         {
             var client = await UnitOfWork.Get<Client>().GetAsync(s => s.ID == id);
 
-            if (client == null)
-                return new FailResponse<ClientDto>(Resource.ClientNotFoundMessage);
-
-            return new SuccessResponse<ClientDto>(client.ToDto());
+            return client == null 
+                ? new ServiceResponse<ClientDto>(ServiceResponseStatus.NotFound) 
+                : new SuccessResponse<ClientDto>(client.ToDto());
         }
+
+        public async Task<ServiceResponse<ClientDto>> CreateAsync(ClientDto client, int userId)
+        {
+            if (client == null)
+                throw new ArgumentNullException(nameof(client));
+
+            var entity = client.ToEntity();
+
+            entity.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            entity.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            entity.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+
+            var saved = UnitOfWork.Get<Client>().Add(entity);
+
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<ClientDto>(saved.ToDto());
+        }       
 
         public async Task<ServiceResponse<ClientDto>> UpdateAsync(ClientDto client, int userId)
         {
@@ -66,7 +66,7 @@ namespace SORANO.BLL.Services
             var existentEntity = await UnitOfWork.Get<Client>().GetAsync(t => t.ID == client.ID);
 
             if (existentEntity == null)
-                return new FailResponse<ClientDto>(Resource.ClientNotFoundMessage);
+                return new ServiceResponse<ClientDto>(ServiceResponseStatus.NotFound);
 
             var entity = client.ToEntity();
 
@@ -87,8 +87,11 @@ namespace SORANO.BLL.Services
         {
             var existentClient = await UnitOfWork.Get<Client>().GetAsync(t => t.ID == id);
 
+            if (existentClient == null)
+                return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
+
             if (existentClient.Goods.Any())
-                return new FailResponse<int>(Resource.ClientCannotBeDeletedMessage);
+                return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
             existentClient.UpdateDeletedFields(userId);
 
@@ -98,5 +101,7 @@ namespace SORANO.BLL.Services
 
             return new SuccessResponse<int>(id);
         }
+
+        #endregion
     }
 }

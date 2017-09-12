@@ -79,7 +79,7 @@ namespace SORANO.WEB.Controllers
             {
                 var result = await _articleTypeService.GetAsync(id, UserId);
 
-                if (result.Status == ServiceResponseStatusType.Fail)
+                if (result.Status == ServiceResponseStatus.Fail)
                 {
                     TempData["Error"] = result.Message;
                     return RedirectToAction("Index", "Article");
@@ -107,7 +107,7 @@ namespace SORANO.WEB.Controllers
                 {
                     var result = await _articleTypeService.GetAsync(id, UserId);
 
-                    if (result.Status == ServiceResponseStatusType.Fail)
+                    if (result.Status == ServiceResponseStatus.Fail)
                     {
                         TempData["Error"] = result.Message;
                         return RedirectToAction("Index", "Article");
@@ -128,7 +128,7 @@ namespace SORANO.WEB.Controllers
             {
                 var result = await _articleTypeService.GetAsync(id, UserId);
 
-                if (result.Status != ServiceResponseStatusType.Fail)
+                if (result.Status != ServiceResponseStatus.Fail)
                 {
                     return View(_mapper.Map<ArticleTypeDeleteViewModel>(result.Result));
                 }
@@ -145,7 +145,7 @@ namespace SORANO.WEB.Controllers
             {
                 var result = await _articleTypeService.GetAsync(id, UserId);
 
-                if (result.Status != ServiceResponseStatusType.Fail)
+                if (result.Status != ServiceResponseStatus.Fail)
                 {
                     return View(_mapper.Map<ArticleTypeDetailsViewModel>(result.Result));
                 }
@@ -177,7 +177,7 @@ namespace SORANO.WEB.Controllers
 
                 var result = await _articleTypeService.CreateAsync(articleType, UserId);
 
-                if (result.Status == ServiceResponseStatusType.Success && result.Result != null)
+                if (result.Status == ServiceResponseStatus.Success && result.Result != null)
                 {
                     if (string.IsNullOrEmpty(model.ReturnPath))
                     {
@@ -224,7 +224,7 @@ namespace SORANO.WEB.Controllers
 
                 var result = await _articleTypeService.UpdateAsync(articleType, UserId);
 
-                if (result.Status == ServiceResponseStatusType.Success)
+                if (result.Status == ServiceResponseStatus.Success)
                 {
                     TempData["Success"] = $"Тип артикула \"{model.Name}\" был успешно обновлён";
                     return RedirectToAction("Index", "Article");
@@ -242,7 +242,7 @@ namespace SORANO.WEB.Controllers
             {
                 var result = await _articleTypeService.DeleteAsync(model.ID, UserId);
 
-                if (result.Status == ServiceResponseStatusType.Success)
+                if (result.Status == ServiceResponseStatus.Success)
                 {
                     TempData["Success"] = $"Тип артикула \"{model.Name}\" был успешно помечен как удалённый";
                 }

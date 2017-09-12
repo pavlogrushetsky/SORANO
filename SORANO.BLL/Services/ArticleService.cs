@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SORANO.BLL.Properties;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
@@ -16,6 +15,8 @@ namespace SORANO.BLL.Services
         public ArticleService(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
+
+        #region CRUD methods
 
         public async Task<ServiceResponse<IEnumerable<ArticleDto>>> GetAllAsync(bool withDeleted)
         {
@@ -34,10 +35,9 @@ namespace SORANO.BLL.Services
         {
             var article = await UnitOfWork.Get<Article>().GetAsync(a => a.ID == id);
 
-            if (article == null)
-                return new FailResponse<ArticleDto>(Resource.ArticleNotFoundMessage);
-
-            return new SuccessResponse<ArticleDto>(article.ToDto());
+            return article == null 
+                ? new ServiceResponse<ArticleDto>(ServiceResponseStatus.NotFound) 
+                : new SuccessResponse<ArticleDto>(article.ToDto());
         }
 
         public async Task<ServiceResponse<ArticleDto>> CreateAsync(ArticleDto article, int userId)
@@ -66,7 +66,7 @@ namespace SORANO.BLL.Services
             var existentEntity = await UnitOfWork.Get<Article>().GetAsync(t => t.ID == article.ID);
 
             if (existentEntity == null)
-                return new FailResponse<ArticleDto>(Resource.ArticleNotFoundMessage);
+                return new ServiceResponse<ArticleDto>(ServiceResponseStatus.NotFound);
 
             var entity = article.ToEntity();
 
@@ -87,8 +87,11 @@ namespace SORANO.BLL.Services
         {
             var existentArticle = await UnitOfWork.Get<Article>().GetAsync(t => t.ID == id);
 
+            if (existentArticle == null)
+                return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
+
             if (existentArticle.DeliveryItems.Any())
-                return new FailResponse<int>(Resource.ArticleCannotBeDeletedMessage);
+                return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
             existentArticle.UpdateDeletedFields(userId);
 
@@ -99,11 +102,13 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<int>(id);
         }
 
+        #endregion
+
         public async Task<ServiceResponse<bool>> BarcodeExistsAsync(string barcode, int? articleId)
         {
             if (string.IsNullOrEmpty(barcode))
             {
-                return new SuccessResponse<bool>(false);
+                return new SuccessResponse<bool>();
             }
 
             var articlesWithSameBarcode = await UnitOfWork.Get<Article>().FindByAsync(a => a.Barcode.Equals(barcode) && a.ID != articleId);

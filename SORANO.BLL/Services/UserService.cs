@@ -6,7 +6,6 @@ using SORANO.BLL.Extensions;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.AccountEntities;
 using SORANO.BLL.Helpers;
-using SORANO.BLL.Properties;
 using SORANO.DAL.Repositories;
 using SORANO.CORE.StockEntities;
 
@@ -30,9 +29,6 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<UserDto>> CreateAsync(UserDto user)
         {
-            if (user.ID != 0)
-                return new FailResponse<UserDto>(Resource.UserInvalidIdentifierMessage);
-
             user.Password = CryptoHelper.Hash(user.Password);
 
             var added = _unitOfWork.Get<User>().Add(user.ToEntity());
@@ -135,7 +131,7 @@ namespace SORANO.BLL.Services
         {
             if (string.IsNullOrEmpty(login))
             {
-                return new SuccessResponse<bool>(false);
+                return new SuccessResponse<bool>();
             }
 
             var userWithSameLogin = await _unitOfWork.Get<User>().FindByAsync(u => u.Login.Equals(login) && u.ID != userId);

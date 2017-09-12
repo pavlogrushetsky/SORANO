@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
-using SORANO.BLL.Properties;
 using SORANO.BLL.Extensions;
 using SORANO.BLL.Dtos;
 
@@ -15,6 +14,30 @@ namespace SORANO.BLL.Services
     {
         public DeliveryService(IUnitOfWork unitOfWork) : base(unitOfWork)
         {            
+        }
+
+        #region CRUD methods
+
+        public async Task<ServiceResponse<IEnumerable<DeliveryDto>>> GetAllAsync(bool withDeleted)
+        {
+            var response = new SuccessResponse<IEnumerable<DeliveryDto>>();
+
+            var deliveries = await UnitOfWork.Get<Delivery>().GetAllAsync();
+
+            response.Result = !withDeleted
+                ? deliveries.Where(d => !d.IsDeleted).Select(d => d.ToDto())
+                : deliveries.Select(d => d.ToDto());
+
+            return response;
+        }
+
+        public async Task<ServiceResponse<DeliveryDto>> GetAsync(int id)
+        {
+            var delivery = await UnitOfWork.Get<Delivery>().GetAsync(d => d.ID == id);
+
+            return delivery == null 
+                ? new ServiceResponse<DeliveryDto>(ServiceResponseStatus.NotFound) 
+                : new SuccessResponse<DeliveryDto>(delivery.ToDto());
         }
 
         public async Task<ServiceResponse<DeliveryDto>> CreateAsync(DeliveryDto delivery, int userId)
@@ -81,7 +104,7 @@ namespace SORANO.BLL.Services
             var existentEntity = await UnitOfWork.Get<Delivery>().GetAsync(d => d.ID == delivery.ID);
 
             if (existentEntity == null)
-                return new FailResponse<DeliveryDto>(Resource.DeliveryNotFoundMessage);
+                return new ServiceResponse<DeliveryDto>(ServiceResponseStatus.NotFound);
 
             var entity = delivery.ToEntity();
 
@@ -122,34 +145,17 @@ namespace SORANO.BLL.Services
             await UnitOfWork.SaveAsync();
 
             return new SuccessResponse<DeliveryDto>(updated.ToDto());
-        }
-
-        public async Task<ServiceResponse<IEnumerable<DeliveryDto>>> GetAllAsync(bool withDeleted)
-        {
-            var response = new SuccessResponse<IEnumerable<DeliveryDto>>();
-
-            var deliveries = await UnitOfWork.Get<Delivery>().GetAllAsync();
-
-            response.Result = !withDeleted
-                ? deliveries.Where(d => !d.IsDeleted).Select(d => d.ToDto())
-                : deliveries.Select(d => d.ToDto());
-
-            return response;
-        }
-
-        public async Task<ServiceResponse<int>> GetUnsubmittedCountAsync()
-        {
-            var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(d => !d.IsSubmitted && !d.IsDeleted);
-
-            return new SuccessResponse<int>(deliveries.Count());
-        }
+        }               
 
         public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
         {
             var existentDelivery = await UnitOfWork.Get<Delivery>().GetAsync(t => t.ID == id);
 
+            if (existentDelivery == null)
+                return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
+
             if (existentDelivery.IsSubmitted)
-                return new FailResponse<int>(Resource.DeliveryCannotBeDeletedMessage);
+                return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
             existentDelivery.UpdateDeletedFields(userId);
 
@@ -159,6 +165,8 @@ namespace SORANO.BLL.Services
 
             return new SuccessResponse<int>(id);
         }
+
+        #endregion
 
         private void UpdateDeliveryItems(Delivery from, Delivery to, int userId)
         {
@@ -207,14 +215,11 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<int>(deliveries.Count());
         }
 
-        public async Task<ServiceResponse<DeliveryDto>> GetAsync(int id)
+        public async Task<ServiceResponse<int>> GetUnsubmittedCountAsync()
         {
-            var delivery = await UnitOfWork.Get<Delivery>().GetAsync(d => d.ID == id);
+            var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(d => !d.IsSubmitted && !d.IsDeleted);
 
-            if (delivery == null)
-                return new FailResponse<DeliveryDto>(Resource.DeliveryNotFoundMessage);
-
-            return new SuccessResponse<DeliveryDto>(delivery.ToDto());
-        }
+            return new SuccessResponse<int>(deliveries.Count());
+        }        
     }
 }

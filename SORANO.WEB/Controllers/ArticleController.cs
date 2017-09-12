@@ -53,7 +53,7 @@ namespace SORANO.WEB.Controllers
 
                 var result = await _articleService.GetAllAsync(showDeletedArticles, UserId);
 
-                if (result.Status == ServiceResponseStatusType.Fail)
+                if (result.Status == ServiceResponseStatus.Fail)
                 {
                     TempData["Error"] = result.Message;
                     return RedirectToAction("Index", "Home");
@@ -129,7 +129,7 @@ namespace SORANO.WEB.Controllers
                 {
                     var result = await _articleService.GetAsync(id, UserId);
 
-                    if (result.Status == ServiceResponseStatusType.Fail)
+                    if (result.Status == ServiceResponseStatus.Fail)
                     {
                         TempData["Error"] = result.Message;
                         return RedirectToAction("Index");
@@ -150,7 +150,7 @@ namespace SORANO.WEB.Controllers
             {
                 var result = await _articleService.GetAsync(id, UserId);
 
-                if (result.Status != ServiceResponseStatusType.Fail)
+                if (result.Status != ServiceResponseStatus.Fail)
                 {
                     return View(_mapper.Map<ArticleDetailsViewModel>(result.Result));
                 }
@@ -167,7 +167,7 @@ namespace SORANO.WEB.Controllers
             {
                 var result = await _articleService.GetAsync(id, UserId);
 
-                if (result.Status != ServiceResponseStatusType.Fail)
+                if (result.Status != ServiceResponseStatus.Fail)
                 {
                     return View(_mapper.Map<ArticleDeleteViewModel>(result.Result));
                 }
@@ -204,7 +204,7 @@ namespace SORANO.WEB.Controllers
 
                 var barcodeExists = await _articleService.BarcodeExistsAsync(model.Barcode, null, UserId);
 
-                if (barcodeExists.Status == ServiceResponseStatusType.Fail)
+                if (barcodeExists.Status == ServiceResponseStatus.Fail)
                 {
                     TempData["Error"] = barcodeExists.Message;
                     return RedirectToAction("Index");
@@ -224,7 +224,7 @@ namespace SORANO.WEB.Controllers
 
                 var result = await _articleService.CreateAsync(article, UserId);
 
-                if (result.Status == ServiceResponseStatusType.Success && result.Result != null)
+                if (result.Status == ServiceResponseStatus.Success && result.Result != null)
                 {
                     if (string.IsNullOrEmpty(model.ReturnPath))
                     {
@@ -264,7 +264,7 @@ namespace SORANO.WEB.Controllers
 
                 var barcodeExists = await _articleService.BarcodeExistsAsync(model.Barcode, model.ID, UserId);
 
-                if (barcodeExists.Status == ServiceResponseStatusType.Fail)
+                if (barcodeExists.Status == ServiceResponseStatus.Fail)
                 {
                     TempData["Error"] = barcodeExists.Message;
                     return RedirectToAction("Index");
@@ -284,7 +284,7 @@ namespace SORANO.WEB.Controllers
 
                 var result = await _articleService.UpdateAsync(article, UserId);
 
-                if (result.Status == ServiceResponseStatusType.Success)
+                if (result.Status == ServiceResponseStatus.Success)
                 {
                     TempData["Success"] = $"Артикул \"{model.Name}\" был успешно обновлён";
                     return RedirectToAction("Index", "Article");
@@ -302,7 +302,7 @@ namespace SORANO.WEB.Controllers
             {
                 var result = await _articleService.DeleteAsync(model.ID, UserId);
 
-                if (result.Status == ServiceResponseStatusType.Success)
+                if (result.Status == ServiceResponseStatus.Success)
                 {
                     TempData["Success"] = $"Артикул \"{model.Name}\" был успешно помечен как удалённый";
                 }

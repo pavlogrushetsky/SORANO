@@ -19,7 +19,7 @@ namespace SORANO.WEB.Controllers
             UserService = userService;
             
             var userResult = UserService.Get(HttpContext.User.FindFirst(ClaimTypes.Name)?.Value);
-            UserId = userResult.Status == ServiceResponseStatusType.Success ? userResult.Result.ID : 0;
+            UserId = userResult.Status == ServiceResponseStatus.Success ? userResult.Result.ID : 0;
         }
 
         protected ISession Session => HttpContext.Session;

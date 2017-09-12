@@ -4,7 +4,6 @@ using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SORANO.BLL.Properties;
 using System.Linq;
 using SORANO.BLL.Extensions;
 using SORANO.BLL.Dtos;
@@ -16,6 +15,8 @@ namespace SORANO.BLL.Services
         public LocationService(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
+
+        #region CRUD methods
 
         public async Task<ServiceResponse<IEnumerable<LocationDto>>> GetAllAsync(bool withDeleted)
         {
@@ -35,7 +36,7 @@ namespace SORANO.BLL.Services
             var location = await UnitOfWork.Get<Location>().GetAsync(s => s.ID == id);
 
             if (location == null)
-                return new FailResponse<LocationDto>(Resource.LocationNotFoundMessage);
+                return new ServiceResponse<LocationDto>(ServiceResponseStatus.NotFound);
 
             return new SuccessResponse<LocationDto>(location.ToDto());
         }
@@ -71,7 +72,7 @@ namespace SORANO.BLL.Services
             var existentEntity = await UnitOfWork.Get<Location>().GetAsync(l => l.ID == location.ID);
 
             if (existentEntity == null)
-                return new FailResponse<LocationDto>(Resource.LocationNotFoundMessage);
+                return new ServiceResponse<LocationDto>(ServiceResponseStatus.NotFound);
 
             var entity = location.ToEntity();
 
@@ -101,8 +102,11 @@ namespace SORANO.BLL.Services
         {
             var existentLocation = await UnitOfWork.Get<Location>().GetAsync(t => t.ID == id);
 
+            if (existentLocation == null)
+                return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
+
             if (existentLocation.Storages.Any() || existentLocation.SoldGoods.Any())
-                return new FailResponse<int>(Resource.LocationCannotBeDeletedMessage);
+                return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
             existentLocation.UpdateDeletedFields(userId);
 
@@ -112,6 +116,8 @@ namespace SORANO.BLL.Services
 
             return new SuccessResponse<int>(id);
         }
+
+        #endregion
 
         public async Task<ServiceResponse<Dictionary<LocationDto, int>>> GetLocationsForArticleAsync(int? articleId, int? except)
         {
