@@ -5,9 +5,11 @@ using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using SORANO.BLL.Dtos;
+using SORANO.BLL.Services;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels;
@@ -21,15 +23,18 @@ namespace SORANO.WEB.Controllers
     public class ClientController : EntityBaseController<ClientCreateUpdateViewModel>
     {
         private readonly IClientService _clientService;
+        private readonly IMapper _mapper;
 
         public ClientController(IClientService clientService, 
             IUserService userService,
             IHostingEnvironment environment,
             IAttachmentTypeService attachmentTypeService,
             IAttachmentService attachmentService,
-            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
+            IMemoryCache memoryCache, 
+            IMapper mapper) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
         {
             _clientService = clientService;
+            _mapper = mapper;
         }
 
         #region GET Actions
@@ -37,15 +42,28 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            bool showDeleted = Session.GetBool("ShowDeletedClients");
+            return await TryGetActionResultAsync(async () =>
+            {
+                var showDeleted = Session.GetBool("ShowDeletedClients");
 
-            var clients = await _clientService.GetAllAsync(showDeleted, UserId);
+                var clientsResult = await _clientService.GetAllAsync(showDeleted);
 
-            ViewBag.ShowDeleted = showDeleted;
+                if (clientsResult.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось получить список клиентов.";
+                    return RedirectToAction("Index", "Home");
+                }
 
-            await ClearAttachments();
+                ViewBag.ShowDeleted = showDeleted;
 
-            return View(clients.Select(s => s.ToModel()).ToList());
+                await ClearAttachments();
+
+                return View(_mapper.Map<IEnumerable<ClientIndexViewModel>>(clientsResult.Result));
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Home");
+            });
         }
 
         [HttpGet]
@@ -59,66 +77,90 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            ClientCreateUpdateViewModel model;
+            return await TryGetActionResultAsync(async () =>
+            {
+                ClientCreateUpdateViewModel model;
 
-            if (TryGetCached(out ClientCreateUpdateViewModel cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
-            {
-                model = cachedModel;
-                await CopyMainPicture(model);
-            }
-            else
-            {
-                model = new ClientCreateUpdateViewModel
+                if (TryGetCached(out var cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
                 {
-                    MainPicture = new MainPictureViewModel()
-                };
-            }
+                    model = cachedModel;
+                    await CopyMainPicture(model);
+                }
+                else
+                {
+                    model = new ClientCreateUpdateViewModel
+                    {
+                        MainPicture = new MainPictureViewModel()
+                    };
+                }
 
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
-
-            return View(model);
-        }
+                return View(model);
+            }, OnFault);            
+        }       
 
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            ClientCreateUpdateViewModel model;
-
-            if (TryGetCached(out ClientCreateUpdateViewModel cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedModel.ID == id)
+            return await TryGetActionResultAsync(async () =>
             {
-                model = cachedModel;
-                await CopyMainPicture(model);
-            }
-            else
-            {
-                var client = await _clientService.GetAsync(id, UserId);
+                ClientCreateUpdateViewModel model;
 
-                model = client.ToModel();
-            }
+                if (TryGetCached(out var cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedModel.ID == id)
+                {
+                    model = cachedModel;
+                    await CopyMainPicture(model);
+                }
+                else
+                {
+                    var client = await _clientService.GetAsync(id);
 
+                    if (client.Status != ServiceResponseStatus.Success)
+                    {
+                        TempData["Error"] = "Не удалось найти указанного клиента.";
+                        return RedirectToAction("Index");
+                    }
 
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
+                    model = _mapper.Map<ClientCreateUpdateViewModel>(client.Result);
+                    model.IsUpdate = true;
+                }
 
-            ViewData["IsEdit"] = true;
-
-            return View("Create", model);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var client = await _clientService.GetAsync(id, UserId);
-
-            return View(client.ToModel());
+                return View("Create", model);
+            }, OnFault);           
         }
 
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var client = await _clientService.GetIncludeAllAsync(id);
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _clientService.GetAsync(id);
 
-            return View(client.ToModel());
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанного клиента.";
+                    return RedirectToAction("Index");
+                }
+
+                return View(_mapper.Map<ClientDetailsViewModel>(result.Result));
+            }, OnFault);            
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _clientService.GetAsync(id);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанного клиента.";
+                    return RedirectToAction("Index");
+                }
+
+                return View(_mapper.Map<ClientDeleteViewModel>(result.Result));
+            }, OnFault);
+        }       
 
         #endregion
 
@@ -128,13 +170,8 @@ namespace SORANO.WEB.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ClientCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            var attachmentTypes = new List<SelectListItem>();
-
             return await TryGetActionResultAsync(async () =>
             {
-                attachmentTypes = await GetAttachmentTypes();
-                ViewBag.AttachmentTypes = attachmentTypes;
-
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
@@ -143,64 +180,48 @@ namespace SORANO.WEB.Controllers
                     return View(model);
                 }
 
-                var client = model.ToEntity();
+                var client = _mapper.Map<ClientDto>(model);
 
-                client = await _clientService.CreateAsync(client, UserId);
+                var result = await _clientService.CreateAsync(client, UserId);
 
-                if (client != null)
+                if (result.Status != ServiceResponseStatus.Success)
                 {
-                    return RedirectToAction("Index", "Client");
+                    TempData["Error"] = "Не удалось создать клиента.";
+                    return RedirectToAction("Index");
                 }
 
-                ModelState.AddModelError("", "Не удалось создать нового клиента.");
-                return View(model);
-            }, ex =>
-            {
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ModelState.AddModelError("", ex);
-                return View(model);
-            });
+                TempData["Success"] = $"Клиент \"{model.Name}\" был успешно создан.";
+                return RedirectToAction("Index");
+            }, OnFault);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(ClientCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            var attachmentTypes = new List<SelectListItem>();
-
             return await TryGetActionResultAsync(async () =>
             {
-                attachmentTypes = await GetAttachmentTypes();
-                ViewBag.AttachmentTypes = attachmentTypes;
-
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
 
                 if (!ModelState.IsValid)
                 {
-                    ViewData["IsEdit"] = true;
                     return View("Create", model);
                 }
 
-                var client = model.ToEntity();
+                var client = _mapper.Map<ClientDto>(model);
 
-                client = await _clientService.UpdateAsync(client, UserId);
+                var result = await _clientService.UpdateAsync(client, UserId);
 
-                if (client != null)
+                if (result.Status != ServiceResponseStatus.Success)
                 {
-                    return RedirectToAction("Index", "Client");
+                    TempData["Error"] = "Не удалось обновить клиента.";
+                    return RedirectToAction("Index");
                 }
 
-                ModelState.AddModelError("", "Не удалось обновить клиента.");
-                ViewData["IsEdit"] = true;
-                return View("Create", model);
-            }, ex =>
-            {
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ModelState.AddModelError("", ex);
-                ViewData["IsEdit"] = true;
-                return View("Create", model);
-            });
+                TempData["Success"] = $"Клиент \"{model.Name}\" был успешно обновлён.";
+                return RedirectToAction("Index");
+            }, OnFault);
         }
 
         [HttpPost]
@@ -208,12 +229,27 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                await _clientService.DeleteAsync(model.ID, UserId);
+                var result = await _clientService.DeleteAsync(model.ID, UserId);
 
-                return RedirectToAction("Index", "Client");
-            }, ex => RedirectToAction("Index", "Client"));
+                if (result.Status == ServiceResponseStatus.Success)
+                {
+                    TempData["Success"] = $"Клиент \"{model.Name}\" был успешно помечен как удалённый.";
+                }
+                else
+                {
+                    TempData["Error"] = "Не удалось удалить клиента.";
+                }
+
+                return RedirectToAction("Index");
+            }, OnFault);
         }
 
         #endregion
+
+        private IActionResult OnFault(string ex)
+        {
+            TempData["Error"] = ex;
+            return RedirectToAction("Index");
+        }
     }
 }
