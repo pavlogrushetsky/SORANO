@@ -1,20 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using SORANO.BLL.Services.Abstract;
-using SORANO.WEB.Infrastructure.Extensions;
-using System.Threading.Tasks;
-using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Dtos;
 using SORANO.BLL.Services;
+using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure;
+using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.Location;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 // ReSharper disable Mvc.ViewNotResolved
 

@@ -2,6 +2,6 @@
 {
     public class LocationTypeDto : BaseDto
     {
-        
+        public string Name { get; set; }
     }
 }
