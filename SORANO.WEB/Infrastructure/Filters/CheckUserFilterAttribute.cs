@@ -25,7 +25,7 @@ namespace SORANO.WEB.Infrastructure.Filters
             public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
             {
                 var userResult = await _userService.GetAsync(context.HttpContext.User.FindFirst(ClaimTypes.Name)?.Value);
-
+                
                 var isBlocked = userResult.Status != ServiceResponseStatus.Success
                                 || userResult.Result == null
                                 || userResult.Result.IsBlocked;

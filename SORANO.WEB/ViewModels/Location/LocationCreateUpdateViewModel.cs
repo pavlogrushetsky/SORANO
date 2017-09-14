@@ -4,6 +4,8 @@ namespace SORANO.WEB.ViewModels.Location
 {
     public class LocationCreateUpdateViewModel : BaseCreateUpdateViewModel
     {
-        
+        public string Name { get; set; }
+
+        public string ReturnPath { get; set; }
     }
 }
