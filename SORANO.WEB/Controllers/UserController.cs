@@ -7,6 +7,10 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels;
+using AutoMapper;
+using SORANO.BLL.Services;
+using SORANO.WEB.ViewModels.User;
+using System.Linq;
 
 namespace SORANO.WEB.Controllers
 {
@@ -15,27 +19,60 @@ namespace SORANO.WEB.Controllers
     public class UserController : BaseController
     {
         private readonly IRoleService _roleService;
+        private readonly IMapper _mapper;
 
-        public UserController(IUserService userService, IRoleService roleService) : base(userService)
+        public UserController(IUserService userService, 
+            IRoleService roleService,
+            IMapper mapper) : base(userService)
         {
             _roleService = roleService;
+            _mapper = mapper;
         }
 
         #region GET Actions
 
         [HttpGet]
-        public async Task<IActionResult> List()
+        public async Task<IActionResult> Index()
         {
-            var users = await UserService.GetAllAsync();
-
-            var models = new List<UserModel>();
-
-            users.ForEach(u =>
+            return await TryGetActionResultAsync(async () => 
             {
-                models.Add(u.ToModel(u.ID == UserId));
-            });
+                var usersResult = await UserService.GetAllAsync();
 
-            return View(models);
+                if (usersResult.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось получить список пользователей.";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                return View(_mapper.Map<IEnumerable<UserIndexViewModel>>(usersResult.Result));
+            }, ex => 
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Home");
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+            return await TryGetActionResultAsync(async () => 
+            {
+                var roles = await _roleService.GetAllAsync();
+
+                var userRoles = roles.Result.Select(r => new SelectListItem
+                {
+                    Value = r.ID.ToString(),
+                    Text = r.Description
+                });
+
+                ViewBag.Roles = userRoles;
+
+                return View(new UserModel());
+            }, ex => 
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index");
+            });           
         }
 
         [HttpGet]
@@ -43,7 +80,7 @@ namespace SORANO.WEB.Controllers
         {
             var user = await UserService.GetAsync(id);
 
-            return View(user.ToModel(user.ID == UserId));
+            return View(_mapper.Map<UserDeleteViewModel>(user.Result));
         }
 
         [HttpGet]
@@ -51,7 +88,7 @@ namespace SORANO.WEB.Controllers
         {
             var user = await UserService.GetAsync(id);
 
-            return View(user.ToModel(user.ID == UserId));
+            return View(_mapper.Map<UserBlockViewModel>(user.Result));
         }
 
         [HttpGet]
@@ -59,15 +96,15 @@ namespace SORANO.WEB.Controllers
         {           
             var user = await UserService.GetAsync(id);
 
-            var model = user.ToModel(user.ID == UserId);
+            var model = _mapper.Map<UserCreateUpdateViewModel>(user.Result);
 
             var roles = await _roleService.GetAllAsync();
 
-            var userRoles = roles.Select(r => new SelectListItem
+            var userRoles = roles.Result.Select(r => new SelectListItem
             {
                 Value = r.ID.ToString(),
                 Text = r.Description,
-                Selected = user.Roles.Select(x => x.ID).Contains(r.ID)
+                Selected = user.Result.Roles.Select(x => x.ID).Contains(r.ID)
             });
 
             ViewBag.Roles = userRoles;
@@ -75,30 +112,14 @@ namespace SORANO.WEB.Controllers
             ViewData["IsEdit"] = true;
 
             return View("Create", model);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Create()
-        {
-            var roles = await _roleService.GetAllAsync();
-
-            var userRoles = roles.Select(r => new SelectListItem
-            {
-                Value = r.ID.ToString(),
-                Text = r.Description
-            });
-
-            ViewBag.Roles = userRoles;
-
-            return View(new UserModel());
-        }
+        }   
 
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
             var user = await UserService.GetAsync(id);
 
-            return View(user.ToModel(user.ID == UserId));
+            return View(_mapper.Map<UserDetailsViewModel>(user.Result));
         }
 
         #endregion
@@ -120,9 +141,9 @@ namespace SORANO.WEB.Controllers
         {
             var user = await UserService.GetAsync(model.ID);
 
-            user.IsBlocked = !user.IsBlocked;
+            user.Result.IsBlocked = !user.Result.IsBlocked;
 
-            await UserService.UpdateAsync(user);
+            await UserService.UpdateAsync(user.Result);
 
             return RedirectToAction("List");
         }
@@ -135,7 +156,7 @@ namespace SORANO.WEB.Controllers
             {
                 var roles = await _roleService.GetAllAsync();
 
-                var userRoles = roles.Select(r => new SelectListItem
+                var userRoles = roles.Result.Select(r => new SelectListItem
                 {
                     Value = r.ID.ToString(),
                     Text = r.Description
@@ -145,7 +166,7 @@ namespace SORANO.WEB.Controllers
 
                 var exists = await UserService.Exists(model.Login, model.ID);
 
-                if (exists)
+                if (exists.Result)
                 {
                     ModelState.AddModelError("Login", "Пользователь с таким логином уже существует");
                 }
@@ -158,7 +179,8 @@ namespace SORANO.WEB.Controllers
 
                 var user = model.ToEntity();
 
-                user = await UserService.UpdateAsync(user);
+                // TODO
+                //user = await UserService.UpdateAsync(user);
 
                 if (user != null)
                 {
@@ -184,7 +206,7 @@ namespace SORANO.WEB.Controllers
             {
                 var roles = await _roleService.GetAllAsync();
 
-                var userRoles = roles.Select(r => new SelectListItem
+                var userRoles = roles.Result.Select(r => new SelectListItem
                 {
                     Value = r.ID.ToString(),
                     Text = r.Description
@@ -194,7 +216,7 @@ namespace SORANO.WEB.Controllers
 
                 var exists = await UserService.Exists(model.Login);
 
-                if (exists)
+                if (exists.Result)
                 {
                     ModelState.AddModelError("Login", "Пользователь с таким логином уже существует");
                 }
@@ -206,7 +228,8 @@ namespace SORANO.WEB.Controllers
 
                 var user = model.ToEntity();
 
-                user = await UserService.CreateAsync(user);
+                // TODO
+                //user = await UserService.CreateAsync(user);
 
                 if (user != null)
                 {

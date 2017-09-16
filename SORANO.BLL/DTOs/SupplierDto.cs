@@ -2,6 +2,6 @@
 {
     public class SupplierDto : BaseDto
     {
-        
+        public string Name { get; set; }
     }
 }

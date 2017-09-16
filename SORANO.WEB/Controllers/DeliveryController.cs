@@ -1,19 +1,21 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Memory;
+using SORANO.BLL.Dtos;
+using SORANO.BLL.Services;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Extensions;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
 using SORANO.WEB.Infrastructure.Filters;
-using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.Delivery;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SORANO.WEB.Controllers
 {
@@ -25,6 +27,7 @@ namespace SORANO.WEB.Controllers
         private readonly ISupplierService _supplierService;
         private readonly IArticleService _articleService;
         private readonly ILocationService _locationService;
+        private readonly IMapper _mapper;
 
         public DeliveryController(IUserService userService,
             IHostingEnvironment hostingEnvironment,
@@ -34,12 +37,14 @@ namespace SORANO.WEB.Controllers
             IDeliveryService deliveryService,
             ISupplierService supplierService,
             IArticleService articleService,
-            ILocationService locationService) : base(userService, hostingEnvironment, attachmentTypeService, attachmentService, memoryCache)
+            ILocationService locationService,
+            IMapper mapper) : base(userService, hostingEnvironment, attachmentTypeService, attachmentService, memoryCache)
         {
             _deliveryService = deliveryService;
             _supplierService = supplierService;
             _articleService = articleService;
             _locationService = locationService;
+            _mapper = mapper;
         }
 
         #region GET Actions
@@ -47,15 +52,28 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var showDeleted = Session.GetBool("ShowDeletedDeliveries");
+            return await TryGetActionResultAsync(async () => 
+            {
+                var showDeleted = Session.GetBool("ShowDeletedDeliveries");
 
-            var deliveries = await _deliveryService.GetAllAsync(showDeleted, UserId);
+                var deliveriesResult = await _deliveryService.GetAllAsync(showDeleted);
 
-            ViewBag.ShowDeleted = showDeleted;
+                if (deliveriesResult.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось получить список поставок.";
+                    return RedirectToAction("Index", "Home");
+                }
 
-            await ClearAttachments();
+                ViewBag.ShowDeleted = showDeleted;
 
-            return View(deliveries.Select(d => d.ToModel()).ToList());
+                await ClearAttachments();
+
+                return View(_mapper.Map<IEnumerable<DeliveryIndexViewModel>>(deliveriesResult.Result));
+            }, ex => 
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Home");
+            });
         }
 
         [HttpGet]
@@ -69,97 +87,113 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            DeliveryCreateUpdateViewModel model;
+            return await TryGetActionResultAsync(async () => 
+            {
+                DeliveryCreateUpdateViewModel model;
 
-            if (TryGetCached(out DeliveryCreateUpdateViewModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
-            {
-                model = cachedForSelectMainPicture;
-                await CopyMainPicture(model);
-            }
-            else if (TryGetCached(out DeliveryCreateUpdateViewModel cachedForCreateSupplier, CacheKeys.CreateSupplierCacheKey, CacheKeys.CreateSupplierCacheValidKey))
-            {
-                model = cachedForCreateSupplier;
-            }
-            else if (TryGetCached(out DeliveryCreateUpdateViewModel cachedForCreateLocation, CacheKeys.CreateLocationCacheKey, CacheKeys.CreateLocationCacheValidKey))
-            {
-                model = cachedForCreateLocation;
-            }
-            else if (TryGetCached(out DeliveryCreateUpdateViewModel cachedForCreateArticle, CacheKeys.CreateArticleCacheKey, CacheKeys.CreateArticleCacheValidKey))
-            {
-                model = cachedForCreateArticle;
-            }
-            else
-            {
-                model = new DeliveryCreateUpdateViewModel
+                if (TryGetCached(out var cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
                 {
-                    MainPicture = new MainPictureViewModel()
-                };
-            }
+                    model = cachedForSelectMainPicture;
+                    await CopyMainPicture(model);
+                }
+                else if (TryGetCached(out var cachedForCreateSupplier, CacheKeys.CreateSupplierCacheKey, CacheKeys.CreateSupplierCacheValidKey))
+                {
+                    model = cachedForCreateSupplier;
+                }
+                else if (TryGetCached(out var cachedForCreateLocation, CacheKeys.CreateLocationCacheKey, CacheKeys.CreateLocationCacheValidKey))
+                {
+                    model = cachedForCreateLocation;
+                }
+                else if (TryGetCached(out var cachedForCreateArticle, CacheKeys.CreateArticleCacheKey, CacheKeys.CreateArticleCacheValidKey))
+                {
+                    model = cachedForCreateArticle;
+                }
+                else
+                {
+                    model = new DeliveryCreateUpdateViewModel
+                    {
+                        MainPicture = new MainPictureViewModel()
+                    };
+                }
 
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
-
-            ViewBag.Suppliers = await GetSuppliers();
-            ViewBag.Locations = await GetLocations();
-            ViewBag.Articles = await GetArticles();
-
-            return View(model);
+                return View(model);
+            }, OnFault);           
         }
 
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            DeliveryCreateUpdateViewModel model;
-
-            if (TryGetCached(out DeliveryCreateUpdateViewModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
+            return await TryGetActionResultAsync(async () => 
             {
-                model = cachedForSelectMainPicture;
-                await CopyMainPicture(model);
-            }
-            else if (TryGetCached(out DeliveryCreateUpdateViewModel cachedForCreateSupplier, CacheKeys.CreateSupplierCacheKey, CacheKeys.CreateSupplierCacheValidKey))
-            {
-                model = cachedForCreateSupplier;
-            }
-            else if (TryGetCached(out DeliveryCreateUpdateViewModel cachedForCreateLocation, CacheKeys.CreateLocationCacheKey, CacheKeys.CreateLocationCacheValidKey))
-            {
-                model = cachedForCreateLocation;
-            }
-            else if (TryGetCached(out DeliveryCreateUpdateViewModel cachedForCreateArticle, CacheKeys.CreateArticleCacheKey, CacheKeys.CreateArticleCacheValidKey))
-            {
-                model = cachedForCreateArticle;
-            }
-            else
-            {
-                var delivery = await _deliveryService.GetIncludeAllAsync(id);
+                DeliveryCreateUpdateViewModel model;
 
-                model = delivery.ToModel();
-            }
+                if (TryGetCached(out var cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
+                {
+                    model = cachedForSelectMainPicture;
+                    await CopyMainPicture(model);
+                }
+                else if (TryGetCached(out var cachedForCreateSupplier, CacheKeys.CreateSupplierCacheKey, CacheKeys.CreateSupplierCacheValidKey))
+                {
+                    model = cachedForCreateSupplier;
+                }
+                else if (TryGetCached(out var cachedForCreateLocation, CacheKeys.CreateLocationCacheKey, CacheKeys.CreateLocationCacheValidKey))
+                {
+                    model = cachedForCreateLocation;
+                }
+                else if (TryGetCached(out var cachedForCreateArticle, CacheKeys.CreateArticleCacheKey, CacheKeys.CreateArticleCacheValidKey))
+                {
+                    model = cachedForCreateArticle;
+                }
+                else
+                {
+                    var result = await _deliveryService.GetAsync(id);
 
+                    if (result.Status != ServiceResponseStatus.Success)
+                    {
+                        TempData["Error"] = "Не удалось найти указанную поставку.";
+                        return RedirectToAction("Index");
+                    }
 
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
+                    model = _mapper.Map<DeliveryCreateUpdateViewModel>(result.Result);
+                    model.IsUpdate = true;
+                }
 
-            ViewBag.Suppliers = await GetSuppliers();
-            ViewBag.Locations = await GetLocations();
-            ViewBag.Articles = await GetArticles();
-
-            ViewData["IsEdit"] = true;
-
-            return View("Create", model);
+                return View("Create", model);
+            }, OnFault);            
         }
 
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var delivery = await _deliveryService.GetIncludeAllAsync(id);
+            return await TryGetActionResultAsync(async () => 
+            {
+                var result = await _deliveryService.GetAsync(id);
 
-            return View(delivery.ToModel());
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанную поставку.";
+                    return RedirectToAction("Index");
+                }
+
+                return View(_mapper.Map<DeliveryDetailsViewModel>(result.Result));
+            }, OnFault);          
         }
 
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var delivery = await _deliveryService.GetIncludeAllAsync(id);
+            return await TryGetActionResultAsync(async () => 
+            {
+                var result = await _deliveryService.GetAsync(id);
 
-            return View(delivery.ToModel());
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанную поставку.";
+                    return RedirectToAction("Index");
+                }
+
+                return View(_mapper.Map<DeliveryDeleteViewModel>(result.Result));
+            }, OnFault);          
         }
 
         #endregion
@@ -168,7 +202,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateLocation(DeliveryModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public async Task<IActionResult> CreateLocation(DeliveryCreateUpdateViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
@@ -180,7 +214,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateSupplier(DeliveryModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public async Task<IActionResult> CreateSupplier(DeliveryCreateUpdateViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
@@ -192,12 +226,13 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateArticle(DeliveryModel model, int num, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public async Task<IActionResult> CreateArticle(DeliveryCreateUpdateViewModel model, int num, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
 
-            model.CurrentItemNumber = num;
+            // TODO
+            //model.CurrentItemNumber = num;
 
             MemoryCache.Set(CacheKeys.CreateArticleCacheKey, model);
 
@@ -205,76 +240,47 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> AddDeliveryItem(DeliveryModel delivery, bool isEdit, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public virtual async Task<IActionResult> AddDeliveryItem(DeliveryCreateUpdateViewModel delivery, bool isEdit, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             ModelState.Clear();
 
-            delivery.DeliveryItems.Add(new DeliveryItemModel
-            {
-                Quantity = 1,
-                UnitPrice = "0.00",
-                Discount = "0.00",
-                DiscountPrice = "0.00",
-                GrossPrice = "0.00"
-            });
-
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
-
-            ViewBag.Articles = await GetArticles();
-            ViewBag.Suppliers = await GetSuppliers();
-            ViewBag.Locations = await GetLocations();
-
-            ViewData["IsEdit"] = isEdit;
-
             await LoadMainPicture(delivery, mainPictureFile);
             await LoadAttachments(delivery, attachments);
+
+            // TODO
+            //delivery.DeliveryItems.Add(new DeliveryItemModel
+            //{
+            //    Quantity = 1,
+            //    UnitPrice = "0.00",
+            //    Discount = "0.00",
+            //    DiscountPrice = "0.00",
+            //    GrossPrice = "0.00"
+            //});           
 
             return View("Create", delivery);
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> DeleteDeliveryItem(DeliveryModel delivery, bool isEdit, int num, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public virtual async Task<IActionResult> DeleteDeliveryItem(DeliveryCreateUpdateViewModel delivery, bool isEdit, int num, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             ModelState.Clear();
 
-            delivery.DeliveryItems.RemoveAt(num);
-
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
-
-            ViewBag.Articles = await GetArticles();
-            ViewBag.Suppliers = await GetSuppliers();
-            ViewBag.Locations = await GetLocations();
-
-            ViewData["IsEdit"] = isEdit;
-
             await LoadMainPicture(delivery, mainPictureFile);
             await LoadAttachments(delivery, attachments);
+
+            // TODO
+            //delivery.DeliveryItems.RemoveAt(num);          
 
             return View("Create", delivery);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(DeliveryModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public async Task<IActionResult> Create(DeliveryCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            var articles = new List<SelectListItem>();
-            var suppliers = new List<SelectListItem>();
-            var locations = new List<SelectListItem>();
-            var attachmentTypes = new List<SelectListItem>();
-
             return await TryGetActionResultAsync(async () =>
             {
                 ModelState.RemoveFor("Status");
-
-                articles = await GetArticles();
-                suppliers = await GetSuppliers();
-                locations = await GetLocations();
-                attachmentTypes = await GetAttachmentTypes();
-
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ViewBag.Articles = articles;
-                ViewBag.Suppliers = suppliers;
-                ViewBag.Locations = locations;
 
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
@@ -290,55 +296,28 @@ namespace SORANO.WEB.Controllers
                     return View(model);
                 }
 
-                var delivery = model.ToEntity();
+                var delivery = _mapper.Map<DeliveryDto>(model);
 
-                delivery = await _deliveryService.CreateAsync(delivery, UserId);
+                var result = await _deliveryService.CreateAsync(delivery, UserId);
 
-                if (delivery != null)
+                if (result.Status != ServiceResponseStatus.Success)
                 {
-                    return RedirectToAction("Index", "Delivery");
+                    TempData["Error"] = "Не удалось создать поставку.";
+                    return RedirectToAction("Index");
                 }
 
-                ModelState.AddModelError("", "Не удалось создать накладную.");
-                model.Status = false;
-                return View(model);
-            }, ex =>
-            {
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ViewBag.Articles = articles;
-                ViewBag.Suppliers = suppliers;
-                ViewBag.Locations = locations;
-
-                ModelState.AddModelError("", ex);
-
-                model.Status = false;
-
-                return View(model);
-            });
+                TempData["Success"] = "Поставка была успешно создана.";
+                return RedirectToAction("Index");
+            }, OnFault);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(DeliveryModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public async Task<IActionResult> Update(DeliveryCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            var articles = new List<SelectListItem>();
-            var suppliers = new List<SelectListItem>();
-            var locations = new List<SelectListItem>();
-            var attachmentTypes = new List<SelectListItem>();
-
             return await TryGetActionResultAsync(async () =>
             {
                 ModelState.RemoveFor("Status");
-
-                articles = await GetArticles();
-                suppliers = await GetSuppliers();
-                locations = await GetLocations();
-                attachmentTypes = await GetAttachmentTypes();
-
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ViewBag.Articles = articles;
-                ViewBag.Suppliers = suppliers;
-                ViewBag.Locations = locations;
 
                 await LoadMainPicture(model, mainPictureFile);
                 await LoadAttachments(model, attachments);
@@ -351,56 +330,55 @@ namespace SORANO.WEB.Controllers
                 if (!ModelState.IsValid)
                 {
                     model.Status = false;
-                    ViewData["IsEdit"] = true;
                     return View("Create", model);
                 }
 
-                var delivery = model.ToEntity();
+                var delivery = _mapper.Map<DeliveryDto>(model);
 
-                delivery = await _deliveryService.UpdateAsync(delivery, UserId);
+                var result = await _deliveryService.UpdateAsync(delivery, UserId);
 
-                if (delivery != null)
+                if (result.Status != ServiceResponseStatus.Success)
                 {
-                    return RedirectToAction("Index", "Delivery");
+                    TempData["Error"] = "Не удалось обновить поставку.";
+                    return RedirectToAction("Index");
                 }
 
-                ModelState.AddModelError("", "Не удалось обновить накладную.");
-                ViewData["IsEdit"] = true;
-                model.Status = false;
-                return View("Create", model);
-            }, ex =>
-            {
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ViewBag.Articles = articles;
-                ViewBag.Suppliers = suppliers;
-                ViewBag.Locations = locations;
-
-                ModelState.AddModelError("", ex);
-
-                model.Status = false;
-
-                ViewData["IsEdit"] = true;
-
-                return View("Create", model);
-            });
+                TempData["Success"] = "Поставка была успешно обновлена.";
+                return RedirectToAction("Index");
+            }, OnFault);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(DeliveryModel model)
+        public async Task<IActionResult> Delete(DeliveryDeleteViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
             {
-                await _deliveryService.DeleteAsync(model.ID, UserId);
+                var result = await _deliveryService.DeleteAsync(model.ID, UserId);
 
-                return RedirectToAction("Index", "Delivery");
-            }, ex => RedirectToAction("Index", "Delivery"));
+                if (result.Status == ServiceResponseStatus.Success)
+                {
+                    TempData["Success"] = $"Поставка была успешно помечена как удалённая.";
+                }
+                else
+                {
+                    TempData["Error"] = "Не удалось удалить поставку.";
+                }
+
+                return RedirectToAction("Index");
+            }, OnFault);
         }
 
         #endregion
 
+        private IActionResult OnFault(string ex)
+        {
+            TempData["Error"] = ex;
+            return RedirectToAction("Index");
+        }
+
         private async Task<List<SelectListItem>> GetSuppliers()
         {
-            var suppliers = await _supplierService.GetAllAsync(false, UserId);
+            var suppliers = await _supplierService.GetAllAsync(false);
 
             var supplierItems = new List<SelectListItem>
             {
@@ -411,7 +389,7 @@ namespace SORANO.WEB.Controllers
                 }
             };
 
-            supplierItems.AddRange(suppliers.Select(s => new SelectListItem
+            supplierItems.AddRange(suppliers.Result.Select(s => new SelectListItem
             {
                 Value = s.ID.ToString(),
                 Text = s.Name
@@ -424,7 +402,7 @@ namespace SORANO.WEB.Controllers
 
         private async Task<List<SelectListItem>> GetLocations()
         {
-            var locations = await _locationService.GetAllAsync(false, UserId);
+            var locations = await _locationService.GetAllAsync(false);
 
             var locationItems = new List<SelectListItem>
             {
@@ -435,7 +413,7 @@ namespace SORANO.WEB.Controllers
                 }
             };
 
-            locationItems.AddRange(locations.Select(l => new SelectListItem
+            locationItems.AddRange(locations.Result.Select(l => new SelectListItem
             {
                 Value = l.ID.ToString(),
                 Text = l.Name
@@ -448,7 +426,7 @@ namespace SORANO.WEB.Controllers
 
         private async Task<List<SelectListItem>> GetArticles()
         {
-            var articles = await _articleService.GetAllAsync(false, UserId);
+            var articles = await _articleService.GetAllAsync(false);
 
             var articleItems = new List<SelectListItem>
             {
