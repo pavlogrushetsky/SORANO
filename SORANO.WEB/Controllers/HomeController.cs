@@ -23,13 +23,13 @@ namespace SORANO.WEB.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var deliveriesCount = await _deliveryService.GetSubmittedCountAsync(UserId);
-            var totalIncome = await _goodsService.GetTotalIncomeAsync(UserId);
+            var deliveriesCount = await _deliveryService.GetSubmittedCountAsync();
+            var totalIncome = await _goodsService.GetTotalIncomeAsync();
 
             return View(new DashboardModel
             {
-                DeliveriesCount = deliveriesCount,
-                TotalIncome = Math.Round(totalIncome).ToString() + " ₴"
+                DeliveriesCount = deliveriesCount.Result,
+                TotalIncome = Math.Round(totalIncome.Result).ToString() + " ₴"
             });
         }
     }

@@ -66,7 +66,8 @@ namespace SORANO.WEB.Controllers
 
             if (cachedModel.MainPicture.ID > 0)
             {
-                hasThisMainPicture = await AttachmentService.HasMainPictureAsync(cachedModel.ID, cachedModel.MainPicture.ID, UserId);
+                var result = await AttachmentService.HasMainPictureAsync(cachedModel.ID, cachedModel.MainPicture.ID);
+                hasThisMainPicture = result.Result;
             }
                                 
             if (hasThisMainPicture)
@@ -154,9 +155,11 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         public virtual async Task<string> GetMimeType(int id)
         {
-            var type = await AttachmentTypeService.GetAsync(id, UserId);
+            var type = await AttachmentTypeService.GetAsync(id);
 
-            return type.ToModel().MimeTypes;
+            // TODO
+            //return type.ToModel().MimeTypes;
+            return string.Empty;
         }
 
         [HttpPost]
@@ -256,11 +259,11 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         public async Task<JsonResult> GetAttachmentTypes(string term)
         {
-            var attachmentTypes = await AttachmentTypeService.GetAllAsync(false, UserId);
+            var attachmentTypes = await AttachmentTypeService.GetAllAsync(false);
 
             return Json(new
             {
-                results = attachmentTypes
+                results = attachmentTypes.Result
                     .Where(t => string.IsNullOrEmpty(term) || t.Name.Contains(term))
                     .Select(t => new
                     {
@@ -345,8 +348,8 @@ namespace SORANO.WEB.Controllers
             }
 
             var files = Directory.GetFiles(path);
-            var attachments = await AttachmentService.GetAllForAsync(_entityTypeName, UserId);
-            var fileNames = attachments.Select(Path.GetFileName).ToList();
+            var attachments = await AttachmentService.GetAllForAsync(_entityTypeName);
+            var fileNames = attachments.Result.Select(Path.GetFileName).ToList();
 
             foreach (var file in files)
             {
