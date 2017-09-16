@@ -1,6 +1,6 @@
-﻿namespace SORANO.WEB.ViewModels.Client
+﻿namespace SORANO.WEB.ViewModels.Supplier
 {
-    public class ClientDeleteViewModel
+    public class SupplierDeleteViewModel
     {
         public int ID { get; set; }
 

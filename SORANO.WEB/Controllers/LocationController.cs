@@ -261,7 +261,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(LocationCreateUpdateViewModel model)
+        public async Task<IActionResult> Delete(LocationDeleteViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
             {

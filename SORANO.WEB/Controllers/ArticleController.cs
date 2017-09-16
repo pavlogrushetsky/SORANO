@@ -275,7 +275,7 @@ namespace SORANO.WEB.Controllers
                         return View("Create", model);
                 }
 
-                TempData["Success"] = $"Артикул \"{model.Name}\" был успешно обновлён";
+                TempData["Success"] = $"Артикул \"{model.Name}\" был успешно обновлён.";
                 return RedirectToAction("Index");
             }, OnFault);
         }
@@ -302,7 +302,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Cancel(ArticleModel model)
+        public IActionResult Cancel(ArticleCreateUpdateViewModel model)
         {
             if (string.IsNullOrEmpty(model.ReturnPath))
             {
