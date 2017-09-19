@@ -79,21 +79,21 @@
                     </dd>
                 }
                 <dt>
-                    @Html.DisplayNameFor(model => model.Type)
+                    @Html.DisplayNameFor(model => model.TypeName)
                 </dt>
                 <dd>
                     <a asp-controller="ArticleType"
                        asp-action="Details"
-                       asp-route-id="@Model.Type.ID"
+                       asp-route-id="@Model.TypeID"
                        data-toggle="tooltip"
                        data-placement="right"
                        data-original-title="Просмотреть информацию о типе артикулов"
                        title="">
-                        @Html.DisplayFor(model => model.Type.Name)
+                        @Html.DisplayFor(model => model.TypeName)
                     </a>
                 </dd>
                 <dd>
-                    @Html.DisplayFor(model => model.Type.Description)
+                    @Html.DisplayFor(model => model.TypeDescription)
                 </dd>
                 <dt>
                     @Html.DisplayNameFor(model => model.Created)

@@ -20,12 +20,11 @@ namespace SORANO.WEB.ViewModels.Article
         [Display(Name = "Штрих-код")]
         public string Barcode { get; set; }
 
-        [Display(Name = "Тип артикулов")]
-        public string TypeID { get; set; }
+        public int TypeID { get; set; }
 
         [Display(Name = "Тип артикулов")]
-        public ArticleTypeModel Type { get; set; }
+        public string TypeName { get; set; }
 
-        public string ReturnPath { get; set; }
+        public string TypeDescription { get; set; }
     }
 }

@@ -1,0 +1,18 @@
+﻿@model CanBeDeletedViewModel
+
+@if (!Model.CanBeDeleted)
+{
+    <div class="col-lg-12">
+        <div class="alert alert-dismissible alert-danger">
+            <strong>Ошибка!</strong> @Model.Error
+        </div>
+    </div>
+}
+else
+{
+    <div class="col-lg-12">
+        <div class="alert alert-dismissible alert-warning">
+            <strong>Внимание!</strong> @Model.Warning
+        </div>
+    </div>
+}

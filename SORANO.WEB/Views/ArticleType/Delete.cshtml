@@ -15,17 +15,16 @@
     </ul>
 }
 
-<div class="col-lg-6 col-sm-12">
-    <div class="row">
-        <p class="@(Model.CanBeDeleted ? "text-warning" : "text-danger")">
-            <i class="fa fa-fw fa-exclamation" aria-hidden="true"></i>
-            @(Model.CanBeDeleted
-                ? "Вы уверены, что хотите удалить следующий тип артикулов?"
-                : "Тип артикулов не может быть удалён, так как у него есть связанные с ним артикулы.")
-        </p>
-    </div>
-    <br/>
-    <div class="row">
+<div class="row">
+    @await Component.InvokeAsync("CanBeDeleted", new
+    {
+        canBeDeleted = Model.CanBeDeleted,
+        error = "Тип артикулов не может быть удалён, так как у него есть связанные с ним артикулы.",
+        warning = "Вы уверены, что хотите удалить следующий тип артикулов?"
+    })
+</div>
+<div class="row">
+    <div class="col-lg-12">
         <dl class="dl-horizontal">
             <dt>
                 @Html.DisplayNameFor(model => model.Name)
@@ -42,15 +41,19 @@
         </dl>
         <form asp-action="Delete">
             <input type="hidden" asp-for="ID" />
+            <input type="hidden" asp-for="Name" />
             <div class="form-group">
                 <a class="btn btn-default btn-sm" asp-controller="Article" asp-action="Index">
                     <i class="fa fa-fw fa-close"></i>
                     Отмена
                 </a>
-                <button type="submit" class="btn btn-danger btn-sm @(Model.CanBeDeleted ? "" : "disabled")">
-                    <i class="fa fa-fw fa-trash"></i>
-                    Удалить
-                </button>
+                @if (Model.CanBeDeleted)
+                {
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fa fa-fw fa-trash"></i>
+                        Удалить
+                    </button>
+                }                
             </div>
         </form>
     </div>

@@ -23,9 +23,9 @@
 <div class="col-lg-12">
     <div class="row">
         <div style="float:left;">
-            @if (Model.MainPicture?.FullPath != null)
+            @if (Model.HasMainPicture)
             {
-                <img src="@Url.Content(Model.MainPicture.FullPath)" />
+                <img src="@Url.Content(Model.MainPicturePath)" />
             }
         </div>   
         <div style="float:left;">
@@ -51,24 +51,24 @@
                         @Html.DisplayFor(model => model.Description)
                     </dd>
                 }
-                @if (Model.ParentType != null)
+                @if (Model.HasType)
                 {
                     <dt>
-                        @Html.DisplayNameFor(model => model.ParentType)
+                        @Html.DisplayNameFor(model => model.TypeName)
                     </dt>
                     <dd>
                         <a asp-controller="ArticleType"
                            asp-action="Details"
-                           asp-route-id="@Model.ParentType.ID"
+                           asp-route-id="@Model.TypeId"
                            data-toggle="tooltip"
                            data-placement="right"
                            data-original-title="Просмотреть информацию о родительском типе артикулов"
                            title="">
-                            @Html.DisplayFor(model => model.ParentType.Name)
+                            @Html.DisplayFor(model => model.TypeName)
                         </a>
                     </dd>
                     <dd>
-                        @Html.DisplayFor(model => model.ParentType.Description)
+                        @Html.DisplayFor(model => model.TypeDescription)
                     </dd>
                 }
                 <dt>

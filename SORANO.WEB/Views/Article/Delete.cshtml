@@ -16,22 +16,12 @@
 }
 
 <div class="row">
-    @if (!Model.CanBeDeleted)
+    @await Component.InvokeAsync("CanBeDeleted", new
     {
-        <div class="col-lg-12">
-            <div class="alert alert-dismissible alert-danger">
-                <strong>Ошибка!</strong> Артикул не может быть удалён, так как у него есть связанные с ним поставки.
-            </div>
-        </div>
-    }
-    else
-    {
-        <div class="col-lg-12">
-            <div class="alert alert-dismissible alert-warning">
-                <strong>Внимание!</strong> Вы уверены, что хотите удалить следующий артикул?
-            </div>
-        </div>
-    }
+        canBeDeleted = Model.CanBeDeleted,
+        error = "Артикул не может быть удалён, так как у него есть связанные с ним поставки.",
+        warning = "Вы уверены, что хотите удалить следующий артикул?"
+    })
 </div>
 <div class="row">
     <div class="col-lg-12">
