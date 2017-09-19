@@ -29,7 +29,7 @@ namespace SORANO.WEB.Controllers
             return View(new DashboardModel
             {
                 DeliveriesCount = deliveriesCount.Result,
-                TotalIncome = Math.Round(totalIncome.Result).ToString() + " ₴"
+                TotalIncome = Math.Round(totalIncome.Result) + " ₴"
             });
         }
     }

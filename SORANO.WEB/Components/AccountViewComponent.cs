@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using SORANO.BLL.Dtos;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.ViewModels.Account;
 
@@ -24,7 +25,7 @@ namespace SORANO.WEB.Components
 
             var userResult = await _userService.GetAsync(login);
 
-            return View(_mapper.Map<AccountViewModel>(userResult.Result));
+            return View(_mapper.Map<UserDto, AccountViewModel>(userResult.Result));
         }
     }
 }

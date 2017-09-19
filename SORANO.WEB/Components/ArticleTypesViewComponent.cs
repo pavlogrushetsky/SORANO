@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
-using SORANO.WEB.Infrastructure.Extensions;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using SORANO.WEB.ViewModels.ArticleType;
@@ -26,7 +24,7 @@ namespace SORANO.WEB.Components
 
             var viewModels = _mapper.Map<IEnumerable<ArticleTypeIndexViewModel>>(result.Result);
 
-            return View(viewModels.ToList().ToTree());
+            return View(viewModels);
         }
     }
 }

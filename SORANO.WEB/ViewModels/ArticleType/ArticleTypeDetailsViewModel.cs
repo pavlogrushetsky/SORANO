@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using SORANO.WEB.ViewModels.Article;
 using SORANO.WEB.ViewModels.Common;
 
 namespace SORANO.WEB.ViewModels.ArticleType
@@ -19,5 +21,8 @@ namespace SORANO.WEB.ViewModels.ArticleType
         public string TypeName { get; set; }
 
         public string TypeDescription { get; set; }
+
+        [Display(Name = "Артикулы")]
+        public IList<ArticleDetailsViewModel> Articles { get; set; }
     }
 }

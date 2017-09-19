@@ -1,9 +1,20 @@
-﻿using SORANO.WEB.ViewModels.Common;
+﻿using System.ComponentModel.DataAnnotations;
+using SORANO.WEB.ViewModels.Common;
 
 namespace SORANO.WEB.ViewModels.Client
 {
     public class ClientCreateUpdateViewModel : BaseCreateUpdateViewModel
     {
+        [Display(Name = "Имя *")]
         public string Name { get; set; }
+
+        [Display(Name = "Описание")]
+        public string Description { get; set; }
+
+        [Display(Name = "Номер телефона")]
+        public string PhoneNumber { get; set; }
+
+        [Display(Name = "Номер карты")]
+        public string CardNumber { get; set; }
     }
 }

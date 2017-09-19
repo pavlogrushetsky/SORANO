@@ -18,7 +18,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 GrossPrice = item.GrossPrice.ToString("0.00"),
                 Discount = item.Discount.ToString("0.00"),
                 DiscountPrice = item.DiscountedPrice.ToString("0.00"),
-                Article = item.Article?.ToModel()
+                //Article = item.Article?.ToModel()
             };
         }
 

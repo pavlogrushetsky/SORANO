@@ -34,34 +34,34 @@ namespace SORANO.WEB.Infrastructure.Extensions
                 return model;
             }
 
-            model.Articles = type.Articles?.Select(a => a.ToModel()).ToList();
+            //model.Articles = type.Articles?.Select(a => a.ToModel()).ToList();
             model.ChildTypes = type.ChildTypes?.Select(t => t.ToModel(false)).ToList();
             model.ParentType = type.ParentType?.ToModel(false);            
 
             return model;
         }     
         
-        public static List<ArticleTypeIndexViewModel> ToTree(this List<ArticleTypeIndexViewModel> types)
-        {
-            var parents = types.Where(t => t.ParentType == null).ToList();
+        //public static List<ArticleTypeIndexViewModel> ToTree(this List<ArticleTypeIndexViewModel> types)
+        //{
+            //var parents = types.Where(t => t.ParentType == null).ToList();
 
-            parents.ForEach(p =>
-            {
-                p.FillChildren(types);
-            });
+            //parents.ForEach(p =>
+            //{
+            //    p.FillChildren(types);
+            //});
 
-            return parents;
-        }
+            //return parents;
+        //}
 
-        private static void FillChildren(this ArticleTypeIndexViewModel parent, List<ArticleTypeIndexViewModel> children)
-        {
-            parent.ChildTypes = children.Where(c => c.ParentType?.ID == parent.ID).ToList();
+        //private static void FillChildren(this ArticleTypeIndexViewModel parent, List<ArticleTypeIndexViewModel> children)
+        //{
+            //parent.ChildTypes = children.Where(c => c.ParentType?.ID == parent.ID).ToList();
 
-            parent.ChildTypes.ToList().ForEach(c =>
-            {
-                c.FillChildren(children);
-            });
-        }
+            //parent.ChildTypes.ToList().ForEach(c =>
+            //{
+            //    c.FillChildren(children);
+            //});
+        //}
 
         public static ArticleType ToEntity(this ArticleTypeModel model)
         {

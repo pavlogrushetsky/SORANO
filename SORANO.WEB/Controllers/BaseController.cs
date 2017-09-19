@@ -12,14 +12,18 @@ namespace SORANO.WEB.Controllers
     {
         protected readonly IUserService UserService;
 
-        protected int UserId { get; }
+        protected int UserId
+        {
+            get
+            {
+                var userResult = UserService.Get(HttpContext.User.FindFirst(ClaimTypes.Name)?.Value);
+                return userResult.Status == ServiceResponseStatus.Success ? userResult.Result.ID : 0;
+            }
+        }
 
         public BaseController(IUserService userService)
         {
-            UserService = userService;
-            
-            var userResult = UserService.Get(HttpContext.User.FindFirst(ClaimTypes.Name)?.Value);
-            UserId = userResult.Status == ServiceResponseStatus.Success ? userResult.Result.ID : 0;
+            UserService = userService;           
         }
 
         protected ISession Session => HttpContext.Session;

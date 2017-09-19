@@ -110,8 +110,10 @@ namespace SORANO.BLL.Services
             var hash = CryptoHelper.Hash(password);
 
             var user = await _unitOfWork.Get<User>().GetAsync(u => !u.IsBlocked && u.Login.Equals(login) && u.Password.Equals(hash));   
-            
-            return new SuccessResponse<UserDto>(user.ToDto());
+
+            return user == null 
+                ? new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound) 
+                : new SuccessResponse<UserDto>(user.ToDto());
         }
 
         public async Task<ServiceResponse<bool>> ChangePasswordAsync(string login, string newPassword)

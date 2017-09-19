@@ -106,7 +106,7 @@ namespace SORANO.BLL.Services
         {
             var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
 
-            var sum = goods.Sum(g => g.SalePrice.Value);
+            var sum = goods?.Sum(g => g.SalePrice) ?? 0.0M;
 
             return new SuccessResponse<decimal>(sum);
         }

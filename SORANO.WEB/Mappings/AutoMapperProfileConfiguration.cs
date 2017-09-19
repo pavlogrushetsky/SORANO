@@ -3,6 +3,7 @@ using System.Linq;
 using AutoMapper;
 using SORANO.BLL.Dtos;
 using SORANO.WEB.Mappings.Converters;
+using SORANO.WEB.ViewModels.Account;
 using SORANO.WEB.ViewModels.Article;
 using SORANO.WEB.ViewModels.ArticleType;
 using SORANO.WEB.ViewModels.Attachment;
@@ -25,6 +26,8 @@ namespace SORANO.WEB.Mappings
             CreateMap<decimal, string>().ConvertUsing<DecimalToStringTypeConverter>();
             CreateMap<DateTime?, string>().ConvertUsing<NullDateTimeToStringTypeConverter>();
             CreateMap<DateTime, string>().ConvertUsing<DateTimeToStringTypeConverter>();
+
+            CreateMap<UserDto, AccountViewModel>();
 
             CreateMap<RecommendationDto, RecommendationViewModel>();
             CreateMap<RecommendationViewModel, RecommendationDto>();

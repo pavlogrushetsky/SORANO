@@ -32,6 +32,10 @@ namespace SORANO.WEB.Infrastructure.Filters
 
                 if (isBlocked)
                     context.Result = new RedirectToActionResult("Logout", "Account", null);
+                else
+                {
+                    await next();
+                }
             }
         }
     }

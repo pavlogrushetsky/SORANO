@@ -212,14 +212,14 @@ namespace SORANO.BLL.Services
         {
             var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(d => d.IsSubmitted && !d.IsDeleted);
 
-            return new SuccessResponse<int>(deliveries.Count());
+            return new SuccessResponse<int>(deliveries?.Count() ?? 0);
         }
 
         public async Task<ServiceResponse<int>> GetUnsubmittedCountAsync()
         {
             var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(d => !d.IsSubmitted && !d.IsDeleted);
 
-            return new SuccessResponse<int>(deliveries.Count());
+            return new SuccessResponse<int>(deliveries?.Count() ?? 0);
         }        
     }
 }

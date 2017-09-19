@@ -23,9 +23,9 @@
 <div class="col-lg-12">
     <div class="row">
         <div style="float:left;">
-            @if (Model.MainPicture?.FullPath != null)
+            @if (Model.HasMainPicture)
             {
-                <img src="@Url.Content(Model.MainPicture.FullPath)" />
+                <img src="@Url.Content(Model.MainPicturePath)" />
             }
         </div> 
         <div style="float: left;">
@@ -152,8 +152,9 @@
                         <a data-toggle="collapse" data-parent="#accordion" href="#collapseGoods">
                             <span>
                                 <i class="fa fa-fw fa-cart-plus" aria-hidden="true"></i>
-                                @Html.DisplayNameFor(m => m.Purchases)
-                                <span class="badge pull-right">@Model.Purchases.Count</span>
+                                @*TODO*@
+                                @*@Html.DisplayNameFor(m => m.Purchases)
+                                <span class="badge pull-right">@Model.Purchases.Count</span>*@
                             </span>
                         </a>
                     </h4>
@@ -178,7 +179,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var purchase in Model.Purchases)
+                            @*TODO*@
+                            @*@foreach (var purchase in Model.Purchases)
                                 {
                                     <tr>
                                         <td>
@@ -207,7 +209,7 @@
                                         <td>@purchase.TotalPrice</td>
                                         <td>@purchase.SaleDate</td>
                                     </tr>
-                                }
+                                }*@
                             </tbody>
                         </table>
                     </div>
