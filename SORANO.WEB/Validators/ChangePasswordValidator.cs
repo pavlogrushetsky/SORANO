@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.Account;
 
 namespace SORANO.WEB.Validators
 {
-    public class ChangePasswordValidator : AbstractValidator<ChangePasswordModel>
+    public class ChangePasswordValidator : AbstractValidator<ChangePasswordViewModel>
     {
         public ChangePasswordValidator()
         {
