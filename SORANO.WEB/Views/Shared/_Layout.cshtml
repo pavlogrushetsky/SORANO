@@ -89,45 +89,45 @@
                         <small>@ViewBag.Description</small>
                     </h2>
                 </div>
-            </div>
-            <div class="row">
-                @if (TempData.ContainsKey("Error"))
-                {
-                    <div class="col-lg-12">
-                        <div class="alert alert-dismissible alert-danger">
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            <strong>Ошибка!</strong> @TempData["Error"]
-                        </div>
+            </div>            
+        </div>
+        <div class="row">
+            @if (TempData.ContainsKey("Error"))
+            {
+                <div class="col-lg-12">
+                    <div class="alert alert-dismissible alert-danger">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Ошибка!</strong> @TempData["Error"]
                     </div>
-                }
-                @if (TempData.ContainsKey("Success"))
-                {
-                    <div class="col-lg-12">
-                        <div class="alert alert-dismissible alert-success">
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            @TempData["Success"]
-                        </div>
+                </div>
+            }
+            @if (TempData.ContainsKey("Success"))
+            {
+                <div class="col-lg-12">
+                    <div class="alert alert-dismissible alert-success">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        @TempData["Success"]
                     </div>
-                }
-                @if (TempData.ContainsKey("Info"))
-                {
-                    <div class="col-lg-12">
-                        <div class="alert alert-dismissible alert-info">
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            <strong>Информация:</strong> @TempData["Info"]
-                        </div>
+                </div>
+            }
+            @if (TempData.ContainsKey("Info"))
+            {
+                <div class="col-lg-12">
+                    <div class="alert alert-dismissible alert-info">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Информация:</strong> @TempData["Info"]
                     </div>
-                }
-                @if (TempData.ContainsKey("Warning"))
-                {
-                    <div class="col-lg-12">
-                        <div class="alert alert-dismissible alert-warning">
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            <strong>Warning!</strong> @TempData["Warning"]
-                        </div>
+                </div>
+            }
+            @if (TempData.ContainsKey("Warning"))
+            {
+                <div class="col-lg-12">
+                    <div class="alert alert-dismissible alert-warning">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Warning!</strong> @TempData["Warning"]
                     </div>
-                }
-            </div>
+                </div>
+            }
         </div>
         <div class="row">
             <div class="col-lg-12">

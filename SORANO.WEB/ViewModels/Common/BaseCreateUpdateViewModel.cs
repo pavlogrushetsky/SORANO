@@ -10,9 +10,9 @@ namespace SORANO.WEB.ViewModels.Common
 
         public bool IsUpdate { get; set; }
 
-        public IList<RecommendationViewModel> Recommendations { get; set; }
+        public IList<RecommendationViewModel> Recommendations { get; set; } = new List<RecommendationViewModel>();
 
-        public IList<AttachmentViewModel> Attachments { get; set; }
+        public IList<AttachmentViewModel> Attachments { get; set; } = new List<AttachmentViewModel>();
 
         public MainPictureViewModel MainPicture { get; set; }
     }

@@ -20,6 +20,7 @@ namespace SORANO.WEB.Mappings
 
         protected AutoMapperProfileConfiguration(string profileName) : base(profileName)
         {
+            CreateMap<int, int?>().ConvertUsing<IntToNullIntTypeConverter>();
             CreateMap<string, decimal?>().ConvertUsing<StringToNullDecimalTypeConverter>();
             CreateMap<decimal?, string>().ConvertUsing<NullDecimalToStringTypeConverter>();
             CreateMap<string, decimal>().ConvertUsing<StringToDecimalTypeConverter>();
@@ -45,6 +46,8 @@ namespace SORANO.WEB.Mappings
                 );
             CreateMap<AttachmentViewModel, AttachmentDto>();
 
+            CreateMap<MainPictureViewModel, AttachmentDto>();
+
             CreateMap<AttachmentTypeDto, AttachmentTypeIndexViewModel>()
                 .ForMember(
                     dest => dest.Extensions,
@@ -52,7 +55,7 @@ namespace SORANO.WEB.Mappings
                 );
 
             CreateMap<ArticleTypeDto, ArticleTypeIndexViewModel>();
-            CreateMap<ArticleTypeDto, ArticleTypeCreateUpdateViewModel>();
+            CreateMap<ArticleTypeCreateUpdateViewModel, ArticleTypeDto>();
             CreateMap<ArticleTypeDto, ArticleTypeDetailsViewModel>();
             CreateMap<ArticleTypeDto, ArticleTypeDeleteViewModel>();
 

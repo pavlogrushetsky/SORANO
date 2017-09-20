@@ -188,6 +188,16 @@ div.main-picture-info {
     .table-responsive { border: 0; }
 }
 
+.alert-dismissable, .alert-dismissible {
+    padding-right: 35px;
+}
+
+.alert {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 8px;
+}
+
 textarea.form-control.recommendations.input-validation-error {
     border: 2px solid #e74c3c;
 }
@@ -217,25 +227,35 @@ span.select2-selection.select2-selection--single {
     color: #2c3e50 !important;
     border-width: 2px !important;
     box-shadow: none !important;
-    border: 2px solid #dce4ec !important;
 }
 
-.select2-container {
-    width: 100% !important;
+.select2-container--bootstrap .select2-selection {
+    border-color: #dce4ec !important
+}
+
+.select2-container--bootstrap.select2-container--focus .select2-selection, .select2-container--bootstrap.select2-container--open .select2-selection .select2-container {
+    border-color: #2c3e50 !important
+}
+
+.select2-container--bootstrap.select2-container--focus .select2-selection, .select2-container--bootstrap.select2-container--open .select2-selection {
+    border-color: #2c3e50 !important
 }
 
 .select2-container--bootstrap .select2-dropdown {
+    border-color: #2c3e50 !important;
+    border-width: 2px;
+    margin-top: -3px !important;
+    -webkit-box-shadow: none !important;
     box-shadow: none !important;
-    border-color: #dce4ec !important;
-    border-width: 2px !important;
-    margin-top: 0 !important;
 }
 
 .select2-container--bootstrap .select2-search--dropdown .select2-search__field {
+    -webkit-box-shadow: none !important;
     box-shadow: none !important;
-    background-color: #ffffff !important;
-    border: 2px solid #dce4ec !important;
-    border-radius: 4px !important;
+    background-color: #fff !important;
+    border: 2px solid #2c3e50 !important;
+    -ms-border-radius: 3px !important;
+    border-radius: 3px !important;
     color: #2c3e50 !important;
     font-size: 13px !important;
 }
@@ -266,4 +286,5 @@ span.select2-selection.select2-selection--single {
 
 .select2-selection__placeholder {
     font-size: 13px !important;
+    color: #b3b6c3 !important;
 }

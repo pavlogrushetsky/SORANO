@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.ArticleType;
 
 namespace SORANO.WEB.Validators
 {
-    public class ArticleTypeValidator : AbstractValidator<ArticleTypeModel>
+    public class ArticleTypeValidator : AbstractValidator<ArticleTypeCreateUpdateViewModel>
     {
         public ArticleTypeValidator()
         {

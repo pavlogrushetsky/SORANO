@@ -7,5 +7,7 @@ namespace SORANO.WEB.ViewModels.LocationType
         public string Name { get; set; }
 
         public string ReturnPath { get; set; }
+
+        public string Description { get; set; }
     }
 }

@@ -109,11 +109,13 @@ namespace SORANO.WEB.Validators
             RuleForEach(d => d.DeliveryItems)
                 .SetValidator(new DeliveryItemValidator());
 
-            RuleForEach(d => d.Attachments)
-                .SetValidator(new AttachmentValidator());
+            // TODO Uncomment after model replacement
+            //RuleForEach(d => d.Attachments)
+            //    .SetValidator(new AttachmentValidator());
 
-            RuleForEach(d => d.Recommendations)
-                .SetValidator(new RecommendationValidator());
+            // TODO Uncomment after model replacement
+            //RuleForEach(d => d.Recommendations)
+            //    .SetValidator(new RecommendationValidator());
         }
 
         private bool BeGreaterThanZero(string id)

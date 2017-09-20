@@ -78,7 +78,7 @@
                 <label class="control-label" asp-for="Name"></label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-tag"></i></span>
-                    <input class="form-control input-sm" type="text" asp-for="Name" placeholder="Название"/>
+                    <input class="form-control input-sm" type="text" asp-for="Name" placeholder="Название" autofocus/>
                 </div>
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
@@ -114,7 +114,7 @@
                     Отмена
                 </button>
                 <button type="submit" class="btn btn-sm btn-primary">
-                    <i class="fa fa-fw fa-check"></i>
+                    <i class="fa fa-fw fa-save"></i>
                     Сохранить
                 </button>
             </div>

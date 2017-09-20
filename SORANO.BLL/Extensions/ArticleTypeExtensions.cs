@@ -13,8 +13,8 @@ namespace SORANO.BLL.Extensions
                 ID = model.ID,
                 Name = model.Name,
                 Description = model.Description,
-                ParentTypeID = model.ParentType?.ID,
-                ParentType = model.ParentType?.ToDto(),
+                TypeID = model.ParentType?.ID,
+                Type = model.ParentType?.ToDto(),
                 ChildTypes = model.ChildTypes.Select(t => t.ToDto()),
                 Articles = model.Articles.Select(a => a.ToDto())
             };
@@ -32,7 +32,7 @@ namespace SORANO.BLL.Extensions
                 ID = dto.ID,
                 Name = dto.Name,
                 Description = dto.Description,
-                ParentTypeId = dto.ParentTypeID,
+                ParentTypeId = dto.TypeID,
                 Recommendations = dto.Recommendations.Select(r => r.ToEntity()).ToList(),
                 Attachments = dto.Attachments.Select(a => a.ToEntity()).ToList()
             };

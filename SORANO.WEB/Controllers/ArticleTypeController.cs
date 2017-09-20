@@ -173,7 +173,7 @@ namespace SORANO.WEB.Controllers
                     return View(model);
                 }
 
-                var articleType = _mapper.Map<ArticleTypeDto>(model);
+                var articleType = _mapper.Map<ArticleTypeCreateUpdateViewModel, ArticleTypeDto>(model);
 
                 var result = await _articleTypeService.CreateAsync(articleType, UserId);
 
@@ -296,7 +296,7 @@ namespace SORANO.WEB.Controllers
 
         private IActionResult OnFault(string ex)
         {
-            TempData["Error"] = ex;
+            TempData["Error"] = "Не удалось выполнить операцию из-за непредвиденного исключения. Обратитесь к системному администратору.";
             return RedirectToAction("Index", "Article");
         }
     }

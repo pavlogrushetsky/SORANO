@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.Article;
 
 namespace SORANO.WEB.Validators
 {
-    public class ArticleValidator : AbstractValidator<ArticleModel>
+    public class ArticleValidator : AbstractValidator<ArticleCreateUpdateViewModel>
     {
         public ArticleValidator()
         {
@@ -36,11 +36,7 @@ namespace SORANO.WEB.Validators
                 .WithMessage("Длина штрих-кода не должна превышать 50 символов");
 
             RuleFor(a => a.TypeID)
-                .Must(a => 
-                {
-                    int.TryParse(a, out int id);
-                    return id > 0;
-                })
+                .GreaterThan(0)
                 .WithMessage("Необходимо указать тип");
 
             RuleForEach(a => a.Attachments)

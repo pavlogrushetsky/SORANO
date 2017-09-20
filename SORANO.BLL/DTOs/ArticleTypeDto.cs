@@ -8,9 +8,9 @@ namespace SORANO.BLL.Dtos
 
         public string Description { get; set; }
 
-        public int? ParentTypeID { get; set; }
+        public int? TypeID { get; set; }
 
-        public ArticleTypeDto ParentType { get; set; }
+        public ArticleTypeDto Type { get; set; }
 
         public IEnumerable<ArticleTypeDto> ChildTypes { get; set; }
 
