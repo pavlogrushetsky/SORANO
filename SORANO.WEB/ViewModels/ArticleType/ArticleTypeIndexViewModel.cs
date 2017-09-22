@@ -9,6 +9,8 @@ namespace SORANO.WEB.ViewModels.ArticleType
 
         public string Name { get; set; }
 
+        public string Description { get; set; }
+
         public bool IsDeleted { get; set; }
 
         public bool HasChildTypes { get; set; }

@@ -37,7 +37,8 @@ namespace SORANO.BLL.Extensions
                 Attachments = dto.Attachments.Select(a => a.ToEntity()).ToList()
             };
 
-            entity.Attachments.Add(dto.MainPicture.ToEntity());
+            if (!string.IsNullOrEmpty(dto.MainPicture?.FullPath))
+                entity.Attachments.Add(dto.MainPicture.ToEntity());
 
             return entity;
         }

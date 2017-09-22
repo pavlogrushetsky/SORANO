@@ -28,7 +28,7 @@ namespace SORANO.WEB.Infrastructure.TagHelpers
 
         private void RenderType(ArticleTypeIndexViewModel type, ref string html)
         {        
-            html += "<li id='" + type.ID + "' class='" + (type.IsDeleted ? " deleted" : "") + "'" + "><span><i class='fa fa-tag'></i>" + type.Name;
+            html += "<li id='" + type.ID + "' class='" + (type.IsDeleted ? " deleted" : "") + "'" + "><span><i class='fa fa-tag'></i>" + type.Name + "<br/><p>" + type.Description + "</p>";
 
             if (type.HasChildTypes)
             {
