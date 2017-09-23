@@ -39,29 +39,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
             model.ParentType = type.ParentType?.ToModel(false);            
 
             return model;
-        }     
-        
-        //public static List<ArticleTypeIndexViewModel> ToTree(this List<ArticleTypeIndexViewModel> types)
-        //{
-            //var parents = types.Where(t => t.ParentType == null).ToList();
-
-            //parents.ForEach(p =>
-            //{
-            //    p.FillChildren(types);
-            //});
-
-            //return parents;
-        //}
-
-        //private static void FillChildren(this ArticleTypeIndexViewModel parent, List<ArticleTypeIndexViewModel> children)
-        //{
-            //parent.ChildTypes = children.Where(c => c.ParentType?.ID == parent.ID).ToList();
-
-            //parent.ChildTypes.ToList().ForEach(c =>
-            //{
-            //    c.FillChildren(children);
-            //});
-        //}
+        }           
 
         public static ArticleType ToEntity(this ArticleTypeModel model)
         {

@@ -280,17 +280,19 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         public async Task<JsonResult> GetArticleTypes(string term, int currentTypeId = 0)
         {
-            var articleTypes = await _articleTypeService.GetAllAsync(false);
+            var articleTypes = await _articleTypeService.GetAllAsync(false, term, currentTypeId);
 
             return Json(new
             {
                 results = articleTypes.Result?
-                    .Where(t => (string.IsNullOrEmpty(term) || t.Name.Contains(term)) && t.ID != currentTypeId)
                     .Select(t => new
                     {
                         id = t.ID,
-                        text = t.Name
+                        text = t.Name,
+                        parent = t.Type == null ? t.Name : $"{t.Type.Name} :: {t.Name}",
+                        desc = t.Description
                     })
+                    .OrderBy(t => t.parent)
             });
         }
 

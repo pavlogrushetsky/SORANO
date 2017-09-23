@@ -5,6 +5,12 @@
     $("span.field-validation-error").closest(".input-group").addClass("has-error");
     $("textarea.input-validation-error").closest(".input-group").addClass("has-error");
 
+    $(window).on('resize', function () {
+        $('.form-group').each(function () {
+            $(this).find('.select2-container').css('width', '100%');
+        });
+    });
+
     $('input[type=file]').not('#main_picture_input').change(function () {
         var id = $(this).attr('id');
         var name = document.getElementById(id).files[0].name;

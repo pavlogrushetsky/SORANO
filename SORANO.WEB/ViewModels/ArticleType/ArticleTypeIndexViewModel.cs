@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SORANO.WEB.ViewModels.Article;
 
 namespace SORANO.WEB.ViewModels.ArticleType
@@ -13,11 +14,11 @@ namespace SORANO.WEB.ViewModels.ArticleType
 
         public bool IsDeleted { get; set; }
 
-        public bool HasChildTypes { get; set; }
+        public bool HasChildTypes => ChildTypes != null && ChildTypes.Any();
 
-        public int ChildTypesCount { get; set; }
+        public int ChildTypesCount => ChildTypes?.Count() ?? 0;
 
-        public bool HasArticles { get; set; }
+        public bool HasArticles => Articles != null && Articles.Any();
 
         public IEnumerable<ArticleTypeIndexViewModel> ChildTypes { get; set; }
 

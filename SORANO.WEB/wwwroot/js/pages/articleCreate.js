@@ -38,14 +38,28 @@ function initArticleTypeSelect() {
                     results: $.map(data, function (item) {
                         return {
                             text: item.text,
-                            id: item.id
+                            id: item.id,
+                            desc: item.desc
                         }
                     })
                 };
             },
             cache: true
-        }
+        },
+        escapeMarkup: function (markup) { return markup; },
+        templateResult: formatData,
+        templateSelection: formatDataSelection
     });
+
+    function formatData(data) {
+        if (data.loading) return data.text;
+
+        return '<div>' + data.text + '</div><div><small>' + data.desc + '</small></div>';
+    }
+
+    function formatDataSelection(data) {
+        return data.text;
+    }
 
     if (articleTypeId.val() > 0) {
         selectArticleType.append($('<option></option>').attr('value', articleTypeId.val()).text(articleTypeName.val()));

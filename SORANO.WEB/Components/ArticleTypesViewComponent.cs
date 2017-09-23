@@ -20,7 +20,7 @@ namespace SORANO.WEB.Components
 
         public async Task<IViewComponentResult> InvokeAsync(bool withDeleted = false)
         {
-            var result = await _articleTypeService.GetAllAsync(withDeleted);
+            var result = await _articleTypeService.GetTreeAsync(withDeleted);
 
             var viewModels = _mapper.Map<IEnumerable<ArticleTypeIndexViewModel>>(result.Result);
 

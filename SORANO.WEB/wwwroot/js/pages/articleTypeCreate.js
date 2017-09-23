@@ -7,7 +7,6 @@ function initArticleTypeSelect() {
     var selectArticleType = $('.select-article-type');
     var articleTypeId = $('#TypeID');
     var articleTypeName = $('#TypeName');
-
     selectArticleType.select2({
         "language": {
             "noResults": function () {
@@ -38,17 +37,22 @@ function initArticleTypeSelect() {
                     results: $.map(data, function (item) {
                         return {
                             text: item.text,
-                            id: item.id
+                            id: item.id,
+                            desc: item.desc,
+                            parent: item.parent
                         }
                     })
                 };
             },
             cache: true
-        }
-    });
+        },
+        escapeMarkup: function (markup) { return markup; },
+        templateResult: formatData,
+        templateSelection: formatDataSelection
+    });   
 
     if (articleTypeId.val() > 0) {
-        selectArticleType.append($('<option></option>').attr('value', articleTypeId.val()).text(articleTypeName.val()));
+        selectArticleType.append($('<option selected></option>').attr('value', articleTypeId.val()).text(articleTypeName.val()));
     }
 
     selectArticleType.on("select2:opening", function () {
@@ -66,6 +70,16 @@ function initArticleTypeSelect() {
             articleTypeName.val('');
         }
     });
+}
+
+function formatData(data) {
+    if (data.loading) return data.text;
+
+    return '<div>' + data.parent + '</div><div><small style="color: #3498db;">' + data.desc + '</small></div>';
+}
+
+function formatDataSelection(data) {
+    return data.text;
 }
 
 function getMimeType(num) {
