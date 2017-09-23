@@ -8,21 +8,21 @@
         $('[href="' + lastTab + '"]').tab('show');
     }
 
-    $('.tree li:has(ul)').addClass('parent_li').find(' > span').attr('title', 'Свернуть ветку');
-    $('.tree li.parent_li > span').on('click', function (e) {
-        var children = $(this).parent('li.parent_li').find(' > ul > li');
+    $('.article-types-tree li:has(ul)').addClass('parent-article-type').find(' > table').attr('title', 'Свернуть ветку');
+    $('.article-types-tree li.parent-article-type > table').on('click', function (e) {
+        var children = $(this).parent('li.parent-article-type').find(' > ul > li');
         if (children.is(":visible")) {
             children.hide('fast');
-            $(this).attr('title', 'Развернуть ветку').find(' > i').addClass('fa-tags').removeClass('fa-tag');
-            $(this).find(' > span').show('fast');
+            $(this).attr('title', 'Развернуть ветку').find('i').addClass('fa-tags').removeClass('fa-tag');
+            $(this).find(' > table').show('fast');
         } else {
             children.show('fast');
-            $(this).attr('title', 'Свернуть ветку').find(' > i').addClass('fa-tag').removeClass('fa-tags');
-            $(this).find(' > span').hide('fast');
+            $(this).attr('title', 'Свернуть ветку').find('i').addClass('fa-tag').removeClass('fa-tags');
+            $(this).find(' > table').hide('fast');
         }
         e.stopPropagation();
     });
-    $('.tree li > a').on('click', function () {
+    $('.article-types-tree li > a').on('click', function () {
         var url = 'ArticleType/Brief';
         var id = $(this).parent().attr('id');
         $.get(url, { id: id }, function (data) {
@@ -37,6 +37,8 @@
 function initArticlesDataTable() {
     var table = $("#article-datatable").DataTable({
         responsive: true,
+        "autoWidth": false,
+        "scrollX": false,
         "columnDefs": [
             { "orderable": false, "targets": 5 }
         ],

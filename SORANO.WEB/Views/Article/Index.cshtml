@@ -61,94 +61,94 @@
                         <div class="clearfix"></div>
                     </div>
                     <div class="panel-body">
-                        <table id="article-datatable" class="table table-striped table-bordered table-hover table-responsive">
+                        <table id="article-datatable" class="table table-striped table-bordered table-hover">
                             <thead>
                                 <tr role="row" class="search-row">
-                                    <th style="width: 5%" rowspan="1" colspan="1"></th>
-                                    <th style="width: 13%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Код" /></th>
-                                    <th style="width: 25%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Название" /></th>
-                                    <th style="width: 25%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Тип" /></th>
-                                    <th style="width: 20%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Производитель" /></th>
-                                    <th style="width: 12%" rowspan="1" colspan="1"></th>
+                                    <th></th>
+                                    <th><input type="text" class="form-control input-sm" placeholder="Код" /></th>
+                                    <th><input type="text" class="form-control input-sm" placeholder="Название" /></th>
+                                    <th><input type="text" class="form-control input-sm" placeholder="Тип" /></th>
+                                    <th><input type="text" class="form-control input-sm" placeholder="Производитель" /></th>
+                                    <th></th>
                                 </tr>
                                 <tr role="row">
-                                    <th style="width: 5%">ID</th>
-                                    <th style="width: 13%"><i class="fa fa-fw fa-barcode" aria-hidden="true"></i>&nbsp;Код</th>
-                                    <th style="width: 25%"><i class="fa fa-fw fa-align-justify" aria-hidden="true"></i>&nbsp;Название</th>
-                                    <th style="width: 25%"><i class="fa fa-fw fa-tag" aria-hidden="true"></i>&nbsp;Тип</th>
-                                    <th style="width: 20%"><i class="fa fa-fw fa-suitcase" aria-hidden="true"></i>&nbsp;Производитель</th>
-                                    <th style="width: 12%">Действия</th>
+                                    <th>ID</th>
+                                    <th><i class="fa fa-fw fa-barcode"></i>Код</th>
+                                    <th><i class="fa fa-fw fa-align-justify"></i>Название</th>
+                                    <th><i class="fa fa-fw fa-tag"></i>Тип</th>
+                                    <th><i class="fa fa-fw fa-suitcase"></i>Производитель</th>
+                                    <th>Действия</th>
                                 </tr>
                             </thead>
                             <tbody>
-                            @foreach (var article in Model)
-                            {
-                                <tr class="@(article.IsDeleted ? "danger" : "")">
-                                    <td>@article.ID</td>
-                                    <td>@article.Code</td>
-                                    <td>
-                                        <a asp-controller="Article"
-                                           asp-action="Details"
-                                           asp-route-id="@article.ID"
-                                           data-toggle="tooltip"
-                                           data-placement="bottom"
-                                           data-original-title="Просмотреть информацию об артикуле"
-                                           title="">
-                                            @article.Name
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a asp-controller="ArticleType"
-                                           asp-action="Details"
-                                           asp-route-id="@article.TypeID"
-                                           data-toggle="tooltip"
-                                           data-placement="bottom"
-                                           data-original-title="Просмотреть информацию о типе артикулов"
-                                           title="">
-                                            @article.TypeName
-                                        </a>
-                                    </td>
-                                    <td>@article.Producer</td>
-                                    <td>
-                                        <a asp-controller="Article"
-                                           asp-action="Details"
-                                           asp-route-id="@article.ID"
-                                           class="btn btn-xs btn-default"
-                                           data-toggle="tooltip"
-                                           data-placement="bottom"
-                                           data-original-title="Просмотреть информацию об артикуле"
-                                           title="">
-                                            <i class="fa fa-fw fa-info-circle" aria-hidden="true"></i>
-                                        </a>                                            
-                                        @if (!article.IsDeleted)
-                                        {
+                                @foreach (var article in Model)
+                                {
+                                    <tr class="@(article.IsDeleted ? "danger" : "")">
+                                        <td>@article.ID</td>
+                                        <td>@article.Code</td>
+                                        <td>
                                             <a asp-controller="Article"
-                                               asp-action="Update"
-                                               asp-route-id="@article.ID"
-                                               class="btn btn-xs btn-default"
-                                               data-toggle="tooltip"
-                                               data-placement="bottom"
-                                               data-original-title="Редактировать свойства артикула"
-                                               title="">
-                                                <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
+                                                asp-action="Details"
+                                                asp-route-id="@article.ID"
+                                                data-toggle="tooltip"
+                                                data-placement="bottom"
+                                                data-original-title="Просмотреть информацию об артикуле"
+                                                title="">
+                                                @article.Name
                                             </a>
-                                            if (article.CanBeDeleted)
+                                        </td>
+                                        <td>
+                                            <a asp-controller="ArticleType"
+                                                asp-action="Details"
+                                                asp-route-id="@article.TypeID"
+                                                data-toggle="tooltip"
+                                                data-placement="bottom"
+                                                data-original-title="Просмотреть информацию о типе артикулов"
+                                                title="">
+                                                @article.TypeName
+                                            </a>
+                                        </td>
+                                        <td>@article.Producer</td>
+                                        <td>
+                                            <a asp-controller="Article"
+                                                asp-action="Details"
+                                                asp-route-id="@article.ID"
+                                                class="btn btn-xs btn-default"
+                                                data-toggle="tooltip"
+                                                data-placement="bottom"
+                                                data-original-title="Просмотреть информацию об артикуле"
+                                                title="">
+                                                <i class="fa fa-fw fa-info-circle" aria-hidden="true"></i>
+                                            </a>
+                                            @if (!article.IsDeleted)
                                             {
                                                 <a asp-controller="Article"
-                                                   asp-action="Delete"
-                                                   asp-route-id="@article.ID"
-                                                   class="btn btn-xs btn-danger"
-                                                   data-toggle="tooltip"
-                                                   data-placement="bottom"
-                                                   data-original-title="Удалить артикул"
-                                                   title="Удалить артикул">
-                                                    <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
+                                                    asp-action="Update"
+                                                    asp-route-id="@article.ID"
+                                                    class="btn btn-xs btn-default"
+                                                    data-toggle="tooltip"
+                                                    data-placement="bottom"
+                                                    data-original-title="Редактировать свойства артикула"
+                                                    title="">
+                                                    <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
                                                 </a>
+                                                if (article.CanBeDeleted)
+                                                {
+                                                    <a asp-controller="Article"
+                                                        asp-action="Delete"
+                                                        asp-route-id="@article.ID"
+                                                        class="btn btn-xs btn-danger"
+                                                        data-toggle="tooltip"
+                                                        data-placement="bottom"
+                                                        data-original-title="Удалить артикул"
+                                                        title="Удалить артикул">
+                                                        <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
+                                                    </a>
+                                                }
                                             }
-                                        }                                            
-                                    </td>
-                                </tr>
-                            }
+                                        </td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>

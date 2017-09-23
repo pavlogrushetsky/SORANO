@@ -1,0 +1,15 @@
+﻿@model ArticleIndexViewModel
+
+<li class="@(Model.IsDeleted ? "deleted" : "")">
+    <table>
+        <tr>
+            <td rowspan="2"><i class="fa fa-fw fa-barcode"></i></td>
+            <td>@Model.Name</td>
+            <td rowspan="2">
+            </td>
+        </tr>
+        <tr>
+            <td>@Model.Description</td>
+        </tr>
+    </table>
+</li>

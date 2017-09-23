@@ -1,0 +1,35 @@
+﻿@model ArticleTypeIndexViewModel
+
+<li id="@Model.ID" class="@(Model.IsDeleted ? "deleted" : "")">
+    <table>
+        <tr>
+            <td rowspan="2"><i class="fa fa-fw fa-tag"></i></td>
+            <td>@Model.Name</td>
+            <td rowspan="2">
+                <a class="btn btn-default btn-xs pull-right"
+                   data-toggle="tooltip"
+                   data-placement="right"
+                   data-original-title="Просмотреть краткую информацию"
+                   title="">
+                    <i class="fa fa-fw fa-info-circle"></i>
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>@Model.Description</td>
+        </tr>
+    </table>
+    @if (Model.HasChildTypes || Model.HasArticles)
+    {
+        <ul>
+            @foreach (var child in Model.ChildTypes)
+            {
+                @Html.Partial("Components/ArticleTypes/_ArticleTypeTreeNode", child)
+            }  
+            @foreach (var article in Model.Articles)
+            {
+                @Html.Partial("Components/ArticleTypes/_ArticleTreeNode", article)
+            }           
+        </ul>
+    }  
+</li>
