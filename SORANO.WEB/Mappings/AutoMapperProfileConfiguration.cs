@@ -56,8 +56,8 @@ namespace SORANO.WEB.Mappings
 
             CreateMap<ArticleTypeDto, ArticleTypeIndexViewModel>()
                 .ForMember(
-                    dest => dest.Description,
-                    source => source.MapFrom(s => s.Description.Length > 50 ? $"{s.Description.Substring(0, 50)} ..." : s.Description)
+                    dest => dest.MainPicturePath,
+                    source => source.MapFrom(s => s.MainPicture.FullPath)
                 );
             CreateMap<ArticleTypeCreateUpdateViewModel, ArticleTypeDto>();
             CreateMap<ArticleTypeDto, ArticleTypeDetailsViewModel>();

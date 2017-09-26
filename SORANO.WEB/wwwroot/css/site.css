@@ -229,22 +229,19 @@ span.select2-selection.select2-selection--single {
             text-decoration: none;
             border-collapse: unset;
             margin-bottom: 5px;
+            padding-bottom: 5px;
         }
 
-            .article-types-tree li > table tr:last-child {
+            .article-types-tree li > table tr.article-type-description {
                 font-size: 12px;
             }
 
-        .article-types-tree li:not(.deleted) > table tr:last-child {
+        .article-types-tree li:not(.deleted) > table tr.article-type-description {
             color: #95a5a6;
         }
 
-    .article-types-tree td:not([rowspan="2"]) {
-        width: 90%;
-    }
-
     .article-types-tree td[rowspan="2"] {
-        width: 5%;
+        width: 1px;
         padding-left: 8px;
         padding-right: 8px;
     }

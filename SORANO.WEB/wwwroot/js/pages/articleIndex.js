@@ -10,25 +10,20 @@
 
     $('.article-types-tree li:has(ul)').addClass('parent-article-type').find(' > table').attr('title', 'Свернуть ветку');
     $('.article-types-tree li.parent-article-type > table').on('click', function (e) {
-        var children = $(this).parent('li.parent-article-type').find(' > ul > li');
-        if (children.is(":visible")) {
-            children.hide('fast');
-            $(this).attr('title', 'Развернуть ветку').find('i').addClass('fa-tags').removeClass('fa-tag');
-            $(this).find(' > table').show('fast');
-        } else {
-            children.show('fast');
-            $(this).attr('title', 'Свернуть ветку').find('i').addClass('fa-tag').removeClass('fa-tags');
-            $(this).find(' > table').hide('fast');
-        }
-        e.stopPropagation();
-    });
-    $('.article-types-tree li > a').on('click', function () {
-        var url = 'ArticleType/Brief';
-        var id = $(this).parent().attr('id');
-        $.get(url, { id: id }, function (data) {
-            $('#details').html(data);
-            $("[data-toggle=tooltip]").tooltip();
-        });
+        var target = $(e.target);
+        if (!target.is("a")) {
+            var children = $(this).parent('li.parent-article-type').find(' > ul > li');
+            if (children.is(":visible")) {
+                children.hide('fast');
+                $(this).attr('title', 'Развернуть ветку').find('i').addClass('fa-tags').removeClass('fa-tag');
+                $(this).find(' > table').show('fast');
+            } else {
+                children.show('fast');
+                $(this).attr('title', 'Свернуть ветку').find('i').addClass('fa-tag').removeClass('fa-tags');
+                $(this).find(' > table').hide('fast');
+            }
+            e.stopPropagation();
+        }              
     });
 
     initArticlesDataTable();

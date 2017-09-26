@@ -16,9 +16,13 @@ namespace SORANO.WEB.ViewModels.ArticleType
 
         public bool HasChildTypes => ChildTypes != null && ChildTypes.Any();
 
-        public int ChildTypesCount => ChildTypes?.Count() ?? 0;
-
         public bool HasArticles => Articles != null && Articles.Any();
+
+        public bool CanBeDeleted { get; set; }
+
+        public string MainPicturePath { get; set; }
+
+        public bool HasMainPicture => !string.IsNullOrEmpty(MainPicturePath);
 
         public IEnumerable<ArticleTypeIndexViewModel> ChildTypes { get; set; }
 

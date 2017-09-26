@@ -75,7 +75,7 @@ function initArticleTypeSelect() {
 function formatData(data) {
     if (data.loading) return data.text;
 
-    return '<div>' + data.parent + '</div><div><small style="color: #3498db;">' + data.desc + '</small></div>';
+    return '<div>' + data.parent + '</div><div><small style="color: #95a5a6;">' + data.desc + '</small></div>';
 }
 
 function formatDataSelection(data) {
