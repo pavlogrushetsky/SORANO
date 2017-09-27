@@ -14,7 +14,6 @@ using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.Article;
 using SORANO.WEB.ViewModels.Attachment;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SORANO.WEB.Controllers
@@ -24,11 +23,9 @@ namespace SORANO.WEB.Controllers
     public class ArticleController : EntityBaseController<ArticleCreateUpdateViewModel>
     {
         private readonly IArticleService _articleService;
-        private readonly IArticleTypeService _articleTypeService;
         private readonly IMapper _mapper;
 
         public ArticleController(IArticleService articleService,
-            IArticleTypeService articleTypeService,
             IUserService userService, 
             IHostingEnvironment environment,
             IAttachmentTypeService attachmentTypeService,
@@ -37,7 +34,6 @@ namespace SORANO.WEB.Controllers
             IMapper mapper) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
         {
             _articleService = articleService;
-            _articleTypeService = articleTypeService;
             _mapper = mapper;
         }
 
@@ -318,23 +314,6 @@ namespace SORANO.WEB.Controllers
         }
 
         #endregion
-
-        [HttpPost]
-        public async Task<JsonResult> GetArticleTypes(string term)
-        {
-            var articleTypes = await _articleTypeService.GetAllAsync(false);
-
-            return Json(new
-            {
-                results = articleTypes.Result?
-                    .Where(t => string.IsNullOrEmpty(term) || t.Name.Contains(term))
-                    .Select(t => new
-                    {
-                        id = t.ID,
-                        text = t.Name
-                    })
-            });
-        }
 
         private IActionResult OnFault(string ex)
         {

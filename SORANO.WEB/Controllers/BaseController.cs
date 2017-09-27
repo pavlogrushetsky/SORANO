@@ -38,7 +38,8 @@ namespace SORANO.WEB.Controllers
             }
             catch (Exception ex)
             {
-                result = onFault.Invoke(ex.Message);
+                // TODO Log in database
+                result = onFault.Invoke("Не удалось выполнить операцию из-за непредвиденного исключения. Обратитесь к системному администратору.");
             }
 
             return result;

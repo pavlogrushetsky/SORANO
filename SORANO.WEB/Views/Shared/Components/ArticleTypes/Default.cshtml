@@ -2,16 +2,6 @@
 
 @if (Model.Any())
 {
-    <input class="form-control input-sm" style="font-weight: bold;" placeholder="Поиск артикулов и типов артикулов" type="text" id="article-search" />
-    <br />
-    <div class="article-types-tree">
-        <ul>
-            @foreach (var type in Model)
-            {
-                @Html.Partial("Components/ArticleTypes/_ArticleTypeTreeNode", type)
-            }
-        </ul>
-    </div>
     <div class="article-types-tree">
         <ul>
             @foreach (var type in Model)

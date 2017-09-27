@@ -297,3 +297,15 @@ span.select2-selection.select2-selection--single {
         background-color: #e74c3c;
         border-color: #e74c3c;
     }
+
+.article-types-tree li.deleted a {
+    color: #ffffff;
+}
+
+    .article-type-info:not(.show) {
+        display: none;
+    }
+
+    .article-type-info.show {
+        display: block;
+    }

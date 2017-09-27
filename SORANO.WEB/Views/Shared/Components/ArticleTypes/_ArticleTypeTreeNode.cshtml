@@ -5,8 +5,8 @@
         <tr>
             <td rowspan="2"><i class="fa fa-fw fa-tag"></i></td>
             <td>
-                <a data-toggle="collapse"
-                   href="#article-type-brief-@(Model.ID)">
+                <a class="toggle-article-type-info"
+                   href="javascript:void(0);">
                     @Model.Name
                 </a>               
             </td>
@@ -17,7 +17,7 @@
         <tr>            
             <td></td>
             <td>
-                <div id="article-type-brief-@(Model.ID)" class="collapse">
+                <div class="article-type-info" id="article-type-info-@(Model.ID)">
                     <div class="col-lg-12">
                         <div class="row">
                             <div style="float:left;">

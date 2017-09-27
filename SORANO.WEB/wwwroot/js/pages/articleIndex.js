@@ -25,6 +25,28 @@
             e.stopPropagation();
         }              
     });
+    
+    var activeInfoId = localStorage.getItem('article-types-active-info');
+    if (activeInfoId) {
+        $(activeInfoId).show('fast');
+    }
+
+    $('.toggle-article-type-info').click(function(e) {
+        e.preventDefault();
+
+        var self = $(this);
+        var thisInfo = self.parent().parent().parent().find('.article-type-info');
+        var tree = $('.article-types-tree');
+        var id = thisInfo.attr('id');
+
+        if (thisInfo.is(':visible')) {
+            thisInfo.hide('fast');
+        } else {
+            tree.find('.article-type-info').hide('fast');
+            thisInfo.show('fast');
+            localStorage.setItem('article-types-active-info', '#' + id);
+        }
+    });
 
     initArticlesDataTable();
 });

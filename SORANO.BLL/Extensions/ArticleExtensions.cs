@@ -17,7 +17,7 @@ namespace SORANO.BLL.Extensions
                 Code = model.Code,
                 Barcode = model.Barcode,
                 TypeID = model.TypeID,
-                Type = model.Type.ToDto()
+                Type = model.Type?.ToDto()
             };
 
             dto.MapDetails(model);
@@ -41,7 +41,8 @@ namespace SORANO.BLL.Extensions
                 Attachments = dto.Attachments.Select(a => a.ToEntity()).ToList()
             };
 
-            entity.Attachments.Add(dto.MainPicture.ToEntity());
+            if (!string.IsNullOrEmpty(dto.MainPicture?.FullPath))
+                entity.Attachments.Add(dto.MainPicture.ToEntity());
 
             return entity;
         }

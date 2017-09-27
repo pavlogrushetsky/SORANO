@@ -22,13 +22,14 @@ function initArticleTypeSelect() {
         placeholder: "Тип",
         minimumInputLength: 0,
         ajax: {
-            url: 'GetArticleTypes',
+            url: '/ArticleType/GetArticleTypes',
             dataType: 'json',
             type: 'POST',
             delay: 100,
             data: function (params) {
                 var queryParameters = {
-                    term: params.term
+                    term: params.term,
+                    currentTypeId: $('#ID').val()
                 }
                 return queryParameters;
             },

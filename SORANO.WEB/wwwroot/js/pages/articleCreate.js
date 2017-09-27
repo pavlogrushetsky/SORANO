@@ -23,7 +23,7 @@ function initArticleTypeSelect() {
         placeholder: "Тип",
         minimumInputLength: 0,
         ajax: {
-            url: 'GetArticleTypes',
+            url: '/ArticleType/GetArticleTypes',
             dataType: 'json',
             type: 'POST',
             delay: 100,
@@ -39,7 +39,8 @@ function initArticleTypeSelect() {
                         return {
                             text: item.text,
                             id: item.id,
-                            desc: item.desc
+                            desc: item.desc,
+                            parent: item.parent
                         }
                     })
                 };
@@ -49,20 +50,10 @@ function initArticleTypeSelect() {
         escapeMarkup: function (markup) { return markup; },
         templateResult: formatData,
         templateSelection: formatDataSelection
-    });
-
-    function formatData(data) {
-        if (data.loading) return data.text;
-
-        return '<div>' + data.text + '</div><div><small>' + data.desc + '</small></div>';
-    }
-
-    function formatDataSelection(data) {
-        return data.text;
-    }
+    });   
 
     if (articleTypeId.val() > 0) {
-        selectArticleType.append($('<option></option>').attr('value', articleTypeId.val()).text(articleTypeName.val()));
+        selectArticleType.append($('<option selected></option>').attr('value', articleTypeId.val()).text(articleTypeName.val()));
     }
 
     selectArticleType.on("select2:opening", function () {
@@ -80,6 +71,16 @@ function initArticleTypeSelect() {
             articleTypeName.val('');
         }
     });
+}
+
+function formatData(data) {
+    if (data.loading) return data.text;
+
+    return '<div>' + data.parent + '</div><div><small style="color: #95a5a6;">' + data.desc + '</small></div>';
+}
+
+function formatDataSelection(data) {
+    return data.text;
 }
 
 function getMimeType(num) {

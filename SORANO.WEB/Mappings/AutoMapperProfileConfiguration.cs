@@ -47,6 +47,7 @@ namespace SORANO.WEB.Mappings
             CreateMap<AttachmentViewModel, AttachmentDto>();
 
             CreateMap<MainPictureViewModel, AttachmentDto>();
+            CreateMap<AttachmentDto, MainPictureViewModel>();
 
             CreateMap<AttachmentTypeDto, AttachmentTypeIndexViewModel>()
                 .ForMember(
@@ -60,6 +61,8 @@ namespace SORANO.WEB.Mappings
                     source => source.MapFrom(s => s.MainPicture.FullPath)
                 );
             CreateMap<ArticleTypeCreateUpdateViewModel, ArticleTypeDto>();
+            CreateMap<ArticleTypeDto, ArticleTypeCreateUpdateViewModel>();
+
             CreateMap<ArticleTypeDto, ArticleTypeDetailsViewModel>();
             CreateMap<ArticleTypeDto, ArticleTypeDeleteViewModel>();
 
@@ -69,6 +72,7 @@ namespace SORANO.WEB.Mappings
                     source => source.MapFrom(s => s.Type.Name)
                 );
             CreateMap<ArticleDto, ArticleCreateUpdateViewModel>();
+            CreateMap<ArticleCreateUpdateViewModel, ArticleDto>();
             CreateMap<ArticleDto, ArticleDetailsViewModel>();
             CreateMap<ArticleDto, ArticleDeleteViewModel>();
         }

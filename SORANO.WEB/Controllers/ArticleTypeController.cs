@@ -40,25 +40,6 @@ namespace SORANO.WEB.Controllers
         #region GET Actions
 
         [HttpGet]
-        public async Task<IActionResult> Brief(int id)
-        {
-            return await TryGetActionResultAsync(async () =>
-            {
-                var result = await _articleTypeService.GetAsync(id);
-
-                if (result.Status != ServiceResponseStatus.Success)
-                {
-                    TempData["Error"] = "Не удалось найти указанный тип артикулов.";
-                    return RedirectToAction("Index", "Article");
-                }
-
-                await ClearAttachments();
-
-                return PartialView("_Brief", _mapper.Map<ArticleTypeBriefViewModel>(result.Result));
-            }, OnFault);
-        }
-
-        [HttpGet]
         public IActionResult ShowDeleted(bool show)
         {
             Session.SetBool("ShowDeletedArticleTypes", show);
@@ -289,7 +270,7 @@ namespace SORANO.WEB.Controllers
                     {
                         id = t.ID,
                         text = t.Name,
-                        parent = t.Type == null ? t.Name : $"{t.Type.Name} :: {t.Name}",
+                        parent = t.Type == null ? t.Name : $"{t.Type.Name}  {'\u21d0'}  {t.Name}",
                         desc = t.Description
                     })
                     .OrderBy(t => t.parent)
@@ -298,7 +279,7 @@ namespace SORANO.WEB.Controllers
 
         private IActionResult OnFault(string ex)
         {
-            TempData["Error"] = "Не удалось выполнить операцию из-за непредвиденного исключения. Обратитесь к системному администратору.";
+            TempData["Error"] = ex;
             return RedirectToAction("Index", "Article");
         }
     }
