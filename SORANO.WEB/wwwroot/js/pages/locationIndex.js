@@ -45,6 +45,8 @@ function initLocationsDataTable() {
 function initLocationTypesDataTable() {
     var locationTypesTable = $("#location-types-datatable").DataTable({
         responsive: true,
+        "autoWidth": false,
+        "scrollX": false,
         "columnDefs": [
             { "orderable": false, "targets": 3 }
         ],
