@@ -5,6 +5,8 @@
 function initClientsDataTable() {
     var table = $("#clients-datatable").DataTable({
         responsive: true,
+        "autoWidth": false,
+        "scrollX": false,
         "columnDefs": [
             { "orderable": false, "targets": 5 }
         ],

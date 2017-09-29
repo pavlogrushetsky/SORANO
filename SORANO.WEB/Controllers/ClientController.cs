@@ -12,7 +12,6 @@ using SORANO.BLL.Dtos;
 using SORANO.BLL.Services;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Filters;
-using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.Client;
 

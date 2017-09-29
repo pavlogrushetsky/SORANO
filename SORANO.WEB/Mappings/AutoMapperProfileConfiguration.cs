@@ -8,6 +8,7 @@ using SORANO.WEB.ViewModels.Article;
 using SORANO.WEB.ViewModels.ArticleType;
 using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.AttachmentType;
+using SORANO.WEB.ViewModels.Client;
 using SORANO.WEB.ViewModels.Recommendation;
 using SORANO.WEB.ViewModels.Supplier;
 
@@ -66,6 +67,16 @@ namespace SORANO.WEB.Mappings
 
             CreateMap<ArticleTypeDto, ArticleTypeDetailsViewModel>();
             CreateMap<ArticleTypeDto, ArticleTypeDeleteViewModel>();
+
+            #region Client
+
+            CreateMap<ClientDto, ClientIndexViewModel>();
+            CreateMap<ClientDto, ClientCreateUpdateViewModel>();
+            CreateMap<ClientDto, ClientDetailsViewModel>();
+            CreateMap<ClientDto, ClientDeleteViewModel>();
+            CreateMap<ClientCreateUpdateViewModel, ClientDto>();
+
+            #endregion
 
             #region Supplier
 

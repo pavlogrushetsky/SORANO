@@ -1,8 +1,7 @@
 ﻿@model ClientCreateUpdateViewModel
 
 @{
-    var isEdit = ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"];
-    var title = isEdit ? "Редактирование" : "Создание";
+    var title = Model.IsUpdate ? "Редактирование" : "Создание";
 }
 
 @{
@@ -20,11 +19,12 @@
     </ul>
 }
 
-<form asp-action="@(isEdit ? "Update" : "Create")"
+<form asp-action="@(Model.IsUpdate ? "Update" : "Create")"
       asp-controller="Client"
       method="post"
       enctype="multipart/form-data">
     <input type="hidden" asp-for="ID" />
+    <input type="hidden" asp-for="IsUpdate" />
     @for (var i = 0; i < Model.Recommendations.Count; i++)
     {
         <input type="hidden" asp-for="@Model.Recommendations[i].ID" />
@@ -59,7 +59,7 @@
                 <label class="control-label" asp-for="Name"></label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-address-card"></i></span>
-                    <input class="form-control input-sm" type="text" asp-for="Name" placeholder="Имя"/>
+                    <input class="form-control input-sm" type="text" asp-for="Name" placeholder="Имя" autofocus/>
                 </div>
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
@@ -101,7 +101,7 @@
                     Отмена
                 </a>
                 <button type="submit" class="btn btn-primary btn-sm">
-                    <i class="fa fa-fw fa-check"></i>
+                    <i class="fa fa-fw fa-save"></i>
                     Сохранить
                 </button>
             </div>
