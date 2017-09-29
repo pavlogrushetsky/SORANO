@@ -1,4 +1,4 @@
-﻿@model SupplierModel
+﻿@model SupplierDetailsViewModel
 
 @{
     ViewBag.Title = "SORANO - Детали поставщика";
@@ -23,9 +23,9 @@
 <div class="col-lg-12">
     <div class="row">
         <div style="float:left;">
-            @if (Model.MainPicture?.FullPath != null)
+            @if (Model.HasMainPicture)
             {
-                <img src="@Url.Content(Model.MainPicture.FullPath)" />
+                <img src="@Url.Content(Model.MainPicturePath)" />
             }
         </div> 
         <div style="float: left;">
@@ -134,8 +134,9 @@
                         <a data-toggle="collapse" data-parent="#accordion" href="#collapseDeliveries">
                             <span>
                                 <i class="fa fa-fw fa-cart-arrow-down" aria-hidden="true"></i>
-                                @Html.DisplayNameFor(m => m.Deliveries)
-                                <span class="badge pull-right">@Model.Deliveries.Count</span>
+                                @* TODO *@
+                                @*@Html.DisplayNameFor(m => m.Deliveries)
+                                <span class="badge pull-right">@Model.Deliveries.Count</span>*@
                             </span>
                         </a>
                     </h4>
@@ -162,7 +163,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var delivery in Model.Deliveries)
+                            @* TODO *@
+                            @*@foreach (var delivery in Model.Deliveries)
                                 {
                                     <tr class="@(delivery.IsDeleted ? "danger" : "")">
                                         <td>
@@ -186,7 +188,7 @@
                                             </span>
                                         </td>
                                     </tr>
-                                }
+                                }*@
                             </tbody>
                         </table>
                     </div>

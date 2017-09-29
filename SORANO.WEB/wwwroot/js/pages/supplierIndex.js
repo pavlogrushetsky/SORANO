@@ -5,6 +5,8 @@
 function initSuppliersDataTable() {
     var table = $("#suppliers-datatable").DataTable({
         responsive: true,
+        "autoWidth": false,
+        "scrollX": false,
         "columnDefs": [
             { "orderable": false, "targets": 3 }
         ],
