@@ -18,6 +18,7 @@ namespace SORANO.BLL.Extensions
             };
 
             dto.MapDetails(model);
+            dto.CanBeDeleted = !model.Deliveries.Any() && !model.Storages.Any() && !model.SoldGoods.Any() && !model.IsDeleted;
 
             return dto;
         }
@@ -34,7 +35,8 @@ namespace SORANO.BLL.Extensions
                 Attachments = dto.Attachments.Select(a => a.ToEntity()).ToList()
             };
 
-            entity.Attachments.Add(dto.MainPicture.ToEntity());
+            if (!string.IsNullOrEmpty(dto.MainPicture?.FullPath))
+                entity.Attachments.Add(dto.MainPicture.ToEntity());
 
             return entity;
         }
@@ -43,6 +45,7 @@ namespace SORANO.BLL.Extensions
         {
             existentLocation.Name = newLocation.Name;
             existentLocation.Comment = newLocation.Comment;
+            existentLocation.TypeID = newLocation.TypeID;
         }
     }
 }

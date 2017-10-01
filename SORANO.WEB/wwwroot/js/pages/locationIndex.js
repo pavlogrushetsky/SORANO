@@ -15,8 +15,10 @@
 function initLocationsDataTable() {
     var locationsTable = $("#locations-datatable").DataTable({
         responsive: true,
+        "autoWidth": false,
+        "scrollX": false,
         "columnDefs": [
-            { "orderable": false, "targets": 3 }
+            { "orderable": false, "targets": 4 }
         ],
         "pagingType": "numbers",
         "language": {
