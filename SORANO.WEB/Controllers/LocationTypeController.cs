@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Linq;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -272,6 +273,24 @@ namespace SORANO.WEB.Controllers
         }
 
         #endregion
+
+        [HttpPost]
+        public async Task<JsonResult> GetLocationTypes(string term)
+        {
+            var locationTypes = await _locationTypeService.GetAllAsync(false, term);
+
+            return Json(new
+            {
+                results = locationTypes.Result?
+                    .Select(t => new
+                    {
+                        id = t.ID,
+                        text = t.Name,
+                        desc = t.Description
+                    })
+                    .OrderBy(t => t.text)
+            });
+        }
 
         private IActionResult OnFault(string ex)
         {

@@ -23,9 +23,9 @@
 <div class="col-lg-12">
     <div class="row">
         <div style="float:left;">
-            @if (Model.MainPicture?.FullPath != null)
+            @if (Model.HasMainPicture)
             {
-                <img src="@Url.Content(Model.MainPicture.FullPath)" />
+                <img src="@Url.Content(Model.MainPicturePath)" />
             }
         </div>  
         <div style="float: left;">
@@ -52,21 +52,21 @@
                     </dd>
                 }
                 <dt>
-                    @Html.DisplayNameFor(model => model.Type)
+                    @Html.DisplayNameFor(model => model.TypeName)
                 </dt>
                 <dd>
                     <a asp-controller="LocationType"
                        asp-action="Details"
-                       asp-route-id="@Model.Type.ID"
+                       asp-route-id="@Model.TypeID"
                        data-toggle="tooltip"
                        data-placement="right"
                        data-original-title="Просмотреть информацию о типе мест"
                        title="">
-                        @Html.DisplayFor(model => model.Type.Name)
+                        @Html.DisplayFor(model => model.TypeName)
                     </a>
                 </dd>
                 <dd>
-                    @Html.DisplayFor(model => model.Type.Description)
+                    @Html.DisplayFor(model => model.TypeDescription)
                 </dd>
                 <dt>
                     @Html.DisplayNameFor(model => model.Created)
@@ -151,8 +151,9 @@
                         <a data-toggle="collapse" data-parent="#accordion" href="#collapseGoods">
                             <span>
                                 <i class="fa fa-fw fa-archive" aria-hidden="true"></i>
-                                @Html.DisplayNameFor(m => m.Goods)
-                                <span class="badge pull-right">@Model.Goods.Sum(g => g.Quantity)</span>
+                                @* TODO *@
+                                @*@Html.DisplayNameFor(m => m.Goods)
+                                <span class="badge pull-right">@Model.Goods.Sum(g => g.Quantity)</span>*@
                             </span>
                         </a>
                     </h4>
@@ -177,7 +178,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            @foreach (var goods in Model.Goods)
+                            @* TODO *@
+                            @*@foreach (var goods in Model.Goods)
                             {
                                 <tr>
                                     <td>
@@ -233,7 +235,7 @@
                                         </a>
                                     </td>
                                 </tr>
-                            }
+                            }*@
                             </tbody>
                         </table>
                     </div>

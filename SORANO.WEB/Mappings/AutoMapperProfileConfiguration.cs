@@ -72,15 +72,11 @@ namespace SORANO.WEB.Mappings
 
             #region Location
 
-            CreateMap<LocationDto, LocationIndexViewModel>()
-                .ForMember(
-                    dest => dest.TypeName,
-                    source => source.MapFrom(s => s.Type.Name)
-                );
+            CreateMap<LocationDto, LocationIndexViewModel>();
             CreateMap<LocationDto, LocationCreateUpdateViewModel>();
             CreateMap<LocationDto, LocationDetailsViewModel>();
             CreateMap<LocationDto, LocationDeleteViewModel>();
-            CreateMap<ArticleCreateUpdateViewModel, LocationDto>();
+            CreateMap<LocationCreateUpdateViewModel, LocationDto>();
 
             #endregion
 
@@ -116,11 +112,7 @@ namespace SORANO.WEB.Mappings
 
             #region Article
 
-            CreateMap<ArticleDto, ArticleIndexViewModel>()
-                .ForMember(
-                    dest => dest.TypeName,
-                    source => source.MapFrom(s => s.Type.Name)
-                );
+            CreateMap<ArticleDto, ArticleIndexViewModel>();
             CreateMap<ArticleDto, ArticleCreateUpdateViewModel>();            
             CreateMap<ArticleDto, ArticleDetailsViewModel>();
             CreateMap<ArticleDto, ArticleDeleteViewModel>();

@@ -25,8 +25,6 @@ namespace SORANO.WEB.Controllers
     public class LocationController : EntityBaseController<LocationCreateUpdateViewModel>
     {
         private readonly ILocationService _locationService;
-        // TODO
-        private readonly ILocationTypeService _locationTypeService;
         private readonly IMapper _mapper;
 
         public LocationController(ILocationService locationService, 
@@ -39,7 +37,6 @@ namespace SORANO.WEB.Controllers
             IMapper mapper) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
         {
             _locationService = locationService;
-            _locationTypeService = locationTypeService;
             _mapper = mapper;
         }
 
