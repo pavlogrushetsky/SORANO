@@ -9,5 +9,7 @@
         public string Extensions { get; set; }
 
         public int AttachmentsCount { get; set; }
+
+        public bool CanBeUpdated { get; set; }
     }
 }

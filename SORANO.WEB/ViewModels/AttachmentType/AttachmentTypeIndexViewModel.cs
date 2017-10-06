@@ -17,5 +17,7 @@ namespace SORANO.WEB.ViewModels.AttachmentType
         public bool IsDeleted { get; set; }
 
         public bool CanBeDeleted { get; set; }
+
+        public bool CanBeUpdated { get; set; }
     }
 }

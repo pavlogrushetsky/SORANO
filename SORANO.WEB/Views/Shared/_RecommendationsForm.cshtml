@@ -7,26 +7,25 @@
             @if (Model.Recommendations.Any())
             {
                 <tbody>
-                @foreach (var recommendation in Model.Recommendations)
+                @for (var i = 0; i < Model.Recommendations.Count; i++)
                 {
                     <tr>
                         <td style="padding: 0; width: 60%; padding-right: 5px; padding-bottom: 5px;">
                             <div class="input-group input-group-sm">
                                 <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-comment"></i></span>
-                                <textarea class="form-control input-sm recommendations" rows="1" asp-for="@recommendation.Comment"></textarea>
+                                <textarea class="form-control input-sm recommendations" rows="1" asp-for="@Model.Recommendations[i].Comment"></textarea>
                             </div>
-                            <span asp-validation-for="@recommendation.Comment" class="text-danger"></span>
+                            <span asp-validation-for="@Model.Recommendations[i].Comment" class="text-danger"></span>
                         </td>
                         <td style="padding: 0; width: 40%; padding-bottom: 5px;">
                             <div class="input-group input-group-sm">
-                                <input class="form-control input-sm recommendations" type="text" asp-for="@recommendation.Value" />
+                                <input class="form-control input-sm recommendations" type="text" asp-for="@Model.Recommendations[i].Value" />
                                 <span class="input-group-btn">
                                     @* ReSharper disable once Mvc.ActionNotResolved *@
                                     <button class="btn btn-danger btn-sm"
                                             type="submit"
                                             asp-action="DeleteRecommendation"
-                                            asp-route-isEdit="@Model.IsUpdate"
-                                            asp-route-num="@recommendation"
+                                            asp-route-num="@i"
                                             data-toggle="tooltip"
                                             data-placement="right"
                                             data-original-title="Удалить рекомендацию"
@@ -35,7 +34,7 @@
                                     </button>
                             </span>
                             </div>  
-                            <span asp-validation-for="@recommendation.Value" class="text-danger"></span>
+                            <span asp-validation-for="@Model.Recommendations[i].Value" class="text-danger"></span>
                         </td>
                     </tr>
                 }
@@ -48,7 +47,6 @@
                     <button class="btn btn-default btn-sm"
                             type="submit"
                             asp-action="AddRecommendation"
-                            asp-route-isEdit="@Model.IsUpdate"
                             data-toggle="tooltip"
                             data-placement="right"
                             data-original-title="Добавить рекомендацию"

@@ -105,11 +105,6 @@ namespace SORANO.WEB.Controllers
 
             model.Recommendations.Add(new RecommendationViewModel());
 
-            ViewBag.LocationTypes = GetLocationTypes();
-            ViewBag.Articles = GetArticles();
-            ViewBag.Suppliers = GetSuppliers();
-            ViewBag.Locations = GetLocations();
-
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
 

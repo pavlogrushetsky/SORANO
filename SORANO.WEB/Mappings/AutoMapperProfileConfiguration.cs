@@ -70,6 +70,19 @@ namespace SORANO.WEB.Mappings
             CreateMap<ArticleTypeDto, ArticleTypeDetailsViewModel>();
             CreateMap<ArticleTypeDto, ArticleTypeDeleteViewModel>();
 
+            #region AttachmentType
+
+            CreateMap<AttachmentTypeDto, AttachmentTypeIndexViewModel>()
+                .ForMember(
+                    dest => dest.Extensions,
+                    source => source.MapFrom(s => s.Extensions.Split(','))
+                );
+            CreateMap<AttachmentTypeDto, AttachmentTypeCreateUpdateViewModel>();
+            CreateMap<AttachmentTypeDto, AttachmentTypeDeleteViewModel>();
+            CreateMap<AttachmentTypeCreateUpdateViewModel, AttachmentTypeDto>();
+
+            #endregion
+
             #region Location
 
             CreateMap<LocationDto, LocationIndexViewModel>();

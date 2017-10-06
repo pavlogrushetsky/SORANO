@@ -13,5 +13,7 @@ namespace SORANO.WEB.ViewModels.AttachmentType
 
         [Display(Name = "Расширения")]
         public string Extensions { get; set; }
+
+        public bool CanBeUpdated { get; set; }
     }
 }

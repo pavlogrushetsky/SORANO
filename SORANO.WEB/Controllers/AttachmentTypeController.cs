@@ -110,7 +110,7 @@ namespace SORANO.WEB.Controllers
                     return View(model);
                 }
 
-                var attachmentType = _mapper.Map<AttachmentTypeDto>(model);
+                var attachmentType = _mapper.Map<AttachmentTypeCreateUpdateViewModel, AttachmentTypeDto>(model);
 
                 var result = await AttachmentTypeService.CreateAsync(attachmentType, UserId);
 
