@@ -65,7 +65,7 @@ namespace SORANO.BLL.Extensions
         public static ICollection<Recommendation> UpdateModifiedFields(this ICollection<Recommendation> recommendations, int userId)
         {
             foreach (var recommendation in recommendations)
-                recommendation.UpdateCreatedFields(userId);
+                recommendation.UpdateModifiedFields(userId);
 
             return recommendations;
         }

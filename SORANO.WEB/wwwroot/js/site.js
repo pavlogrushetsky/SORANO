@@ -47,6 +47,8 @@ function getMimeType(num, url) {
 function initRecomendationsDataTable() {
     var recommendationsDataTable = $("#recommendations-datatable").DataTable({
         responsive: true,
+        "autoWidth": false,
+        "scrollX": false,
         "pagingType": "numbers",
         "language": {
             "lengthMenu": "Отобразить _MENU_ рекомендаций на странице",
@@ -74,6 +76,8 @@ function initRecomendationsDataTable() {
 function initAttachmentsDataTable() {
     var attachmentsDataTable = $("#attachments-datatable").DataTable({
         responsive: true,
+        "autoWidth": false,
+        "scrollX": false,
         "columnDefs": [
             { "orderable": false, "targets": 2 }
         ],

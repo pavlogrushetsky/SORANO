@@ -1,14 +1,14 @@
 ﻿@model IEnumerable<RecommendationViewModel>
 
-<table id="recommendations-datatable" class="table table-striped table-hover table-responsive">
+<table id="recommendations-datatable" class="table table-striped table-hover">
     <thead>
-        <tr role="row" id="recommendations-search-row">
-            <th style="width: 80%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Текст" /></th>
-            <th style="width: 20%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Значение" /></th>
+        <tr role="row" class="search-row">
+            <th><input type="text" class="form-control input-sm" placeholder="Коментарий" /></th>
+            <th><input type="text" class="form-control input-sm" placeholder="Значение" /></th>
         </tr>
         <tr role="row">
-            <th style="width: 80%"><i class="fa fa-fw fa-comment" aria-hidden="true"></i>&nbsp;Коментарий</th>
-            <th style="width: 20%"><i class="fa fa-fw fa-hashtag" aria-hidden="true"></i>&nbsp;Значение</th>
+            <th><i class="fa fa-fw fa-comment" aria-hidden="true"></i>Коментарий</th>
+            <th><i class="fa fa-fw fa-hashtag" aria-hidden="true"></i>Значение</th>
         </tr>
     </thead>
     <tbody>
