@@ -18,7 +18,7 @@ namespace SORANO.WEB.ViewModels.Common
 
         public string MainPicturePath { get; set; }
 
-        public bool HasMainPicture => !string.IsNullOrEmpty(MainPicturePath);
+        public bool HasMainPicture => !string.IsNullOrWhiteSpace(MainPicturePath);
 
         [Display(Name = "Создание")]
         public string Created { get; set; }

@@ -81,7 +81,7 @@ namespace SORANO.BLL.Extensions
         public static ICollection<Attachment> UpdateModifiedFields(this ICollection<Attachment> attachments, int userId)
         {
             foreach (var attachment in attachments)
-                attachment.UpdateCreatedFields(userId);
+                attachment.UpdateModifiedFields(userId);
 
             return attachments;
         }

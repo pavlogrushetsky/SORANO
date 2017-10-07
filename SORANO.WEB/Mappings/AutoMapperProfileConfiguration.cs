@@ -57,18 +57,18 @@ namespace SORANO.WEB.Mappings
                 .ForMember(
                     dest => dest.Extensions,
                     source => source.MapFrom(s => s.Extensions.Split(','))
-                );
+                );            
 
-            CreateMap<ArticleTypeDto, ArticleTypeIndexViewModel>()
+            #region Attachment
+
+            CreateMap<MainPictureViewModel, AttachmentDto>()
                 .ForMember(
-                    dest => dest.MainPicturePath,
-                    source => source.MapFrom(s => s.MainPicture.FullPath)
+                    dest => dest.AttachmentTypeID,
+                    source => source.MapFrom(s => s.TypeID)
                 );
-            CreateMap<ArticleTypeCreateUpdateViewModel, ArticleTypeDto>();
-            CreateMap<ArticleTypeDto, ArticleTypeCreateUpdateViewModel>();
+            CreateMap<AttachmentDto, MainPictureViewModel>();
 
-            CreateMap<ArticleTypeDto, ArticleTypeDetailsViewModel>();
-            CreateMap<ArticleTypeDto, ArticleTypeDeleteViewModel>();
+            #endregion
 
             #region AttachmentType
 
@@ -87,7 +87,11 @@ namespace SORANO.WEB.Mappings
 
             CreateMap<LocationDto, LocationIndexViewModel>();
             CreateMap<LocationDto, LocationCreateUpdateViewModel>();
-            CreateMap<LocationDto, LocationDetailsViewModel>();
+            CreateMap<LocationDto, LocationDetailsViewModel>()
+                .ForMember(
+                    dest => dest.MainPicturePath,
+                    source => source.MapFrom(s => s.MainPicture.FullPath)
+                );
             CreateMap<LocationDto, LocationDeleteViewModel>();
             CreateMap<LocationCreateUpdateViewModel, LocationDto>();
 
@@ -97,7 +101,11 @@ namespace SORANO.WEB.Mappings
 
             CreateMap<LocationTypeDto, LocationTypeIndexViewModel>();
             CreateMap<LocationTypeDto, LocationTypeCreateUpdateViewModel>();
-            CreateMap<LocationTypeDto, LocationTypeDetailsViewModel>();
+            CreateMap<LocationTypeDto, LocationTypeDetailsViewModel>()
+                .ForMember(
+                    dest => dest.MainPicturePath,
+                    source => source.MapFrom(s => s.MainPicture.FullPath)
+                );
             CreateMap<LocationTypeDto, LocationTypeDeleteViewModel>();
             CreateMap<LocationTypeCreateUpdateViewModel, LocationTypeDto>();
 
@@ -107,7 +115,11 @@ namespace SORANO.WEB.Mappings
 
             CreateMap<ClientDto, ClientIndexViewModel>();
             CreateMap<ClientDto, ClientCreateUpdateViewModel>();
-            CreateMap<ClientDto, ClientDetailsViewModel>();
+            CreateMap<ClientDto, ClientDetailsViewModel>()
+                .ForMember(
+                    dest => dest.MainPicturePath,
+                    source => source.MapFrom(s => s.MainPicture.FullPath)
+                );
             CreateMap<ClientDto, ClientDeleteViewModel>();
             CreateMap<ClientCreateUpdateViewModel, ClientDto>();
 
@@ -117,7 +129,11 @@ namespace SORANO.WEB.Mappings
 
             CreateMap<SupplierDto, SupplierIndexViewModel>();
             CreateMap<SupplierDto, SupplierCreateUpdateViewModel>();
-            CreateMap<SupplierDto, SupplierDetailsViewModel>();
+            CreateMap<SupplierDto, SupplierDetailsViewModel>()
+                .ForMember(
+                    dest => dest.MainPicturePath,
+                    source => source.MapFrom(s => s.MainPicture.FullPath)
+                );
             CreateMap<SupplierDto, SupplierDeleteViewModel>();
             CreateMap<SupplierCreateUpdateViewModel, SupplierDto>();
 
@@ -127,9 +143,31 @@ namespace SORANO.WEB.Mappings
 
             CreateMap<ArticleDto, ArticleIndexViewModel>();
             CreateMap<ArticleDto, ArticleCreateUpdateViewModel>();            
-            CreateMap<ArticleDto, ArticleDetailsViewModel>();
+            CreateMap<ArticleDto, ArticleDetailsViewModel>()
+                .ForMember(
+                    dest => dest.MainPicturePath,
+                    source => source.MapFrom(s => s.MainPicture.FullPath)
+                );
             CreateMap<ArticleDto, ArticleDeleteViewModel>();
             CreateMap<ArticleCreateUpdateViewModel, ArticleDto>();
+
+            #endregion
+
+            #region ArticleType
+
+            CreateMap<ArticleTypeDto, ArticleTypeIndexViewModel>()
+                .ForMember(
+                    dest => dest.MainPicturePath,
+                    source => source.MapFrom(s => s.MainPicture.FullPath)
+                );
+            CreateMap<ArticleTypeCreateUpdateViewModel, ArticleTypeDto>();
+            CreateMap<ArticleTypeDto, ArticleTypeCreateUpdateViewModel>();
+            CreateMap<ArticleTypeDto, ArticleTypeDetailsViewModel>()
+                .ForMember(
+                    dest => dest.MainPicturePath,
+                    source => source.MapFrom(s => s.MainPicture.FullPath)
+                );
+            CreateMap<ArticleTypeDto, ArticleTypeDeleteViewModel>();
 
             #endregion
         }

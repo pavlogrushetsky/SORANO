@@ -38,7 +38,7 @@ namespace SORANO.WEB.Controllers
             AttachmentService = attachmentService;
             MemoryCache = memorycache;
             Environment = environment;
-            _entityTypeName = typeof(T).Name.ToLower().Replace("model", "");
+            _entityTypeName = typeof(T).Name.ToLower().Replace("createupdateviewmodel", "");
         }
 
         protected bool TryGetCached(out T model, string key, string validKey)
@@ -118,11 +118,6 @@ namespace SORANO.WEB.Controllers
 
             model.Recommendations.RemoveAt(num);
 
-            ViewBag.LocationTypes = GetLocationTypes();
-            ViewBag.Articles = GetArticles();
-            ViewBag.Suppliers = GetSuppliers();
-            ViewBag.Locations = GetLocations();
-
             await LoadMainPicture(model, mainPictureFile);
             await LoadAttachments(model, attachments);
 
@@ -133,11 +128,6 @@ namespace SORANO.WEB.Controllers
         public virtual async Task<IActionResult> AddAttachment(T model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             ModelState.Clear();                        
-
-            ViewBag.LocationTypes = GetLocationTypes();
-            ViewBag.Articles = GetArticles();
-            ViewBag.Suppliers = GetSuppliers();
-            ViewBag.Locations = GetLocations();
 
             model.Attachments.Add(new AttachmentViewModel());
 
@@ -164,11 +154,6 @@ namespace SORANO.WEB.Controllers
 
             entity.Attachments.RemoveAt(num);
 
-            ViewBag.LocationTypes = GetLocationTypes();
-            ViewBag.Articles = GetArticles();
-            ViewBag.Suppliers = GetSuppliers();
-            ViewBag.Locations = GetLocations();
-
             await LoadMainPicture(entity, mainPictureFile);
             await LoadAttachments(entity, attachments);
 
@@ -192,11 +177,6 @@ namespace SORANO.WEB.Controllers
             ModelState.Clear();
 
             entity.MainPicture = new MainPictureViewModel();
-
-            ViewBag.LocationTypes = GetLocationTypes();
-            ViewBag.Articles = GetArticles();
-            ViewBag.Suppliers = GetSuppliers();
-            ViewBag.Locations = GetLocations();
 
             await LoadMainPicture(entity, mainPictureFile);
             await LoadAttachments(entity, attachments);
