@@ -1,3 +1,4 @@
-﻿function getMimeType(num) {
-    getMimeType(num, "Client/GetMimeType?id=");
-}
+﻿$(document).ready(function () {
+    $.fn.select2.defaults.set('theme', 'bootstrap');
+    initAttachmentTypeSelect();
+});

@@ -25,7 +25,8 @@ namespace SORANO.BLL.Extensions
                 .Where(a => !a.IsDeleted && !a.Type.Name.Equals("Основное изображение"))
                 .Select(a => a.ToDto());
             dto.MainPicture = model.Attachments?
-                .SingleOrDefault(a => !a.IsDeleted && a.Type.Name.Equals("Основное изображение"))?
+                .Where(a => !a.IsDeleted && a.Type.Name.Equals("Основное изображение"))
+                .SingleOrDefault()?
                 .ToDto() ?? new AttachmentDto();
         }
 

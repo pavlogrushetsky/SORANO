@@ -61,11 +61,11 @@ namespace SORANO.BLL.Services
             entity.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             entity.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-            var saved = UnitOfWork.Get<ArticleType>().Add(entity);
+            UnitOfWork.Get<ArticleType>().Add(entity);
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<ArticleTypeDto>(saved.ToDto());           
+            return new SuccessResponse<ArticleTypeDto>();           
         }
 
         public async Task<ServiceResponse<ArticleTypeDto>> UpdateAsync(ArticleTypeDto articleType, int userId)
@@ -86,11 +86,11 @@ namespace SORANO.BLL.Services
             UpdateAttachments(entity, existentEntity, userId);
             UpdateRecommendations(entity, existentEntity, userId);
 
-            var updated = UnitOfWork.Get<ArticleType>().Update(existentEntity);
+            UnitOfWork.Get<ArticleType>().Update(existentEntity);
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<ArticleTypeDto>(updated.ToDto());          
+            return new SuccessResponse<ArticleTypeDto>();          
         }
 
         public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)

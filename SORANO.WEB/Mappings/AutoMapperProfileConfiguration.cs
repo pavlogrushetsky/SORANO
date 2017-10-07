@@ -34,39 +34,46 @@ namespace SORANO.WEB.Mappings
 
             CreateMap<UserDto, AccountViewModel>();
 
+            #region Recommendation
+
             CreateMap<RecommendationDto, RecommendationViewModel>();
             CreateMap<RecommendationViewModel, RecommendationDto>();
 
-            CreateMap<AttachmentDto, AttachmentViewModel>()
-                .ForMember(
-                    dest => dest.TypeName, 
-                    source => source.MapFrom(s => s.AttachmentType.Name)
-                )
-                .ForMember(
-                    dest => dest.MimeTypes, 
-                    source => source.MapFrom(s => !string.IsNullOrEmpty(s.AttachmentType.Extensions) 
-                        ? string.Join(",", s.AttachmentType.Extensions.Split(',').Select(MimeTypes.MimeTypeMap.GetMimeType)) 
-                        : "")
-                );
-            CreateMap<AttachmentViewModel, AttachmentDto>();
-
-            CreateMap<MainPictureViewModel, AttachmentDto>();
-            CreateMap<AttachmentDto, MainPictureViewModel>();
-
-            CreateMap<AttachmentTypeDto, AttachmentTypeIndexViewModel>()
-                .ForMember(
-                    dest => dest.Extensions,
-                    source => source.MapFrom(s => s.Extensions.Split(','))
-                );            
+            #endregion
 
             #region Attachment
 
+            CreateMap<AttachmentDto, AttachmentViewModel>()
+                .ForMember(
+                    dest => dest.TypeID,
+                    source => source.MapFrom(s => s.AttachmentType.ID)
+                )
+                .ForMember(
+                    dest => dest.TypeName,
+                    source => source.MapFrom(s => s.AttachmentType.Name)
+                )
+                .ForMember(
+                    dest => dest.MimeTypes,
+                    source => source.MapFrom(s => !string.IsNullOrEmpty(s.AttachmentType.Extensions)
+                        ? string.Join(",", s.AttachmentType.Extensions.Split(',').Select(MimeTypes.MimeTypeMap.GetMimeType))
+                        : "")
+                );
+            CreateMap<AttachmentViewModel, AttachmentDto>()
+                .ForMember(
+                    dest => dest.AttachmentTypeID,
+                    source => source.MapFrom(s => s.TypeID)
+                );
+           
+            CreateMap<AttachmentDto, MainPictureViewModel>()
+                .ForMember(
+                    dest => dest.TypeID,
+                    source => source.MapFrom(s => s.AttachmentType.ID)
+                );
             CreateMap<MainPictureViewModel, AttachmentDto>()
                 .ForMember(
                     dest => dest.AttachmentTypeID,
                     source => source.MapFrom(s => s.TypeID)
                 );
-            CreateMap<AttachmentDto, MainPictureViewModel>();
 
             #endregion
 
@@ -76,6 +83,12 @@ namespace SORANO.WEB.Mappings
                 .ForMember(
                     dest => dest.Extensions,
                     source => source.MapFrom(s => s.Extensions.Split(','))
+                )
+                .ForMember(
+                    dest => dest.MimeTypes,
+                    source => source.MapFrom(s => !string.IsNullOrEmpty(s.Extensions)
+                        ? string.Join(",", s.Extensions.Split(',').Select(MimeTypes.MimeTypeMap.GetMimeType))
+                        : "")
                 );
             CreateMap<AttachmentTypeDto, AttachmentTypeCreateUpdateViewModel>();
             CreateMap<AttachmentTypeDto, AttachmentTypeDeleteViewModel>();

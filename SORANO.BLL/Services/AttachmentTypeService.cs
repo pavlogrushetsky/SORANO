@@ -54,11 +54,11 @@ namespace SORANO.BLL.Services
 
             entity.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-            var saved = UnitOfWork.Get<AttachmentType>().Add(entity);
+            UnitOfWork.Get<AttachmentType>().Add(entity);
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<AttachmentTypeDto>(saved.ToDto());
+            return new SuccessResponse<AttachmentTypeDto>();
         }
 
         public async Task<ServiceResponse<AttachmentTypeDto>> UpdateAsync(AttachmentTypeDto attachmentType, int userId)
@@ -81,11 +81,11 @@ namespace SORANO.BLL.Services
             existentEntity.UpdateFields(entity);
             existentEntity.UpdateModifiedFields(userId);
 
-            var updated = UnitOfWork.Get<AttachmentType>().Update(existentEntity);
+            UnitOfWork.Get<AttachmentType>().Update(existentEntity);
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<AttachmentTypeDto>(updated.ToDto());
+            return new SuccessResponse<AttachmentTypeDto>();
         }
 
         public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
@@ -114,6 +114,26 @@ namespace SORANO.BLL.Services
             var type = await UnitOfWork.Get<AttachmentType>().GetAsync(t => t.Name.Equals("Основное изображение"));
 
             return new SuccessResponse<int>(type.ID);
+        }
+
+        public async Task<ServiceResponse<IEnumerable<AttachmentTypeDto>>> GetAllAsync(string searchTerm)
+        {
+            var response = new SuccessResponse<IEnumerable<AttachmentTypeDto>>();
+
+            var attachmentTypes = await UnitOfWork.Get<AttachmentType>().GetAllAsync();
+
+            var term = searchTerm?.ToLower();
+
+            var searched = attachmentTypes
+                .Where(t => !t.Name.Equals("Основное изображение"))
+                .Where(t => string.IsNullOrWhiteSpace(term)
+                            || t.Name.ToLower().Contains(term)
+                            || t.Comment.ToLower().Contains(term)
+                            || t.Extensions.ToLower().Contains(term));
+
+            response.Result = searched.Select(t => t.ToDto());
+
+            return response;
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SORANO.CORE", "SORANO.CORE\SORANO.CORE.csproj", "{50FF04FE-1E18-45B5-A386-C17AAF626AC4}"
 EndProject
@@ -9,7 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SORANO.BLL", "SORANO.BLL\SO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SORANO.DAL", "SORANO.DAL\SORANO.DAL.csproj", "{092919DE-E34A-44FF-BFCC-E9B260351B53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SORANO.WEB", "SORANO.WEB\SORANO.WEB.csproj", "{D1AF848C-25EF-4910-912C-B5BC190AA9A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SORANO.WEB", "SORANO.WEB\SORANO.WEB.csproj", "{D1AF848C-25EF-4910-912C-B5BC190AA9A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SORANO.TESTS", "SORANO.TESTS\SORANO.TESTS.csproj", "{3EEB5591-94F6-4BF3-87F2-61FB6BB74D33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,8 +35,15 @@ Global
 		{D1AF848C-25EF-4910-912C-B5BC190AA9A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1AF848C-25EF-4910-912C-B5BC190AA9A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1AF848C-25EF-4910-912C-B5BC190AA9A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EEB5591-94F6-4BF3-87F2-61FB6BB74D33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EEB5591-94F6-4BF3-87F2-61FB6BB74D33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EEB5591-94F6-4BF3-87F2-61FB6BB74D33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EEB5591-94F6-4BF3-87F2-61FB6BB74D33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {28482225-FBB6-4547-82E0-A59C40CCA38C}
 	EndGlobalSection
 EndGlobal

@@ -11,6 +11,30 @@
         });
     });
 
+    $('.select-attachment-type').one('change', function () {
+        var id = $(this).attr('id');
+        var matches = id.match(/\d+$/);
+        if (matches) {
+            var number = matches[0];
+            var typeId = $(this).val();            
+            if (typeId) {
+                $.post('/AttachmentType/GetMimeTypes?id=' + typeId, function (mimeType) {
+                    $('#attachment_input_' + number).attr('accept', mimeType);
+                    $('#Attachments_' + number + '__MimeTypes').val(mimeType);
+                });
+            }
+            var data = $(this).select2('data');
+            if (data[0]) {
+                $('#Attachments_' + number + '__TypeID').val(data[0].id);
+                $('#Attachments_' + number + '__TypeName').val(data[0].text);
+            }
+            else {
+                $('#Attachments_' + number + '__TypeID').val(0);
+                $('#Attachments_' + number + '__TypeName').val('');
+            }
+        }       
+    });   
+
     $('input[type=file]').not('#main_picture_input').change(function () {
         var id = $(this).attr('id');
         var name = document.getElementById(id).files[0].name;
@@ -20,8 +44,79 @@
             $('#attachment_name_' + number).val(name);
             $('#Attachments_' + number + '__IsNew').val(true);
         }
-    });   
+    });     
 });
+
+function initAttachmentTypeSelect() {
+    var selectAttachmentTypes = $('.select-attachment-type');
+
+    selectAttachmentTypes.select2({
+        "language": {
+            "noResults": function () {
+                return "Типы не найдены";
+            },
+            "searching": function () {
+                return "Поиск типов...";
+            },
+            "errorLoading": function () {
+                return "Невозможно загрузить результаты поиска";
+            }
+        },
+        placeholder: "Тип",
+        minimumInputLength: 0,
+        ajax: {
+            url: '/AttachmentType/GetAttachmentTypes',
+            dataType: 'json',
+            type: 'POST',
+            delay: 100,
+            data: function (params) {
+                var queryParameters = {
+                    term: params.term
+                }
+                return queryParameters;
+            },
+            results: function (data) {
+                return {
+                    results: $.map(data, function (item) {
+                        return {
+                            text: item.text,
+                            id: item.id,
+                            desc: item.desc,
+                            exts: item.exts
+                        }
+                    })
+                };
+            },
+            cache: true
+        },
+        escapeMarkup: function (markup) { return markup; },
+        templateResult: formatAttachmentTypeData,
+        templateSelection: formatAttachmentTypeDataSelection
+    });
+
+    selectAttachmentTypes.each(function () {
+        var id = $(this).attr('id');
+        var matches = id.match(/\d+$/);
+        if (matches) {
+            var number = matches[0];
+            var typeId = $('#Attachments_' + number + '__TypeID');
+            var typeName = $('#Attachments_' + number + '__TypeName');
+            if (typeId.val() > 0) {
+                $(this).append($('<option selected></option>').attr('value', typeId.val()).text(typeName.val()));
+            }
+        }     
+    });
+}
+
+function formatAttachmentTypeData(data) {
+    if (data.loading) return data.text;
+
+    return '<div>' + data.text + '</div><div><small style="color: #95a5a6;">' + data.desc + '</small></div><div><small style="color: #95a5a6;">' + data.exts + '</small></div>';
+}
+
+function formatAttachmentTypeDataSelection(data) {
+    return data.text;
+}
 
 function previewMainPicture(input) {
     if (input.files && input.files[0]) {
@@ -32,15 +127,6 @@ function previewMainPicture(input) {
             $('#mainPicture_img').attr('src', e.target.result);
         }
         reader.readAsDataURL(input.files[0]);
-    }
-}
-
-function getMimeType(num, url) {
-    var id = $('#select_type_' + num).val();
-    if (id) {
-        $.post(url + id, function (mimeType) {
-            $('#attachment_input_' + num).attr('accept', mimeType);
-        });
     }
 }
 

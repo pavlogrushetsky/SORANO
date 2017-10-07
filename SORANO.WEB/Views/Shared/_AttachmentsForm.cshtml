@@ -3,7 +3,7 @@
 <div class="form-group">
     <label class="control-label">Вложения:</label>
     <div id="attachments">
-        <table class="table table-responsive" style="margin-bottom: 0;">
+        <table class="table" style="margin-bottom: 0;">
             @if (Model.Attachments.Any())
             {
                 <tbody>
@@ -32,13 +32,12 @@
                         </td>
                         <td style="width: 40%; padding: 0; padding-bottom: 5px;">
                             <div class="input-group input-group-sm">
-                                <select id="select_type_@i" onchange="getMimeType(@i);" class="form-control input-sm attachments" asp-for="@Model.Attachments[i].TypeID" asp-items="@ViewBag.AttachmentTypes"></select>
+                                <select id="select_type_@i" class="form-control input-sm select-attachment-type" asp-for="@Model.Attachments[i].TypeID"></select>
                                 <span class="input-group-btn">
                                     @* ReSharper disable once Mvc.ActionNotResolved *@
                                     <button class="btn btn-danger btn-sm"
                                             type="submit"
                                             asp-action="DeleteAttachment"
-                                            asp-route-isEdit="@Model.IsUpdate"
                                             asp-route-num="@i"
                                             data-toggle="tooltip"
                                             data-placement="right"
@@ -61,7 +60,6 @@
                     <button class="btn btn-default btn-sm"
                             type="submit"
                             asp-action="AddAttachment"
-                            asp-route-isEdit="@Model.IsUpdate"
                             data-toggle="tooltip"
                             data-placement="right"
                             data-original-title="Добавить вложение"

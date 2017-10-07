@@ -15,14 +15,6 @@
 @section Styles {
     <link rel="stylesheet" href="~/lib/select2/dist/css/select2.min.css" />
     <link rel="stylesheet" href="~/lib/select2-bootstrap-theme/dist/select2-bootstrap.min.css" />
-    <style>
-        span.select2-selection.select2-selection--single {
-            -ms-border-top-left-radius: 0 !important;
-            border-top-left-radius: 0 !important;
-            -ms-border-bottom-left-radius: 0 !important;
-            border-bottom-left-radius: 0 !important;
-        }
-    </style>
 }
 
 @section Breadcrumb {
@@ -53,6 +45,7 @@
         @Html.HiddenFor(m => m.Attachments[i].FullPath)
         @Html.HiddenFor(m => m.Attachments[i].MimeTypes)
         @Html.HiddenFor(m => m.Attachments[i].TypeName)
+        @Html.HiddenFor(m => m.Attachments[i].TypeID)
     }
     @Html.HiddenFor(m => m.MainPicture.ID)
     @Html.HiddenFor(m => m.MainPicture.Name)

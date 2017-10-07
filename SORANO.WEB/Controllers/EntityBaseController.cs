@@ -138,16 +138,6 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
-        public virtual async Task<string> GetMimeType(int id)
-        {
-            var type = await AttachmentTypeService.GetAsync(id);
-
-            // TODO
-            //return type.ToModel().MimeTypes;
-            return string.Empty;
-        }
-
-        [HttpPost]
         public virtual async Task<IActionResult> DeleteAttachment(T entity, int num, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             ModelState.Clear();
@@ -189,64 +179,7 @@ namespace SORANO.WEB.Controllers
             var bytes = System.IO.File.ReadAllBytes(Environment.WebRootPath + path);
 
             return File(bytes, MimeTypeMap.GetMimeType(Path.GetExtension(path)), name);
-        }
-
-        private List<SelectListItem> GetLocationTypes()
-        {
-            if (MemoryCache.TryGetValue(CacheKeys.LocationTypesCacheKey, out List<SelectListItem> locationTypeSelectItems))
-            {
-                return locationTypeSelectItems;
-            }
-
-            return null;
-        }
-
-        private List<SelectListItem> GetSuppliers()
-        {
-            if (MemoryCache.TryGetValue(CacheKeys.SuppliersCacheKey, out List<SelectListItem> supplierSelectItems))
-            {
-                return supplierSelectItems;
-            }
-
-            return null;
-        }
-
-        private List<SelectListItem> GetLocations()
-        {
-            if (MemoryCache.TryGetValue(CacheKeys.LocationsCacheKey, out List<SelectListItem> locationSelectItems))
-            {
-                return locationSelectItems;
-            }
-
-            return null;
-        }
-
-        private List<SelectListItem> GetArticles()
-        {
-            if (MemoryCache.TryGetValue(CacheKeys.ArticlesCacheKey, out List<SelectListItem> articleCodesSelectItems))
-            {
-                return articleCodesSelectItems;
-            }
-
-            return null;
-        }
-
-        [HttpPost]
-        public async Task<JsonResult> GetAttachmentTypes(string term)
-        {
-            var attachmentTypes = await AttachmentTypeService.GetAllAsync(false);
-
-            return Json(new
-            {
-                results = attachmentTypes.Result
-                    .Where(t => string.IsNullOrEmpty(term) || t.Name.Contains(term))
-                    .Select(t => new
-                    {
-                        id = t.ID,
-                        text = t.Name
-                    })
-            });
-        }
+        }       
 
         protected virtual async Task<int> GetMainPictureTypeID()
         {

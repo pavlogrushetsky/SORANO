@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -182,6 +183,37 @@ namespace SORANO.WEB.Controllers
         }
 
         #endregion
+
+        [HttpPost]
+        public async Task<JsonResult> GetAttachmentTypes(string term)
+        {
+            var attachmentTypes = await AttachmentTypeService.GetAllAsync(term);
+
+            return Json(new
+            {
+                results = attachmentTypes.Result?
+                    .Select(t => new
+                    {
+                        id = t.ID,
+                        text = t.Name,
+                        exts = t.Extensions,
+                        desc = t.Comment
+                    })
+                    .OrderBy(t => t.text)
+            });
+        }
+
+        [HttpPost]
+        public virtual async Task<string> GetMimeTypes(int id)
+        {
+            var result = await AttachmentTypeService.GetAsync(id);
+
+            if (result.Status != ServiceResponseStatus.Success)
+                return string.Empty;
+
+            var model = _mapper.Map<AttachmentTypeIndexViewModel>(result.Result);
+            return model.MimeTypes;
+        }
 
         private IActionResult OnFault(string ex)
         {

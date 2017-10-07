@@ -1,6 +1,7 @@
 ﻿$(document).ready(function () {
     $.fn.select2.defaults.set('theme', 'bootstrap');
     initLocationTypeSelect();
+    initAttachmentTypeSelect();
 });
 
 function initLocationTypeSelect() {
@@ -80,8 +81,4 @@ function formatData(data) {
 
 function formatDataSelection(data) {
     return data.text;
-}
-
-function getMimeType(num) {
-    getMimeType(num, "Location/GetMimeType?id=");
 }

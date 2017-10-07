@@ -23,9 +23,9 @@ namespace SORANO.WEB.ViewModels.Attachment
 
         [Display(Name = "Тип")]
         public string TypeName { get; set; }
-
-        public string MimeTypes { get; set; }
         
         public bool IsNew { get; set; }
+
+        public string MimeTypes { get; set; }
     }
 }
