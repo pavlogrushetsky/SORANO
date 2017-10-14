@@ -102,15 +102,11 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [ValidateModelFilter]
         public async Task<IActionResult> Create(AttachmentTypeCreateUpdateViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
             {
-                if (!ModelState.IsValid)
-                {
-                    return View(model);
-                }
-
                 var attachmentType = _mapper.Map<AttachmentTypeCreateUpdateViewModel, AttachmentTypeDto>(model);
 
                 var result = await AttachmentTypeService.CreateAsync(attachmentType, UserId);
@@ -133,15 +129,11 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [ValidateModelFilter]
         public async Task<IActionResult> Update(AttachmentTypeCreateUpdateViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
             {
-                if (!ModelState.IsValid)
-                {
-                    return View("Create", model);
-                }
-
                 var attachmentType = _mapper.Map<AttachmentTypeDto>(model);
 
                 var result = await AttachmentTypeService.UpdateAsync(attachmentType, UserId);

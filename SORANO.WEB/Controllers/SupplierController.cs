@@ -169,18 +169,12 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [LoadAttachmentsFilter]
+        [ValidateModelFilter]
         public async Task<IActionResult> Create(SupplierCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return await TryGetActionResultAsync(async () =>
             {
-                await LoadMainPicture(model, mainPictureFile);
-                await LoadAttachments(model, attachments);
-
-                if (!ModelState.IsValid)
-                {
-                    return View(model);
-                }
-
                 var supplier = _mapper.Map<SupplierDto>(model);
 
                 var result = await _supplierService.CreateAsync(supplier, UserId);
@@ -217,18 +211,12 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [LoadAttachmentsFilter]
+        [ValidateModelFilter]
         public async Task<IActionResult> Update(SupplierCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return await TryGetActionResultAsync(async () =>
             {
-                await LoadMainPicture(model, mainPictureFile);
-                await LoadAttachments(model, attachments);
-
-                if (!ModelState.IsValid)
-                {
-                    return View("Create", model);
-                }
-
                 var supplier = _mapper.Map<SupplierDto>(model);
 
                 var result = await _supplierService.UpdateAsync(supplier, UserId);

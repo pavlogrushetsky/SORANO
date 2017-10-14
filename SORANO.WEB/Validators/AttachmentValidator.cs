@@ -14,6 +14,10 @@ namespace SORANO.WEB.Validators
                 .NotEmpty()
                 .WithMessage("Необходимо выбрать файл");
 
+            RuleFor(a => a.TypeID)
+                .GreaterThan(0)
+                .WithMessage("Необходимо выбрать тип");
+
             RuleFor(a => a.Name)
                 .MaximumLength(255)
                 .WithMessage("Длина названия файла не должна превышать 255 символов");

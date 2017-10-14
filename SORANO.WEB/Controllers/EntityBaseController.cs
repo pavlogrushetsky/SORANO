@@ -1,10 +1,8 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Services.Abstract;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -126,8 +124,8 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         public virtual async Task<IActionResult> AddAttachment(T model, IFormFile mainPictureFile, IFormFileCollection attachments)
-        {
-            ModelState.Clear();                        
+        {        
+            ModelState.Clear();
 
             model.Attachments.Add(new AttachmentViewModel());
 
@@ -205,7 +203,7 @@ namespace SORANO.WEB.Controllers
             return path + filename;            
         }
 
-        protected virtual async Task LoadAttachments(T model, IFormFileCollection attachments)
+        public virtual async Task LoadAttachments(T model, IFormFileCollection attachments)
         {
             var attachmentCounter = 0;
 
@@ -222,10 +220,12 @@ namespace SORANO.WEB.Controllers
                     if (newAttachment != null)
                     {
                         var path = await Load(newAttachment, _entityTypeName);
-                        model.Attachments[i].FullPath = path;
-                        model.Attachments[i].IsNew = false;
 
                         ModelState.RemoveFor($"Attachments[{i}].FullPath");
+                        ModelState.RemoveFor($"Attachments[{i}].IsNew");
+
+                        model.Attachments[i].FullPath = path;
+                        model.Attachments[i].IsNew = false;                        
                     }
 
                     attachmentCounter++;
@@ -233,7 +233,7 @@ namespace SORANO.WEB.Controllers
             }
         }
 
-        protected virtual async Task LoadMainPicture(T model, IFormFile mainPicture)
+        public virtual async Task LoadMainPicture(T model, IFormFile mainPicture)
         {
             if (mainPicture != null)
             {
