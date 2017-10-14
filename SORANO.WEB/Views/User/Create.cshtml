@@ -1,21 +1,20 @@
-﻿@model UserModel
+﻿@model UserCreateUpdateViewModel
 
 @{
-    var isEdit = ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"];
-    var title = isEdit ? "Редактирование" : "Создание";
+    var title = Model.IsUpdate ? "Редактирование" : "Создание";
 }
 
 @{ 
     ViewBag.Title = "SORANO - " + title + " пользователя";
     ViewBag.Header = title;
     ViewBag.Description = "пользователя";
-    ViewBag.Icon = "fa fa-fw " + (isEdit ? "fa-pencil-square" : "fa-user-plus");
+    ViewBag.Icon = "fa fa-fw " + (Model.IsUpdate ? "fa-pencil-square" : "fa-user-plus");
 }
 
 @section Breadcrumb {
     <ul class="breadcrumb">
         <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
-        <li><a asp-controller="User" asp-action="List">Пользователи</a></li>
+        <li><a asp-controller="User" asp-action="Index">Пользователи</a></li>
         <li class="active">@title пользователя</li>
     </ul>
 }

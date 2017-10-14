@@ -1,8 +1,9 @@
-﻿using SORANO.WEB.ViewModels.Common;
-
-namespace SORANO.WEB.ViewModels.User
+﻿namespace SORANO.WEB.ViewModels.User
 {
-    public class UserCreateUpdateViewModel : BaseCreateUpdateViewModel
+    public class UserCreateUpdateViewModel
     {
+        public int ID { get; set; }
+
+        public bool IsUpdate { get; set; }
     }
 }

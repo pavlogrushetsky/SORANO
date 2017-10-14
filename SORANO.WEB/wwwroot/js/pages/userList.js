@@ -5,6 +5,8 @@
 function initUsersDataTable() {
     var table = $("#users-datatable").DataTable({
         responsive: true,
+        "autoWidth": false,
+        "scrollX": false,
         "columnDefs": [
             { "orderable": false, "targets": 3 },
             { "orderable": false, "targets": 5 }

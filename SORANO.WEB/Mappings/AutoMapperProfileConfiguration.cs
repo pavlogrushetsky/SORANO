@@ -13,6 +13,7 @@ using SORANO.WEB.ViewModels.Location;
 using SORANO.WEB.ViewModels.LocationType;
 using SORANO.WEB.ViewModels.Recommendation;
 using SORANO.WEB.ViewModels.Supplier;
+using SORANO.WEB.ViewModels.User;
 
 namespace SORANO.WEB.Mappings
 {
@@ -181,6 +182,21 @@ namespace SORANO.WEB.Mappings
                     source => source.MapFrom(s => s.MainPicture.FullPath)
                 );
             CreateMap<ArticleTypeDto, ArticleTypeDeleteViewModel>();
+
+            #endregion
+
+            #region User
+
+            CreateMap<UserDto, UserIndexViewModel>()
+                .ForMember(
+                    dest => dest.Roles,
+                    source => source.MapFrom(s => s.Roles.Select(r => r.Name))
+                );
+            CreateMap<UserDto, UserDetailsViewModel>()
+                .ForMember(
+                    dest => dest.Roles,
+                    source => source.MapFrom(s => s.Roles.Select(r => r.Name))
+                );
 
             #endregion
         }
