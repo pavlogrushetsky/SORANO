@@ -11,6 +11,11 @@
     ViewBag.Icon = "fa fa-fw fa-truck";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/lib/select2/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="~/lib/select2-bootstrap-theme/dist/select2-bootstrap.min.css" />
+}
+
 @section Breadcrumb {
     <ul class="breadcrumb">
         <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
@@ -37,6 +42,7 @@
         <input type="hidden" asp-for="@Model.Attachments[i].FullPath" />
         <input type="hidden" asp-for="@Model.Attachments[i].MimeTypes" />
         <input type="hidden" asp-for="@Model.Attachments[i].TypeName" />
+        <input type="hidden" asp-for="@Model.Attachments[i].TypeID" />
     }
     @Html.HiddenFor(m => m.MainPicture.ID)
     @Html.HiddenFor(m => m.MainPicture.Name)
@@ -95,6 +101,7 @@
 </form>
 
 @section Scripts {
+    <script src="~/lib/select2/dist/js/select2.full.min.js"></script>
     <environment names="Development">
         <script src="~/js/pages/supplierCreate.js"></script>
     </environment>

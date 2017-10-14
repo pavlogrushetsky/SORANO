@@ -52,6 +52,7 @@
         <input type="hidden" asp-for="@Model.Attachments[i].FullPath" />
         <input type="hidden" asp-for="@Model.Attachments[i].MimeTypes" />
         <input type="hidden" asp-for="@Model.Attachments[i].TypeName" />
+        <input type="hidden" asp-for="@Model.Attachments[i].TypeID" />
     }
     @Html.HiddenFor(m => m.MainPicture.ID)
     @Html.HiddenFor(m => m.MainPicture.Name)
