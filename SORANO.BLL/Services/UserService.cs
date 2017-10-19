@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SORANO.BLL.Dtos;
@@ -29,18 +30,45 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<UserDto>> CreateAsync(UserDto user)
         {
-            user.Password = CryptoHelper.Hash(user.Password);
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
 
-            var added = _unitOfWork.Get<User>().Add(user.ToEntity());
+            var usersWithSameLogin = await _unitOfWork.Get<User>()
+                .FindByAsync(u => u.Login.Equals(user.Login) && u.ID != user.ID);
+
+            if (usersWithSameLogin.Any())
+                return new ServiceResponse<UserDto>(ServiceResponseStatus.AlreadyExists);
+
+            var entity = user.ToEntity();
+            entity.Password = CryptoHelper.Hash(user.Password);
+
+            var roles = await _unitOfWork.Get<Role>().GetAllAsync();
+            var rolesToAttach = roles.Where(r => user.Roles.Select(x => x.ID).Contains(r.ID));
+
+            entity.Roles = rolesToAttach.ToList();
+
+            _unitOfWork.Get<User>().Add(entity);
 
             await _unitOfWork.SaveAsync();
 
-            return new SuccessResponse<UserDto>(added.ToDto());          
+            return new SuccessResponse<UserDto>();          
         }
 
         public async Task<ServiceResponse<UserDto>> UpdateAsync(UserDto user)
         {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
             var existentUser = await _unitOfWork.Get<User>().GetAsync(user.ID);
+
+            if (existentUser == null)
+                return new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound);
+
+            var usersWithSameLogin = await _unitOfWork.Get<User>()
+                .FindByAsync(u => u.Login.Equals(user.Login) && u.ID != user.ID);
+
+            if (usersWithSameLogin.Any())
+                return new ServiceResponse<UserDto>(ServiceResponseStatus.AlreadyExists);
 
             existentUser.Login = user.Login;
             existentUser.Description = user.Description;
@@ -68,11 +96,11 @@ namespace SORANO.BLL.Services
                 }
             });
 
-            var updated = _unitOfWork.Get<User>().Update(existentUser);
+            _unitOfWork.Get<User>().Update(existentUser);
 
             await _unitOfWork.SaveAsync();
 
-            return new SuccessResponse<UserDto>(updated.ToDto());
+            return new SuccessResponse<UserDto>();
         }
 
         public async Task<ServiceResponse<bool>> DeleteAsync(int id)

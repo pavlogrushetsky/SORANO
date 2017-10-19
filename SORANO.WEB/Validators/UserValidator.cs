@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 using System.Linq;
-using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.User;
 
 namespace SORANO.WEB.Validators
 {
-    public class UserValidator : AbstractValidator<UserModel>
+    public class UserValidator : AbstractValidator<UserCreateUpdateViewModel>
     {
         public UserValidator()
         {

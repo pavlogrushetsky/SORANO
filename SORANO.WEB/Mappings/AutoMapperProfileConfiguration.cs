@@ -190,12 +190,33 @@ namespace SORANO.WEB.Mappings
             CreateMap<UserDto, UserIndexViewModel>()
                 .ForMember(
                     dest => dest.Roles,
-                    source => source.MapFrom(s => s.Roles.Select(r => r.Name))
+                    source => source.MapFrom(s => s.Roles.Select(r => r.Description))
+                );
+            CreateMap<UserDto, UserCreateUpdateViewModel>()
+                .ForMember(
+                    dest => dest.RoleIDs,
+                    source => source.MapFrom(s => s.Roles.Select(r => r.ID))
+                )
+                .ForMember(
+                    dest => dest.Roles,
+                    source => source.Ignore()
                 );
             CreateMap<UserDto, UserDetailsViewModel>()
                 .ForMember(
                     dest => dest.Roles,
-                    source => source.MapFrom(s => s.Roles.Select(r => r.Name))
+                    source => source.MapFrom(s => s.Roles.Select(r => r.Description))
+                );
+            CreateMap<UserCreateUpdateViewModel, UserDto>()
+                .ForMember(
+                    dest => dest.Password,
+                    source => source.MapFrom(s => s.NewPassword ?? s.Password)
+                )
+                .ForMember(
+                    dest => dest.Roles,
+                    source => source.MapFrom(s => s.RoleIDs.Select(r => new RoleDto
+                    {
+                        ID = r
+                    }))
                 );
 
             #endregion

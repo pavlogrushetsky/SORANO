@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
-using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels;
 using AutoMapper;
 using SORANO.BLL.Services;
 using SORANO.WEB.ViewModels.User;
 using System.Linq;
+using SORANO.BLL.Dtos;
 
 namespace SORANO.WEB.Controllers
 {
@@ -65,61 +65,91 @@ namespace SORANO.WEB.Controllers
                     Text = r.Description
                 });
 
-                ViewBag.Roles = userRoles;
+                return View(new UserCreateUpdateViewModel { Roles = userRoles.ToList()});
+            }, OnFault);           
+        }
 
-                return View(new UserModel());
-            }, ex => 
+        [HttpGet]
+        public async Task<IActionResult> Update(int id)
+        {
+            return await TryGetActionResultAsync(async () =>
             {
-                TempData["Error"] = ex;
-                return RedirectToAction("Index");
-            });           
+                var result = await UserService.GetAsync(id);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанного пользователя.";
+                    return RedirectToAction("Index");
+                }
+
+                var model = _mapper.Map<UserCreateUpdateViewModel>(result.Result);
+
+                var roles = await _roleService.GetAllAsync();
+
+                var userRoles = roles.Result.Select(r => new SelectListItem
+                {
+                    Value = r.ID.ToString(),
+                    Text = r.Description,
+                    Selected = result.Result.Roles.Select(x => x.ID).Contains(r.ID)
+                });
+
+                model.Roles = userRoles.ToList();
+                model.IsUpdate = true;
+                model.CanBeModified = id != UserId;
+
+                return View("Create", model);
+            }, OnFault);
         }
 
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var user = await UserService.GetAsync(id);
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await UserService.GetAsync(id);
 
-            return View(_mapper.Map<UserDeleteViewModel>(user.Result));
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанного пользователя.";
+                    return RedirectToAction("Index");
+                }
+
+                return View(_mapper.Map<UserDeleteViewModel>(result.Result));
+            }, OnFault);           
         }
 
         [HttpGet]
         public async Task<IActionResult> Block(int id)
         {
-            var user = await UserService.GetAsync(id);
-
-            return View(_mapper.Map<UserBlockViewModel>(user.Result));
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Update(int id)
-        {           
-            var user = await UserService.GetAsync(id);
-
-            var model = _mapper.Map<UserCreateUpdateViewModel>(user.Result);
-
-            var roles = await _roleService.GetAllAsync();
-
-            var userRoles = roles.Result.Select(r => new SelectListItem
+            return await TryGetActionResultAsync(async () =>
             {
-                Value = r.ID.ToString(),
-                Text = r.Description,
-                Selected = user.Result.Roles.Select(x => x.ID).Contains(r.ID)
-            });
+                var result = await UserService.GetAsync(id);
 
-            ViewBag.Roles = userRoles;
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанного пользователя.";
+                    return RedirectToAction("Index");
+                }
 
-            ViewData["IsEdit"] = true;
-
-            return View("Create", model);
-        }   
+                return View(_mapper.Map<UserBlockViewModel>(result.Result));
+            }, OnFault);            
+        }         
 
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var user = await UserService.GetAsync(id);
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await UserService.GetAsync(id);
 
-            return View(_mapper.Map<UserDetailsViewModel>(user.Result));
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанного пользователя.";
+                    return RedirectToAction("Index");
+                }
+
+                return View(_mapper.Map<UserDetailsViewModel>(result.Result));
+            }, OnFault);           
         }
 
         #endregion
@@ -132,7 +162,7 @@ namespace SORANO.WEB.Controllers
         {
             await UserService.DeleteAsync(model.ID);
 
-            return RedirectToAction("List");
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -145,106 +175,79 @@ namespace SORANO.WEB.Controllers
 
             await UserService.UpdateAsync(user.Result);
 
-            return RedirectToAction("List");
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(UserModel model)
+        public async Task<IActionResult> Update(UserCreateUpdateViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var roles = await _roleService.GetAllAsync();
-
-                var userRoles = roles.Result.Select(r => new SelectListItem
-                {
-                    Value = r.ID.ToString(),
-                    Text = r.Description
-                });
-
-                ViewBag.Roles = userRoles;
-
-                var exists = await UserService.Exists(model.Login, model.ID);
-
-                if (exists.Result)
-                {
-                    ModelState.AddModelError("Login", "Пользователь с таким логином уже существует");
-                }
-
                 if (!ModelState.IsValid)
                 {
-                    ViewData["IsEdit"] = true;
                     return View("Create", model);
                 }
 
-                var user = model.ToEntity();
+                var user = _mapper.Map<UserDto>(model);
 
-                // TODO
-                //user = await UserService.UpdateAsync(user);
+                var result = await UserService.UpdateAsync(user);
 
-                if (user != null)
+                switch (result.Status)
                 {
-                    return RedirectToAction("List", "User");
+                    case ServiceResponseStatus.NotFound:
+                    case ServiceResponseStatus.InvalidOperation:
+                        TempData["Error"] = "Не удалось обновить пользователя.";
+                        return RedirectToAction("Index");
+                    case ServiceResponseStatus.AlreadyExists:
+                        ModelState.AddModelError("Login", "Пользователь с таким логином уже существует.");
+                        return View("Create", model);
                 }
 
-                ModelState.AddModelError("", "Не удалось обновить пользователя.");
-                ViewData["IsEdit"] = true;
-                return View("Create", model);
-            }, ex =>
-            {
-                ModelState.AddModelError("", ex);
-                ViewData["IsEdit"] = true;
-                return View("Create", model);
-            });
+                TempData["Success"] = $"Пользователь \"{model.Login}\" был успешно обновлён.";
+
+                return RedirectToAction("Index");
+            }, OnFault);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(UserModel model)
+        public async Task<IActionResult> Create(UserCreateUpdateViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var roles = await _roleService.GetAllAsync();
-
-                var userRoles = roles.Result.Select(r => new SelectListItem
-                {
-                    Value = r.ID.ToString(),
-                    Text = r.Description
-                });
-
-                ViewBag.Roles = userRoles;
-
-                var exists = await UserService.Exists(model.Login);
-
-                if (exists.Result)
-                {
-                    ModelState.AddModelError("Login", "Пользователь с таким логином уже существует");
-                }
-
                 if (!ModelState.IsValid)
                 {
                     return View(model);
                 }
 
-                var user = model.ToEntity();
+                var user = _mapper.Map<UserDto>(model);
 
-                // TODO
-                //user = await UserService.CreateAsync(user);
+                var result = await UserService.CreateAsync(user);
 
-                if (user != null)
+                switch (result.Status)
                 {
-                    return RedirectToAction("List", "User");
+                    case ServiceResponseStatus.NotFound:
+                    case ServiceResponseStatus.InvalidOperation:
+                        TempData["Error"] = "Не удалось создать пользователя.";
+                        return RedirectToAction("Index");
+                    case ServiceResponseStatus.AlreadyExists:
+                        ModelState.AddModelError("Login", "Пользователь с таким логином уже существует.");
+                        return View(model);
                 }
 
-                ModelState.AddModelError("Login", "Пользователь с таким логином уже существует в системе");
-                return View(model);
-            }, ex =>
-            {
-                ModelState.AddModelError("", ex);
-                return View(model);
-            });
+                TempData["Success"] = $"Пользователь \"{model.Login}\" был успешно создан.";
+
+                return RedirectToAction("Index");
+            }, OnFault);
         }
 
-        #endregion                     
+        #endregion
+
+        private IActionResult OnFault(string ex)
+        {
+            TempData["Error"] = ex;
+            return RedirectToAction("Index");
+        }
     }
 }

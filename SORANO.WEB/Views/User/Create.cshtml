@@ -19,112 +19,121 @@
     </ul>
 }
 
-<div class="row">
-    <div class="col-lg-4 col-md-12 col-sm-12">
-        <div class="row" style="margin-left: 0;">
-            @if (isEdit && !Model.CanBeModified)
-            {
-                <p class="text-info">
-                    <i class="fa fa-fw fa-info" aria-hidden="true"></i>
-                    Для текущего пользователя количество свойств для редактирования ограничено
-                </p>
-            }
+<form asp-action="@(Model.IsUpdate ? "Update" : "Create")"
+        asp-controller="User"
+        method="post">
+    <input type="hidden" asp-for="ID" />
+    <input type="hidden" asp-for="CanBeModified" />
+    <input type="hidden" asp-for="IsUpdate" />
+    @for (var i = 0; i < Model.Roles.Count; i++)
+    {
+        <input type="hidden" asp-for="@Model.Roles[i].Value" />
+        <input type="hidden" asp-for="@Model.Roles[i].Text" />
+        <input type="hidden" asp-for="@Model.Roles[i].Selected" />
+    }
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    @if (Model.IsUpdate && !Model.CanBeModified)
+    {
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="alert alert-dismissible alert-warning">
+                    <strong>Внимание!</strong> Для текущего пользователя количество свойств для редактирования ограничено
+                </div>
+            </div>
         </div>
-        <div class="row" style="margin-left: 0;">
-            <form asp-action="@(isEdit ? "Update" : "Create")"
-                  asp-controller="User"
-                  method="post">
-                <input type="hidden" asp-for="ID" />
-                <input type="hidden" asp-for="CanBeModified" />
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                @if (Model.CanBeModified || !isEdit)
-                {
-                    <div class="form-group">
-                        <label class="control-label" asp-for="Login"></label>
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-addon"><i class="fa fa-fw fa-user-circle-o"></i></span>
-                            <input class="form-control input-sm" type="text" asp-for="Login" placeholder="Логин"/>
-                        </div>
-                        <span asp-validation-for="Login" class="text-danger"></span>
-                    </div>
-                }
-                @if(isEdit && !Model.CanBeModified)
-                {
-                    <input type="hidden" asp-for="Login" />
-                    for (int i = 0; i < Model.RoleIDs.Count(); i++)
-                    {
-                        @Html.HiddenFor(m => m.RoleIDs.ToList()[i])
-                    }
-                }
-                <div class="form-group">
-                    <label class="control-label" asp-for="Description"></label>
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-align-justify"></i></span>
-                        <textarea class="form-control input-sm" rows="3" asp-for="Description" placeholder="Описание"></textarea>
-                    </div>
-                    <span asp-validation-for="Description" class="text-danger"></span>
-                </div>
-                @if (!isEdit)
-                {
-                    <div class="form-group">
-                        <label class="control-label" asp-for="Password"></label>
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
-                            <input class="form-control input-sm" type="password" asp-for="Password" placeholder="Новый пароль"/>
-                        </div>
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                    </div>
-                }
-                @if (isEdit && Model.CanBeModified)
-                {
-                    <div class="form-group">
-                        <label class="control-label" asp-for="NewPassword"></label>
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
-                            <input class="form-control input-sm" type="password" asp-for="NewPassword" placeholder="Новый пароль" />
-                        </div>
-                        <span asp-validation-for="NewPassword" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label" asp-for="RepeatPassword"></label>
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
-                            <input class="form-control input-sm" type="password" asp-for="RepeatPassword" placeholder="Повторите новый пароль" />
-                        </div>
-                        <span asp-validation-for="RepeatPassword" class="text-danger"></span>
-                    </div>
-                }
-                @if (Model.CanBeModified || !isEdit)
-                {
-                    <div class="form-group">
-                        <label class="control-label" asp-for="RoleIDs"></label>
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-vcard"></i></span>
-                            <select class="form-control input-sm" asp-for="RoleIDs" asp-items="@ViewBag.Roles"></select>
-                        </div>
-                        <span asp-validation-for="RoleIDs" class="text-danger"></span>
-                    </div>
-                }                
-                <div class="form-group">
-                    <a class="btn btn-default btn-sm" asp-controller="User" asp-action="List">
-                        <i class="fa fa-fw fa-close"></i>
-                        Отмена
-                    </a>
-                    <button type="submit" class="btn btn-primary btn-sm">
-                        <i class="fa fa-fw fa-check"></i>
-                        Сохранить
-                    </button>
-                </div>
-            </form>
+    }    
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-dismissible alert-info">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Информация:</strong> Поля, отмеченные символом *, являются обязательными для ввода
+            </div>
         </div>
     </div>
-</div>
-
-@section Scripts {
-    <environment names="Development">
-        <script src="~/js/pages/userCreate.js"></script>
-    </environment>
-    <environment names="Staging,Production">
-        <script src="~/js/pages/userCreate.min.js" asp-append-version="true"></script>
-    </environment>
-}
+    <div class="row">
+        <div class="col-lg-4 col-md-12 col-sm-12">
+            @if (Model.CanBeModified || !Model.IsUpdate)
+            {
+                <div class="form-group">
+                    <label class="control-label" asp-for="Login"></label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"><i class="fa fa-fw fa-user-circle-o"></i></span>
+                        <input class="form-control input-sm" type="text" asp-for="Login" placeholder="Логин" autofocus/>
+                    </div>
+                    <span asp-validation-for="Login" class="text-danger"></span>
+                </div>
+            }
+            @if(Model.IsUpdate && !Model.CanBeModified)
+            {
+                <input type="hidden" asp-for="Login" />
+                for (int i = 0; i < Model.RoleIDs.Count(); i++)
+                {
+                    @Html.HiddenFor(m => m.RoleIDs.ToList()[i])
+                }
+            }
+            <div class="form-group">
+                <label class="control-label" asp-for="Description"></label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-align-justify"></i></span>
+                    <textarea class="form-control input-sm" rows="3" asp-for="Description" placeholder="Описание"></textarea>
+                </div>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            @if (!Model.IsUpdate)
+            {
+                <div class="form-group">
+                    <label class="control-label" asp-for="Password"></label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
+                        <input class="form-control input-sm" type="password" asp-for="Password" placeholder="Пароль"/>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+            }
+            @if (Model.IsUpdate && Model.CanBeModified)
+            {
+                <div class="form-group">
+                    <label class="control-label" asp-for="NewPassword"></label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
+                        <input class="form-control input-sm" type="password" asp-for="NewPassword" placeholder="Новый пароль" />
+                    </div>
+                    <span asp-validation-for="NewPassword" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" asp-for="RepeatPassword"></label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
+                        <input class="form-control input-sm" type="password" asp-for="RepeatPassword" placeholder="Повторите новый пароль" />
+                    </div>
+                    <span asp-validation-for="RepeatPassword" class="text-danger"></span>
+                </div>
+            }
+            @if (Model.CanBeModified || !Model.IsUpdate)
+            {
+                <div class="form-group">
+                    <label class="control-label" asp-for="RoleIDs"></label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-vcard"></i></span>
+                        <select class="form-control input-sm" asp-for="RoleIDs" asp-items="@Model.Roles"></select>
+                    </div>
+                    <span asp-validation-for="RoleIDs" class="text-danger"></span>
+                </div>
+            }        
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="form-group">
+                <a class="btn btn-default btn-sm" asp-action="Index">
+                    <i class="fa fa-fw fa-close"></i>
+                    Отмена
+                </a>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="fa fa-fw fa-save"></i>
+                    Сохранить
+                </button>
+            </div>
+        </div>
+    </div>                                                        
+</form>
