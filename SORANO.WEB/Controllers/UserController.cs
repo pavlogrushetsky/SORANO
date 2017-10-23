@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Filters;
-using SORANO.WEB.ViewModels;
 using AutoMapper;
 using SORANO.BLL.Services;
 using SORANO.WEB.ViewModels.User;
@@ -44,7 +43,15 @@ namespace SORANO.WEB.Controllers
                     return RedirectToAction("Index", "Home");
                 }
 
-                return View(_mapper.Map<IEnumerable<UserIndexViewModel>>(usersResult.Result));
+                var models = _mapper.Map<IEnumerable<UserIndexViewModel>>(usersResult.Result);
+                foreach (var user in models)
+                {
+                    user.CanBeBlocked = user.ID != UserId;
+                    user.CanBeDeleted = user.ID != UserId;
+                }
+
+
+                return View(models);
             }, ex => 
             {
                 TempData["Error"] = ex;
@@ -114,7 +121,10 @@ namespace SORANO.WEB.Controllers
                     return RedirectToAction("Index");
                 }
 
-                return View(_mapper.Map<UserDeleteViewModel>(result.Result));
+                var model = _mapper.Map<UserDeleteViewModel>(result.Result);
+                model.CanBeDeleted = id != UserId;
+
+                return View(model);
             }, OnFault);           
         }
 
@@ -131,7 +141,10 @@ namespace SORANO.WEB.Controllers
                     return RedirectToAction("Index");
                 }
 
-                return View(_mapper.Map<UserBlockViewModel>(result.Result));
+                var model = _mapper.Map<UserBlockViewModel>(result.Result);
+                model.CanBeBlocked = id != UserId;
+
+                return View(model);
             }, OnFault);            
         }         
 
@@ -158,24 +171,49 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete([Bind("ID")]UserModel model)
+        public async Task<IActionResult> Delete(UserBlockViewModel model)
         {
-            await UserService.DeleteAsync(model.ID);
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await UserService.DeleteAsync(model.ID);
 
-            return RedirectToAction("Index");
+                if (result.Status == ServiceResponseStatus.Success)
+                {
+                    TempData["Success"] = $"Пользователь \"{model.Login}\" был успешно удалён.";
+                }
+                else
+                {
+                    TempData["Error"] = "Не удалось удалить пользователя.";
+                }
+
+                return RedirectToAction("Index");
+            }, OnFault);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Block([Bind("ID")]UserModel model)
+        public async Task<IActionResult> Block(UserBlockViewModel model)
         {
-            var user = await UserService.GetAsync(model.ID);
+            return await TryGetActionResultAsync(async () =>
+            {
+                var user = await UserService.GetAsync(model.ID);
 
-            user.Result.IsBlocked = !user.Result.IsBlocked;
+                user.Result.IsBlocked = !user.Result.IsBlocked;
 
-            await UserService.UpdateAsync(user.Result);
+                var result = await UserService.UpdateAsync(user.Result);
 
-            return RedirectToAction("Index");
+                if (result.Status == ServiceResponseStatus.Success)
+                {
+                    var status = user.Result.IsBlocked ? "заблокирован" : "разблокирован";
+                    TempData["Success"] = $"Пользователь \"{model.Login}\" был успешно {status}.";
+                }
+                else
+                {
+                    TempData["Error"] = "Не удалось обновить пользователя.";
+                }                
+
+                return RedirectToAction("Index");
+            }, OnFault);           
         }
 
         [HttpPost]

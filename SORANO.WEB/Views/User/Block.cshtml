@@ -10,32 +10,32 @@
 @section Breadcrumb {
     <ul class="breadcrumb">
         <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
-        <li><a asp-controller="User" asp-action="List">Пользователи</a></li>
+        <li><a asp-controller="User" asp-action="Index">Пользователи</a></li>
         <li class="active">@(Model.IsBlocked ? "Разблокирование" : "Блокирование")</li>
     </ul>
 }
 
-<div class="col-lg-6 col-sm-12">
-    <div class="row">
-        @if (Model.IsBlocked)
+<div class="row">
+    @if (Model.IsBlocked)
+    {
+        <div class="col-lg-12">
+            <div class="alert alert-dismissible alert-warning">
+                <strong>Внимание!</strong> Вы уверены, что хотите разблокировать следующего пользователя?
+            </div>
+        </div>
+    }
+    else
+    {
+        @await Component.InvokeAsync("CanBeDeleted", new
         {
-            <p class="text-warning">
-                <i class="fa fa-fw fa-exclamation" aria-hidden="true"></i>
-                Вы уверены, что хотите разблокировать следующего пользователя?
-            </p>
-        }
-        else
-        {
-            <p class="@(Model.CanBeBlocked ? "text-warning" : "text-danger")">
-                <i class="fa fa-fw fa-exclamation" aria-hidden="true"></i>
-                @(Model.CanBeBlocked
-                ? "Вы уверены, что хотите заблокировать следующего пользователя?"
-                : "Пользователь не может быть заблокирован, так как он является текущим пользователем в системе.")
-            </p>
-        }
-    </div>
-    <br/>
-    <div class="row">
+            canBeDeleted = Model.CanBeBlocked,
+            error = "Пользователь не может быть заблокирован, так как он является текущим пользователем в системе.",
+            warning = "Вы уверены, что хотите заблокировать следующего пользователя?"
+        })
+    }    
+</div>
+<div class="row">
+    <div class="col-lg-12">
         <dl class="dl-horizontal">
             <dt>
                 @Html.DisplayNameFor(model => model.Login)
@@ -52,15 +52,19 @@
         </dl>
         <form asp-action="Block">
             <input type="hidden" asp-for="ID" />
+            <input type="hidden" asp-for="Login" />
             <div class="form-group">
-                <a class="btn btn-default btn-sm" asp-controller="User" asp-action="List">
+                <a class="btn btn-default btn-sm" asp-controller="User" asp-action="Index">
                     <i class="fa fa-fw fa-close"></i>
                     Отмена
                 </a>
-                <button type="submit" class="btn btn-sm btn@(Model.IsBlocked ? "-success" : "-warning") @((!Model.IsBlocked && Model.CanBeBlocked) || Model.IsBlocked ? "" : "disabled")">
-                    <i class="fa fa-fw @(Model.IsBlocked ? "fa-unlock" : "fa-lock")"></i>
-                    @(Model.IsBlocked ? "Разблокировать" : "Заблокировать")
-                </button>
+                @if (Model.IsBlocked || !Model.IsBlocked && Model.CanBeBlocked)
+                {
+                    <button type="submit" class="btn btn-sm btn@(Model.IsBlocked ? "-success" : "-warning") @((!Model.IsBlocked && Model.CanBeBlocked) || Model.IsBlocked ? "" : "disabled")">
+                        <i class="fa fa-fw @(Model.IsBlocked ? "fa-unlock" : "fa-lock")"></i>
+                        @(Model.IsBlocked ? "Разблокировать" : "Заблокировать")
+                    </button>
+                }               
             </div>
         </form>
     </div>

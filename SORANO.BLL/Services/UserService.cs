@@ -72,6 +72,7 @@ namespace SORANO.BLL.Services
 
             existentUser.Login = user.Login;
             existentUser.Description = user.Description;
+            existentUser.IsBlocked = user.IsBlocked;
 
             if (!string.IsNullOrEmpty(user.Password))
             {
@@ -118,7 +119,9 @@ namespace SORANO.BLL.Services
         {
             var user = await _unitOfWork.Get<User>().GetAsync(u => u.Login.Equals(login)); 
             
-            return new SuccessResponse<UserDto>(user.ToDto());
+            return user == null 
+                ? new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound) 
+                : new SuccessResponse<UserDto>(user.ToDto());
         }
 
         public async Task<ServiceResponse<UserDto>> GetAsync(int id)

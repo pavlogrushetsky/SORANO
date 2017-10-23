@@ -206,6 +206,8 @@ namespace SORANO.WEB.Mappings
                     dest => dest.Roles,
                     source => source.MapFrom(s => s.Roles.Select(r => r.Description))
                 );
+            CreateMap<UserDto, UserBlockViewModel>();
+            CreateMap<UserDto, UserDeleteViewModel>();
             CreateMap<UserCreateUpdateViewModel, UserDto>()
                 .ForMember(
                     dest => dest.Password,
