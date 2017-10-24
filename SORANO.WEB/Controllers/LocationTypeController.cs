@@ -15,6 +15,7 @@ using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.LocationType;
 using System.Threading.Tasks;
+using SORANO.WEB.ViewModels.Location;
 
 namespace SORANO.WEB.Controllers
 {
@@ -178,18 +179,17 @@ namespace SORANO.WEB.Controllers
                     return RedirectToAction("Index", "Location");
                 }
 
-                // TODO
-                //if (MemoryCache.TryGetValue(CacheKeys.CreateLocationTypeCacheKey, out LocationModel cachedLocation))
-                //{
-                //    cachedLocation.Type = locationType.ToModel();
-                //    cachedLocation.TypeID = locationType.ID.ToString();
-                //    MemoryCache.Set(CacheKeys.CreateLocationTypeCacheKey, cachedLocation);
-                //    Session.SetBool(CacheKeys.CreateLocationTypeCacheValidKey, true);
-                //}
-                //else
-                //{
-                //    return BadRequest();
-                //}
+                if (MemoryCache.TryGetValue(CacheKeys.CreateLocationTypeCacheKey, out LocationCreateUpdateViewModel cachedLocation))
+                {
+                    cachedLocation.TypeName = model.Name;
+                    cachedLocation.TypeID = result.Result;
+                    MemoryCache.Set(CacheKeys.CreateLocationTypeCacheKey, cachedLocation);
+                    Session.SetBool(CacheKeys.CreateLocationTypeCacheValidKey, true);
+                }
+                else
+                {
+                    return BadRequest();
+                }
 
                 return Redirect(model.ReturnPath);
             }, OnFault);
@@ -252,7 +252,7 @@ namespace SORANO.WEB.Controllers
                 return RedirectToAction("Index", "Location");
             }
 
-            if (MemoryCache.TryGetValue(CacheKeys.CreateLocationTypeCacheKey, out LocationModel _))
+            if (MemoryCache.TryGetValue(CacheKeys.CreateLocationTypeCacheKey, out LocationCreateUpdateViewModel _))
             {
                 Session.SetBool(CacheKeys.CreateLocationTypeCacheValidKey, true);
             }

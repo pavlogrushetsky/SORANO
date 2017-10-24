@@ -267,20 +267,17 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateType(LocationCreateUpdateViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        [LoadAttachmentsFilter]
+        public IActionResult CreateType(LocationCreateUpdateViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            return await TryGetActionResultAsync(async () =>
+            return TryGetActionResult(() =>
             {
-                await LoadMainPicture(model, mainPictureFile);
-                await LoadAttachments(model, attachments);
-
                 MemoryCache.Set(CacheKeys.CreateLocationTypeCacheKey, model);
-
                 return RedirectToAction("Create", "LocationType", new { returnUrl });
             }, ex =>
             {
                 TempData["Error"] = ex;
-                return View(model);
+                return View("Create", model);
             });           
         }
 
