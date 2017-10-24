@@ -37,7 +37,6 @@
             </label>
             @* ReSharper disable once Mvc.ActionNotResolved *@
             <button class="btn btn-default btn-sm"
-                    type="submit"
                     asp-action="SelectMainPicture"
                     asp-route-returnUrl="@(Model.IsUpdate ? Url.Action("Update", controllerName) : Url.Action("Create", controllerName))"
                     data-toggle="tooltip"
@@ -50,7 +49,6 @@
             @if (!string.IsNullOrEmpty(Model.MainPicture.Name))
             {
                 <button class="btn btn-danger btn-sm"
-                        type="submit"
                         asp-action="DeleteMainPicture"
                         asp-route-isEdit="@Model.IsUpdate"
                         data-toggle="tooltip"

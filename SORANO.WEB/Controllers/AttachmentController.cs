@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
@@ -10,6 +12,7 @@ using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.Attachment;
+using SORANO.WEB.ViewModels.Common;
 
 namespace SORANO.WEB.Controllers
 {
@@ -51,8 +54,12 @@ namespace SORANO.WEB.Controllers
                     return Redirect(returnUrl);
                 }
 
-                var viewModel = _mapper.Map<SelectMainPictureViewModel>(picturesResult.Result);
-                viewModel.ReturnUrl = returnUrl;
+                var picturesModels = _mapper.Map<IEnumerable<MainPictureViewModel>>(picturesResult.Result);
+                var viewModel = new SelectMainPictureViewModel
+                {
+                    ReturnUrl = returnUrl,
+                    Pictures = picturesModels.ToList()
+                };
 
                 return View(viewModel);
             }, ex =>
@@ -74,10 +81,9 @@ namespace SORANO.WEB.Controllers
             {
                 if (model.SelectedID > 0)
                 {
-                    if (_memoryCache.TryGetValue(CacheKeys.SelectMainPictureCacheKey, out EntityBaseModel cachedModel))
+                    if (_memoryCache.TryGetValue(CacheKeys.SelectMainPictureCacheKey, out BaseCreateUpdateViewModel cachedModel))
                     {
-                        // TODO
-                        //cachedModel.MainPicture = model.Pictures.Single(p => p.ID == model.SelectedID);
+                        cachedModel.MainPicture = model.Pictures.Single(p => p.ID == model.SelectedID);
                         _memoryCache.Set(CacheKeys.SelectMainPictureCacheKey, cachedModel);
                         Session.SetBool(CacheKeys.SelectMainPictureCacheValidKey, true);
                     }

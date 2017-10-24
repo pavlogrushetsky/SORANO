@@ -44,8 +44,18 @@
             $('#attachment_name_' + number).val(name);
             $('#Attachments_' + number + '__IsNew').val(true);
         }
-    });     
+    });   
+
+    $('form').keypress(keypressHandler);
 });
+
+function keypressHandler(e) {
+    if (e.which === 13) {
+        e.preventDefault();
+        $(this).blur();
+        $('button[type=submit]').focus().click();
+    }
+}
 
 function initAttachmentTypeSelect() {
     var selectAttachmentTypes = $('.select-attachment-type');
