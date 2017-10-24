@@ -40,7 +40,7 @@ namespace SORANO.BLL.Services
                 : new SuccessResponse<ArticleDto>(article.ToDto());
         }
 
-        public async Task<ServiceResponse<ArticleDto>> CreateAsync(ArticleDto article, int userId)
+        public async Task<ServiceResponse<int>> CreateAsync(ArticleDto article, int userId)
         {
             if (article == null)
                 throw new ArgumentNullException(nameof(article));
@@ -49,7 +49,7 @@ namespace SORANO.BLL.Services
                 .FindByAsync(a => a.Barcode.Equals(article.Barcode) && a.ID != article.ID);
 
             if (articlesWithSameBarcode.Any())
-                return new ServiceResponse<ArticleDto>(ServiceResponseStatus.AlreadyExists);
+                return new ServiceResponse<int>(ServiceResponseStatus.AlreadyExists);
 
             var entity = article.ToEntity();
 
@@ -57,11 +57,11 @@ namespace SORANO.BLL.Services
             entity.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             entity.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-            UnitOfWork.Get<Article>().Add(entity);
+            var added = UnitOfWork.Get<Article>().Add(entity);
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<ArticleDto>();
+            return new SuccessResponse<int>(added.ID);
         }
 
         public async Task<ServiceResponse<ArticleDto>> UpdateAsync(ArticleDto article, int userId)

@@ -50,7 +50,7 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<LocationTypeDto>(locationType.ToDto());
         }
 
-        public async Task<ServiceResponse<LocationTypeDto>> CreateAsync(LocationTypeDto locationType, int userId)
+        public async Task<ServiceResponse<int>> CreateAsync(LocationTypeDto locationType, int userId)
         {
             if (locationType == null)
                 throw new ArgumentNullException(nameof(locationType));
@@ -58,7 +58,7 @@ namespace SORANO.BLL.Services
             var locationTypes = await UnitOfWork.Get<LocationType>().FindByAsync(t => t.Name.Equals(locationType.Name) && t.ID != locationType.ID);
 
             if (locationTypes.Any())
-                return new ServiceResponse<LocationTypeDto>(ServiceResponseStatus.AlreadyExists);
+                return new ServiceResponse<int>(ServiceResponseStatus.AlreadyExists);
 
             var entity = locationType.ToEntity();
 
@@ -66,11 +66,11 @@ namespace SORANO.BLL.Services
             entity.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             entity.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-            UnitOfWork.Get<LocationType>().Add(entity);
+            var added = UnitOfWork.Get<LocationType>().Add(entity);
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<LocationTypeDto>();
+            return new SuccessResponse<int>(added.ID);
         }
 
         public async Task<ServiceResponse<LocationTypeDto>> UpdateAsync(LocationTypeDto locationType, int userId)

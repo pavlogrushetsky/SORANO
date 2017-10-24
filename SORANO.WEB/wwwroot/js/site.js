@@ -191,6 +191,40 @@ function initAttachmentsDataTable() {
     });   
 }
 
+function initArticlesDataTable() {
+    var table = $("#article-datatable").DataTable({
+        responsive: true,
+        "autoWidth": false,
+        "scrollX": false,
+        "columnDefs": [
+            { "orderable": false, "targets": 5 }
+        ],
+        "order": [[0, "desc"]],
+        "pagingType": "numbers",
+        "language": {
+            "lengthMenu": "Отобразить _MENU_ артикулов на странице",
+            "zeroRecords": "Артикулы отсутствуют",
+            "info": "Отображение страницы _PAGE_ из _PAGES_",
+            "infoEmpty": "Записи отсутствуют",
+            "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+            "search": "Поиск"
+        },
+        "drawCallback": function () {
+            $('.pagination').addClass('pagination-sm');
+        }
+    });
+
+    table.columns().eq(0).each(function (colIdx) {
+        $('input', $('th')[colIdx]).on('keyup change',
+            function () {
+                table
+                    .column(colIdx)
+                    .search(this.value)
+                    .draw();
+            });
+    });
+}
+
 function isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }

@@ -40,7 +40,7 @@ namespace SORANO.BLL.Services
                 : new SuccessResponse<DeliveryDto>(delivery.ToDto());
         }
 
-        public async Task<ServiceResponse<DeliveryDto>> CreateAsync(DeliveryDto delivery, int userId)
+        public async Task<ServiceResponse<int>> CreateAsync(DeliveryDto delivery, int userId)
         {
             if (delivery == null)
                 throw new ArgumentNullException(nameof(delivery));
@@ -93,7 +93,7 @@ namespace SORANO.BLL.Services
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<DeliveryDto>(saved.ToDto());
+            return new SuccessResponse<int>(saved.ID);
         }
 
         public async Task<ServiceResponse<DeliveryDto>> UpdateAsync(DeliveryDto delivery, int userId)

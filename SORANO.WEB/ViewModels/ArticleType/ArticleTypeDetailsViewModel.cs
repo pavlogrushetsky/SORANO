@@ -23,6 +23,6 @@ namespace SORANO.WEB.ViewModels.ArticleType
         public string TypeDescription { get; set; }
 
         [Display(Name = "Артикулы")]
-        public IList<ArticleDetailsViewModel> Articles { get; set; }
+        public IList<ArticleIndexViewModel> Articles { get; set; }
     }
 }

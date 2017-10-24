@@ -41,7 +41,7 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<LocationDto>(location.ToDto());
         }
 
-        public async Task<ServiceResponse<LocationDto>> CreateAsync(LocationDto location, int userId)
+        public async Task<ServiceResponse<int>> CreateAsync(LocationDto location, int userId)
         {
             if (location == null)
                 throw new ArgumentNullException(nameof(location));
@@ -57,11 +57,11 @@ namespace SORANO.BLL.Services
             entity.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             entity.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-            UnitOfWork.Get<Location>().Add(entity);
+            var added = UnitOfWork.Get<Location>().Add(entity);
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<LocationDto>();
+            return new SuccessResponse<int>(added.ID);
         }
 
         public async Task<ServiceResponse<LocationDto>> UpdateAsync(LocationDto location, int userId)

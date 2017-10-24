@@ -40,7 +40,7 @@ namespace SORANO.BLL.Services
                 : new SuccessResponse<SupplierDto>(supplier.ToDto());
         }
 
-        public async Task<ServiceResponse<SupplierDto>> CreateAsync(SupplierDto supplier, int userId)
+        public async Task<ServiceResponse<int>> CreateAsync(SupplierDto supplier, int userId)
         {
             if (supplier == null)
                 throw new ArgumentNullException(nameof(supplier));
@@ -51,11 +51,11 @@ namespace SORANO.BLL.Services
             entity.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             entity.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-            UnitOfWork.Get<Supplier>().Add(entity);
+            var added = UnitOfWork.Get<Supplier>().Add(entity);
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<SupplierDto>();
+            return new SuccessResponse<int>(added.ID);
         }        
 
         public async Task<ServiceResponse<SupplierDto>> UpdateAsync(SupplierDto supplier, int userId)

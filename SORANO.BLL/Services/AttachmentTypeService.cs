@@ -40,7 +40,7 @@ namespace SORANO.BLL.Services
                 : new SuccessResponse<AttachmentTypeDto>(attachmentType.ToDto());
         }
 
-        public async Task<ServiceResponse<AttachmentTypeDto>> CreateAsync(AttachmentTypeDto attachmentType, int userId)
+        public async Task<ServiceResponse<int>> CreateAsync(AttachmentTypeDto attachmentType, int userId)
         {
             if (attachmentType == null)
                 throw new ArgumentNullException(nameof(attachmentType));
@@ -48,17 +48,17 @@ namespace SORANO.BLL.Services
             var attachmentTypes = await UnitOfWork.Get<AttachmentType>().FindByAsync(t => t.Name.Equals(attachmentType.Name) && t.ID != attachmentType.ID);
 
             if (attachmentTypes.Any())
-                return new ServiceResponse<AttachmentTypeDto>(ServiceResponseStatus.AlreadyExists);
+                return new ServiceResponse<int>(ServiceResponseStatus.AlreadyExists);
 
             var entity = attachmentType.ToEntity();
 
             entity.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-            UnitOfWork.Get<AttachmentType>().Add(entity);
+            var added = UnitOfWork.Get<AttachmentType>().Add(entity);
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<AttachmentTypeDto>();
+            return new SuccessResponse<int>(added.ID);
         }
 
         public async Task<ServiceResponse<AttachmentTypeDto>> UpdateAsync(AttachmentTypeDto attachmentType, int userId)

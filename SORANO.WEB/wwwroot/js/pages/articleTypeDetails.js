@@ -23,31 +23,3 @@
     initAttachmentsDataTable();
     initArticlesDataTable();
 });
-
-function initArticlesDataTable() {
-    var articlesTable = $("#article-datatable").DataTable({
-        responsive: true,
-        "pagingType": "numbers",
-        "language": {
-            "lengthMenu": "Отобразить _MENU_ артикулов на странице",
-            "zeroRecords": "Артикулы отсутствуют",
-            "info": "Отображение страницы _PAGE_ из _PAGES_",
-            "infoEmpty": "Записи отсутствуют",
-            "infoFiltered": "(Отфильтровано из _MAX_ записей)",
-            "search": "Поиск"
-        },
-        "drawCallback": function () {
-            $('.pagination').addClass('pagination-sm');
-        }
-    });
-
-    articlesTable.columns().eq(0).each(function (colIdx) {
-        $('input', $('#article-datatable th')[colIdx]).on('keyup change',
-            function () {
-                articlesTable
-                    .column(colIdx)
-                    .search(this.value)
-                    .draw();
-            });
-    });
-}

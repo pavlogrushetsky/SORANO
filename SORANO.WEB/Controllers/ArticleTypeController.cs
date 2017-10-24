@@ -13,6 +13,7 @@ using SORANO.BLL.Services;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.Article;
 using SORANO.WEB.ViewModels.ArticleType;
 using SORANO.WEB.ViewModels.Attachment;
 
@@ -166,18 +167,17 @@ namespace SORANO.WEB.Controllers
                     return RedirectToAction("Index", "Article");
                 }
 
-                // TODO
-                //if (MemoryCache.TryGetValue(CacheKeys.CreateArticleTypeCacheKey, out ArticleModel cachedArticle))
-                //{
-                //    cachedArticle.TypeID = articleType.ID.ToString();
-                //    cachedArticle.Type = articleType.ToModel();
-                //    MemoryCache.Set(CacheKeys.CreateArticleTypeCacheKey, cachedArticle);
-                //    Session.SetBool(CacheKeys.CreateArticleTypeCacheValidKey, true);
-                //}
-                //else
-                //{
-                //    return BadRequest();
-                //}
+                if (MemoryCache.TryGetValue(CacheKeys.CreateArticleTypeCacheKey, out ArticleCreateUpdateViewModel cachedArticle))
+                {
+                    cachedArticle.TypeID = result.Result;
+                    cachedArticle.TypeName = model.Name;
+                    MemoryCache.Set(CacheKeys.CreateArticleTypeCacheKey, cachedArticle);
+                    Session.SetBool(CacheKeys.CreateArticleTypeCacheValidKey, true);
+                }
+                else
+                {
+                    return BadRequest();
+                }
 
                 return Redirect(model.ReturnPath);
             }, OnFault);            
@@ -236,7 +236,7 @@ namespace SORANO.WEB.Controllers
                 return RedirectToAction("Index", "Article");
             }
 
-            if (MemoryCache.TryGetValue(CacheKeys.CreateArticleTypeCacheKey, out ArticleModel _))
+            if (MemoryCache.TryGetValue(CacheKeys.CreateArticleTypeCacheKey, out ArticleCreateUpdateViewModel _))
             {
                 Session.SetBool(CacheKeys.CreateArticleTypeCacheValidKey, true);
             }
@@ -259,7 +259,7 @@ namespace SORANO.WEB.Controllers
                         id = t.ID,
                         text = t.Name,
                         parent = t.Type == null ? t.Name : $"{t.Type.Name}  {'\u21d0'}  {t.Name}",
-                        desc = t.Description
+                        desc = t.Description ?? string.Empty
                     })
                     .OrderBy(t => t.parent)
             });

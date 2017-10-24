@@ -179,14 +179,18 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateParentType(ArticleCreateUpdateViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        [LoadAttachmentsFilter]
+        public IActionResult CreateParentType(ArticleCreateUpdateViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            await LoadMainPicture(model, mainPictureFile);
-            await LoadAttachments(model, attachments);
-
-            MemoryCache.Set(CacheKeys.CreateArticleTypeCacheKey, model);
-
-            return RedirectToAction("Create", "ArticleType", new { returnUrl });
+            return TryGetActionResult(() =>
+            {
+                MemoryCache.Set(CacheKeys.CreateArticleTypeCacheKey, model);
+                return RedirectToAction("Create", "ArticleType", new {returnUrl});
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return View("Create", model);
+            });
         }
 
         [HttpPost]
