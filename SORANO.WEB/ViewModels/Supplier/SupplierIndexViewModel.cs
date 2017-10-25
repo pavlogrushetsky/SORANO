@@ -11,5 +11,7 @@
         public bool IsDeleted { get; set; }
 
         public bool CanBeDeleted { get; set; }
+
+        public string Modified { get; set; }
     }
 }

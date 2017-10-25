@@ -8,8 +8,8 @@ function initUsersDataTable() {
         "autoWidth": false,
         "scrollX": false,
         "columnDefs": [
-            { "orderable": false, "targets": 3 },
-            { "orderable": false, "targets": 5 }
+            { "orderable": false, "targets": 2 },
+            { "orderable": false, "targets": 4 }
         ],
         "pagingType": "numbers",
         "language": {

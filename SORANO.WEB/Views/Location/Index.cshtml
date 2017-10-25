@@ -64,14 +64,14 @@
                         <table id="locations-datatable" class="table table-striped table-hover">
                             <thead>
                                 <tr role="row" class="search-row">
-                                    <th></th>
+                                    <th><input type="text" class="form-control input-sm" placeholder="Изменено" /></th>
                                     <th><input type="text" class="form-control input-sm" placeholder="Название" /></th>
                                     <th><input type="text" class="form-control input-sm" placeholder="Описание" /></th>
                                     <th><input type="text" class="form-control input-sm" placeholder="Тип" /></th>
                                     <th></th>
                                 </tr>
                                 <tr role="row">
-                                    <th>ID</th>
+                                    <th><i class="fa fa-fw fa-calendar"></i>Изменено</th>
                                     <th><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i>Название</th>
                                     <th><i class="fa fa-fw fa-align-justify" aria-hidden="true"></i>Описание</th>
                                     <th><i class="fa fa-fw fa-map-signs" aria-hidden="true"></i>Тип</th>
@@ -82,7 +82,7 @@
                                 @foreach (var location in Model)
                                 {
                                     <tr class="@(location.IsDeleted ? "danger" : "")">
-                                        <td>@location.ID</td>
+                                        <td>@location.Modified</td>
                                         <td>
                                             <a asp-controller="Location"
                                                asp-action="Details"

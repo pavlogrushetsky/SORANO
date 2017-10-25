@@ -21,5 +21,7 @@ namespace SORANO.WEB.ViewModels.AttachmentType
         public bool CanBeUpdated { get; set; }
 
         public string MimeTypes { get; set; }
+
+        public string Modified { get; set; }
     }
 }

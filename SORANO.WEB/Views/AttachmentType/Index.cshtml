@@ -41,7 +41,7 @@
                 <table id="attachment-types-datatable" class="table table-striped table-hover">
                     <thead>
                         <tr role="row" class="search-row">
-                            <th></th>
+                            <th><input type="text" class="form-control input-sm" placeholder="Изменён" /></th>
                             <th><input type="text" class="form-control input-sm" placeholder="Название" /></th>
                             <th><input type="text" class="form-control input-sm" placeholder="Описание" /></th>
                             <th><input type="text" class="form-control input-sm" placeholder="Расширения" /></th>
@@ -49,7 +49,7 @@
                             <th></th>
                         </tr>
                         <tr role="row">
-                            <th>ID</th>
+                            <th><i class="fa fa-fw fa-calendar"></i>Изменён</th>
                             <th><i class="fa fa-fw fa-paperclip" aria-hidden="true"></i>Название</th>
                             <th><i class="fa fa-fw fa-align-justify" aria-hidden="true"></i>Описание</th>
                             <th><i class="fa fa-fw fa-filter" aria-hidden="true"></i>Расширения</th>
@@ -61,7 +61,7 @@
                         @foreach (var attachmentType in Model)
                         {
                             <tr class="@(attachmentType.IsDeleted ? "danger" : "")">
-                                <td>@attachmentType.ID</td>
+                                <td>@attachmentType.Modified</td>
                                 <td>@attachmentType.Name</td>
                                 <td>@attachmentType.Comment</td>
                                 <td>
