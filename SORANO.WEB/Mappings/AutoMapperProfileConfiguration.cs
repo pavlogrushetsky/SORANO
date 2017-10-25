@@ -9,6 +9,7 @@ using SORANO.WEB.ViewModels.ArticleType;
 using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.AttachmentType;
 using SORANO.WEB.ViewModels.Client;
+using SORANO.WEB.ViewModels.Delivery;
 using SORANO.WEB.ViewModels.Location;
 using SORANO.WEB.ViewModels.LocationType;
 using SORANO.WEB.ViewModels.Recommendation;
@@ -182,6 +183,24 @@ namespace SORANO.WEB.Mappings
                     source => source.MapFrom(s => s.MainPicture.FullPath)
                 );
             CreateMap<ArticleTypeDto, ArticleTypeDeleteViewModel>();
+
+            #endregion
+
+            #region Delivery
+
+            CreateMap<DeliveryDto, DeliveryIndexViewModel>()
+                .ForMember(
+                    dest => dest.DeliveryItemsCount,
+                    source => source.MapFrom(s => s.Items.Count())
+                )
+                .ForMember(
+                    dest => dest.TotalPrice,
+                    source => source.MapFrom(s => s.TotalDiscountedPrice)
+                )
+                .ForMember(
+                    dest => dest.Currency,
+                    source => source.MapFrom(s => s.DollarRate.HasValue ? "$" : s.EuroRate.HasValue ? "€" : "₴")
+                );
 
             #endregion
 

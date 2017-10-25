@@ -6,8 +6,9 @@ function initDeliveriesDataTable() {
     var table = $("#deliveries-datatable").DataTable({
         responsive: true,
         "columnDefs": [
-            { "orderable": false, "targets": 7 }
+            { "orderable": false, "targets": 6 }
         ],
+        "order": [[0, "desc"]],
         "pagingType": "numbers",
         "language": {
             "lengthMenu": "Отобразить _MENU_ поставок на странице",
