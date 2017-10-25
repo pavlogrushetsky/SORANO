@@ -283,7 +283,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Cancel(LocationModel model)
+        public IActionResult Cancel(LocationCreateUpdateViewModel model)
         {
             if (string.IsNullOrEmpty(model.ReturnPath))
             {

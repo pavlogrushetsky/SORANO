@@ -208,7 +208,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(ArticleTypeModel model)
+        public async Task<IActionResult> Delete(ArticleTypeDeleteViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
             {
@@ -229,7 +229,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Cancel(ArticleTypeModel model)
+        public IActionResult Cancel(ArticleTypeCreateUpdateViewModel model)
         {
             if (string.IsNullOrEmpty(model.ReturnPath))
             {

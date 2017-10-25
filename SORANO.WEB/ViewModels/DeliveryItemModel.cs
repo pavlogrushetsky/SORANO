@@ -22,7 +22,5 @@ namespace SORANO.WEB.ViewModels
         public string DiscountPrice { get; set; }
 
         public DeliveryModel Delivery { get; set; }
-
-        public ArticleModel Article { get; set; }
     }
 }
