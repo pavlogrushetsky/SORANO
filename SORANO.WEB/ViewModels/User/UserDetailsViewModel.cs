@@ -19,5 +19,8 @@ namespace SORANO.WEB.ViewModels.User
 
         [Display(Name = "Статус")]
         public bool IsBlocked { get; set; }
+
+        [Display(Name = "Действия")]
+        public IEnumerable<UserActivityViewModel> Activities { get; set; }
     }
 }

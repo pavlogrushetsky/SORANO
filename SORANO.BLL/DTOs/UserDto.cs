@@ -17,5 +17,7 @@ namespace SORANO.BLL.Dtos
         public IEnumerable<RoleDto> Roles { get; set; }
 
         public IEnumerable<GoodsDto> SoldGoods { get; set; }
+
+        public IEnumerable<UserActivityDto> Activities { get; set; }
     }
 }

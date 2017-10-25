@@ -192,6 +192,8 @@ namespace SORANO.WEB.Mappings
                     dest => dest.Roles,
                     source => source.MapFrom(s => s.Roles.Select(r => r.Description))
                 );
+            CreateMap<UserActivityDto, UserActivityViewModel>();
+            CreateMap<UserActivityType, string>().ConvertUsing<UserActivityTypeToStringConverter>();
             CreateMap<UserDto, UserCreateUpdateViewModel>()
                 .ForMember(
                     dest => dest.RoleIDs,
