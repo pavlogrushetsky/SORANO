@@ -14,6 +14,7 @@ using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.Supplier;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SORANO.WEB.Controllers
@@ -270,6 +271,24 @@ namespace SORANO.WEB.Controllers
         }
 
         #endregion
+
+        [HttpPost]
+        public async Task<JsonResult> GetSuppliers(string term)
+        {
+            var suppliers = await _supplierService.GetAllAsync(false, term);
+
+            return Json(new
+            {
+                results = suppliers.Result?
+                    .Select(t => new
+                    {
+                        id = t.ID,
+                        text = t.Name,
+                        desc = t.Description ?? string.Empty
+                    })
+                    .OrderBy(t => t.text)
+            });
+        }
 
         private IActionResult OnFault(string ex)
         {

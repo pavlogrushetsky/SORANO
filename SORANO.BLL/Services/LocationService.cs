@@ -141,5 +141,28 @@ namespace SORANO.BLL.Services
                 ? new SuccessResponse<Dictionary<LocationDto, int>>(locations) 
                 : new SuccessResponse<Dictionary<LocationDto, int>>(locations.Where(l => l.Key.ID != except).ToDictionary(l => l.Key, l => l.Value));
         }
+
+        public async Task<ServiceResponse<IEnumerable<LocationDto>>> GetAllAsync(bool withDeleted, string searchTerm)
+        {
+            var response = new SuccessResponse<IEnumerable<LocationDto>>();
+
+            var locations = await UnitOfWork.Get<Location>().GetAllAsync();
+
+            var term = searchTerm?.ToLower();
+
+            var searched = locations
+                .Where(t => string.IsNullOrEmpty(term)
+                            || t.Name.ToLower().Contains(term)
+                            || t.Comment.ToLower().Contains(term));
+
+            if (withDeleted)
+            {
+                response.Result = searched.Select(t => t.ToDto());
+                return response;
+            }
+
+            response.Result = searched.Where(t => !t.IsDeleted).Select(t => t.ToDto());
+            return response;
+        }
     }
 }

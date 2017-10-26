@@ -11,7 +11,6 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Infrastructure.Filters;
-using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.LocationType;
 using System.Threading.Tasks;
@@ -274,7 +273,7 @@ namespace SORANO.WEB.Controllers
                     {
                         id = t.ID,
                         text = t.Name,
-                        desc = t.Description
+                        desc = t.Description ?? string.Empty
                     })
                     .OrderBy(t => t.text)
             });

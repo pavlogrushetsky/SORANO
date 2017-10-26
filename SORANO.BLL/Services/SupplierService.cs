@@ -103,5 +103,28 @@ namespace SORANO.BLL.Services
         }
 
         #endregion
+
+        public async Task<ServiceResponse<IEnumerable<SupplierDto>>> GetAllAsync(bool withDeleted, string searchTerm)
+        {
+            var response = new SuccessResponse<IEnumerable<SupplierDto>>();
+
+            var suppliers = await UnitOfWork.Get<Supplier>().GetAllAsync();
+
+            var term = searchTerm?.ToLower();
+
+            var searched = suppliers
+                .Where(t => string.IsNullOrEmpty(term)
+                            || t.Name.ToLower().Contains(term)
+                            || t.Description.ToLower().Contains(term));
+
+            if (withDeleted)
+            {
+                response.Result = searched.Select(t => t.ToDto());
+                return response;
+            }
+
+            response.Result = searched.Where(t => !t.IsDeleted).Select(t => t.ToDto());
+            return response;
+        }
     }
 }

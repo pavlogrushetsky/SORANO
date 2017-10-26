@@ -14,6 +14,7 @@ using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.Location;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 // ReSharper disable Mvc.ViewNotResolved
@@ -299,6 +300,24 @@ namespace SORANO.WEB.Controllers
         }
 
         #endregion
+
+        [HttpPost]
+        public async Task<JsonResult> GetLocations(string term)
+        {
+            var locations = await _locationService.GetAllAsync(false, term);
+
+            return Json(new
+            {
+                results = locations.Result?
+                    .Select(t => new
+                    {
+                        id = t.ID,
+                        text = t.Name,
+                        desc = t.Comment ?? string.Empty
+                    })
+                    .OrderBy(t => t.text)
+            });
+        }
 
         private IActionResult OnFault(string ex)
         {
