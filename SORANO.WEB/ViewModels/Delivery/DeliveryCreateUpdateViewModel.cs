@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using SORANO.WEB.ViewModels.Common;
+using SORANO.WEB.ViewModels.DeliveryItem;
 
 namespace SORANO.WEB.ViewModels.Delivery
 {
@@ -15,7 +16,7 @@ namespace SORANO.WEB.ViewModels.Delivery
 
         public string TotalDiscountPrice { get; set; }
 
-        public string SelectedCurrency { get; set; }
+        public string SelectedCurrency { get; set; } = "₴";
 
         [Display(Name = "Поставщик *")]
         public int SupplierID { get; set; }

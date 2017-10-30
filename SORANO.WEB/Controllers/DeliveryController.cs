@@ -144,6 +144,10 @@ namespace SORANO.WEB.Controllers
                 {
                     model = cachedForCreateArticle;
                 }
+                else if (TryGetCached(out var cachedForCreateItem, CacheKeys.CreateDeliveryItemCacheKey, CacheKeys.CreateDeliveryItemCacheValidKey))
+                {
+                    model = cachedForCreateItem;
+                }
                 else
                 {
                     var result = await _deliveryService.GetAsync(id);
@@ -202,26 +206,34 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateLocation(DeliveryCreateUpdateViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        [LoadAttachmentsFilter]
+        public IActionResult CreateLocation(DeliveryCreateUpdateViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            await LoadMainPicture(model, mainPictureFile);
-            await LoadAttachments(model, attachments);
-
-            MemoryCache.Set(CacheKeys.CreateLocationCacheKey, model);
-
-            return RedirectToAction("Create", "Location", new { returnUrl });
+            return TryGetActionResult(() =>
+            {
+                MemoryCache.Set(CacheKeys.CreateLocationCacheKey, model);
+                return RedirectToAction("Create", "Location", new { returnUrl });
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return View("Create", model);
+            });           
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateSupplier(DeliveryCreateUpdateViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        [LoadAttachmentsFilter]
+        public IActionResult CreateSupplier(DeliveryCreateUpdateViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            await LoadMainPicture(model, mainPictureFile);
-            await LoadAttachments(model, attachments);
-
-            MemoryCache.Set(CacheKeys.CreateSupplierCacheKey, model);
-
-            return RedirectToAction("Create", "Supplier", new { returnUrl });
+            return TryGetActionResult(() =>
+            {
+                MemoryCache.Set(CacheKeys.CreateSupplierCacheKey, model);
+                return RedirectToAction("Create", "Supplier", new { returnUrl });
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return View("Create", model);
+            });            
         }
 
         [HttpPost]
@@ -240,28 +252,23 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> AddDeliveryItem(DeliveryCreateUpdateViewModel delivery, bool isEdit, IFormFile mainPictureFile, IFormFileCollection attachments)
+        [ValidateAntiForgeryToken]
+        [LoadAttachmentsFilter]
+        public IActionResult AddItem(DeliveryCreateUpdateViewModel delivery, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            ModelState.Clear();
-
-            await LoadMainPicture(delivery, mainPictureFile);
-            await LoadAttachments(delivery, attachments);
-
-            // TODO
-            //delivery.DeliveryItems.Add(new DeliveryItemModel
-            //{
-            //    Quantity = 1,
-            //    UnitPrice = "0.00",
-            //    Discount = "0.00",
-            //    DiscountPrice = "0.00",
-            //    GrossPrice = "0.00"
-            //});           
-
-            return View("Create", delivery);
+            return TryGetActionResult(() =>
+            {
+                MemoryCache.Set(CacheKeys.CreateDeliveryItemCacheKey, delivery);
+                return RedirectToAction("Create", "DeliveryItem", new { returnUrl });
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return View("Create", delivery);
+            });
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> DeleteDeliveryItem(DeliveryCreateUpdateViewModel delivery, bool isEdit, int num, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public virtual async Task<IActionResult> DeleteDeliveryItem(DeliveryCreateUpdateViewModel delivery, int num, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             ModelState.Clear();
 

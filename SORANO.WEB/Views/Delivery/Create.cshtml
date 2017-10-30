@@ -44,6 +44,7 @@
     <input type="hidden" asp-for="SupplierName" />
     <input type="hidden" asp-for="LocationID" />
     <input type="hidden" asp-for="LocationName" />
+    <input type="hidden" asp-for="SelectedCurrency" />
     @for (var i = 0; i < Model.Recommendations.Count; i++)
     {
         <input type="hidden" asp-for="@Model.Recommendations[i].ID" />
@@ -240,6 +241,7 @@
                                 <button class="btn btn-default btn-sm"
                                         asp-controller="Delivery"
                                         asp-action="AddItem"
+                                        asp-route-returnUrl="@returnUrl"
                                         data-toggle="tooltip"
                                         data-placement="right"
                                         data-original-title="Добавить позицию"
@@ -261,7 +263,7 @@
                         {
                             <tr>
                                 <td>@item.Number</td>
-                                <td>@item.Description</td>
+                                <td>@item.ArticleDescription</td>
                                 <td>@item.Quantity</td>
                                 <td>@item.UnitPrice</td>
                                 <td>@item.GrossPrice</td>

@@ -89,19 +89,21 @@
             $('#DollarRate').val('');
             $('#EuroRate').val('');
             $('#DollarRate').prop('readonly', true);
-            $('#EuroRate').prop('readonly', true);            
+            $('#EuroRate').prop('readonly', true);    
+            $('#SelectedCurrency').val('₴');
         } else if (value === '1') {
             $('#DollarRate').prop('readonly', false);
             $('#DollarRate').val('0.00');
             $('#EuroRate').val('');
             $('#EuroRate').prop('readonly', true);
+            $('#SelectedCurrency').val('$');
         } else if (value === '2') {
             $('#EuroRate').prop('readonly', false);
             $('#EuroRate').val('0.00');
             $('#DollarRate').val('');
             $('#DollarRate').prop('readonly', true);
-        }
-        $('#SelectedCurrency').val(value);
+            $('#SelectedCurrency').val('€');
+        }        
     });
 
     $('.delivery_item_quantity').bind('keyup mouseup',
@@ -211,7 +213,7 @@ function initDeliveryItemsDataTable() {
 
 function updateCurrencyRates() {
     var value = $('#SelectedCurrency').val();
-    if (value === '0') {
+    if (value === '₴') {
         $('#DollarRate').val('');
         $('#EuroRate').val('');
         $('#DollarRate').prop('readonly', true);
@@ -219,14 +221,14 @@ function updateCurrencyRates() {
         $('#select_currency_uah').prop('checked', true);
         $('#select_currency_usd').prop('checked', false);
         $('#select_currency_eur').prop('checked', false);
-    } else if (value === '1') {
+    } else if (value === '$') {
         $('#DollarRate').prop('readonly', false);
         $('#EuroRate').val('');
         $('#EuroRate').prop('readonly', true);
         $('#select_currency_uah').prop('checked', false);
         $('#select_currency_usd').prop('checked', true);
         $('#select_currency_eur').prop('checked', false);
-    } else if (value === '2') {
+    } else if (value === '€') {
         $('#EuroRate').prop('readonly', false);
         $('#DollarRate').val('');
         $('#DollarRate').prop('readonly', true);
