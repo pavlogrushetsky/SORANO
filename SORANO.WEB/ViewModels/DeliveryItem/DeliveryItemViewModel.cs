@@ -10,7 +10,7 @@ namespace SORANO.WEB.ViewModels.DeliveryItem
         [Display(Name = "Артикул *")]
         public int ArticleID { get; set; }
 
-        public string ArticleDescription { get; set; }
+        public string ArticleName { get; set; }
 
         [Display(Name = "Количество, шт. *")]
         public int Quantity { get; set; }

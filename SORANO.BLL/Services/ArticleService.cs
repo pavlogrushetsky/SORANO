@@ -137,5 +137,30 @@ namespace SORANO.BLL.Services
 
             return new SuccessResponse<IDictionary<ArticleDto, int>>(result);
         }
+
+        public async Task<ServiceResponse<IEnumerable<ArticleDto>>> GetAllAsync(bool withDeleted, string searchTerm)
+        {
+            var response = new SuccessResponse<IEnumerable<ArticleDto>>();
+
+            var articles = await UnitOfWork.Get<Article>().GetAllAsync();
+
+            var term = searchTerm?.ToLower();
+
+            var searched = articles
+                .Where(a => string.IsNullOrEmpty(term)
+                            || a.Name.ToLower().Contains(term)
+                            || a.Type.Name.ToLower().Contains(term)
+                            || !string.IsNullOrWhiteSpace(a.Code) && a.Code.ToLower().Contains(term)
+                            || !string.IsNullOrWhiteSpace(a.Barcode) && a.Barcode.ToLower().Contains(term));
+
+            if (withDeleted)
+            {
+                response.Result = searched.Select(t => t.ToDto());
+                return response;
+            }
+
+            response.Result = searched.Where(t => !t.IsDeleted).Select(t => t.ToDto());
+            return response;
+        }
     }
 }

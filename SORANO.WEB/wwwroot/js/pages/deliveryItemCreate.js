@@ -1,16 +1,89 @@
 ﻿$(document).ready(function () {
     $.fn.select2.defaults.set('theme', 'bootstrap');
 
-    initGenericSelect({
-        selectElementClass: '.select-article',
-        valueElementId: '#ArticleID',
-        displayElementId: '#ArticleDescription',
-        noResultsText: 'Артикулы не найдены',
-        searchingText: 'Поиск артикулов...',
-        errorLoadingText: 'Невозможно загрузить результаты поиска',
-        placeholderText: 'Артикул',
-        url: '/Article/GetArticles'
-    });
-
+    initArticleSelect();
     initAttachmentTypeSelect();
 });
+
+function initArticleSelect() {
+    var selectArticle = $('.select-article');
+    var articleId = $('#ArticleID');
+    var articleName = $('#ArticleName');
+    selectArticle.select2({
+        "language": {
+            "noResults": function () {
+                return "Артикулы не найдены";
+            },
+            "searching": function () {
+                return "Поиск артикулов...";
+            },
+            "errorLoading": function () {
+                return "Невозможно загрузить результаты поиска";
+            }
+        },
+        placeholder: "Артикул",
+        minimumInputLength: 0,
+        ajax: {
+            url: '/Article/GetArticles',
+            dataType: 'json',
+            type: 'POST',
+            delay: 100,
+            data: function (params) {
+                var queryParameters = {
+                    term: params.term
+                }
+                return queryParameters;
+            },
+            results: function (data) {
+                return {
+                    results: $.map(data, function (item) {
+                        return {
+                            id: item.id,
+                            name: item.name,
+                            type: item.type,
+                            code: item.code,
+                            barcode: item.barcode
+                        }
+                    })
+                };
+            },
+            cache: true
+        },
+        escapeMarkup: function (markup) { return markup; },
+        templateResult: formatData,
+        templateSelection: formatDataSelection
+    });
+
+    if (articleId.val() > 0) {
+        selectArticle.append($('<option selected></option>').attr('value', articleId.val()).text(articleName.val()));
+    }
+
+    selectArticle.on("select2:opening", function () {
+        selectArticle.val(null).trigger('change');
+    });
+
+    selectArticle.on("change", function () {
+        var data = selectArticle.select2('data');
+        if (data[0]) {
+            articleId.val(data[0].id);
+            articleName.val(data[0].name);
+        }
+        else {
+            articleId.val(0);
+            articleName.val('');
+        }
+    });
+}
+
+function formatData(data) {
+    if (data.loading) return data.name;
+
+    return '<div>' + data.name + '</div>' +
+        '<div><small style="color: #95a5a6;">' + data.type + '</small></div>' +
+        '<div><small style="color: #95a5a6;">' + data.code + '</small></div>' +
+        '<div><small style="color: #95a5a6;">' + data.barcode + '</small></div>';
+}
+
+function formatDataSelection(data) {
+    return data.name;
+}

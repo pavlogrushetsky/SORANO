@@ -14,7 +14,9 @@ using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.Article;
 using SORANO.WEB.ViewModels.Attachment;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using SORANO.WEB.ViewModels.Common;
 
 namespace SORANO.WEB.Controllers
 {
@@ -306,6 +308,16 @@ namespace SORANO.WEB.Controllers
         }
 
         #endregion
+
+        [HttpPost]
+        public async Task<JsonResult> GetArticles(string term)
+        {
+            var articles = await _articleService.GetAllAsync(false, term);
+
+            var selectModels = _mapper.Map<IEnumerable<ArticleSelectViewModel>>(articles.Result);
+
+            return Json(new {results = selectModels.OrderBy(s => s.Name)});
+        }
 
         private IActionResult OnFault(string ex)
         {

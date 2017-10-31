@@ -9,6 +9,7 @@ using SORANO.WEB.ViewModels.ArticleType;
 using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.AttachmentType;
 using SORANO.WEB.ViewModels.Client;
+using SORANO.WEB.ViewModels.Common;
 using SORANO.WEB.ViewModels.Delivery;
 using SORANO.WEB.ViewModels.Location;
 using SORANO.WEB.ViewModels.LocationType;
@@ -157,6 +158,19 @@ namespace SORANO.WEB.Mappings
             #region Article
 
             CreateMap<ArticleDto, ArticleIndexViewModel>();
+            CreateMap<ArticleDto, ArticleSelectViewModel>()
+                .ForMember(
+                    dest => dest.Type,
+                    source => source.MapFrom(s => $"Тип: {s.Type.Name}")
+                )
+                .ForMember(
+                    dest => dest.Code,
+                    source => source.MapFrom(s => !string.IsNullOrWhiteSpace(s.Code) ? $"Код: {s.Code}" : string.Empty)
+                )
+                .ForMember(
+                    dest => dest.Barcode,
+                    source => source.MapFrom(s => !string.IsNullOrWhiteSpace(s.Barcode) ? $"Штрих-код: {s.Barcode}" : string.Empty)
+                );
             CreateMap<ArticleDto, ArticleCreateUpdateViewModel>();            
             CreateMap<ArticleDto, ArticleDetailsViewModel>()
                 .ForMember(
