@@ -30,6 +30,7 @@
       method="post"
       enctype="multipart/form-data">
     <input type="hidden" asp-for="ID" />
+    <input type="hidden" asp-for="Number" />
     <input type="hidden" asp-for="ArticleID" />
     <input type="hidden" asp-for="ArticleName" />
     <input type="hidden" asp-for="ReturnPath" />
@@ -70,7 +71,8 @@
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-shopping-cart"></i></span>
                     <select class="form-control input-sm select-article"
-                            asp-for="ArticleID" autofocus></select>
+                            asp-for="ArticleID">
+                    </select>
                     <span class="input-group-btn">
                         <button class="btn btn-default btn-sm"
                                 asp-action="CreateArticle"
@@ -89,7 +91,7 @@
                 <label class="control-label" asp-for="Quantity"></label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-hashtag"></i></span>
-                    <input class="form-control input-sm" type="text" asp-for="Quantity" placeholder="Количество, шт." autofocus/>
+                    <input class="form-control input-sm calculate" type="number" min="1" asp-for="Quantity" placeholder="Количество, шт." autofocus/>
                 </div>
                 <span asp-validation-for="Quantity" class="text-danger"></span>
             </div>
@@ -97,7 +99,7 @@
                 <label class="control-label" asp-for="UnitPrice"></label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-money"></i></span>
-                    <input class="form-control input-sm" type="text" asp-for="UnitPrice" placeholder="Стоимость ед. товара"/>
+                    <input class="form-control input-sm calculate" type="text" asp-for="UnitPrice" placeholder="Стоимость ед. товара"/>
                 </div>
                 <span asp-validation-for="UnitPrice" class="text-danger"></span>
             </div>
@@ -107,13 +109,12 @@
                     <span class="input-group-addon"><i class="fa fa-fw fa-money"></i></span>
                     <input class="form-control input-sm" type="text" asp-for="GrossPrice" placeholder="Общая стоимость" readonly="readonly"/>
                 </div>
-                <span asp-validation-for="GrossPrice" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="Discount"></label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-money"></i></span>
-                    <input class="form-control input-sm" type="text" asp-for="Discount" placeholder="Скидка"/>
+                    <input class="form-control input-sm calculate" type="text" asp-for="Discount" placeholder="Скидка"/>
                 </div>
                 <span asp-validation-for="Discount" class="text-danger"></span>
             </div>

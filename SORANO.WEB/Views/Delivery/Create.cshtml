@@ -58,6 +58,31 @@
         <input type="hidden" asp-for="@Model.Attachments[i].TypeName" />
         <input type="hidden" asp-for="@Model.Attachments[i].TypeID" />
     }
+    @for (var i = 0; i < Model.DeliveryItems.Count; i++)
+    {
+        <input type="hidden" asp-for="@Model.DeliveryItems[i].ID" />
+        <input type="hidden" asp-for="@Model.DeliveryItems[i].Number" />
+        <input type="hidden" asp-for="@Model.DeliveryItems[i].ArticleID" />
+        <input type="hidden" asp-for="@Model.DeliveryItems[i].ArticleName" />
+        <input type="hidden" asp-for="@Model.DeliveryItems[i].Quantity" />
+        <input type="hidden" asp-for="@Model.DeliveryItems[i].UnitPrice" />
+        <input type="hidden" asp-for="@Model.DeliveryItems[i].GrossPrice" />
+        <input type="hidden" asp-for="@Model.DeliveryItems[i].Discount" />
+        <input type="hidden" asp-for="@Model.DeliveryItems[i].DiscountPrice" />
+        <input type="hidden" asp-for="@Model.DeliveryItems[i].MainPicture.ID" />
+        <input type="hidden" asp-for="@Model.DeliveryItems[i].MainPicture.Name" />
+        <input type="hidden" asp-for="@Model.DeliveryItems[i].MainPicture.FullPath" />
+        <input type="hidden" asp-for="@Model.DeliveryItems[i].MainPicture.TypeID" />
+        for (var j = 0; j < Model.DeliveryItems[i].Attachments.Count; j++)
+        {
+            <input type="hidden" asp-for="@Model.DeliveryItems[i].Attachments[j].ID" />
+            <input type="hidden" asp-for="@Model.DeliveryItems[i].Attachments[j].IsNew" />
+            <input type="hidden" asp-for="@Model.DeliveryItems[i].Attachments[j].FullPath" />
+            <input type="hidden" asp-for="@Model.DeliveryItems[i].Attachments[j].MimeTypes" />
+            <input type="hidden" asp-for="@Model.DeliveryItems[i].Attachments[j].TypeName" />
+            <input type="hidden" asp-for="@Model.DeliveryItems[i].Attachments[j].TypeID" />
+        }
+    }
     @Html.HiddenFor(m => m.MainPicture.ID)
     @Html.HiddenFor(m => m.MainPicture.Name)
     @Html.HiddenFor(m => m.MainPicture.FullPath)

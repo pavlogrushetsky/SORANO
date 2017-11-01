@@ -2,11 +2,11 @@
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.Delivery;
 
 namespace SORANO.WEB.Validators
 {
-    public class DeliveryValidator : AbstractValidator<DeliveryModel>
+    public class DeliveryValidator : AbstractValidator<DeliveryCreateUpdateViewModel>
     {
         public DeliveryValidator()
         {
@@ -27,19 +27,19 @@ namespace SORANO.WEB.Validators
                 .WithMessage("Необходимо указать дату оплаты");
 
             RuleFor(d => d.LocationID)
-                .Must(BeGreaterThanZero)
+                .GreaterThan(0)
                 .WithMessage("Необходимо указать место поставки");
 
             RuleFor(d => d.SupplierID)
-                .Must(BeGreaterThanZero)
+                .GreaterThan(0)
                 .WithMessage("Необходимо указать поставщика");
 
             RuleFor(d => d.DollarRate)
-                .Must((d, r) => d.SelectedCurrency != 1 || (!string.IsNullOrEmpty(r) && decimal.TryParse(r, NumberStyles.Any, new CultureInfo("en-US"), out decimal p) && p > 0.0M))
+                .Must((d, r) => d.SelectedCurrency != "$" || !string.IsNullOrEmpty(r) && decimal.TryParse(r, NumberStyles.Any, new CultureInfo("en-US"), out decimal p) && p > 0.0M)
                 .WithMessage("Необходимо указать курс доллара");
 
             RuleFor(d => d.EuroRate)
-                .Must((d, r) => d.SelectedCurrency != 2 || (!string.IsNullOrEmpty(r) && decimal.TryParse(r, NumberStyles.Any, new CultureInfo("en-US"), out decimal p) && p > 0.0M))
+                .Must((d, r) => d.SelectedCurrency != "€" || !string.IsNullOrEmpty(r) && decimal.TryParse(r, NumberStyles.Any, new CultureInfo("en-US"), out decimal p) && p > 0.0M)
                 .WithMessage("Необходимо указать курс евро");
 
             RuleFor(d => d.TotalGrossPrice)
@@ -109,29 +109,16 @@ namespace SORANO.WEB.Validators
             RuleForEach(d => d.DeliveryItems)
                 .SetValidator(new DeliveryItemValidator());
 
-            // TODO Uncomment after model replacement
-            //RuleForEach(d => d.Attachments)
-            //    .SetValidator(new AttachmentValidator());
+            RuleForEach(d => d.Attachments)
+                .SetValidator(new AttachmentValidator());
 
-            // TODO Uncomment after model replacement
-            //RuleForEach(d => d.Recommendations)
-            //    .SetValidator(new RecommendationValidator());
+            RuleForEach(d => d.Recommendations)
+                .SetValidator(new RecommendationValidator());
         }
 
-        private bool BeGreaterThanZero(string id)
+        private static bool BeValidPrice(string price)
         {
-            int.TryParse(id, out int i);
-            return i > 0;
-        }
-
-        private bool BeValidPrice(string price)
-        {
-            if (string.IsNullOrEmpty(price))
-            {
-                return false;
-            }
-
-            return Regex.IsMatch(price, @"^\d+(\.\d{0,2})?$");
+            return !string.IsNullOrEmpty(price) && Regex.IsMatch(price, @"^\d+(\.\d{0,2})?$");
         }
     }
 }

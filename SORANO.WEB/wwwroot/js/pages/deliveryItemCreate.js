@@ -3,6 +3,21 @@
 
     initArticleSelect();
     initAttachmentTypeSelect();
+
+    $('.calculate').bind('keyup mouseup',
+        function () {
+            var quantity = $('#Quantity').val();
+            var unitPrice = $('#UnitPrice').val();
+            var discount = $('#Discount').val();
+            if (isNumeric(unitPrice)) {
+                var grossPrice = quantity * unitPrice;
+                $('#GrossPrice').val(formatDecimal(grossPrice));
+            }
+            if (isNumeric(unitPrice) && isNumeric(discount)) {
+                var discountPrice = quantity * unitPrice - discount;
+                $('#DiscountPrice').val(formatDecimal(discountPrice));
+            }
+        });
 });
 
 function initArticleSelect() {
@@ -85,5 +100,5 @@ function formatData(data) {
 }
 
 function formatDataSelection(data) {
-    return data.name;
+    return data.name || data.text;
 }

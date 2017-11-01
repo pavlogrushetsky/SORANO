@@ -1,20 +1,16 @@
 ﻿using FluentValidation;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.DeliveryItem;
 
 namespace SORANO.WEB.Validators
 {
-    public class DeliveryItemValidator : AbstractValidator<DeliveryItemModel>
+    public class DeliveryItemValidator : AbstractValidator<DeliveryItemViewModel>
     {
         public DeliveryItemValidator()
         {
             RuleFor(d => d.ArticleID)
-                .Must(d =>
-                {
-                    int.TryParse(d, out int id);
-                    return id > 0;
-                })
+                .GreaterThan(0)
                 .WithMessage("Необходимо указать артикул");
 
             RuleFor(d => d.Quantity)
@@ -29,14 +25,6 @@ namespace SORANO.WEB.Validators
                 .Must(BeGreaterThanZero)
                 .WithMessage("Значение должно быть больше 0");
 
-            RuleFor(d => d.GrossPrice)
-                .Must(BeValidPrice)
-                .WithMessage("Значение должно быть указано в формате #.##");
-
-            RuleFor(d => d.GrossPrice)
-                .Must(BeGreaterThanZero)
-                .WithMessage("Значение должно быть больше 0");
-
             RuleFor(d => d.Discount)
                 .Must(BeValidPrice)
                 .WithMessage("Значение должно быть указано в формате #.##");
@@ -46,28 +34,24 @@ namespace SORANO.WEB.Validators
                 .WithMessage("Значение должно быть больше или равна 0");
 
             RuleFor(d => d.DiscountPrice)
-                .Must(BeValidPrice)
-                .WithMessage("Значение должно быть указано в формате #.##");
-
-            RuleFor(d => d.DiscountPrice)
                 .Must(BeGreaterThanZero)
                 .WithMessage("Значение должно быть больше 0");
         }
 
-        private bool BeValidPrice(string price)
+        private static bool BeValidPrice(string price)
         {
-            return string.IsNullOrEmpty(price) || Regex.IsMatch(price, @"^\d+(\.\d{0,2})?$");
+            return !string.IsNullOrEmpty(price) && Regex.IsMatch(price, @"^\d+(\.\d{0,2})?$");
         }
 
-        private bool BeGreaterThanZero(string price)
+        private static bool BeGreaterThanZero(string price)
         {
-            var parsed = decimal.TryParse(price, NumberStyles.Any, new CultureInfo("en-US"), out decimal p);
+            var parsed = decimal.TryParse(price, NumberStyles.Any, new CultureInfo("en-US"), out var p);
             return parsed && p > 0.0M;
         }
 
-        private bool BeGreaterThanOrEqualToZero(string price)
+        private static bool BeGreaterThanOrEqualToZero(string price)
         {
-            var parsed = decimal.TryParse(price, NumberStyles.Any, new CultureInfo("en-US"), out decimal p);
+            var parsed = decimal.TryParse(price, NumberStyles.Any, new CultureInfo("en-US"), out var p);
             return parsed && p >= 0.0M;
         }
     }

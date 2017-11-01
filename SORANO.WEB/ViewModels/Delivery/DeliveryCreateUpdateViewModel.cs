@@ -42,6 +42,6 @@ namespace SORANO.WEB.ViewModels.Delivery
 
         public int DeliveryItemsCount { get; set; }
 
-        public IEnumerable<DeliveryItemViewModel> DeliveryItems { get; set; } = new List<DeliveryItemViewModel>();
+        public IList<DeliveryItemViewModel> DeliveryItems { get; set; } = new List<DeliveryItemViewModel>();
     }
 }

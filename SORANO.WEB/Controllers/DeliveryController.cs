@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Dtos;
 using SORANO.BLL.Services;
@@ -14,7 +13,6 @@ using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.Delivery;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SORANO.WEB.Controllers
@@ -24,9 +22,6 @@ namespace SORANO.WEB.Controllers
     public class DeliveryController : EntityBaseController<DeliveryCreateUpdateViewModel>
     {
         private readonly IDeliveryService _deliveryService;
-        private readonly ISupplierService _supplierService;
-        private readonly IArticleService _articleService;
-        private readonly ILocationService _locationService;
         private readonly IMapper _mapper;
 
         public DeliveryController(IUserService userService,
@@ -41,9 +36,6 @@ namespace SORANO.WEB.Controllers
             IMapper mapper) : base(userService, hostingEnvironment, attachmentTypeService, attachmentService, memoryCache)
         {
             _deliveryService = deliveryService;
-            _supplierService = supplierService;
-            _articleService = articleService;
-            _locationService = locationService;
             _mapper = mapper;
         }
 
@@ -104,9 +96,9 @@ namespace SORANO.WEB.Controllers
                 {
                     model = cachedForCreateLocation;
                 }
-                else if (TryGetCached(out var cachedForCreateArticle, CacheKeys.CreateArticleCacheKey, CacheKeys.CreateArticleCacheValidKey))
+                else if (TryGetCached(out var cachedForCreateDeliveryItem, CacheKeys.CreateDeliveryItemCacheKey, CacheKeys.CreateDeliveryItemCacheValidKey))
                 {
-                    model = cachedForCreateArticle;
+                    model = cachedForCreateDeliveryItem;
                 }
                 else
                 {
@@ -238,21 +230,6 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateArticle(DeliveryCreateUpdateViewModel model, int num, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
-        {
-            await LoadMainPicture(model, mainPictureFile);
-            await LoadAttachments(model, attachments);
-
-            // TODO
-            //model.CurrentItemNumber = num;
-
-            MemoryCache.Set(CacheKeys.CreateArticleCacheKey, model);
-
-            return RedirectToAction("Create", "Article", new { returnUrl });
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
         [LoadAttachmentsFilter]
         public IActionResult AddItem(DeliveryCreateUpdateViewModel delivery, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
@@ -283,14 +260,12 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [LoadAttachmentsFilter]
         public async Task<IActionResult> Create(DeliveryCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return await TryGetActionResultAsync(async () =>
             {
                 ModelState.RemoveFor("Status");
-
-                await LoadMainPicture(model, mainPictureFile);
-                await LoadAttachments(model, attachments);
 
                 if (model.Status && model.DeliveryItemsCount == 0)
                 {
@@ -320,14 +295,12 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [LoadAttachmentsFilter]
         public async Task<IActionResult> Update(DeliveryCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return await TryGetActionResultAsync(async () =>
             {
                 ModelState.RemoveFor("Status");
-
-                await LoadMainPicture(model, mainPictureFile);
-                await LoadAttachments(model, attachments);
 
                 if (model.Status && model.DeliveryItemsCount == 0)
                 {

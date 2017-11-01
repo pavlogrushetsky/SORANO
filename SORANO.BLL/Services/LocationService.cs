@@ -153,7 +153,7 @@ namespace SORANO.BLL.Services
             var searched = locations
                 .Where(t => string.IsNullOrEmpty(term)
                             || t.Name.ToLower().Contains(term)
-                            || t.Comment.ToLower().Contains(term));
+                            || !string.IsNullOrWhiteSpace(t.Comment) && t.Comment.ToLower().Contains(term));
 
             if (withDeleted)
             {
