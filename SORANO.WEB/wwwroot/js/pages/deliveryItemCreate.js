@@ -18,6 +18,13 @@
                 $('#DiscountPrice').val(formatDecimal(discountPrice));
             }
         });
+
+    $('button[type=submit]').on('click', function () {
+        var unitPrice = $('#UnitPrice').val();
+        $('#UnitPrice').val(formatDecimal(unitPrice));
+        var discount = $('#Discount').val();
+        $('#Discount').val(formatDecimal(discount));
+    });
 });
 
 function initArticleSelect() {

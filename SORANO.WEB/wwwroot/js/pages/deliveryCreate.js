@@ -106,71 +106,6 @@
         }        
     });
 
-    $('.delivery_item_quantity').bind('keyup mouseup',
-        function() {
-            var id = $(this).attr('id');
-            var quantity = $(this).val();
-            if (isNumeric(quantity)) {
-                var matches = id.match(/\d+$/);
-                if (matches) {
-                    var number = matches[0];
-                    var unitPrice = $('#delivery_item_unitprice_' + number).val();
-                    var discount = $('#delivery_item_discount_' + number).val();
-                    if (isNumeric(unitPrice) && isNumeric(discount)) {
-                        var grossPrice = quantity * unitPrice;
-                        var discountPrice = grossPrice - discount;
-                        $('#DeliveryItems_' + number + '__GrossPrice').val(formatDecimal(grossPrice));
-                        $('#DeliveryItems_' + number + '__DiscountPrice').val(formatDecimal(discountPrice));
-                        updateTotalGrossPrice();
-                        updateTotalDiscountPrice();
-                    }
-                }
-            }            
-        });
-
-    $('.delivery_item_unitprice').bind('keyup mouseup',
-        function () {
-            var id = $(this).attr('id');
-            var unitPrice = $(this).val();
-            if (isNumeric(unitPrice)) {
-                var matches = id.match(/\d+$/);
-                if (matches) {
-                    var number = matches[0];
-                    var quantity = $('#delivery_item_quantity_' + number).val();
-                    var discount = $('#delivery_item_discount_' + number).val();
-                    if (isNumeric(quantity) && isNumeric(discount)) {
-                        var grossPrice = quantity * unitPrice;
-                        var discountPrice = grossPrice - discount;
-                        $('#DeliveryItems_' + number + '__GrossPrice').val(formatDecimal(grossPrice));
-                        $('#DeliveryItems_' + number + '__DiscountPrice').val(formatDecimal(discountPrice));
-                        updateTotalGrossPrice();
-                        updateTotalDiscountPrice();
-                    }
-                }
-            }
-        });
-
-    $('.delivery_item_discount').bind('keyup mouseup',
-        function () {
-            var id = $(this).attr('id');
-            var discount = $(this).val();
-            if (isNumeric(discount)) {
-                var matches = id.match(/\d+$/);
-                if (matches) {
-                    var number = matches[0];
-                    var quantity = $('#delivery_item_quantity_' + number).val();
-                    var unitPrice = $('#delivery_item_unitprice_' + number).val();
-                    if (isNumeric(quantity) && isNumeric(unitPrice)) {
-                        var grossPrice = quantity * unitPrice;
-                        var discountPrice = grossPrice - discount;
-                        $('#DeliveryItems_' + number + '__DiscountPrice').val(formatDecimal(discountPrice));
-                        updateTotalDiscount();
-                        updateTotalDiscountPrice();
-                    }
-                }
-            }
-        });
-
     updateCurrencyRates();
 
     updateTotalGrossPrice();
@@ -240,7 +175,7 @@ function updateCurrencyRates() {
 
 function updateTotalGrossPrice() {
     var totalGrossPrice = 0;
-    $('.delivery_item_grossprice').each(function() {
+    $('.delivery-item-grossprice').each(function() {
         var value = $(this).val();
         if (isNumeric(value)) {
             totalGrossPrice += parseFloat(value);
@@ -252,7 +187,7 @@ function updateTotalGrossPrice() {
 
 function updateTotalDiscount() {
     var totalDiscount = 0;
-    $('.delivery_item_discount').each(function() {
+    $('.delivery-item-discount').each(function() {
         var value = $(this).val();
         if (isNumeric(value)) {
             totalDiscount += parseFloat(value);
@@ -264,7 +199,7 @@ function updateTotalDiscount() {
 
 function updateTotalDiscountPrice() {
     var totalDiscountPrice = 0;
-    $('.delivery_item_discountprice').each(function () {
+    $('.delivery-item-discountprice').each(function () {
         var value = $(this).val();
         if (isNumeric(value)) {
             totalDiscountPrice += parseFloat(value);
@@ -272,8 +207,4 @@ function updateTotalDiscountPrice() {
     });
     $('#TotalDiscountPrice').val(formatDecimal(totalDiscountPrice));
     $('#delivery_totaldiscountprice').text(formatDecimal(totalDiscountPrice));
-}
-
-function getMimeType(num) {
-    getMimeType(num, "Delivery/GetMimeType?id=");
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -41,8 +42,32 @@ namespace SORANO.WEB.Controllers
                 UnitPrice = "0.00",
                 GrossPrice = "0.00",
                 Discount = "0.00",
-                DiscountPrice = "0.00"
+                DiscountPrice = "0.00"              
             }), ex =>
+            {
+                TempData["Error"] = ex;
+                return Redirect(returnUrl);
+            });
+        }
+
+        [HttpGet]
+        public IActionResult Update(string returnUrl)
+        {
+            if (string.IsNullOrWhiteSpace(returnUrl))
+                return BadRequest();
+
+            return TryGetActionResult(() =>
+            {
+                if (!TryGetCached(out var cachedItem, CacheKeys.DeliveryItemCacheKey, CacheKeys.DeliveryItemCacheValidKey))
+                {
+                    TempData["Error"] = "Не удалось получить позицию поставки.";
+                    return Redirect(returnUrl);
+                }
+
+                cachedItem.ReturnPath = returnUrl;
+                cachedItem.IsUpdate = true;
+                return View("Create", cachedItem);
+            }, ex =>
             {
                 TempData["Error"] = ex;
                 return Redirect(returnUrl);
@@ -66,22 +91,59 @@ namespace SORANO.WEB.Controllers
             {
                 TempData["Success"] = "Позиция поставки была успешно добавлена.";
 
-                if (string.IsNullOrEmpty(model.ReturnPath))
-                {
-                    return BadRequest();
-                }
-
                 if (MemoryCache.TryGetValue(CacheKeys.CreateDeliveryItemCacheKey, out DeliveryCreateUpdateViewModel cachedDelivery))
                 {
+                    model.Number = cachedDelivery.DeliveryItems.Count + 1;
                     cachedDelivery.DeliveryItems.Add(model);
                     MemoryCache.Set(CacheKeys.CreateDeliveryItemCacheKey, cachedDelivery);
                     Session.SetBool(CacheKeys.CreateDeliveryItemCacheValidKey, true);
                 }
                 else
                 {
-                    return BadRequest();
+                    TempData["Error"] = "Не удалось создать позицию поставки.";
+                    return Redirect(model.ReturnPath);
                 }
 
+                return Redirect(model.ReturnPath);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return Redirect(model.ReturnPath);
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [LoadAttachmentsFilter]
+        [ValidateModelFilter]
+        public IActionResult Update(DeliveryItemViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        {
+            if (string.IsNullOrWhiteSpace(model.ReturnPath))
+                return BadRequest();
+
+            return TryGetActionResult(() =>
+            {               
+                if (MemoryCache.TryGetValue(CacheKeys.CreateDeliveryItemCacheKey, out DeliveryCreateUpdateViewModel cachedDelivery))
+                {
+                    var item = cachedDelivery.DeliveryItems.FirstOrDefault(di => di.ID == model.ID || di.Number == model.Number);
+                    if (item == null)
+                    {
+                        TempData["Error"] = "Не удалось обновить позицию поставки.";
+                        return Redirect(model.ReturnPath);
+                    }
+
+                    var index = cachedDelivery.DeliveryItems.IndexOf(item);
+                    cachedDelivery.DeliveryItems[index] = model;
+                    MemoryCache.Set(CacheKeys.CreateDeliveryItemCacheKey, cachedDelivery);
+                    Session.SetBool(CacheKeys.CreateDeliveryItemCacheValidKey, true);
+                }
+                else
+                {
+                    TempData["Error"] = "Не удалось обновить позицию поставки.";
+                    return Redirect(model.ReturnPath);
+                }
+
+                TempData["Success"] = "Позиция поставки была успешно обновлена.";
                 return Redirect(model.ReturnPath);
             }, ex =>
             {

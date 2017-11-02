@@ -31,5 +31,9 @@
         public static readonly string CreateDeliveryItemCacheKey = "CreateDeliveryItemCache";
 
         public static readonly string CreateDeliveryItemCacheValidKey = "CreateDeliveryItemValidCache";
+
+        public static readonly string DeliveryItemCacheKey = "DeliveryItemCacheKey";
+
+        public static readonly string DeliveryItemCacheValidKey = "DeliveryItemCacheValidKey";
     }
 }

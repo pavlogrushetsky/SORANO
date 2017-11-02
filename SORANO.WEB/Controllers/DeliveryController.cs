@@ -13,6 +13,7 @@ using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.Delivery;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SORANO.WEB.Controllers
@@ -245,6 +246,28 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        [LoadAttachmentsFilter]
+        public IActionResult UpdateItem(DeliveryCreateUpdateViewModel delivery, int id, int number, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        {
+            return TryGetActionResult(() =>
+            {
+                var item = delivery.DeliveryItems.FirstOrDefault(di => id != 0 && di.ID == id || di.Number == number);
+                if (item == null)
+                    return BadRequest();
+
+                MemoryCache.Set(CacheKeys.CreateDeliveryItemCacheKey, delivery);
+                MemoryCache.Set(CacheKeys.DeliveryItemCacheKey, item);
+                Session.SetBool(CacheKeys.DeliveryItemCacheValidKey, true);
+                return RedirectToAction("Update", "DeliveryItem", new { returnUrl });
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return View("Create", delivery);
+            });
+        }
+
+        [HttpPost]
         public virtual async Task<IActionResult> DeleteDeliveryItem(DeliveryCreateUpdateViewModel delivery, int num, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             ModelState.Clear();
@@ -267,7 +290,7 @@ namespace SORANO.WEB.Controllers
             {
                 ModelState.RemoveFor("Status");
 
-                if (model.Status && model.DeliveryItemsCount == 0)
+                if (model.Status && model.DeliveryItems.Count == 0)
                 {
                     ModelState.AddModelError("", "Необходимо добавить хотя бы одну позицию");
                 }
@@ -302,7 +325,7 @@ namespace SORANO.WEB.Controllers
             {
                 ModelState.RemoveFor("Status");
 
-                if (model.Status && model.DeliveryItemsCount == 0)
+                if (model.Status && model.DeliveryItems.Count == 0)
                 {
                     ModelState.AddModelError("", "Необходимо добавить хотя бы одну позицию");
                 }

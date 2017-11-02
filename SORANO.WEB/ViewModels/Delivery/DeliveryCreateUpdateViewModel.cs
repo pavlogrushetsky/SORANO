@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using SORANO.WEB.ViewModels.Common;
 using SORANO.WEB.ViewModels.DeliveryItem;
 
@@ -39,8 +41,6 @@ namespace SORANO.WEB.ViewModels.Delivery
         public string EuroRate { get; set; }
 
         public bool Status { get; set; }
-
-        public int DeliveryItemsCount { get; set; }
 
         public IList<DeliveryItemViewModel> DeliveryItems { get; set; } = new List<DeliveryItemViewModel>();
     }
