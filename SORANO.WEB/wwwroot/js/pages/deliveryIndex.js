@@ -5,6 +5,8 @@
 function initDeliveriesDataTable() {
     var table = $("#deliveries-datatable").DataTable({
         responsive: true,
+        "autoWidth": false,
+        "scrollX": false,
         "columnDefs": [
             { "orderable": false, "targets": 6 }
         ],

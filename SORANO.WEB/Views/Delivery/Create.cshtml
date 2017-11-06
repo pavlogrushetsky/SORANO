@@ -58,29 +58,28 @@
         <input type="hidden" asp-for="@Model.Attachments[i].TypeName" />
         <input type="hidden" asp-for="@Model.Attachments[i].TypeID" />
     }
-    @for (var i = 0; i < Model.DeliveryItems.Count; i++)
+    @for (var i = 0; i < Model.Items.Count; i++)
     {
-        <input type="hidden" asp-for="@Model.DeliveryItems[i].ID" />
-        <input type="hidden" asp-for="@Model.DeliveryItems[i].Number" />
-        <input type="hidden" asp-for="@Model.DeliveryItems[i].ArticleID" />
-        <input type="hidden" asp-for="@Model.DeliveryItems[i].ArticleName" />
-        <input type="hidden" asp-for="@Model.DeliveryItems[i].Quantity" />
-        <input type="hidden" asp-for="@Model.DeliveryItems[i].UnitPrice" />
-        <input type="hidden" class="delivery-item-grossprice" asp-for="@Model.DeliveryItems[i].GrossPrice" />
-        <input type="hidden" class="delivery-item-discount" asp-for="@Model.DeliveryItems[i].Discount" />
-        <input type="hidden" class="delivery-item-discountprice" asp-for="@Model.DeliveryItems[i].DiscountPrice" />
-        <input type="hidden" asp-for="@Model.DeliveryItems[i].MainPicture.ID" />
-        <input type="hidden" asp-for="@Model.DeliveryItems[i].MainPicture.Name" />
-        <input type="hidden" asp-for="@Model.DeliveryItems[i].MainPicture.FullPath" />
-        <input type="hidden" asp-for="@Model.DeliveryItems[i].MainPicture.TypeID" />
-        for (var j = 0; j < Model.DeliveryItems[i].Attachments.Count; j++)
+        <input type="hidden" asp-for="@Model.Items[i].ID" />
+        <input type="hidden" asp-for="@Model.Items[i].ArticleID" />
+        <input type="hidden" asp-for="@Model.Items[i].ArticleName" />
+        <input type="hidden" asp-for="@Model.Items[i].Quantity" />
+        <input type="hidden" asp-for="@Model.Items[i].UnitPrice" />
+        <input type="hidden" class="delivery-item-grossprice" asp-for="@Model.Items[i].GrossPrice" />
+        <input type="hidden" class="delivery-item-discount" asp-for="@Model.Items[i].Discount" />
+        <input type="hidden" class="delivery-item-discountprice" asp-for="@Model.Items[i].DiscountPrice" />
+        <input type="hidden" asp-for="@Model.Items[i].MainPicture.ID" />
+        <input type="hidden" asp-for="@Model.Items[i].MainPicture.Name" />
+        <input type="hidden" asp-for="@Model.Items[i].MainPicture.FullPath" />
+        <input type="hidden" asp-for="@Model.Items[i].MainPicture.TypeID" />
+        for (var j = 0; j < Model.Items[i].Attachments.Count; j++)
         {
-            <input type="hidden" asp-for="@Model.DeliveryItems[i].Attachments[j].ID" />
-            <input type="hidden" asp-for="@Model.DeliveryItems[i].Attachments[j].IsNew" />
-            <input type="hidden" asp-for="@Model.DeliveryItems[i].Attachments[j].FullPath" />
-            <input type="hidden" asp-for="@Model.DeliveryItems[i].Attachments[j].MimeTypes" />
-            <input type="hidden" asp-for="@Model.DeliveryItems[i].Attachments[j].TypeName" />
-            <input type="hidden" asp-for="@Model.DeliveryItems[i].Attachments[j].TypeID" />
+            <input type="hidden" asp-for="@Model.Items[i].Attachments[j].ID" />
+            <input type="hidden" asp-for="@Model.Items[i].Attachments[j].IsNew" />
+            <input type="hidden" asp-for="@Model.Items[i].Attachments[j].FullPath" />
+            <input type="hidden" asp-for="@Model.Items[i].Attachments[j].MimeTypes" />
+            <input type="hidden" asp-for="@Model.Items[i].Attachments[j].TypeName" />
+            <input type="hidden" asp-for="@Model.Items[i].Attachments[j].TypeID" />
         }
     }
     @Html.HiddenFor(m => m.MainPicture.ID)
@@ -90,10 +89,10 @@
 
     @Html.HiddenFor(m => m.TotalGrossPrice)
     @Html.HiddenFor(m => m.TotalDiscount)
-    @Html.HiddenFor(m => m.TotalDiscountPrice) 
+    @Html.HiddenFor(m => m.TotalDiscountedPrice) 
     
     @Html.HiddenFor(m => m.SelectedCurrency)
-    @Html.HiddenFor(m => m.Status)
+    @Html.HiddenFor(m => m.IsSubmitted)
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
         <div class="col-lg-12">
@@ -225,6 +224,7 @@
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12">
             <label class="control-label">Позиции поставки:</label>
+            <span asp-validation-for="Items" class="text-danger"></span>
             <div class="form-group well well-sm">
                 <div id="deliveryItems">
                     <table id="delivery-items-datatable" class="table table-striped table-hover" style="margin-bottom: 0;">
@@ -258,7 +258,7 @@
                             <td><b>Всего:</b></td>
                             <td id="delivery_totalgrossprice">@Model.TotalGrossPrice</td>
                             <td id="delivery_totaldiscount">@Model.TotalDiscount</td>
-                            <td id="delivery_totaldiscountprice">@Model.TotalDiscountPrice</td>
+                            <td id="delivery_totaldiscountprice">@Model.TotalDiscountedPrice</td>
                             <td></td>
                         </tr>
                         <tr>
@@ -284,37 +284,38 @@
                         </tr>
                         </tfoot>
                         <tbody>
-                        @foreach (var item in Model.DeliveryItems)
+                        @for (var i = 0; i < Model.Items.Count; i++)
                         {
                             <tr>
-                                <td>@item.Number</td>
-                                <td>@item.ArticleName</td>
-                                <td>@item.Quantity</td>
-                                <td>@item.UnitPrice</td>
-                                <td>@item.GrossPrice</td>
-                                <td>@item.Discount</td>
-                                <td>@item.DiscountPrice</td>
+                                <td>@(i + 1)</td>
+                                <td>@Model.Items[i].ArticleName</td>
+                                <td>@Model.Items[i].Quantity</td>
+                                <td>@Model.Items[i].UnitPrice</td>
+                                <td>@Model.Items[i].GrossPrice</td>
+                                <td>@Model.Items[i].Discount</td>
+                                <td>@Model.Items[i].DiscountPrice</td>
                                 <td>
                                     <button asp-controller="Delivery"
-                                       asp-action="UpdateItem"
-                                       asp-route-id="@item.ID"
-                                       asp-route-number="@item.Number"
-                                       asp-route-returnUrl="@returnUrl"
-                                       class="btn btn-xs btn-default"
-                                       data-toggle="tooltip"
-                                       data-placement="bottom"
-                                       data-original-title="Редактировать позицию"
-                                       title="">
+                                            asp-action="UpdateItem"
+                                            asp-route-id="@Model.Items[i].ID"
+                                            asp-route-number="@i"
+                                            asp-route-returnUrl="@returnUrl"
+                                            class="btn btn-xs btn-default"
+                                            data-toggle="tooltip"
+                                            data-placement="bottom"
+                                            data-original-title="Редактировать позицию"
+                                            title="">
                                         <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
                                     </button>
                                     <button class="btn btn-xs btn-danger"
-                                       data-toggle="tooltip"
-                                       data-placement="bottom"
-                                       data-original-title="Удалить позицию"
-                                       title=""
-                                       asp-controller="Delivery"
-                                       asp-action="DeleteItem"
-                                       asp-route-id="@item.Number">
+                                            data-toggle="tooltip"
+                                            data-placement="bottom"
+                                            data-original-title="Удалить позицию"
+                                            title=""
+                                            asp-controller="Delivery"
+                                            asp-action="DeleteItem"
+                                            asp-route-id="@Model.Items[i].ID"
+                                            asp-route-number="@i">
                                         <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
                                     </button>
                                 </td>
@@ -322,7 +323,7 @@
                         }
                         </tbody>
                     </table>
-                </div>
+                </div>                
             </div>
         </div>
     </div>
@@ -339,7 +340,7 @@
                 </button>
                 <button class="btn btn-success btn-sm submit-delivery">
                     <i class="fa fa-fw fa-check"></i>
-                    Подтвердить и сохранить 
+                    Подтвердить 
                 </button>
             </div>
         </div>

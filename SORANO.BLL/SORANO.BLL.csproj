@@ -65,6 +65,7 @@
     <Compile Include="Extensions\AttachmentExtensions.cs" />
     <Compile Include="Extensions\AttachmentTypeExtensions.cs" />
     <Compile Include="Extensions\ClientExtensions.cs" />
+    <Compile Include="Extensions\DeliveryItemExtensions.cs" />
     <Compile Include="Extensions\DeliveryExtensions.cs" />
     <Compile Include="Extensions\LocationExtensions.cs" />
     <Compile Include="Extensions\RecommendationExtensions.cs" />

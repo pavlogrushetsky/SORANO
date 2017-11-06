@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using SORANO.WEB.ViewModels.Common;
 using SORANO.WEB.ViewModels.DeliveryItem;
 
@@ -16,7 +14,7 @@ namespace SORANO.WEB.ViewModels.Delivery
 
         public string TotalDiscount { get; set; }
 
-        public string TotalDiscountPrice { get; set; }
+        public string TotalDiscountedPrice { get; set; }
 
         public string SelectedCurrency { get; set; } = "₴";
 
@@ -40,8 +38,8 @@ namespace SORANO.WEB.ViewModels.Delivery
 
         public string EuroRate { get; set; }
 
-        public bool Status { get; set; }
+        public bool IsSubmitted { get; set; }
 
-        public IList<DeliveryItemViewModel> DeliveryItems { get; set; } = new List<DeliveryItemViewModel>();
+        public IList<DeliveryItemViewModel> Items { get; set; } = new List<DeliveryItemViewModel>();
     }
 }

@@ -9,8 +9,8 @@ using SORANO.WEB.ViewModels.ArticleType;
 using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.AttachmentType;
 using SORANO.WEB.ViewModels.Client;
-using SORANO.WEB.ViewModels.Common;
 using SORANO.WEB.ViewModels.Delivery;
+using SORANO.WEB.ViewModels.DeliveryItem;
 using SORANO.WEB.ViewModels.Location;
 using SORANO.WEB.ViewModels.LocationType;
 using SORANO.WEB.ViewModels.Recommendation;
@@ -214,7 +214,17 @@ namespace SORANO.WEB.Mappings
                 .ForMember(
                     dest => dest.Currency,
                     source => source.MapFrom(s => s.DollarRate.HasValue ? "$" : s.EuroRate.HasValue ? "€" : "₴")
+                )
+                .ForMember(
+                    dest => dest.CanBeUpdated,
+                    source => source.MapFrom(s => s.CanBeDeleted)
                 );
+
+            CreateMap<DeliveryDto, DeliveryCreateUpdateViewModel>();
+            CreateMap<DeliveryCreateUpdateViewModel, DeliveryDto>();
+
+            CreateMap<DeliveryItemDto, DeliveryItemViewModel>();
+            CreateMap<DeliveryItemViewModel, DeliveryItemDto>();
 
             #endregion
 

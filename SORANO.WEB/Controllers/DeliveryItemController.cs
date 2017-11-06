@@ -51,7 +51,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public IActionResult Update(string returnUrl)
+        public IActionResult Update(int number, string returnUrl)
         {
             if (string.IsNullOrWhiteSpace(returnUrl))
                 return BadRequest();
@@ -64,6 +64,7 @@ namespace SORANO.WEB.Controllers
                     return Redirect(returnUrl);
                 }
 
+                cachedItem.Number = number;
                 cachedItem.ReturnPath = returnUrl;
                 cachedItem.IsUpdate = true;
                 return View("Create", cachedItem);
@@ -93,8 +94,7 @@ namespace SORANO.WEB.Controllers
 
                 if (MemoryCache.TryGetValue(CacheKeys.CreateDeliveryItemCacheKey, out DeliveryCreateUpdateViewModel cachedDelivery))
                 {
-                    model.Number = cachedDelivery.DeliveryItems.Count + 1;
-                    cachedDelivery.DeliveryItems.Add(model);
+                    cachedDelivery.Items.Add(model);
                     MemoryCache.Set(CacheKeys.CreateDeliveryItemCacheKey, cachedDelivery);
                     Session.SetBool(CacheKeys.CreateDeliveryItemCacheValidKey, true);
                 }
@@ -125,15 +125,18 @@ namespace SORANO.WEB.Controllers
             {               
                 if (MemoryCache.TryGetValue(CacheKeys.CreateDeliveryItemCacheKey, out DeliveryCreateUpdateViewModel cachedDelivery))
                 {
-                    var item = cachedDelivery.DeliveryItems.FirstOrDefault(di => di.ID == model.ID || di.Number == model.Number);
+                    var item = model.ID > 0
+                        ? cachedDelivery.Items.SingleOrDefault(di => di.ID == model.ID)
+                        : cachedDelivery.Items[model.Number];
+
                     if (item == null)
                     {
                         TempData["Error"] = "Не удалось обновить позицию поставки.";
                         return Redirect(model.ReturnPath);
                     }
 
-                    var index = cachedDelivery.DeliveryItems.IndexOf(item);
-                    cachedDelivery.DeliveryItems[index] = model;
+                    var index = cachedDelivery.Items.IndexOf(item);
+                    cachedDelivery.Items[index] = model;
                     MemoryCache.Set(CacheKeys.CreateDeliveryItemCacheKey, cachedDelivery);
                     Session.SetBool(CacheKeys.CreateDeliveryItemCacheValidKey, true);
                 }

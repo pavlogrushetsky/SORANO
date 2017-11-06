@@ -205,6 +205,6 @@ function updateTotalDiscountPrice() {
             totalDiscountPrice += parseFloat(value);
         }
     });
-    $('#TotalDiscountPrice').val(formatDecimal(totalDiscountPrice));
+    $('#TotalDiscountedPrice').val(formatDecimal(totalDiscountPrice));
     $('#delivery_totaldiscountprice').text(formatDecimal(totalDiscountPrice));
 }

@@ -252,14 +252,17 @@ namespace SORANO.WEB.Controllers
         {
             return TryGetActionResult(() =>
             {
-                var item = delivery.DeliveryItems.FirstOrDefault(di => id != 0 && di.ID == id || di.Number == number);
+                var item = id > 0 
+                    ? delivery.Items.SingleOrDefault(di => di.ID == id) 
+                    : delivery.Items[number];
+
                 if (item == null)
                     return BadRequest();
 
                 MemoryCache.Set(CacheKeys.CreateDeliveryItemCacheKey, delivery);
                 MemoryCache.Set(CacheKeys.DeliveryItemCacheKey, item);
                 Session.SetBool(CacheKeys.DeliveryItemCacheValidKey, true);
-                return RedirectToAction("Update", "DeliveryItem", new { returnUrl });
+                return RedirectToAction("Update", "DeliveryItem", new { number, returnUrl });
             }, ex =>
             {
                 TempData["Error"] = ex;
@@ -268,17 +271,29 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> DeleteDeliveryItem(DeliveryCreateUpdateViewModel delivery, int num, IFormFile mainPictureFile, IFormFileCollection attachments)
+        [ValidateAntiForgeryToken]
+        [LoadAttachmentsFilter]
+        public virtual IActionResult DeleteItem(DeliveryCreateUpdateViewModel delivery, int id, int number, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            ModelState.Clear();
+            return TryGetActionResult(() =>
+            {
+                ModelState.Clear();
 
-            await LoadMainPicture(delivery, mainPictureFile);
-            await LoadAttachments(delivery, attachments);
+                var item = id > 0
+                    ? delivery.Items.SingleOrDefault(di => di.ID == id)
+                    : delivery.Items[number];
 
-            // TODO
-            //delivery.DeliveryItems.RemoveAt(num);          
+                if (item == null)
+                    return BadRequest();
 
-            return View("Create", delivery);
+                delivery.Items.Remove(item);
+
+                return View("Create", delivery);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return View("Create", delivery);
+            });
         }
 
         [HttpPost]
@@ -290,14 +305,14 @@ namespace SORANO.WEB.Controllers
             {
                 ModelState.RemoveFor("Status");
 
-                if (model.Status && model.DeliveryItems.Count == 0)
+                if (model.IsSubmitted && model.Items.Count == 0)
                 {
-                    ModelState.AddModelError("", "Необходимо добавить хотя бы одну позицию");
+                    ModelState.AddModelError("DeliveryItems", "Необходимо добавить хотя бы одну позицию");
                 }
 
                 if (!ModelState.IsValid)
                 {
-                    model.Status = false;
+                    model.IsSubmitted = false;
                     return View(model);
                 }
 
@@ -325,14 +340,14 @@ namespace SORANO.WEB.Controllers
             {
                 ModelState.RemoveFor("Status");
 
-                if (model.Status && model.DeliveryItems.Count == 0)
+                if (model.IsSubmitted && model.Items.Count == 0)
                 {
-                    ModelState.AddModelError("", "Необходимо добавить хотя бы одну позицию");
+                    ModelState.AddModelError("DeliveryItems", "Необходимо добавить хотя бы одну позицию");
                 }
 
                 if (!ModelState.IsValid)
                 {
-                    model.Status = false;
+                    model.IsSubmitted = false;
                     return View("Create", model);
                 }
 

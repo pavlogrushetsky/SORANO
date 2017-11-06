@@ -23,7 +23,7 @@ namespace SORANO.WEB.Validators
                 .WithMessage("Необходимо указать дату поставки");
 
             RuleFor(d => d.PaymentDate)
-                .Must((d, pd) => !d.Status || !string.IsNullOrEmpty(pd))
+                .Must((d, pd) => !d.IsSubmitted || !string.IsNullOrEmpty(pd))
                 .WithMessage("Необходимо указать дату оплаты");
 
             RuleFor(d => d.LocationID)
@@ -56,7 +56,7 @@ namespace SORANO.WEB.Validators
                         return false;
                     }
 
-                    return d.DeliveryItems.Sum(di => 
+                    return d.Items.Sum(di => 
                     {
                         var parsed = decimal.TryParse(di.UnitPrice, NumberStyles.Any, new CultureInfo("en-US"), out decimal price);
                         return parsed ? price * di.Quantity : 0.0M;
@@ -78,7 +78,7 @@ namespace SORANO.WEB.Validators
                         return false;
                     }
 
-                    return d.DeliveryItems.Sum(di => 
+                    return d.Items.Sum(di => 
                     {
                         var parsed = decimal.TryParse(di.Discount, NumberStyles.Any, new CultureInfo("en-US"), out decimal price);
                         return parsed ? price : 0.0M;
@@ -86,16 +86,16 @@ namespace SORANO.WEB.Validators
                 })
                 .WithMessage("Общая сумма скидки некорректна");
 
-            RuleFor(d => d.TotalDiscountPrice)
+            RuleFor(d => d.TotalDiscountedPrice)
                 .Must(BeValidPrice)
                 .WithMessage("Значение должно быть указано в формате #.##");
 
-            RuleFor(d => d.TotalDiscountPrice)
+            RuleFor(d => d.TotalDiscountedPrice)
                 .Must((d, p) =>
                 {
                     var parsedGross = decimal.TryParse(d.TotalGrossPrice, NumberStyles.Any, new CultureInfo("en-US"), out decimal gross);
                     var parsedDiscount = decimal.TryParse(d.TotalDiscount, NumberStyles.Any, new CultureInfo("en-US"), out decimal discount);
-                    var parsedDiscounted = decimal.TryParse(d.TotalDiscountPrice, NumberStyles.Any, new CultureInfo("en-US"), out decimal discounted);
+                    var parsedDiscounted = decimal.TryParse(d.TotalDiscountedPrice, NumberStyles.Any, new CultureInfo("en-US"), out decimal discounted);
 
                     if (!parsedGross || !parsedDiscount || !parsedDiscounted)
                     {
@@ -106,7 +106,7 @@ namespace SORANO.WEB.Validators
                 })
                 .WithMessage("Общая сумма с учётом скидки некорректна");
 
-            RuleForEach(d => d.DeliveryItems)
+            RuleForEach(d => d.Items)
                 .SetValidator(new DeliveryItemValidator());
 
             RuleForEach(d => d.Attachments)
