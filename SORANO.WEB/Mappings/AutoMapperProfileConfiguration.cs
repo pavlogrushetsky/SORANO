@@ -34,6 +34,8 @@ namespace SORANO.WEB.Mappings
             CreateMap<decimal, string>().ConvertUsing<DecimalToStringTypeConverter>();
             CreateMap<DateTime?, string>().ConvertUsing<NullDateTimeToStringTypeConverter>();
             CreateMap<DateTime, string>().ConvertUsing<DateTimeToStringTypeConverter>();
+            CreateMap<string, DateTime>().ConvertUsing<StringToDateTimeTypeConverter>();
+            CreateMap<string, DateTime?>().ConvertUsing<StringToNullDateTimeTypeConverter>();
 
             CreateMap<UserDto, AccountViewModel>();
 
@@ -220,8 +222,21 @@ namespace SORANO.WEB.Mappings
                     source => source.MapFrom(s => s.CanBeDeleted)
                 );
 
-            CreateMap<DeliveryDto, DeliveryCreateUpdateViewModel>();
+            CreateMap<DeliveryDto, DeliveryCreateUpdateViewModel>()
+                .ForMember(
+                    dest => dest.SelectedCurrency,
+                    source => source.MapFrom(s => s.DollarRate.HasValue ? "$" : s.EuroRate.HasValue ? "€" : "₴")
+                );
             CreateMap<DeliveryCreateUpdateViewModel, DeliveryDto>();
+            CreateMap<DeliveryDto, DeliveryDeleteViewModel>()
+                .ForMember(
+                    dest => dest.SupplierName,
+                    source => source.MapFrom(s => s.Supplier.Name)
+                )
+                .ForMember(
+                    dest => dest.LocationName,
+                    source => source.MapFrom(s => s.Location.Name)
+                );
 
             CreateMap<DeliveryItemDto, DeliveryItemViewModel>();
             CreateMap<DeliveryItemViewModel, DeliveryItemDto>();

@@ -1,5 +1,9 @@
 ﻿$(document).ready(function () {
-    $("[data-toggle=tooltip]").tooltip({ container: 'body' });
+    $("[data-toggle=tooltip]").tooltip({
+        animated: 'fade',
+        container: 'body'
+    });
+
     $("input.input-validation-error").closest(".input-group").addClass("has-error");
     $("select.input-validation-error").closest(".input-group").addClass("has-error");
     $("span.field-validation-error").closest(".input-group").addClass("has-error");

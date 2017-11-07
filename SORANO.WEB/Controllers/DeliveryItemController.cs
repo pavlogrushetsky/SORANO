@@ -42,7 +42,7 @@ namespace SORANO.WEB.Controllers
                 UnitPrice = "0.00",
                 GrossPrice = "0.00",
                 Discount = "0.00",
-                DiscountPrice = "0.00"              
+                DiscountedPrice = "0.00"              
             }), ex =>
             {
                 TempData["Error"] = ex;

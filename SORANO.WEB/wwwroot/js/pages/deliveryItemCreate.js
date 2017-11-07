@@ -15,7 +15,7 @@
             }
             if (isNumeric(unitPrice) && isNumeric(discount)) {
                 var discountPrice = quantity * unitPrice - discount;
-                $('#DiscountPrice').val(formatDecimal(discountPrice));
+                $('#DiscountedPrice').val(formatDecimal(discountPrice));
             }
         });
 

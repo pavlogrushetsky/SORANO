@@ -33,7 +33,7 @@ namespace SORANO.WEB.Validators
                 .Must(BeGreaterThanOrEqualToZero)
                 .WithMessage("Значение должно быть больше или равна 0");
 
-            RuleFor(d => d.DiscountPrice)
+            RuleFor(d => d.DiscountedPrice)
                 .Must(BeGreaterThanZero)
                 .WithMessage("Значение должно быть больше 0");
         }

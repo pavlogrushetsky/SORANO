@@ -24,7 +24,7 @@ namespace SORANO.BLL.Extensions
                 TotalDiscount = model.TotalDiscount,
                 TotalDiscountedPrice = model.TotalDiscountedPrice,
                 IsSubmitted = model.IsSubmitted,
-                Items = model.Items.Select(i => i.ToDto())
+                Items = model.Items.Where(di => !di.IsDeleted).Select(i => i.ToDto())
             };
 
             dto.MapDetails(model);

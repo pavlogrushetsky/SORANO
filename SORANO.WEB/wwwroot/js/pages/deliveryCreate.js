@@ -26,7 +26,7 @@
     initDeliveryItemsDataTable();
 
     $('.submit-delivery').on('click', function () {
-        $('#Status').val(true);
+        $('#IsSubmitted').val(true);
     });
 
     $('#pick-delivery-date').datetimepicker({

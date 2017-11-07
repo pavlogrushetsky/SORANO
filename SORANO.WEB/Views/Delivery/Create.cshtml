@@ -67,7 +67,7 @@
         <input type="hidden" asp-for="@Model.Items[i].UnitPrice" />
         <input type="hidden" class="delivery-item-grossprice" asp-for="@Model.Items[i].GrossPrice" />
         <input type="hidden" class="delivery-item-discount" asp-for="@Model.Items[i].Discount" />
-        <input type="hidden" class="delivery-item-discountprice" asp-for="@Model.Items[i].DiscountPrice" />
+        <input type="hidden" class="delivery-item-discountprice" asp-for="@Model.Items[i].DiscountedPrice" />
         <input type="hidden" asp-for="@Model.Items[i].MainPicture.ID" />
         <input type="hidden" asp-for="@Model.Items[i].MainPicture.Name" />
         <input type="hidden" asp-for="@Model.Items[i].MainPicture.FullPath" />
@@ -293,11 +293,10 @@
                                 <td>@Model.Items[i].UnitPrice</td>
                                 <td>@Model.Items[i].GrossPrice</td>
                                 <td>@Model.Items[i].Discount</td>
-                                <td>@Model.Items[i].DiscountPrice</td>
+                                <td>@Model.Items[i].DiscountedPrice</td>
                                 <td>
                                     <button asp-controller="Delivery"
                                             asp-action="UpdateItem"
-                                            asp-route-id="@Model.Items[i].ID"
                                             asp-route-number="@i"
                                             asp-route-returnUrl="@returnUrl"
                                             class="btn btn-xs btn-default"
@@ -314,7 +313,6 @@
                                             title=""
                                             asp-controller="Delivery"
                                             asp-action="DeleteItem"
-                                            asp-route-id="@Model.Items[i].ID"
                                             asp-route-number="@i">
                                         <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
                                     </button>

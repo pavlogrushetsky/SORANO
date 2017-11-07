@@ -248,19 +248,12 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [LoadAttachmentsFilter]
-        public IActionResult UpdateItem(DeliveryCreateUpdateViewModel delivery, int id, int number, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public IActionResult UpdateItem(DeliveryCreateUpdateViewModel delivery, int number, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return TryGetActionResult(() =>
             {
-                var item = id > 0 
-                    ? delivery.Items.SingleOrDefault(di => di.ID == id) 
-                    : delivery.Items[number];
-
-                if (item == null)
-                    return BadRequest();
-
                 MemoryCache.Set(CacheKeys.CreateDeliveryItemCacheKey, delivery);
-                MemoryCache.Set(CacheKeys.DeliveryItemCacheKey, item);
+                MemoryCache.Set(CacheKeys.DeliveryItemCacheKey, delivery.Items[number]);
                 Session.SetBool(CacheKeys.DeliveryItemCacheValidKey, true);
                 return RedirectToAction("Update", "DeliveryItem", new { number, returnUrl });
             }, ex =>
@@ -273,20 +266,13 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [LoadAttachmentsFilter]
-        public virtual IActionResult DeleteItem(DeliveryCreateUpdateViewModel delivery, int id, int number, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public IActionResult DeleteItem(DeliveryCreateUpdateViewModel delivery, int number, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return TryGetActionResult(() =>
             {
                 ModelState.Clear();
 
-                var item = id > 0
-                    ? delivery.Items.SingleOrDefault(di => di.ID == id)
-                    : delivery.Items[number];
-
-                if (item == null)
-                    return BadRequest();
-
-                delivery.Items.Remove(item);
+                delivery.Items.RemoveAt(number);
 
                 return View("Create", delivery);
             }, ex =>
@@ -303,7 +289,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                ModelState.RemoveFor("Status");
+                ModelState.RemoveFor(nameof(model.IsSubmitted));
 
                 if (model.IsSubmitted && model.Items.Count == 0)
                 {
@@ -338,7 +324,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                ModelState.RemoveFor("Status");
+                ModelState.RemoveFor(nameof(model.IsSubmitted));
 
                 if (model.IsSubmitted && model.Items.Count == 0)
                 {
@@ -375,7 +361,7 @@ namespace SORANO.WEB.Controllers
 
                 if (result.Status == ServiceResponseStatus.Success)
                 {
-                    TempData["Success"] = $"Поставка была успешно помечена как удалённая.";
+                    TempData["Success"] = $"Поставка № {model.BillNumber} была успешно помечена как удалённая.";
                 }
                 else
                 {

@@ -25,7 +25,7 @@ namespace SORANO.WEB.ViewModels.DeliveryItem
         public string Discount { get; set; }
 
         [Display(Name = "Стоимость с учётом скидки")]
-        public string DiscountPrice { get; set; }
+        public string DiscountedPrice { get; set; }
 
         public string ReturnPath { get; set; }
     }

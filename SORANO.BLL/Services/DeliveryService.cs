@@ -176,11 +176,11 @@ namespace SORANO.BLL.Services
                 .ForEach(d =>
                 {
                     d.UpdateDeletedFields(userId);
-                    UnitOfWork.Get<DeliveryItem>().Delete(d);
+                    UnitOfWork.Get<DeliveryItem>().Update(d);
                 });
 
             from.Items
-                .Where(d => to.Attachments.Select(x => x.ID).Contains(d.ID))
+                .Where(d => to.Items.Select(x => x.ID).Contains(d.ID))
                 .ToList()
                 .ForEach(d =>
                 {
@@ -199,10 +199,11 @@ namespace SORANO.BLL.Services
                 });
 
             from.Items
-                .Where(d => !to.Attachments.Select(x => x.ID).Contains(d.ID))
+                .Where(d => !to.Items.Select(x => x.ID).Contains(d.ID))
                 .ToList()
                 .ForEach(d =>
                 {
+                    d.DeliveryID = to.ID;
                     d.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
                     to.Items.Add(d);
                 });
