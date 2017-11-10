@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using SORANO.BLL.Dtos;
@@ -178,6 +179,10 @@ namespace SORANO.WEB.Mappings
                 .ForMember(
                     dest => dest.MainPicturePath,
                     source => source.MapFrom(s => s.MainPicture.FullPath)
+                )
+                .ForMember(
+                    dest => dest.Table,
+                    source => source.MapFrom(s => s.DeliveryItems)
                 );
             CreateMap<ArticleDto, ArticleDeleteViewModel>();
             CreateMap<ArticleCreateUpdateViewModel, ArticleDto>();
@@ -228,6 +233,27 @@ namespace SORANO.WEB.Mappings
                     source => source.MapFrom(s => s.DollarRate.HasValue ? "$" : s.EuroRate.HasValue ? "€" : "₴")
                 );
             CreateMap<DeliveryCreateUpdateViewModel, DeliveryDto>();
+            CreateMap<DeliveryDto, DeliveryDetailsViewModel>()
+                .ForMember(
+                    dest => dest.MainPicturePath,
+                    source => source.MapFrom(s => s.MainPicture.FullPath)
+                )
+                .ForMember(
+                    dest => dest.Currency,
+                    source => source.MapFrom(s => s.DollarRate.HasValue ? "$" : s.EuroRate.HasValue ? "€" : "₴")
+                )
+                .ForMember(
+                    dest => dest.SupplierName,
+                    source => source.MapFrom(s => s.Supplier.Name)
+                )
+                .ForMember(
+                    dest => dest.LocationName,
+                    source => source.MapFrom(s => s.Location.Name)
+                )
+                .ForMember(
+                    dest => dest.Table,
+                    source => source.MapFrom(s => s.Items)
+                );
             CreateMap<DeliveryDto, DeliveryDeleteViewModel>()
                 .ForMember(
                     dest => dest.SupplierName,
@@ -238,7 +264,24 @@ namespace SORANO.WEB.Mappings
                     source => source.MapFrom(s => s.Location.Name)
                 );
 
-            CreateMap<DeliveryItemDto, DeliveryItemViewModel>();
+            CreateMap<DeliveryItemDto, DeliveryItemViewModel>()
+                .ForMember(
+                    dest => dest.Currency,
+                    source => source.MapFrom(s => s.Delivery.DollarRate.HasValue ? "$" : s.Delivery.EuroRate.HasValue ? "€" : "₴")
+                )
+                .ForMember(
+                    dest => dest.DeliveryBillNumber,
+                    source => source.MapFrom(s => s.Delivery.BillNumber)
+                )
+                .ForMember(
+                    dest => dest.DeliveryDate,
+                    source => source.MapFrom(s => s.Delivery.DeliveryDate)
+                );
+            CreateMap<IEnumerable<DeliveryItemDto>, DeliveryItemTableViewModel>()
+                .ForMember(
+                    dest => dest.Items,
+                    source => source.MapFrom(s => s)
+                );
             CreateMap<DeliveryItemViewModel, DeliveryItemDto>();
 
             #endregion

@@ -17,7 +17,8 @@ namespace SORANO.BLL.Extensions
                 Code = model.Code,
                 Barcode = model.Barcode,
                 TypeID = model.TypeID,
-                Type = model.Type?.ToDto()
+                Type = model.Type?.ToDto(),
+                DeliveryItems = model.DeliveryItems.Where(di => !di.IsDeleted && !di.Delivery.IsDeleted).Select(i => i.ToDto())
             };
 
             dto.MapDetails(model);

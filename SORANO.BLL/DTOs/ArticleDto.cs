@@ -1,4 +1,6 @@
-﻿namespace SORANO.BLL.Dtos
+﻿using System.Collections.Generic;
+
+namespace SORANO.BLL.Dtos
 {
     public class ArticleDto : BaseDto
     {
@@ -15,5 +17,7 @@
         public int TypeID { get; set; }
 
         public ArticleTypeDto Type { get; set; }
+
+        public IEnumerable<DeliveryItemDto> DeliveryItems { get; set; }
     }
 }

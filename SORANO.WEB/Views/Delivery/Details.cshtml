@@ -1,12 +1,10 @@
-﻿@model DeliveryModel
+﻿@model DeliveryDetailsViewModel
 
 @{
     ViewBag.Title = "SORANO - Детали поставки";
     ViewBag.Header = "Детали";
     ViewBag.Description = "поставки";
     ViewBag.Icon = "fa fa-fw fa-info-circle";
-
-    var symbol = Model.SelectedCurrency == 2 ? "€" : Model.SelectedCurrency == 1 ? "$" : "₴";
 }
 
 @section Styles {
@@ -25,9 +23,9 @@
 <div class="col-lg-12">
     <div class="row">
         <div style="float:left;">
-            @if (Model.MainPicture?.FullPath != null)
+            @if (Model.HasMainPicture)
             {
-                <img src="@Url.Content(Model.MainPicture.FullPath)" />
+                <img src="@Url.Content(Model.MainPicturePath)" />
             }
         </div>
         <div style="float:left;">
@@ -65,7 +63,7 @@
                         @Html.DisplayNameFor(model => model.DollarRate)
                     </dt>
                     <dd>
-                        @Html.DisplayFor(model => model.DollarRate)
+                        @Html.DisplayFor(model => model.DollarRate) ₴
                     </dd>
                 }
                 @if (!string.IsNullOrEmpty(Model.EuroRate))
@@ -74,60 +72,62 @@
                         @Html.DisplayNameFor(model => model.EuroRate)
                     </dt>
                     <dd>
-                        @Html.DisplayFor(model => model.EuroRate)
+                        @Html.DisplayFor(model => model.EuroRate) ₴
                     </dd>
                 }
                 <dt>
-                    @Html.DisplayNameFor(model => model.Supplier)
+                    @Html.DisplayNameFor(model => model.SupplierName)
                 </dt>
                 <dd>
                     <a asp-controller="Supplier"
                        asp-action="Details"
-                       asp-route-id="@Model.Supplier.ID"
+                       asp-route-id="@Model.SupplierID"
                        data-toggle="tooltip"
                        data-placement="right"
                        data-original-title="Просмотреть информацию о поставщике"
                        title="">
-                        @Html.DisplayFor(model => model.Supplier.Name)
+                        @Html.DisplayFor(model => model.SupplierName)
                     </a>
                 </dd>
                 <dt>
-                    @Html.DisplayNameFor(model => model.Location)
+                    @Html.DisplayNameFor(model => model.LocationName)
                 </dt>
                 <dd>
                     <a asp-controller="Location"
                        asp-action="Details"
-                       asp-route-id="@Model.Location.ID"
+                       asp-route-id="@Model.LocationID"
                        data-toggle="tooltip"
                        data-placement="right"
                        data-original-title="Просмотреть информацию о месте поставки"
                        title="">
-                        @Html.DisplayFor(model => model.Location.Name)
+                        @Html.DisplayFor(model => model.LocationName)
                     </a>
                 </dd>   
                 <dt>
-                    @Html.DisplayNameFor(model => model.Status)
+                    @Html.DisplayNameFor(model => model.IsSubmitted)
                 </dt>
                 <dd>
-                    <span class="label label-@(Model.Status ? "success" : "warning")">@(Model.Status ? "Подтверждено" : "Не подтверждено")</span>
+                    <span class="label label@(Model.IsSubmitted ? "-success" : "-warning")">
+                        @(Model.IsSubmitted ? "Подтверждено" : "Не подтверждено")
+                    </span>
                 </dd>
                 <dt>
                     @Html.DisplayNameFor(model => model.TotalGrossPrice)
                 </dt>
                 <dd>
-                    @Html.DisplayFor(model => model.TotalGrossPrice) @symbol
+                    @Html.DisplayFor(model => model.TotalGrossPrice) @Model.Currency
                 </dd>
                 <dt>
                     @Html.DisplayNameFor(model => model.TotalDiscount)
                 </dt>
                 <dd>
-                    @Html.DisplayFor(model => model.TotalDiscount) @symbol
+                    @Html.DisplayFor(model => model.TotalDiscount) @Model.Currency
                 </dd>
                 <dt>
-                    @Html.DisplayNameFor(model => model.TotalDiscountPrice)
+                    @Html.DisplayNameFor(model => model.TotalDiscountedPrice)
                 </dt>
                 <dd>
-                    @Html.DisplayFor(model => model.TotalDiscountPrice) @symbol
+                    @Html.DisplayFor(model => model.TotalDiscountedPrice) @Model.Currency
                 </dd>
                 <dt>
                     @Html.DisplayNameFor(model => model.Created)
@@ -212,57 +212,15 @@
                         <a data-toggle="collapse" data-parent="#accordion" href="#collapseDeliveries">
                             <span>
                                 <i class="fa fa-fw fa-cart-arrow-down" aria-hidden="true"></i>
-                                @Html.DisplayNameFor(m => m.DeliveryItems)
-                                <span class="badge pull-right">@Model.DeliveryItemsCount</span>
+                                @Html.DisplayNameFor(m => m.Table)
+                                <span class="badge pull-right">@Model.Table.Items.Count</span>
                             </span>
                         </a>
                     </h4>
                 </div>
                 <div id="collapseDeliveries" class="panel-collapse collapse">
                     <div class="panel-body">
-                        <table id="items-datatable" class="table table-striped table-bordered table-hover table-responsive" style="width: 100%">
-                            <thead>
-                                <tr role="row" id="search-row">
-                                    <th style="width: 25%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Артикул" /></th>
-                                    <th style="width: 15%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Кол-во, шт." /></th>
-                                    <th style="width: 15%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Цена" /></th>
-                                    <th style="width: 15%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Без скидки" /></th>
-                                    <th style="width: 15%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Скидка" /></th>
-                                    <th style="width: 15%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" style="width: 100%" placeholder="Сумма" /></th>
-                                </tr>
-                                <tr role="row">
-                                    <th style="width: 25%"><i class="fa fa-fw fa-barcode" aria-hidden="true"></i>&nbsp;Артикул</th>
-                                    <th style="width: 15%"><i class="fa fa-fw fa-hashtag" aria-hidden="true"></i>&nbsp;Кол-во, шт.</th>
-                                    <th style="width: 15%"><i class="fa fa-fw fa-money" aria-hidden="true"></i>&nbsp;Цена</th>
-                                    <th style="width: 15%"><i class="fa fa-fw fa-money" aria-hidden="true"></i>&nbsp;Без скидки</th>
-                                    <th style="width: 15%"><i class="fa fa-fw fa-money" aria-hidden="true"></i>&nbsp;Скидка</th>
-                                    <th style="width: 15%"><i class="fa fa-fw fa-money" aria-hidden="true"></i>&nbsp;Сумма</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (var i = 0; i < Model.DeliveryItems.Count; i++)
-                                {
-                                    <tr class="@(Model.DeliveryItems[i].IsDeleted ? "danger" : "")">
-                                        <td>
-                                            <a asp-controller="Article"
-                                               asp-action="Details"
-                                               asp-route-id="@Model.DeliveryItems[i].ArticleID"
-                                               data-toggle="tooltip"
-                                               data-placement="bottom"
-                                               data-original-title="Просмотреть информацию об артикуле"
-                                               title="">
-                                                @Model.DeliveryItems[i].Article.Name
-                                            </a>
-                                        </td>
-                                        <td>@Model.DeliveryItems[i].Quantity</td>
-                                        <td>@Model.DeliveryItems[i].UnitPrice @symbol</td>
-                                        <td>@Model.DeliveryItems[i].GrossPrice @symbol</td>
-                                        <td>@Model.DeliveryItems[i].Discount @symbol</td>
-                                        <td>@Model.DeliveryItems[i].DiscountPrice @symbol</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                        @Html.Partial("~/Views/DeliveryItem/_Table.cshtml", Model.Table)
                     </div>
                 </div>
             </div>

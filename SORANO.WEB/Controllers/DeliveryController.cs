@@ -15,6 +15,7 @@ using SORANO.WEB.ViewModels.Delivery;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SORANO.WEB.ViewModels.DeliveryItem;
 
 namespace SORANO.WEB.Controllers
 {
@@ -172,7 +173,10 @@ namespace SORANO.WEB.Controllers
                     return RedirectToAction("Index");
                 }
 
-                return View(_mapper.Map<DeliveryDetailsViewModel>(result.Result));
+                var viewModel = _mapper.Map<DeliveryDetailsViewModel>(result.Result);
+                viewModel.Table.Mode = DeliveryItemTableMode.DeliveryDetails;
+
+                return View(viewModel);
             }, OnFault);          
         }
 

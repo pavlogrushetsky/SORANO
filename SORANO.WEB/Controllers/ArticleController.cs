@@ -16,6 +16,7 @@ using SORANO.WEB.ViewModels.Attachment;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SORANO.WEB.ViewModels.DeliveryItem;
 
 namespace SORANO.WEB.Controllers
 {
@@ -151,9 +152,12 @@ namespace SORANO.WEB.Controllers
                 {
                     TempData["Error"] = "Не удалось найти указанный артикул.";
                     return RedirectToAction("Index");
-                }               
+                }
 
-                return View(_mapper.Map<ArticleDetailsViewModel>(result.Result));
+                var viewModel = _mapper.Map<ArticleDetailsViewModel>(result.Result);
+                viewModel.Table.Mode = DeliveryItemTableMode.ArticleDetails;
+
+                return View(viewModel);
             }, OnFault);            
         }
 

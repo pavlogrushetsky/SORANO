@@ -178,16 +178,15 @@
                         <a data-toggle="collapse" data-parent="#accordion" href="#collapseDeliveries">
                             <span>
                                 <i class="fa fa-fw fa-cart-arrow-down" aria-hidden="true"></i>
-                                @* TODO *@
-                                Позиции поставок 
-                                <span class="badge pull-right">0</span>
+                                @Html.DisplayNameFor(m => m.Table)
+                                <span class="badge pull-right">@Model.Table.Items.Count</span>
                             </span>
                         </a>
                     </h4>
                 </div>
                 <div id="collapseDeliveries" class="panel-collapse collapse">
                     <div class="panel-body">
-                        @* TODO *@
+                        @Html.Partial("~/Views/DeliveryItem/_Table.cshtml", Model.Table)
                     </div>
                 </div>
             </div>

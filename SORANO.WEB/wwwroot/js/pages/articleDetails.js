@@ -21,4 +21,5 @@
 
     initRecomendationsDataTable();
     initAttachmentsDataTable();
+    initDeliveryItemsDataTable();
 });

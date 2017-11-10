@@ -27,6 +27,21 @@ namespace SORANO.WEB.ViewModels.DeliveryItem
         [Display(Name = "Стоимость с учётом скидки")]
         public string DiscountedPrice { get; set; }
 
+        public int DeliveryID { get; set; }
+
+        [Display(Name = "Поставка")]
+        public string DeliveryBillNumber { get; set; }
+
+        public int LocationID { get; set; }
+
+        [Display(Name = "Место поставки")]
+        public string LocationName { get; set; }
+
+        [Display(Name = "Дата поставки")]
+        public string DeliveryDate { get; set; }
+
         public string ReturnPath { get; set; }
+
+        public string Currency { get; set; }
     }
 }
