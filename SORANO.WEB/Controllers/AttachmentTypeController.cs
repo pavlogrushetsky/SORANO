@@ -15,7 +15,7 @@ using SORANO.WEB.ViewModels.AttachmentType;
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    [CheckUserFilter]
+    [CheckUser]
     public class AttachmentTypeController : EntityBaseController<AttachmentTypeCreateUpdateViewModel>
     {
         private readonly IMapper _mapper;
@@ -102,7 +102,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [ValidateModelFilter]
+        [ValidateModel]
         public async Task<IActionResult> Create(AttachmentTypeCreateUpdateViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
@@ -129,7 +129,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [ValidateModelFilter]
+        [ValidateModel]
         public async Task<IActionResult> Update(AttachmentTypeCreateUpdateViewModel model)
         {
             return await TryGetActionResultAsync(async () =>

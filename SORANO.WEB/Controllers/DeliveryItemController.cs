@@ -16,7 +16,7 @@ using SORANO.WEB.ViewModels.DeliveryItem;
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    [CheckUserFilter]
+    [CheckUser]
     public class DeliveryItemController : EntityBaseController<DeliveryItemViewModel>
     {
         public DeliveryItemController(IUserService userService,
@@ -111,7 +111,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [LoadAttachmentsFilter]
+        [LoadAttachments]
         public IActionResult CreateArticle(DeliveryItemViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return TryGetActionResult(() =>
@@ -127,8 +127,8 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [LoadAttachmentsFilter]
-        [ValidateModelFilter]
+        [LoadAttachments]
+        [ValidateModel]
         public IActionResult Create(DeliveryItemViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             if (string.IsNullOrWhiteSpace(model.ReturnPath))
@@ -160,8 +160,8 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [LoadAttachmentsFilter]
-        [ValidateModelFilter]
+        [LoadAttachments]
+        [ValidateModel]
         public IActionResult Update(DeliveryItemViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             if (string.IsNullOrWhiteSpace(model.ReturnPath))

@@ -9,7 +9,7 @@ using SORANO.WEB.ViewModels;
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager,editor,user")]
-    [CheckUserFilter]
+    [CheckUser]
     public class HomeController : BaseController
     {
         private readonly IDeliveryService _deliveryService;

@@ -7,9 +7,9 @@ using SORANO.BLL.Services.Abstract;
 
 namespace SORANO.WEB.Infrastructure.Filters
 {
-    public class CheckUserFilterAttribute : TypeFilterAttribute
+    public class CheckUserAttribute : TypeFilterAttribute
     {
-        public CheckUserFilterAttribute() : base(typeof(CheckUserFilterImplementation))
+        public CheckUserAttribute() : base(typeof(CheckUserFilterImplementation))
         {            
         }
 

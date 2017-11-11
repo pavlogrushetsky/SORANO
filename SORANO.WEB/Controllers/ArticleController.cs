@@ -20,7 +20,7 @@ using SORANO.WEB.ViewModels.DeliveryItem;
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    [CheckUserFilter]
+    [CheckUser]
     public class ArticleController : EntityBaseController<ArticleCreateUpdateViewModel>
     {
         private readonly IArticleService _articleService;
@@ -186,7 +186,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [LoadAttachmentsFilter]
+        [LoadAttachments]
         public IActionResult CreateParentType(ArticleCreateUpdateViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return TryGetActionResult(() =>
@@ -202,8 +202,8 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [LoadAttachmentsFilter]
-        [ValidateModelFilter]
+        [LoadAttachments]
+        [ValidateModel]
         public async Task<IActionResult> Create(ArticleCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return await TryGetActionResultAsync(async () =>
@@ -248,8 +248,8 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [LoadAttachmentsFilter]
-        [ValidateModelFilter]
+        [LoadAttachments]
+        [ValidateModel]
         public async Task<IActionResult> Update(ArticleCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return await TryGetActionResultAsync(async () =>

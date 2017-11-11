@@ -20,7 +20,7 @@ using SORANO.WEB.ViewModels.Delivery;
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    [CheckUserFilter]
+    [CheckUser]
     public class SupplierController : EntityBaseController<SupplierCreateUpdateViewModel>
     {
         private readonly ISupplierService _supplierService;
@@ -173,8 +173,8 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [LoadAttachmentsFilter]
-        [ValidateModelFilter]
+        [LoadAttachments]
+        [ValidateModel]
         public async Task<IActionResult> Create(SupplierCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return await TryGetActionResultAsync(async () =>
@@ -214,8 +214,8 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [LoadAttachmentsFilter]
-        [ValidateModelFilter]
+        [LoadAttachments]
+        [ValidateModel]
         public async Task<IActionResult> Update(SupplierCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return await TryGetActionResultAsync(async () =>

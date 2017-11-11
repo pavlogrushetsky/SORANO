@@ -18,7 +18,7 @@ using SORANO.WEB.ViewModels.Client;
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    [CheckUserFilter]
+    [CheckUser]
     public class ClientController : EntityBaseController<ClientCreateUpdateViewModel>
     {
         private readonly IClientService _clientService;
@@ -167,8 +167,8 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [LoadAttachmentsFilter]
-        [ValidateModelFilter]
+        [LoadAttachments]
+        [ValidateModel]
         public async Task<IActionResult> Create(ClientCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return await TryGetActionResultAsync(async () =>
@@ -190,8 +190,8 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [LoadAttachmentsFilter]
-        [ValidateModelFilter]
+        [LoadAttachments]
+        [ValidateModel]
         public async Task<IActionResult> Update(ClientCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return await TryGetActionResultAsync(async () =>

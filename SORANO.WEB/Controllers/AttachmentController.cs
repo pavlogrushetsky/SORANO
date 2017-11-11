@@ -17,7 +17,7 @@ using SORANO.WEB.ViewModels.Common;
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    [CheckUserFilter]
+    [CheckUser]
     public class AttachmentController : BaseController
     {
         private readonly IAttachmentService _attachmentService;

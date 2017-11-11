@@ -14,7 +14,7 @@ using SORANO.BLL.Dtos;
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer, administrator")]
-    [CheckUserFilter]
+    [CheckUser]
     public class UserController : BaseController
     {
         private readonly IRoleService _roleService;

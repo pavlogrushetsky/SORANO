@@ -18,7 +18,7 @@ using SORANO.WEB.ViewModels.DeliveryItem;
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager,editor,user")]
-    [CheckUserFilter]
+    [CheckUser]
     public class DeliveryController : EntityBaseController<DeliveryCreateUpdateViewModel>
     {
         private readonly IDeliveryService _deliveryService;
@@ -204,7 +204,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [LoadAttachmentsFilter]
+        [LoadAttachments]
         public IActionResult CreateLocation(DeliveryCreateUpdateViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return TryGetActionResult(() =>
@@ -220,7 +220,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [LoadAttachmentsFilter]
+        [LoadAttachments]
         public IActionResult CreateSupplier(DeliveryCreateUpdateViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return TryGetActionResult(() =>
@@ -236,7 +236,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [LoadAttachmentsFilter]
+        [LoadAttachments]
         public IActionResult AddItem(DeliveryCreateUpdateViewModel delivery, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return TryGetActionResult(() =>
@@ -252,7 +252,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [LoadAttachmentsFilter]
+        [LoadAttachments]
         public IActionResult UpdateItem(DeliveryCreateUpdateViewModel delivery, int number, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return TryGetActionResult(() =>
@@ -270,7 +270,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [LoadAttachmentsFilter]
+        [LoadAttachments]
         public IActionResult DeleteItem(DeliveryCreateUpdateViewModel delivery, int number, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return TryGetActionResult(() =>
@@ -289,7 +289,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [LoadAttachmentsFilter]
+        [LoadAttachments]
         public async Task<IActionResult> Create(DeliveryCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return await TryGetActionResultAsync(async () =>
@@ -324,7 +324,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [LoadAttachmentsFilter]
+        [LoadAttachments]
         public async Task<IActionResult> Update(DeliveryCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return await TryGetActionResultAsync(async () =>

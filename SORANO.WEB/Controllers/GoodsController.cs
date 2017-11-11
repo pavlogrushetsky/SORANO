@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager,editor,user")]
-    [CheckUserFilter]
+    [CheckUser]
     public class GoodsController : BaseController
     {
         private readonly IGoodsService _goodsService;

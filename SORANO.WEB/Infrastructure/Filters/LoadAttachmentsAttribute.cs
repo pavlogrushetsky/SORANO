@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace SORANO.WEB.Infrastructure.Filters
 {
-    public class LoadAttachmentsFilterAttribute : ActionFilterAttribute
+    public class LoadAttachmentsAttribute : ActionFilterAttribute
     {
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
