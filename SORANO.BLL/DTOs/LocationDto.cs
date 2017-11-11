@@ -1,4 +1,6 @@
-﻿namespace SORANO.BLL.Dtos
+﻿using System.Collections.Generic;
+
+namespace SORANO.BLL.Dtos
 {
     public class LocationDto : BaseDto
     {
@@ -9,5 +11,7 @@
         public string Comment { get; set; }
 
         public LocationTypeDto Type { get; set; }
+
+        public IEnumerable<DeliveryDto> Deliveries { get; set; }
     }
 }

@@ -16,6 +16,7 @@ using SORANO.WEB.ViewModels.Location;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SORANO.WEB.ViewModels.Delivery;
 
 // ReSharper disable Mvc.ViewNotResolved
 
@@ -156,7 +157,10 @@ namespace SORANO.WEB.Controllers
                     return RedirectToAction("Index");
                 }
 
-                return View(_mapper.Map<LocationDetailsViewModel>(result.Result));
+                var viewModel = _mapper.Map<LocationDetailsViewModel>(result.Result);
+                viewModel.Deliveries.Mode = DeliveryTableMode.LocationDetails;
+
+                return View(viewModel);
             }, OnFault);
         }
 

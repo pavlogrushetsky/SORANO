@@ -14,7 +14,8 @@ namespace SORANO.BLL.Extensions
                 Name = model.Name,
                 Comment = model.Comment,
                 TypeID = model.TypeID,
-                Type = model.Type.ToDto()
+                Type = model.Type.ToDto(),
+                Deliveries = model.Deliveries.Where(d => !d.IsDeleted).Select(d => d.ToDto())
             };
 
             dto.MapDetails(model);

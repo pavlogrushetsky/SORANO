@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using SORANO.WEB.ViewModels.Common;
+using SORANO.WEB.ViewModels.Delivery;
 
 namespace SORANO.WEB.ViewModels.Location
 {
@@ -17,5 +18,8 @@ namespace SORANO.WEB.ViewModels.Location
         public string TypeName { get; set; }
 
         public string TypeDescription { get; set; }
+
+        [Display(Name = "Поставки")]
+        public DeliveryIndexViewModel Deliveries { get; set; }
     }
 }

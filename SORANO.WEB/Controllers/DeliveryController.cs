@@ -12,8 +12,6 @@ using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.Delivery;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using SORANO.WEB.ViewModels.DeliveryItem;
 
@@ -62,7 +60,10 @@ namespace SORANO.WEB.Controllers
 
                 await ClearAttachments();
 
-                return View(_mapper.Map<IEnumerable<DeliveryIndexViewModel>>(deliveriesResult.Result));
+                var viewModel = _mapper.Map<DeliveryIndexViewModel>(deliveriesResult.Result);
+                viewModel.Mode = DeliveryTableMode.DeliveryIndex;
+
+                return View(viewModel);
             }, ex => 
             {
                 TempData["Error"] = ex;

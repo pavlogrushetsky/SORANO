@@ -209,10 +209,18 @@ namespace SORANO.WEB.Mappings
 
             #region Delivery
 
-            CreateMap<DeliveryDto, DeliveryIndexViewModel>()
+            CreateMap<DeliveryDto, DeliveryViewModel>()
                 .ForMember(
                     dest => dest.DeliveryItemsCount,
                     source => source.MapFrom(s => s.Items.Count())
+                )
+                .ForMember(
+                    dest => dest.SupplierName,
+                    source => source.MapFrom(s => s.Supplier.Name)
+                )
+                .ForMember(
+                    dest => dest.LocationName,
+                    source => source.MapFrom(s => s.Location.Name)
                 )
                 .ForMember(
                     dest => dest.TotalPrice,
@@ -225,6 +233,11 @@ namespace SORANO.WEB.Mappings
                 .ForMember(
                     dest => dest.CanBeUpdated,
                     source => source.MapFrom(s => s.CanBeDeleted)
+                );
+            CreateMap<IEnumerable<DeliveryDto>, DeliveryIndexViewModel>()
+                .ForMember(
+                    dest => dest.Items,
+                    source => source.MapFrom(s => s)
                 );
 
             CreateMap<DeliveryDto, DeliveryCreateUpdateViewModel>()

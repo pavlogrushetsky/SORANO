@@ -32,11 +32,6 @@ namespace SORANO.WEB.ViewModels.DeliveryItem
         [Display(Name = "Поставка")]
         public string DeliveryBillNumber { get; set; }
 
-        public int LocationID { get; set; }
-
-        [Display(Name = "Место поставки")]
-        public string LocationName { get; set; }
-
         [Display(Name = "Дата поставки")]
         public string DeliveryDate { get; set; }
 

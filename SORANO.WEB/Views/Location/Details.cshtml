@@ -144,7 +144,25 @@
                         @Html.Partial("~/Views/Shared/_AttachmentsDetails.cshtml", Model.Attachments)
                     </div>
                 </div>
-            </div>    
+            </div>   
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseDeliveries">
+                            <span>
+                                <i class="fa fa-fw fa-cart-arrow-down" aria-hidden="true"></i>
+                                @Html.DisplayNameFor(m => m.Deliveries)
+                                <span class="badge pull-right">@Model.Deliveries.Items.Count</span>
+                            </span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseDeliveries" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        @Html.Partial("~/Views/Delivery/_Table.cshtml", Model.Deliveries)
+                    </div>
+                </div>
+            </div>
             <div class="panel panel-info">
                 <div class="panel-heading">
                     <h4 class="panel-title">

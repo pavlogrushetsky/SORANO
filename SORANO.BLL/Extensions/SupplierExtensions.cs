@@ -12,7 +12,8 @@ namespace SORANO.BLL.Extensions
             {
                 ID = model.ID,
                 Name = model.Name,
-                Description = model.Description
+                Description = model.Description,
+                Deliveries = model.Deliveries.Where(d => !d.IsDeleted).Select(d => d.ToDto())
             };
 
             dto.MapDetails(model);

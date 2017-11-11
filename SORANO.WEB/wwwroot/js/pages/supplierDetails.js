@@ -23,31 +23,3 @@
     initAttachmentsDataTable();
     initDeliveriesDataTable();
 });
-
-function initDeliveriesDataTable() {
-    var deliveriesTable = $("#deliveries-datatable").DataTable({
-        responsive: true,
-        "pagingType": "numbers",
-        "language": {
-            "lengthMenu": "Отобразить _MENU_ поставок на странице",
-            "zeroRecords": "Поставки отсутствуют",
-            "info": "Отображение страницы _PAGE_ из _PAGES_",
-            "infoEmpty": "Записи отсутствуют",
-            "infoFiltered": "(Отфильтровано из _MAX_ записей)",
-            "search": "Поиск"
-        },
-        "drawCallback": function () {
-            $('.pagination').addClass('pagination-sm');
-        }
-    });
-
-    deliveriesTable.columns().eq(0).each(function (colIdx) {
-        $('input', $('#items-datatable th')[colIdx]).on('keyup change',
-            function () {
-                deliveriesTable
-                    .column(colIdx)
-                    .search(this.value)
-                    .draw();
-            });
-    });
-}
