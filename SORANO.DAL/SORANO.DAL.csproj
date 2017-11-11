@@ -79,6 +79,7 @@
     <Compile Include="Migrations\201708061737225_ReimplementedBarcodeUniqueIndex.Designer.cs">
       <DependentUpon>201708061737225_ReimplementedBarcodeUniqueIndex.cs</DependentUpon>
     </Compile>
+    <Compile Include="Repositories\IStockRepository.cs" />
     <Compile Include="Repositories\IUnitOfWork.cs" />
     <Compile Include="Context\StockContext.cs" />
     <Compile Include="Repositories\UnitOfWork.cs" />

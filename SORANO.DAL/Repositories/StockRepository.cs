@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SORANO.DAL.Repositories
 {
-    public class StockRepository<T> where T : Entity, new()
+    public class StockRepository<T> : IStockRepository<T> where T : Entity, new()
     {
         private readonly StockContext _context;
         private readonly IDbSet<T> _dataSet;

@@ -17,14 +17,14 @@ namespace SORANO.DAL.Repositories
             _repositories = new Dictionary<string, object>();
         }
 
-        public StockRepository<T> Get<T>() where T : Entity, new()
+        public IStockRepository<T> Get<T>() where T : Entity, new()
         {
             var type = typeof(T);
             var key = type.ToString();
 
             if (_repositories.ContainsKey(key))
             {
-                return _repositories[key] as StockRepository<T>;
+                return _repositories[key] as IStockRepository<T>;
             }
 
             var repo = new StockRepository<T>(_context);
