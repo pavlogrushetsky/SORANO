@@ -266,7 +266,7 @@ namespace SORANO.WEB.Controllers
                 return RedirectToAction("Index", "Supplier");
             }
 
-            if (MemoryCache.TryGetValue(CacheKeys.CreateSupplierCacheKey, out DeliveryModel _))
+            if (MemoryCache.TryGetValue(CacheKeys.CreateSupplierCacheKey, out DeliveryCreateUpdateViewModel _))
             {
                 Session.SetBool(CacheKeys.CreateSupplierCacheValidKey, true);
             }

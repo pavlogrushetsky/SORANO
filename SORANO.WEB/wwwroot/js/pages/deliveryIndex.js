@@ -1,3 +1,3 @@
 ﻿$(document).ready(function () {
-    initDeliveriesDataTable(true);
+    initDeliveriesDataTable();
 });

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ArticleIndexViewModel>
+﻿@model ArticleIndexViewModel
 
 <table id="article-datatable" class="table table-striped table-hover">
     <thead>
@@ -6,21 +6,27 @@
             <th><input type="text" class="form-control input-sm" placeholder="Изменён" /></th>
             <th><input type="text" class="form-control input-sm" placeholder="Код" /></th>
             <th><input type="text" class="form-control input-sm" placeholder="Название" /></th>
-            <th><input type="text" class="form-control input-sm" placeholder="Тип" /></th>
+            @if (Model.Mode != ArticleTableMode.ArticleTypeDetails)
+            {
+                <th><input type="text" class="form-control input-sm" placeholder="Тип" /></th>
+            }            
             <th><input type="text" class="form-control input-sm" placeholder="Производитель" /></th>
-            <th></th>
+            <th></th>          
         </tr>
         <tr role="row">
             <th><i class="fa fa-fw fa-calendar"></i>Изменён</th>
             <th><i class="fa fa-fw fa-barcode"></i>Код</th>
             <th><i class="fa fa-fw fa-align-justify"></i>Название</th>
-            <th><i class="fa fa-fw fa-tag"></i>Тип</th>
+            @if (Model.Mode != ArticleTableMode.ArticleTypeDetails)
+            {
+                <th><i class="fa fa-fw fa-tag"></i>Тип</th>
+            }            
             <th><i class="fa fa-fw fa-suitcase"></i>Производитель</th>
-            <th>Действия</th>
+            <th>Действия</th>           
         </tr>
     </thead>
     <tbody>
-        @foreach (var article in Model)
+        @foreach (var article in Model.Articles)
         {
             <tr class="@(article.IsDeleted ? "danger" : "")">
                 <td>@article.Modified</td>
@@ -36,17 +42,20 @@
                         @article.Name
                     </a>
                 </td>
-                <td>
-                    <a asp-controller="ArticleType"
-                       asp-action="Details"
-                       asp-route-id="@article.TypeID"
-                       data-toggle="tooltip"
-                       data-placement="bottom"
-                       data-original-title="Просмотреть информацию о типе артикулов"
-                       title="">
-                        @article.TypeName
-                    </a>
-                </td>
+                @if (Model.Mode != ArticleTableMode.ArticleTypeDetails)
+                {
+                    <td>
+                        <a asp-controller="ArticleType"
+                           asp-action="Details"
+                           asp-route-id="@article.TypeID"
+                           data-toggle="tooltip"
+                           data-placement="bottom"
+                           data-original-title="Просмотреть информацию о типе артикулов"
+                           title="">
+                            @article.TypeName
+                        </a>
+                    </td>
+                }                
                 <td>@article.Producer</td>
                 <td>
                     <a asp-controller="Article"
@@ -59,7 +68,7 @@
                        title="">
                         <i class="fa fa-fw fa-info-circle" aria-hidden="true"></i>
                     </a>
-                    @if (!article.IsDeleted)
+                    @if (Model.Mode == ArticleTableMode.ArticleIndex && !article.IsDeleted)
                     {
                         <a asp-controller="Article"
                            asp-action="Update"

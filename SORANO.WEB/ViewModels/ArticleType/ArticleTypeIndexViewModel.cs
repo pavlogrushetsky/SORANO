@@ -26,6 +26,6 @@ namespace SORANO.WEB.ViewModels.ArticleType
 
         public IEnumerable<ArticleTypeIndexViewModel> ChildTypes { get; set; }
 
-        public IEnumerable<ArticleIndexViewModel> Articles { get; set; }
+        public IEnumerable<ArticleViewModel> Articles { get; set; }
     }
 }

@@ -160,7 +160,12 @@ namespace SORANO.WEB.Mappings
 
             #region Article
 
-            CreateMap<ArticleDto, ArticleIndexViewModel>();
+            CreateMap<ArticleDto, ArticleViewModel>();
+            CreateMap<IEnumerable<ArticleDto>, ArticleIndexViewModel>()
+                .ForMember(
+                    dest => dest.Articles,
+                    source => source.MapFrom(s => s)
+                );
             CreateMap<ArticleDto, ArticleSelectViewModel>()
                 .ForMember(
                     dest => dest.Type,

@@ -114,8 +114,11 @@ namespace SORANO.WEB.Controllers
                     TempData["Error"] = "Не удалось найти указанный тип артикулов.";
                     return RedirectToAction("Index", "Article");
                 }
-               
-                return View(_mapper.Map<ArticleTypeDetailsViewModel>(result.Result));
+
+                var viewModel = _mapper.Map<ArticleTypeDetailsViewModel>(result.Result);
+                viewModel.Articles.Mode = ArticleTableMode.ArticleTypeDetails;
+
+                return View(viewModel);
             }, OnFault);
         }
 

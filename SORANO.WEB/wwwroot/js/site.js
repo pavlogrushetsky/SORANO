@@ -290,7 +290,7 @@ function initArticlesDataTable() {
         "autoWidth": false,
         "scrollX": false,
         "columnDefs": [
-            { "orderable": false, "targets": 5 }
+            { "orderable": false, "targets": -1 }
         ],
         "order": [[0, "desc"]],
         "pagingType": "numbers",
@@ -348,13 +348,13 @@ function initDeliveryItemsDataTable() {
     });
 }
 
-function initDeliveriesDataTable(hasActions) {
+function initDeliveriesDataTable() {
     var table = $("#deliveries-datatable").DataTable({
         responsive: true,
         "autoWidth": false,
         "scrollX": false,
         "columnDefs": [
-            { "orderable": false, "targets": hasActions === true ? -1 : 0 }
+            { "orderable": false, "targets": -1 }
         ],
         "order": [[0, "desc"]],
         "pagingType": "numbers",

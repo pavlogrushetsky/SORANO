@@ -10,7 +10,6 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Infrastructure.Filters;
-using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.Location;
 using System.Collections.Generic;
@@ -295,7 +294,7 @@ namespace SORANO.WEB.Controllers
                 return RedirectToAction("Index", "Location");
             }
 
-            if (MemoryCache.TryGetValue(CacheKeys.CreateLocationCacheKey, out DeliveryModel _))
+            if (MemoryCache.TryGetValue(CacheKeys.CreateLocationCacheKey, out DeliveryCreateUpdateViewModel _))
             {
                 Session.SetBool(CacheKeys.CreateLocationCacheValidKey, true);
             }

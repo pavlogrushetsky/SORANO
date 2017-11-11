@@ -10,12 +10,12 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Infrastructure.Filters;
-using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.Article;
 using SORANO.WEB.ViewModels.Attachment;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SORANO.WEB.ViewModels.Delivery;
 using SORANO.WEB.ViewModels.DeliveryItem;
 
 namespace SORANO.WEB.Controllers
@@ -62,7 +62,10 @@ namespace SORANO.WEB.Controllers
 
                 await ClearAttachments();
 
-                return View(_mapper.Map<IEnumerable<ArticleIndexViewModel>>(articlesResult.Result));
+                var viewModel = _mapper.Map<ArticleIndexViewModel>(articlesResult.Result);
+                viewModel.Mode = ArticleTableMode.ArticleIndex;
+
+                return View(viewModel);
             }, ex =>
             {
                 TempData["Error"] = ex;
@@ -302,7 +305,7 @@ namespace SORANO.WEB.Controllers
                 return RedirectToAction("Index", "Article");
             }
 
-            if (MemoryCache.TryGetValue(CacheKeys.CreateArticleCacheKey, out DeliveryModel _))
+            if (MemoryCache.TryGetValue(CacheKeys.CreateArticleCacheKey, out DeliveryCreateUpdateViewModel _))
             {
                 Session.SetBool(CacheKeys.CreateArticleCacheValidKey, true);
             }

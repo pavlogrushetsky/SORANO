@@ -17,10 +17,7 @@
             <th><input type="text" class="form-control input-sm" placeholder="Позиций" /></th>
             <th><input type="text" class="form-control input-sm" placeholder="Сумма" /></th>
             <th><input type="text" class="form-control input-sm" placeholder="Статус" /></th>
-            @if (Model.Mode == DeliveryTableMode.DeliveryIndex)
-            {
-                <th></th>
-            }            
+            <th></th>           
         </tr>
         <tr role="row">
             <th><i class="fa fa-fw fa-calendar"></i>Поставка</th>
@@ -37,10 +34,7 @@
             <th><i class="fa fa-fw fa-hashtag"></i>Позиций</th>
             <th><i class="fa fa-fw fa-money"></i>Сумма</th>
             <th><i class="fa fa-fw fa-align-justify"></i>Статус</th>
-            @if (Model.Mode == DeliveryTableMode.DeliveryIndex)
-            {
-                <th>Действия</th>
-            }            
+            <th>Действия</th>            
         </tr>
     </thead>
     <tbody>
@@ -95,47 +89,47 @@
                         @(delivery.IsSubmitted ? "Подтверждено" : "Не подтверждено")
                     </span>
                 </td>
-                @if (Model.Mode == DeliveryTableMode.DeliveryIndex)
-                {
-                    <td nowrap="nowrap">
-                        <a asp-controller="Delivery"
-                           asp-action="Details"
-                           asp-route-id="@delivery.ID"
-                           class="btn btn-xs btn-default"
-                           data-toggle="tooltip"
-                           data-placement="bottom"
-                           data-original-title="Просмотреть информацию о поставке"
-                           title="">
-                            <i class="fa fa-fw fa-info-circle" aria-hidden="true"></i>
-                        </a>
-                        @if (delivery.CanBeUpdated)
+                <td nowrap="nowrap">
+                    <a asp-controller="Delivery"
+                        asp-action="Details"
+                        asp-route-id="@delivery.ID"
+                        class="btn btn-xs btn-default"
+                        data-toggle="tooltip"
+                        data-placement="bottom"
+                        data-original-title="Просмотреть информацию о поставке"
+                        title="">
+                        <i class="fa fa-fw fa-info-circle" aria-hidden="true"></i>
+                    </a>                        
+                    @if (Model.Mode == DeliveryTableMode.DeliveryIndex)
+                    {
+                        if (delivery.CanBeUpdated)
                         {
                             <a asp-controller="Delivery"
-                               asp-action="Update"
-                               asp-route-id="@delivery.ID"
-                               class="btn btn-xs btn-default"
-                               data-toggle="tooltip"
-                               data-placement="bottom"
-                               data-original-title="Редактировать поставку"
-                               title="">
+                            asp-action="Update"
+                            asp-route-id="@delivery.ID"
+                            class="btn btn-xs btn-default"
+                            data-toggle="tooltip"
+                            data-placement="bottom"
+                            data-original-title="Редактировать поставку"
+                            title="">
                                 <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
                             </a>
                         }
-                        @if (delivery.CanBeDeleted)
+                        if (delivery.CanBeDeleted)
                         {
                             <a class="btn btn-xs btn-danger"
-                               data-toggle="tooltip"
-                               data-placement="bottom"
-                               data-original-title="Удалить поставку"
-                               title=""
-                               asp-controller="Delivery"
-                               asp-action="Delete"
-                               asp-route-id="@delivery.ID">
+                            data-toggle="tooltip"
+                            data-placement="bottom"
+                            data-original-title="Удалить поставку"
+                            title=""
+                            asp-controller="Delivery"
+                            asp-action="Delete"
+                            asp-route-id="@delivery.ID">
                                 <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
                             </a>
                         }
-                    </td>
-                }                
+                    }                        
+                </td>               
             </tr>
         }
     </tbody>
