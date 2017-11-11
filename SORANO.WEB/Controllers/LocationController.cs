@@ -209,18 +209,17 @@ namespace SORANO.WEB.Controllers
                     return RedirectToAction("Index");
                 }
 
-                // TODO
-                //if (MemoryCache.TryGetValue(CacheKeys.CreateLocationCacheKey, out DeliveryModel cachedDelivery))
-                //{
-                //    cachedDelivery.Location = location.ToModel();
-                //    cachedDelivery.LocationID = location.ID.ToString();
-                //    MemoryCache.Set(CacheKeys.CreateLocationCacheKey, cachedDelivery);
-                //    Session.SetBool(CacheKeys.CreateLocationCacheValidKey, true);
-                //}
-                //else
-                //{
-                //    return BadRequest();
-                //}
+                if (MemoryCache.TryGetValue(CacheKeys.CreateLocationCacheKey, out DeliveryCreateUpdateViewModel cachedDelivery))
+                {
+                    cachedDelivery.LocationName = model.Name;
+                    cachedDelivery.LocationID = result.Result;
+                    MemoryCache.Set(CacheKeys.CreateLocationCacheKey, cachedDelivery);
+                    Session.SetBool(CacheKeys.CreateLocationCacheValidKey, true);
+                }
+                else
+                {
+                    return BadRequest();
+                }
 
                 return Redirect(model.ReturnPath);
             }, OnFault);

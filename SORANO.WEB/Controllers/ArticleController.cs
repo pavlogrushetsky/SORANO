@@ -15,7 +15,6 @@ using SORANO.WEB.ViewModels.Attachment;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SORANO.WEB.ViewModels.Delivery;
 using SORANO.WEB.ViewModels.DeliveryItem;
 
 namespace SORANO.WEB.Controllers
@@ -231,18 +230,17 @@ namespace SORANO.WEB.Controllers
                     return RedirectToAction("Index");
                 }
 
-                // TODO
-                //if (MemoryCache.TryGetValue(CacheKeys.CreateArticleCacheKey, out DeliveryModel cachedDelivery))
-                //{
-                //    cachedDelivery.DeliveryItems[cachedDelivery.CurrentItemNumber].Article = model;
-                //    cachedDelivery.DeliveryItems[cachedDelivery.CurrentItemNumber].ArticleID = article.ID.ToString();
-                //    MemoryCache.Set(CacheKeys.CreateArticleCacheKey, cachedDelivery);
-                //    Session.SetBool(CacheKeys.CreateArticleCacheValidKey, true);
-                //}
-                //else
-                //{
-                //    return BadRequest();
-                //}
+                if (MemoryCache.TryGetValue(CacheKeys.CreateArticleCacheKey, out DeliveryItemViewModel cachedDeliveryItem))
+                {
+                    cachedDeliveryItem.ArticleName = model.Name;
+                    cachedDeliveryItem.ArticleID = result.Result;
+                    MemoryCache.Set(CacheKeys.CreateArticleCacheKey, cachedDeliveryItem);
+                    Session.SetBool(CacheKeys.CreateArticleCacheValidKey, true);
+                }
+                else
+                {
+                    return BadRequest();
+                }
 
                 return Redirect(model.ReturnPath);
             }, OnFault);
@@ -305,7 +303,7 @@ namespace SORANO.WEB.Controllers
                 return RedirectToAction("Index", "Article");
             }
 
-            if (MemoryCache.TryGetValue(CacheKeys.CreateArticleCacheKey, out DeliveryCreateUpdateViewModel _))
+            if (MemoryCache.TryGetValue(CacheKeys.CreateArticleCacheKey, out DeliveryItemViewModel _))
             {
                 Session.SetBool(CacheKeys.CreateArticleCacheValidKey, true);
             }

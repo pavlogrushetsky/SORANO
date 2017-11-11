@@ -10,7 +10,6 @@ using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Infrastructure.Filters;
-using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.Supplier;
 using System.Collections.Generic;
@@ -197,18 +196,17 @@ namespace SORANO.WEB.Controllers
                     return RedirectToAction("Index");
                 }
 
-                // TODO
-                //if (MemoryCache.TryGetValue(CacheKeys.CreateSupplierCacheKey, out DeliveryModel cachedDelivery))
-                //{
-                //    cachedDelivery.Supplier = supplier.ToModel();
-                //    cachedDelivery.SupplierID = supplier.ID.ToString();
-                //    MemoryCache.Set(CacheKeys.CreateSupplierCacheKey, cachedDelivery);
-                //    Session.SetBool(CacheKeys.CreateSupplierCacheValidKey, true);
-                //}
-                //else
-                //{
-                //    return BadRequest();
-                //}
+                if (MemoryCache.TryGetValue(CacheKeys.CreateSupplierCacheKey, out DeliveryCreateUpdateViewModel cachedDelivery))
+                {
+                    cachedDelivery.SupplierName = model.Name;
+                    cachedDelivery.SupplierID = result.Result;
+                    MemoryCache.Set(CacheKeys.CreateSupplierCacheKey, cachedDelivery);
+                    Session.SetBool(CacheKeys.CreateSupplierCacheValidKey, true);
+                }
+                else
+                {
+                    return BadRequest();
+                }
 
                 return Redirect(model.ReturnPath);
             }, OnFault);

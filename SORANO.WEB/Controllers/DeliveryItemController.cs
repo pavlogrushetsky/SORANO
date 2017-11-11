@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -29,21 +30,37 @@ namespace SORANO.WEB.Controllers
         #region GET Actions
 
         [HttpGet]
-        public IActionResult Create(string returnUrl)
+        public async Task<IActionResult> Create(string returnUrl)
         {
-            if (string.IsNullOrWhiteSpace(returnUrl))
-                return BadRequest();
-
-            return TryGetActionResult(() => View(new DeliveryItemViewModel
+            return await TryGetActionResultAsync(async () =>
             {
-                MainPicture = new MainPictureViewModel(),
-                ReturnPath = returnUrl,
-                Quantity = 1,
-                UnitPrice = "0.00",
-                GrossPrice = "0.00",
-                Discount = "0.00",
-                DiscountedPrice = "0.00"              
-            }), ex =>
+                DeliveryItemViewModel model;
+
+                if (TryGetCached(out var cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
+                {
+                    model = cachedForSelectMainPicture;
+                    await CopyMainPicture(model);
+                }
+                else if (TryGetCached(out var cachedForCreateArticle, CacheKeys.CreateArticleCacheKey, CacheKeys.CreateArticleCacheValidKey))
+                {
+                    model = cachedForCreateArticle;
+                }
+                else
+                {
+                    model = new DeliveryItemViewModel
+                    {
+                        MainPicture = new MainPictureViewModel(),
+                        ReturnPath = returnUrl,
+                        Quantity = 1,
+                        UnitPrice = "0.00",
+                        GrossPrice = "0.00",
+                        Discount = "0.00",
+                        DiscountedPrice = "0.00"
+                    };
+                }
+
+                return View(model);
+            }, ex =>
             {
                 TempData["Error"] = ex;
                 return Redirect(returnUrl);
@@ -51,23 +68,36 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public IActionResult Update(int number, string returnUrl)
+        public async Task<IActionResult> Update(int number, string returnUrl)
         {
-            if (string.IsNullOrWhiteSpace(returnUrl))
-                return BadRequest();
-
-            return TryGetActionResult(() =>
+            return await TryGetActionResultAsync(async () =>
             {
-                if (!TryGetCached(out var cachedItem, CacheKeys.DeliveryItemCacheKey, CacheKeys.DeliveryItemCacheValidKey))
+                DeliveryItemViewModel model;
+
+                if (TryGetCached(out var cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
+                {
+                    model = cachedForSelectMainPicture;
+                    await CopyMainPicture(model);
+                }
+                else if (TryGetCached(out var cachedForCreateArticle, CacheKeys.CreateArticleCacheKey, CacheKeys.CreateArticleCacheValidKey))
+                {
+                    model = cachedForCreateArticle;
+                }
+                else if (TryGetCached(out var cachedItem, CacheKeys.DeliveryItemCacheKey, CacheKeys.DeliveryItemCacheValidKey))
+                {
+                    cachedItem.Number = number;
+                    cachedItem.ReturnPath = returnUrl;
+                    cachedItem.IsUpdate = true;
+
+                    model = cachedItem;
+                }
+                else
                 {
                     TempData["Error"] = "Не удалось получить позицию поставки.";
                     return Redirect(returnUrl);
                 }
-
-                cachedItem.Number = number;
-                cachedItem.ReturnPath = returnUrl;
-                cachedItem.IsUpdate = true;
-                return View("Create", cachedItem);
+               
+                return View("Create", model);
             }, ex =>
             {
                 TempData["Error"] = ex;
@@ -78,6 +108,22 @@ namespace SORANO.WEB.Controllers
         #endregion
 
         #region POST Actions
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [LoadAttachmentsFilter]
+        public IActionResult CreateArticle(DeliveryItemViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        {
+            return TryGetActionResult(() =>
+            {
+                MemoryCache.Set(CacheKeys.CreateArticleCacheKey, model);
+                return RedirectToAction("Create", "Article", new { returnUrl });
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return View("Create", model);
+            });
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
