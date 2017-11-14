@@ -115,7 +115,7 @@ namespace SORANO.BLL.Services
 
             if (entity.IsSubmitted)
             {
-                foreach (var item in entity.Items)
+                foreach (var item in existentEntity.Items)
                 {
                     for (var i = 0; i < item.Quantity; i++)
                     {

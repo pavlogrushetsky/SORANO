@@ -1,4 +1,5 @@
-﻿using SORANO.BLL.Dtos;
+﻿using System.Linq;
+using SORANO.BLL.Dtos;
 using SORANO.CORE.StockEntities;
 
 namespace SORANO.BLL.Extensions
@@ -7,10 +8,27 @@ namespace SORANO.BLL.Extensions
     {
         public static GoodsDto ToDto(this Goods model)
         {
-            return new GoodsDto
+            var dto = new GoodsDto
             {
-
+                ID = model.ID,
+                DeliveryItemID = model.DeliveryItemID,
+                ClientID = model.ClientID,
+                SalePrice = model.SalePrice,
+                SaleDate = model.SaleDate,
+                SoldBy = model.SoldBy,
+                SaleLocationID = model.SaleLocationID,
+                DeliveryItem = model.DeliveryItem.ToDto(),
+                Client = model.Client?.ToDto(),
+                SoldByUser = model.SoldByUser?.Login,
+                SaleLocation = model.SaleLocation?.ToDto(),
+                Storages = model.Storages.Select(s => s.ToDto()).ToList(),
+                Quantity = 1
             };
+
+            dto.MapDetails(model);
+            dto.CanBeDeleted = false;
+
+            return dto;
         }
 
         public static Goods ToEntity(this GoodsDto dto)

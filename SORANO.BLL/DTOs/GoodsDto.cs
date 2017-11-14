@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SORANO.BLL.Dtos
 {
@@ -14,7 +15,7 @@ namespace SORANO.BLL.Dtos
 
         public int? SoldBy { get; set; }
 
-        public int SaleLocationID { get; set; }
+        public int? SaleLocationID { get; set; }
 
         public DeliveryItemDto DeliveryItem { get; set; }
 
@@ -23,5 +24,9 @@ namespace SORANO.BLL.Dtos
         public string SoldByUser { get; set; }
 
         public LocationDto SaleLocation { get; set; }
+
+        public IEnumerable<StorageDto> Storages { get; set; }
+
+        public int Quantity { get; set; }
     }
 }

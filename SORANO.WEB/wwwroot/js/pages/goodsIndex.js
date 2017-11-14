@@ -5,6 +5,11 @@
 function initGoodsDataTable() {
     var table = $("#goods-datatable").DataTable({
         responsive: true,
+        "autoWidth": false,
+        "scrollX": false,
+        "columnDefs": [
+            { "orderable": false, "targets": -1 }
+        ],
         "pagingType": "numbers",
         "language": {
             "lengthMenu": "Отобразить _MENU_ товаров на странице",

@@ -12,6 +12,7 @@ using SORANO.WEB.ViewModels.AttachmentType;
 using SORANO.WEB.ViewModels.Client;
 using SORANO.WEB.ViewModels.Delivery;
 using SORANO.WEB.ViewModels.DeliveryItem;
+using SORANO.WEB.ViewModels.Goods;
 using SORANO.WEB.ViewModels.Location;
 using SORANO.WEB.ViewModels.LocationType;
 using SORANO.WEB.ViewModels.Recommendation;
@@ -301,6 +302,48 @@ namespace SORANO.WEB.Mappings
                     source => source.MapFrom(s => s)
                 );
             CreateMap<DeliveryItemViewModel, DeliveryItemDto>();
+
+            #endregion
+
+            #region Goods
+
+            CreateMap<GoodsDto, GoodsIndexViewModel>()
+                .ForMember(
+                    dest => dest.ArticleID,
+                    source => source.MapFrom(s => s.DeliveryItem.ArticleID)
+                )
+                .ForMember(
+                    dest => dest.ArticleName,
+                    source => source.MapFrom(s => s.DeliveryItem.Article.Name)
+                )
+                .ForMember(
+                    dest => dest.DeliveryID,
+                    source => source.MapFrom(s => s.DeliveryItem.DeliveryID)
+                )
+                .ForMember(
+                    dest => dest.DeliveryBillNumber,
+                    source => source.MapFrom(s => s.DeliveryItem.Delivery.BillNumber)
+                )
+                .ForMember(
+                    dest => dest.DeliveryPrice,
+                    source => source.MapFrom(s => s.DeliveryItem.UnitPrice)
+                )
+                .ForMember(
+                    dest => dest.Currency,
+                    source => source.MapFrom(s => s.DeliveryItem.Delivery.DollarRate.HasValue ? "$" : s.DeliveryItem.Delivery.EuroRate.HasValue ? "€" : "₴")
+                )
+                .ForMember(
+                    dest => dest.StorageID,
+                    source => source.MapFrom(s => s.Storages.OrderBy(st => st.FromDate).First().LocationID)
+                )
+                .ForMember(
+                    dest => dest.StorageName,
+                    source => source.MapFrom(s => s.Storages.OrderBy(st => st.FromDate).First().Location.Name)
+                )
+                .ForMember(
+                    dest => dest.IsSold,
+                    source => source.MapFrom(s => s.SaleDate.HasValue)
+                );
 
             #endregion
 

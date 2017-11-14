@@ -55,44 +55,15 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<int>(targetLocationId);
         }
 
-        public async Task<ServiceResponse<IEnumerable<AllGoodsDto>>> GetAllAsync()
+        public async Task<ServiceResponse<IEnumerable<GoodsDto>>> GetAllAsync()
         {
+            var response = new SuccessResponse<IEnumerable<GoodsDto>>();
+
             var goods = await UnitOfWork.Get<Goods>().GetAllAsync();
 
-            var result = goods
-                .Where(g => !g.SaleDate.HasValue)
-                .GroupBy(g => new
-                {
-                    g.DeliveryItem.Article,
-                    g.Storages.Single(s => !s.ToDate.HasValue).Location,
-                    g.DeliveryItem.Delivery,
-                    g.DeliveryItem.UnitPrice,
-                    g.DeliveryItem.Delivery.DollarRate,
-                    g.DeliveryItem.Delivery.EuroRate
-                })
-                .GroupBy(g => g.Key.Article)
-                .Select(g => new AllGoodsDto
-                {
-                    ArticleId = g.Key.ID,
-                    ArticleName = g.Key.Name,
-                    ArticleImage = g.Key.Attachments.FirstOrDefault(a => a.Type.Name.Equals("Основное изображение"))
-                        ?.FullPath,
-                    Goods = g.Select(gr => new GoodsGroupDto
-                        {
-                            BillNumber = gr.Key.Delivery.BillNumber,
-                            Count = gr.Count(),
-                            DeliveryId = gr.Key.Delivery.ID,
-                            DeliveryPrice = gr.Key.UnitPrice,
-                            DollarRate = gr.Key.DollarRate,
-                            EuroRate = gr.Key.EuroRate,
-                            LocationId = gr.Key.Location.ID,
-                            LocationName = gr.Key.Location.Name
-                        })
-                        .ToList()
-                })
-                .ToList();
+            response.Result = goods.Select(a => a.ToDto());
 
-            return new SuccessResponse<IEnumerable<AllGoodsDto>>(result);
+            return response;
         }
 
         public async Task<ServiceResponse<IEnumerable<GoodsDto>>> GetSoldGoodsAsync()
