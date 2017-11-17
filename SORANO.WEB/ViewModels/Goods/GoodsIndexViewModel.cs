@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using SORANO.WEB.ViewModels.Recommendation;
 
 namespace SORANO.WEB.ViewModels.Goods
 {
@@ -9,22 +8,18 @@ namespace SORANO.WEB.ViewModels.Goods
 
         public string ArticleName { get; set; }
 
-        public string DeliveryID { get; set; }
+        public int ArticleTypeID { get; set; }
 
-        public string DeliveryBillNumber { get; set; }
+        public string ArticleTypeName { get; set; }
 
-        public string DeliveryPrice { get; set; }
+        public int LocationID { get; set; }
 
-        public string Currency { get; set; }
+        public string LocationName { get; set; }
 
-        public int StorageID { get; set; }
+        public string SearchTerm { get; set; }
 
-        public string StorageName { get; set; }
+        public bool ShowSold { get; set; }
 
-        public bool IsSold { get; set; }
-
-        public int Quantity { get; set; }
-
-        public IList<RecommendationViewModel> Recommendations { get; set; }
+        public IEnumerable<GoodsItemViewModel> Goods { get; set; }       
     }
 }

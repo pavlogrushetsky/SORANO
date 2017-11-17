@@ -52,7 +52,11 @@ namespace SORANO.WEB.Controllers
                     return RedirectToAction("Index", "Home");
                 }
 
-                var viewModel = _mapper.Map<IEnumerable<GoodsIndexViewModel>>(goodsResult.Result);
+                var goods = _mapper.Map<IEnumerable<GoodsItemViewModel>>(goodsResult.Result);
+                var viewModel = new GoodsIndexViewModel
+                {
+                    Goods = goods
+                };
 
                 return View(viewModel);
             }, ex =>
