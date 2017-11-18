@@ -55,13 +55,43 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<int>(targetLocationId);
         }
 
-        public async Task<ServiceResponse<IEnumerable<GoodsDto>>> GetAllAsync()
+        public async Task<ServiceResponse<IEnumerable<GoodsDto>>> GetAllAsync(int articleID = 0, int articleTypeID = 0, int locationID = 0, bool bypiece = false)
         {
             var response = new SuccessResponse<IEnumerable<GoodsDto>>();
 
             var goods = await UnitOfWork.Get<Goods>().GetAllAsync();
+            var dtos = goods.Select(a => a.ToDto()).ToList();
 
-            response.Result = goods.Select(a => a.ToDto());
+            IEnumerable<GoodsDto> result;
+            if (bypiece)
+                result = dtos;
+            else
+                result = dtos.GroupBy(g => new
+                {
+                    g.DeliveryItem.ArticleID,
+                    g.DeliveryItem.UnitPrice,
+                    HasDollarRate = g.DeliveryItem.Delivery.DollarRate.HasValue,
+                    HasEuroRate = g.DeliveryItem.Delivery.EuroRate.HasValue,
+                    g.SaleDate.HasValue,
+                    g.Storages.OrderBy(st => st.FromDate).First().LocationID
+                }).Select(gg =>
+                {
+                    var firstInGroup = gg.First();
+                    firstInGroup.Quantity = gg.Count();
+
+                    return firstInGroup;
+                });
+
+            if (articleID > 0)
+                result = result.Where(g => g.DeliveryItem.ArticleID == articleID);
+
+            if (articleTypeID > 0)
+                result = result.Where(g => g.DeliveryItem.Article.TypeID == articleTypeID);
+
+            if (locationID > 0)
+                result = result.Where(g => g.Storages.OrderBy(st => st.FromDate).First().LocationID == locationID);
+
+            response.Result = result;
 
             return response;
         }
@@ -118,3 +148,4 @@ namespace SORANO.BLL.Services
         }
     }
 }
+

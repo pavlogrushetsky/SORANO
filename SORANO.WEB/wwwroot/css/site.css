@@ -201,7 +201,7 @@ span.select2-selection.select2-selection--single {
 
 .select2-selection__rendered {
     color: #2c3e50 !important;
-    padding-left: 0px !important;
+    padding-left: 0 !important;
 }
 
 .select2-selection__placeholder {
@@ -210,12 +210,15 @@ span.select2-selection.select2-selection--single {
 }
 
 select:not(.select-attachment-type) + span.select2.select2-container.select2-container--bootstrap > span.selection > span.select2-selection.select2-selection--single {
-    -ms-border-top-left-radius: 0px !important;
-    border-top-left-radius: 0px !important;
-    -ms-border-bottom-left-radius: 0px !important;
-    border-bottom-left-radius: 0px !important;
+    -ms-border-top-left-radius: 0 !important;
+    border-top-left-radius: 0 !important;
+    -ms-border-bottom-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
 }
 
+span.select2.select2-container.select2-container--bootstrap {
+    width: 100% !important;
+}
 /* Article Types Tree */
 .article-types-tree {
     min-height: 20px;
@@ -316,3 +319,48 @@ select:not(.select-attachment-type) + span.select2.select2-container.select2-con
     .article-type-info.show {
         display: block;
     }
+
+.card {
+    position: relative;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid #95a5a6;
+    border-radius: 0.25rem;
+    margin-bottom: 2rem;
+}
+.card-header {
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 0;
+    margin-top: 0;
+    background-color: #95a5a6;
+    border-bottom: 1px solid #000000;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+.card-body {
+    -webkit-box-flex: 1;
+    flex: 1 1 auto;
+    padding: 1.25rem;
+}
+.card-title {
+    margin-bottom: 0.75rem;
+}
+.card-body dt {
+    text-align: left;
+    font-size: 13px;
+}
+.card-body dd {
+    margin-left: 0;
+    font-size: 13px;
+}
+.card-footer {
+    padding: 0.75rem 1.25rem;
+    background-color: #ecf0f1;
+    border-top: 1px solid #000000;
+    border-top: 1px solid rgba(0, 0, 0, 0.125);
+}

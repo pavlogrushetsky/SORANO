@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using SORANO.BLL.Services;
+using SORANO.WEB.Infrastructure.Extensions;
 
 namespace SORANO.WEB.Controllers
 {
@@ -140,6 +141,73 @@ namespace SORANO.WEB.Controllers
         #endregion
 
         #region POST Actions
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Index(GoodsIndexViewModel model)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                ModelState.RemoveFor("IsFiltered");
+
+                var goodsResult = await _goodsService.GetAllAsync(model.ArticleID, model.ArticleTypeID, model.LocationID, model.ShowByPiece);
+
+                if (goodsResult.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось получить список товаров.";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                var goods = _mapper.Map<IEnumerable<GoodsItemViewModel>>(goodsResult.Result);
+                var viewModel = new GoodsIndexViewModel
+                {
+                    Goods = goods,
+                    IsFiltered = true
+                };
+
+                return View(viewModel);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return View(model);
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetFilters(GoodsIndexViewModel model)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                model.ShowByPiece = false;
+                model.ShowNumber = 10;
+                model.ShowSold = false;
+                model.ArticleID = 0;
+                model.ArticleTypeID = 0;
+                model.IsFiltered = false;
+                ModelState.Clear();
+
+                var goodsResult = await _goodsService.GetAllAsync();
+
+                if (goodsResult.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось получить список товаров.";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                var goods = _mapper.Map<IEnumerable<GoodsItemViewModel>>(goodsResult.Result);
+                var viewModel = new GoodsIndexViewModel
+                {
+                    Goods = goods
+                };
+
+                return View("Index", viewModel);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return View("Index", model);
+            });
+        }
 
         [HttpPost]
         public async Task<IActionResult> ChangeLocation(GoodsChangeLocationModel model)

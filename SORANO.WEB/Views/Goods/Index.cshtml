@@ -8,53 +8,14 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/lib/datatables.net-bs/css/dataTables.bootstrap.min.css" />
-    <link rel="stylesheet" href="~/lib/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/select2/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="~/lib/select2-bootstrap-theme/dist/select2-bootstrap.min.css" />
     <style>
-        .card {
-            position: relative;
-            display: flex;
-            -webkit-box-orient: vertical;
-            -webkit-box-direction: normal;
-            flex-direction: column;
-            min-width: 0;
-            word-wrap: break-word;
-            background-color: #fff;
-            background-clip: border-box;
-            border: 1px solid #000000;
-            border: 1px solid rgba(0, 0, 0, 0.125);
-            border-radius: 0.25rem;
-            margin-bottom: 1rem;
-        }
-        .card-header {
-            padding: 0.75rem 1.25rem;
-            margin-bottom: 0;
-            margin-top: 0;
-            background-color: #ecf0f1;
-            border-bottom: 1px solid #000000;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-        }
-        .card-body {
-            -webkit-box-flex: 1;
-            flex: 1 1 auto;
-            padding: 1.25rem;
-        }
-        .card-title {
-            margin-bottom: 0.75rem;
-        }
-        .card-body dt {
-            text-align: left;
-            font-size: 13px;
-        }
-        .card-body dd {
-            margin-left: 0;
-            font-size: 13px;
-        }
-        .card-footer {
-            padding: 0.75rem 1.25rem;
-            background-color: #ecf0f1;
-            border-top: 1px solid #000000;
-            border-top: 1px solid rgba(0, 0, 0, 0.125);
+        span.select2-selection.select2-selection--single {
+            -ms-border-top-right-radius: 3px !important;
+            border-top-right-radius: 3px !important;
+            -ms-border-bottom-right-radius: 3px !important;
+            border-bottom-right-radius: 3px !important;
         }
     </style>
 }
@@ -69,9 +30,27 @@
 <form asp-action="Index"
       asp-controller="Goods"
       method="post">
+    <input type="hidden" asp-for="ArticleID" />
+    <input type="hidden" asp-for="ArticleName" />
+    <input type="hidden" asp-for="ArticleTypeID" />
+    <input type="hidden" asp-for="ArticleTypeName" />
+    <input type="hidden" asp-for="LocationID" />
+    <input type="hidden" asp-for="LocationName" />
+    <input type="hidden" asp-for="IsFiltered" />
+    @if (!Model.Goods.Any())
+    {
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="alert alert-dismissible alert-info">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <strong>Информация:</strong> Товары, удовлетворяющие заданные критерии, отсутствуют
+                </div>
+            </div>
+        </div>
+    }
     <div class="row">
         <div class="col-lg-12">
-            <div class="panel panel-default">
+            <div class="panel @(Model.IsFiltered ? "panel-info" : "panel-default")">
                 <div class="panel-heading">
                     <h4 class="panel-title">
                         <a data-toggle="collapse" href="#collapseFilters">
@@ -85,20 +64,48 @@
                 <div id="collapseFilters" class="panel-collapse collapse">
                     <div class="panel-body">
                         <div class="row">
-                            <div class="col-lg-3 col-md-6 col-sm-12 col-lg-offset-9 col-md-offset-6">
+                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                                 <div class="form-group">
-                                    <label class="control-label" @*asp-for="Name" *@>Поиск:</label>
+                                    <label class="control-label" asp-for="SearchTerm"></label>
                                     <div class="input-group input-group-sm">
                                         <span class="input-group-addon"><i class="fa fa-fw fa-search"></i></span>
-                                        <input class="form-control input-sm" type="text" asp-for="SearchTerm" placeholder="Поиск" autofocus />
+                                        <input class="form-control input-sm" type="text" asp-for="SearchTerm" placeholder="Поиск" autofocus/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                                <div class="form-group">
+                                    <label class="control-label" asp-for="ShowNumber"></label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon"><i class="fa fa-fw fa-hashtag"></i></span>
+                                        <select class="form-control input-sm"
+                                                asp-for="ShowNumber">
+                                            <option value="10">10</option>
+                                            <option value="25">25</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                                <div class="form-group">
+                                    <label class="control-label" asp-for="ShowByPiece"></label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon"><i class="fa fa-fw fa-object-group"></i></span>
+                                        <select class="form-control input-sm"
+                                                asp-for="ShowByPiece">
+                                            <option value="false">Группировать</option>
+                                            <option value="true">Поштучно</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                                 <div class="form-group">
-                                    <label class="control-label" @*asp-for="TypeID" *@>Артикул:</label>
+                                    <label class="control-label" asp-for="ArticleName"></label>
                                     <div class="input-group input-group-sm">
                                         <span class="input-group-addon"><i class="fa fa-fw fa-tag"></i></span>
                                         <select class="form-control input-sm select-article"
@@ -106,35 +113,35 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                                 <div class="form-group">
-                                    <label class="control-label" @*asp-for="TypeID" *@>Тип артикула:</label>
+                                    <label class="control-label" asp-for="ArticleTypeName"></label>
                                     <div class="input-group input-group-sm">
                                         <span class="input-group-addon"><i class="fa fa-fw fa-tags"></i></span>
-                                        <select class="form-control input-sm select-article"
+                                        <select class="form-control input-sm select-article-type"
                                                 asp-for="ArticleTypeID"></select>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                                 <div class="form-group">
-                                    <label class="control-label" @*asp-for="TypeID" *@>Склад:</label>
+                                    <label class="control-label" asp-for="LocationName"></label>
                                     <div class="input-group input-group-sm">
                                         <span class="input-group-addon"><i class="fa fa-fw fa-map-signs"></i></span>
-                                        <select class="form-control input-sm select-article"
+                                        <select class="form-control input-sm select-location"
                                                 asp-for="LocationID"></select>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                                 <div class="form-group">
-                                    <label class="control-label" @*asp-for="TypeID" *@>Статус:</label>
+                                    <label class="control-label" asp-for="ShowSold"></label>
                                     <div class="input-group input-group-sm">
                                         <span class="input-group-addon"><i class="fa fa-fw fa-align-justify"></i></span>
-                                        <select class="form-control input-sm select-article"
+                                        <select class="form-control input-sm"
                                                 asp-for="ShowSold">
-                                            <option value="Fasle">В наличии</option>
-                                            <option value="True">Все</option>
+                                            <option value="false">В наличии</option>
+                                            <option value="true">Все</option>
                                         </select>
                                     </div>
                                 </div>
@@ -153,81 +160,22 @@
                             </button>
                         </div>
                     </div>
-                </div>                
+                </div>
             </div>
-        </div>        
-    </div>   
+        </div>
+    </div>
 </form>
 <div class="row">
     @foreach (var item in Model.Goods)
     {
         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-            <div class="card">
-                <h4 class="card-header">@item.ArticleName</h4>
-                <div class="card-body">
-                    <h5>@item.ArticleTypeName</h5>
-                    <h6 class="text-muted">@item.ArticleDescription</h6>
-                </div>
-                @if (!string.IsNullOrWhiteSpace(item.ImagePath))
-                {
-                    <img style="height: 200px; width: 100%; display: block; border: none;" src="@Url.Content(item.ImagePath)" />
-                }   
-                <div class="card-body">
-                    <dl class="dl-horizontal">
-                        <dt>Цена поставки:</dt>
-                        <dd>@item.DeliveryPrice @item.Currency</dd>
-                        <dt>Количество, шт.:</dt>
-                        <dd>@item.Quantity</dd>
-                        <dt>Склад:</dt>
-                        <dd>@item.LocationName</dd>
-                        <dt>Статус:</dt>
-                        <dd>
-                            <span class="label label@(!item.IsSold ? "-success" : "-warning")">
-                                @(!item.IsSold ? "В наличии" : "Нет на складе")
-                            </span>
-                        </dd>
-                    </dl>
-                </div>
-                <div class="card-footer">
-                    <button class="btn btn-default btn-sm">
-                        <i class="fa fa-fw fa-info-circle"></i>
-                    </button>
-                    <button class="btn btn-default btn-sm">
-                        <i class="fa fa-fw fa-comment"></i>
-                    </button>
-                    <button class="btn btn-default btn-sm">
-                        <i class="fa fa-fw fa-location-arrow"></i>
-                    </button>
-                    <button class="btn btn-primary btn-sm">
-                        <i class="fa fa-fw fa-handshake-o"></i>
-                    </button>                    
-                </div>
-            </div>
-            @*<div class="card">
-                <h3 class="card-header">Card header</h3>
-                <div class="card-body">
-                    <h5 class="card-title">Special title treatment</h5>
-                    <h6 class="card-subtitle text-muted">Support card subtitle</h6>
-                </div>
-                <img style="height: 200px; width: 100%; display: block;" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22318%22%20height%3D%22180%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20318%20180%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_158bd1d28ef%20text%20%7B%20fill%3Argba(255%2C255%2C255%2C.75)%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A16pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_158bd1d28ef%22%3E%3Crect%20width%3D%22318%22%20height%3D%22180%22%20fill%3D%22%23777%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22129.359375%22%20y%3D%2297.35%22%3EImage%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E" alt="Card image">
-                <div class="card-body">
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                    <a href="#" class="card-link">Card link</a>
-                    <a href="#" class="card-link">Another link</a>
-                </div>
-                <div class="card-footer text-muted">
-                    2 days ago
-                </div>
-            </div>*@
+            @Html.Partial("~/Views/Goods/_Card.cshtml", item)
         </div>
     }
 </div>
 
 @section Scripts {
-    <script src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script src="~/lib/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-    <script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="~/lib/datatables.net-responsive-bs/js/responsive.bootstrap.min.js"></script>
+    <script src="~/lib/select2/dist/js/select2.full.min.js"></script>
     <environment names="Development">
         <script src="~/js/pages/goodsIndex.js"></script>
     </environment>
