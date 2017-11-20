@@ -81,6 +81,12 @@
             <input type="hidden" asp-for="@Model.Items[i].Attachments[j].TypeName" />
             <input type="hidden" asp-for="@Model.Items[i].Attachments[j].TypeID" />
         }
+        for (var j = 0; j < Model.Items[i].Recommendations.Count; j++)
+        {
+            <input type="hidden" asp-for="@Model.Items[i].Recommendations[j].ID" />
+            <input type="hidden" asp-for="@Model.Items[i].Recommendations[j].Value" />
+            <input type="hidden" asp-for="@Model.Items[i].Recommendations[j].Comment" />
+        }
     }
     @Html.HiddenFor(m => m.MainPicture.ID)
     @Html.HiddenFor(m => m.MainPicture.Name)

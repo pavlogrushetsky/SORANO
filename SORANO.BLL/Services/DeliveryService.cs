@@ -60,6 +60,8 @@ namespace SORANO.BLL.Services
             foreach (var item in entity.Items)
             {
                 item.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+                item.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+                item.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
             entity.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
@@ -196,6 +198,8 @@ namespace SORANO.BLL.Services
                     di.Quantity = d.Quantity;
                     di.UnitPrice = d.UnitPrice;
                     di.UpdateModifiedFields(userId);
+                    UpdateAttachments(d, di, userId);
+                    UpdateRecommendations(d, di, userId);
                 });
 
             from.Items
@@ -205,6 +209,8 @@ namespace SORANO.BLL.Services
                 {
                     d.DeliveryID = to.ID;
                     d.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+                    d.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+                    d.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
                     to.Items.Add(d);
                 });
         }

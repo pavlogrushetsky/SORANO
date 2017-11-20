@@ -309,6 +309,10 @@ namespace SORANO.WEB.Mappings
 
             CreateMap<GoodsDto, GoodsItemViewModel>()
                 .ForMember(
+                    dest => dest.GoodsIds,
+                    source => source.MapFrom(s => s.IDs)
+                )
+                .ForMember(
                     dest => dest.ArticleID,
                     source => source.MapFrom(s => s.DeliveryItem.ArticleID)
                 )
@@ -351,6 +355,76 @@ namespace SORANO.WEB.Mappings
                 .ForMember(
                     dest => dest.ImagePath,
                     source => source.MapFrom(s => s.DeliveryItem.Article.MainPicture.FullPath)
+                );
+
+            CreateMap<GoodsDto, GoodsDetailsViewModel>()
+                .ForMember(
+                    dest => dest.ArticleID,
+                    source => source.MapFrom(s => s.DeliveryItem.ArticleID)
+                )
+                .ForMember(
+                    dest => dest.ArticleName,
+                    source => source.MapFrom(s => s.DeliveryItem.Article.Name)
+                )
+                .ForMember(
+                    dest => dest.ArticleDescription,
+                    source => source.MapFrom(s => s.DeliveryItem.Article.Description)
+                )
+                .ForMember(
+                    dest => dest.ArticleTypeID,
+                    source => source.MapFrom(s => s.DeliveryItem.Article.TypeID)
+                )
+                .ForMember(
+                    dest => dest.ArticleTypeName,
+                    source => source.MapFrom(s => s.DeliveryItem.Article.Type.Name)
+                )
+                .ForMember(
+                    dest => dest.DeliveryID,
+                    source => source.MapFrom(s => s.DeliveryItem.DeliveryID)
+                )
+                .ForMember(
+                    dest => dest.DeliveryBillNumber,
+                    source => source.MapFrom(s => s.DeliveryItem.Delivery.BillNumber)
+                )
+                .ForMember(
+                    dest => dest.DeliveryPrice,
+                    source => source.MapFrom(s => s.DeliveryItem.UnitPrice)
+                )
+                .ForMember(
+                    dest => dest.DeliveryDate,
+                    source => source.MapFrom(s => s.DeliveryItem.Delivery.DeliveryDate)
+                )
+                .ForMember(
+                    dest => dest.Currency,
+                    source => source.MapFrom(s => s.DeliveryItem.Delivery.DollarRate.HasValue ? "$" : s.DeliveryItem.Delivery.EuroRate.HasValue ? "€" : "₴")
+                )
+                .ForMember(
+                    dest => dest.LocationID,
+                    source => source.MapFrom(s => s.Storages.OrderBy(st => st.FromDate).First().LocationID)
+                )
+                .ForMember(
+                    dest => dest.LocationName,
+                    source => source.MapFrom(s => s.Storages.OrderBy(st => st.FromDate).First().Location.Name)
+                )
+                .ForMember(
+                    dest => dest.IsSold,
+                    source => source.MapFrom(s => s.SaleDate.HasValue)
+                )
+                .ForMember(
+                    dest => dest.SoldBy,
+                    source => source.MapFrom(s => s.SoldByUser)
+                )
+                .ForMember(
+                    dest => dest.MainPicturePath,
+                    source => source.MapFrom(s => s.DeliveryItem.Article.MainPicture.FullPath)
+                )
+                .ForMember(
+                    dest => dest.DeliveryRecommendations,
+                    source => source.MapFrom(s => s.DeliveryItem.Delivery.Recommendations)
+                )
+                .ForMember(
+                    dest => dest.DeliveryItemRecommendations,
+                    source => source.MapFrom(s => s.DeliveryItem.Recommendations)
                 );
 
             #endregion

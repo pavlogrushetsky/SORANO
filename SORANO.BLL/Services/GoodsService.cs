@@ -16,6 +16,15 @@ namespace SORANO.BLL.Services
         {
         }
 
+        public async Task<ServiceResponse<GoodsDto>> GetAsync(int id)
+        {
+            var goods = await UnitOfWork.Get<Goods>().GetAsync(a => a.ID == id);
+
+            return goods == null
+                ? new ServiceResponse<GoodsDto>(ServiceResponseStatus.NotFound)
+                : new SuccessResponse<GoodsDto>(goods.ToDto());
+        }
+
         public async Task<ServiceResponse<int>> ChangeLocationAsync(int articleId, int currentLocationId, int targetLocationId, int num, int userId)
         {
             var storages = await UnitOfWork.Get<Storage>().GetAllAsync();
@@ -60,7 +69,12 @@ namespace SORANO.BLL.Services
             var response = new SuccessResponse<IEnumerable<GoodsDto>>();
 
             var goods = await UnitOfWork.Get<Goods>().GetAllAsync();
-            var dtos = goods.Select(a => a.ToDto()).ToList();
+            var dtos = goods.Select(a =>
+            {
+                var dto = a.ToDto();
+                dto.IDs = new List<int> {dto.ID};
+                return dto;
+            }).ToList();
 
             IEnumerable<GoodsDto> result;
             if (bypiece)
@@ -77,6 +91,7 @@ namespace SORANO.BLL.Services
                 }).Select(gg =>
                 {
                     var firstInGroup = gg.First();
+                    firstInGroup.IDs = gg.Select(g => g.ID).ToList();
                     firstInGroup.Quantity = gg.Count();
 
                     return firstInGroup;

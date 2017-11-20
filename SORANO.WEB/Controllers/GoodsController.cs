@@ -67,6 +67,28 @@ namespace SORANO.WEB.Controllers
             });
         }
 
+        public async Task<IActionResult> Details(int id)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _goodsService.GetAsync(id);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанный товар.";
+                    return RedirectToAction("Index");
+                }
+
+                var viewModel = _mapper.Map<GoodsDetailsViewModel>(result.Result);
+
+                return View(viewModel);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Goods");
+            });
+        }
+
         [HttpGet]
         public async Task<IActionResult> Sales()
         {

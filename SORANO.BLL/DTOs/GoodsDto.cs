@@ -5,6 +5,9 @@ namespace SORANO.BLL.Dtos
 {
     public class GoodsDto : BaseDto
     {
+        // ReSharper disable once InconsistentNaming
+        public List<int> IDs { get; set; }
+
         public int DeliveryItemID { get; set; }
 
         public int? ClientID { get; set; }

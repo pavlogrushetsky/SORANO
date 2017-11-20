@@ -364,3 +364,8 @@ span.select2.select2-container.select2-container--bootstrap {
     border-top: 1px solid #000000;
     border-top: 1px solid rgba(0, 0, 0, 0.125);
 }
+
+.row.goods-cards-row {
+    display: flex;
+    flex-wrap: wrap;
+}
