@@ -50,13 +50,16 @@
                 <i class="fa fa-fw fa-info-circle"></i>
             </a>
         }        
-        <button class="btn btn-default btn-xs"
-                data-toggle="tooltip"
-                data-placement="bottom"
-                data-original-title="Добавить рекомендации"
-                title="">
+        <a asp-action="EditRecommendations"
+           asp-controller="Goods"
+           asp-route-goods="@Model" 
+           class="btn btn-default btn-xs"
+           data-toggle="tooltip"
+           data-placement="bottom"
+           data-original-title="Редактировать рекомендации"
+           title="">
             <i class="fa fa-fw fa-comment"></i>
-        </button>
+        </a>
         <button class="btn btn-default btn-xs"
                 data-toggle="tooltip"
                 data-placement="bottom"

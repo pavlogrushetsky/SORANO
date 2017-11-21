@@ -161,6 +161,66 @@ namespace SORANO.BLL.Services
 
             return new SuccessResponse<int>(num);
         }
+
+        public async Task<ServiceResponse<GoodsDto>> UpdateRecommendationsAsync(GoodsDto goods, int userId)
+        {
+            if (goods == null)
+                throw new ArgumentNullException(nameof(goods));
+
+            var existentEntities = await UnitOfWork.Get<Goods>().FindByAsync(g => goods.IDs.Contains(g.ID));
+            var existentGoods = existentEntities.ToList();
+
+            if (!existentGoods.Any())
+                return new ServiceResponse<GoodsDto>(ServiceResponseStatus.NotFound);
+
+            var recommendations = goods.Recommendations.Select(r => r.ToEntity()).ToList();
+
+            existentGoods.ForEach(e =>
+            {
+                e.UpdateModifiedFields(userId);
+                e.Recommendations
+                    .Where(r => !recommendations.Select(x => x.ID).Contains(r.ID))
+                    .ToList()
+                    .ForEach(r =>
+                    {
+                        r.UpdateDeletedFields(userId);
+                        UnitOfWork.Get<Recommendation>().Update(r);
+                    });
+
+                // Update existent recommendations
+                recommendations
+                    .Where(r => e.Recommendations.Select(x => x.ID).Contains(r.ID))
+                    .ToList()
+                    .ForEach(r =>
+                    {
+                        var rec = e.Recommendations.SingleOrDefault(x => x.ID == r.ID);
+                        if (rec == null)
+                        {
+                            return;
+                        }
+                        rec.Comment = r.Comment;
+                        rec.Value = r.Value;
+                        rec.UpdateModifiedFields(userId);
+                    });
+
+                // Add newly created recommendations to existent entity
+                recommendations
+                     .Where(r => !e.Recommendations.Select(x => x.ID).Contains(r.ID))
+                    .ToList()
+                    .ForEach(r =>
+                    {
+                        r.ParentEntityID = e.ID;
+                        r.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+                        e.Recommendations.Add(r);
+                    });
+
+                UnitOfWork.Get<Goods>().Update(e);
+            });
+
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<GoodsDto>();
+        }
     }
 }
 

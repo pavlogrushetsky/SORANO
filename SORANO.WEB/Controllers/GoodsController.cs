@@ -9,8 +9,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using SORANO.BLL.Dtos;
 using SORANO.BLL.Services;
 using SORANO.WEB.Infrastructure.Extensions;
+using SORANO.WEB.ViewModels.Attachment;
+using SORANO.WEB.ViewModels.Recommendation;
 
 namespace SORANO.WEB.Controllers
 {
@@ -82,6 +86,32 @@ namespace SORANO.WEB.Controllers
                 var viewModel = _mapper.Map<GoodsDetailsViewModel>(result.Result);
 
                 return View(viewModel);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Goods");
+            });
+        }
+
+        [HttpGet]
+        public IActionResult EditRecommendations(GoodsItemViewModel goods)
+        {
+            return TryGetActionResult(() =>
+            {
+                var viewModel = new GoodsRecommendationsViewModel
+                {
+                    ArticleName = goods.ArticleName,
+                    ArticleTypeName = goods.ArticleTypeName,
+                    ArticleDescription = goods.ArticleDescription,
+                    Currency = goods.Currency,
+                    DeliveryPrice = goods.DeliveryPrice,
+                    Ids = goods.GoodsIds,
+                    LocationName = goods.LocationName,
+                    MainPicture = new MainPictureViewModel { FullPath = goods.ImagePath },
+                    Quantity = goods.Quantity
+                };
+
+                return View("Recommendations", viewModel);
             }, ex =>
             {
                 TempData["Error"] = ex;
@@ -229,6 +259,57 @@ namespace SORANO.WEB.Controllers
                 TempData["Error"] = ex;
                 return View("Index", model);
             });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditRecommendations(GoodsRecommendationsViewModel model)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                if (!ModelState.IsValid)
+                {
+                    return View("Recommendations", model);
+                }
+
+                var goods = _mapper.Map<GoodsDto>(model);
+
+                var result = await _goodsService.UpdateRecommendationsAsync(goods, UserId);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось обновить рекомендации.";
+                    return RedirectToAction("Index");
+                }
+
+                TempData["Success"] = "Рекомендации были успешно обновлены.";
+
+                return RedirectToAction("Index");
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index");
+            });
+        }
+
+        [HttpPost]
+        public virtual IActionResult AddRecommendation(GoodsRecommendationsViewModel model)
+        {
+            ModelState.Clear();
+
+            model.Recommendations.Add(new RecommendationViewModel());
+
+            return View("Recommendations", model);
+        }
+
+        [HttpPost]
+        public virtual IActionResult DeleteRecommendation(GoodsRecommendationsViewModel model, int num)
+        {
+            ModelState.Clear();
+
+            model.Recommendations.RemoveAt(num);
+
+            return View("Recommendations", model);
         }
 
         [HttpPost]

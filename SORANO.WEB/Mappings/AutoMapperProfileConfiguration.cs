@@ -357,6 +357,8 @@ namespace SORANO.WEB.Mappings
                     source => source.MapFrom(s => s.DeliveryItem.Article.MainPicture.FullPath)
                 );
 
+            CreateMap<GoodsRecommendationsViewModel, GoodsDto>();
+
             CreateMap<GoodsDto, GoodsDetailsViewModel>()
                 .ForMember(
                     dest => dest.ArticleID,

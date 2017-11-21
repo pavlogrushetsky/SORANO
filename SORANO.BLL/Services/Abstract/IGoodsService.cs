@@ -17,5 +17,7 @@ namespace SORANO.BLL.Services.Abstract
         Task<ServiceResponse<IEnumerable<GoodsDto>>> GetAllAsync(int articleID = 0, int articleTypeID = 0, int locationID = 0, bool byPiece = false);
 
         Task<ServiceResponse<GoodsDto>> GetAsync(int id);
+
+        Task<ServiceResponse<GoodsDto>> UpdateRecommendationsAsync(GoodsDto goods, int userId);
     }
 }
