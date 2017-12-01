@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using SORANO.BLL.Dtos;
 using SORANO.BLL.Services;
 using SORANO.WEB.Infrastructure.Extensions;
@@ -60,7 +59,7 @@ namespace SORANO.WEB.Controllers
                 var goods = _mapper.Map<IEnumerable<GoodsItemViewModel>>(goodsResult.Result);
                 var viewModel = new GoodsIndexViewModel
                 {
-                    Goods = goods
+                    Goods = goods.ToList()
                 };
 
                 return View(viewModel);
@@ -71,6 +70,7 @@ namespace SORANO.WEB.Controllers
             });
         }
 
+        [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
             return await TryGetActionResultAsync(async () =>
@@ -94,7 +94,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public IActionResult EditRecommendations(GoodsItemViewModel goods)
+        public IActionResult Recommendations(GoodsItemViewModel goods)
         {
             return TryGetActionResult(() =>
             {
@@ -111,7 +111,7 @@ namespace SORANO.WEB.Controllers
                     Quantity = goods.Quantity
                 };
 
-                return View("Recommendations", viewModel);
+                return View(viewModel);
             }, ex =>
             {
                 TempData["Error"] = ex;
@@ -213,7 +213,7 @@ namespace SORANO.WEB.Controllers
                 var goods = _mapper.Map<IEnumerable<GoodsItemViewModel>>(goodsResult.Result);
                 var viewModel = new GoodsIndexViewModel
                 {
-                    Goods = goods,
+                    Goods = goods.ToList(),
                     IsFiltered = true
                 };
 
@@ -222,6 +222,28 @@ namespace SORANO.WEB.Controllers
             {
                 TempData["Error"] = ex;
                 return View(model);
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditRecommendations(GoodsIndexViewModel model, IList<int> ids)
+        {
+            return TryGetActionResult(() =>
+            {
+                var goodsItemViewModel = model.Goods.SingleOrDefault(g => g.GoodsIds.All(ids.Contains));
+
+                if (goodsItemViewModel == null)
+                {
+                    TempData["Error"] = "Не удалось получить список товаров.";
+                    return RedirectToAction("Index");
+                }
+
+                return RedirectToAction("Recommendations", goodsItemViewModel);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index");
             });
         }
 
@@ -250,7 +272,7 @@ namespace SORANO.WEB.Controllers
                 var goods = _mapper.Map<IEnumerable<GoodsItemViewModel>>(goodsResult.Result);
                 var viewModel = new GoodsIndexViewModel
                 {
-                    Goods = goods
+                    Goods = goods.ToList()
                 };
 
                 return View("Index", viewModel);
@@ -263,13 +285,13 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditRecommendations(GoodsRecommendationsViewModel model)
+        public async Task<IActionResult> Recommendations(GoodsRecommendationsViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
             {
                 if (!ModelState.IsValid)
                 {
-                    return View("Recommendations", model);
+                    return View(model);
                 }
 
                 var goods = _mapper.Map<GoodsDto>(model);

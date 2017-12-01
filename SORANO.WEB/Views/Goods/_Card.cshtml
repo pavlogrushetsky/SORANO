@@ -37,12 +37,12 @@
         </dl>
     </div>
     <div class="card-footer">
-        @if (Model.Quantity == 1)
+        @if (Model.GoodsIds.Count == 1)
         {
             <a asp-action="Details"
                asp-controller="Goods"
                asp-route-id="@Model.GoodsIds.First()"
-               class="btn btn-default btn-xs"
+               class="btn btn-default btn-sm"
                data-toggle="tooltip"
                data-placement="bottom"
                data-original-title="Просмотреть информацию о товаре"
@@ -50,24 +50,23 @@
                 <i class="fa fa-fw fa-info-circle"></i>
             </a>
         }        
-        <a asp-action="EditRecommendations"
-           asp-controller="Goods"
-           asp-route-goods="@Model" 
-           class="btn btn-default btn-xs"
-           data-toggle="tooltip"
-           data-placement="bottom"
-           data-original-title="Редактировать рекомендации"
-           title="">
+        <button asp-action="EditRecommendations"
+                asp-route-ids="@Model.GoodsIds"
+                class="btn btn-default btn-sm"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                data-original-title="Редактировать рекомендации"
+                title="">
             <i class="fa fa-fw fa-comment"></i>
-        </a>
-        <button class="btn btn-default btn-xs"
+        </button>
+        <button class="btn btn-default btn-sm"
                 data-toggle="tooltip"
                 data-placement="bottom"
                 data-original-title="Переместить на другой склад"
                 title="">
             <i class="fa fa-fw fa-location-arrow"></i>
         </button>
-        <button class="btn btn-primary btn-xs"
+        <button class="btn btn-primary btn-sm"
                 data-toggle="tooltip"
                 data-placement="bottom"
                 data-original-title="Оформить продажу"

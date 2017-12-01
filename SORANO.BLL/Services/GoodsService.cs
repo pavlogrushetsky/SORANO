@@ -18,7 +18,7 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<GoodsDto>> GetAsync(int id)
         {
-            var goods = await UnitOfWork.Get<Goods>().GetAsync(a => a.ID == id);
+            var goods = await UnitOfWork.Get<Goods>().GetAsync(id);
 
             return goods == null
                 ? new ServiceResponse<GoodsDto>(ServiceResponseStatus.NotFound)

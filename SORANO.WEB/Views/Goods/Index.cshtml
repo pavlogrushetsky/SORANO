@@ -36,7 +36,7 @@
     <input type="hidden" asp-for="ArticleTypeName" />
     <input type="hidden" asp-for="LocationID" />
     <input type="hidden" asp-for="LocationName" />
-    <input type="hidden" asp-for="IsFiltered" />
+    <input type="hidden" asp-for="IsFiltered" />    
     @if (!Model.Goods.Any())
     {
         <div class="row">
@@ -163,13 +163,13 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>   
 </form>
 <div class="row goods-cards-row">
     @foreach (var item in Model.Goods)
     {
         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-            @Html.Partial("~/Views/Goods/_Card.cshtml", item)
+                @Html.Partial("~/Views/Goods/_Card.cshtml", item)               
         </div>
     }
 </div>

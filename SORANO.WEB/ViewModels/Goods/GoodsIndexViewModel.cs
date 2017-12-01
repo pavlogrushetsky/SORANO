@@ -5,6 +5,8 @@ namespace SORANO.WEB.ViewModels.Goods
 {
     public class GoodsIndexViewModel
     {
+        #region Filtering Parameters
+
         public int ArticleID { get; set; }
 
         [Display(Name = "Артикул:")]
@@ -34,6 +36,8 @@ namespace SORANO.WEB.ViewModels.Goods
 
         public bool IsFiltered { get; set; }
 
-        public IEnumerable<GoodsItemViewModel> Goods { get; set; }       
+        #endregion
+
+        public IList<GoodsItemViewModel> Goods { get; set; }       
     }
 }
