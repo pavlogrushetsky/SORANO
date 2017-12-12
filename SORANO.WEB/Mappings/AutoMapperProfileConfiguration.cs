@@ -310,7 +310,7 @@ namespace SORANO.WEB.Mappings
             CreateMap<GoodsDto, GoodsItemViewModel>()
                 .ForMember(
                     dest => dest.GoodsIds,
-                    source => source.MapFrom(s => s.IDs)
+                    source => source.MapFrom(s => s.IDs.Select(id => id.ToString()).Aggregate((i, j) => i + ',' + j))
                 )
                 .ForMember(
                     dest => dest.ArticleID,
@@ -356,8 +356,6 @@ namespace SORANO.WEB.Mappings
                     dest => dest.ImagePath,
                     source => source.MapFrom(s => s.DeliveryItem.Article.MainPicture.FullPath)
                 );
-
-            CreateMap<GoodsRecommendationsViewModel, GoodsDto>();
 
             CreateMap<GoodsDto, GoodsDetailsViewModel>()
                 .ForMember(
@@ -427,6 +425,36 @@ namespace SORANO.WEB.Mappings
                 .ForMember(
                     dest => dest.DeliveryItemRecommendations,
                     source => source.MapFrom(s => s.DeliveryItem.Recommendations)
+                );
+
+            CreateMap<GoodsDto, GoodsRecommendationsViewModel>()
+                .ForMember(
+                    dest => dest.ArticleName,
+                    source => source.MapFrom(s => s.DeliveryItem.Article.Name)
+                )
+                .ForMember(
+                    dest => dest.ArticleDescription,
+                    source => source.MapFrom(s => s.DeliveryItem.Article.Description)
+                )
+                .ForMember(
+                    dest => dest.ArticleTypeName,
+                    source => source.MapFrom(s => s.DeliveryItem.Article.Type.Name)
+                )
+                .ForMember(
+                    dest => dest.DeliveryPrice,
+                    source => source.MapFrom(s => s.DeliveryItem.UnitPrice)
+                )
+                .ForMember(
+                    dest => dest.Currency,
+                    source => source.MapFrom(s => s.DeliveryItem.Delivery.DollarRate.HasValue ? "$" : s.DeliveryItem.Delivery.EuroRate.HasValue ? "€" : "₴")
+                )
+                .ForMember(
+                    dest => dest.LocationName,
+                    source => source.MapFrom(s => s.Storages.OrderBy(st => st.FromDate).First().Location.Name)
+                )
+                .ForMember(
+                    dest => dest.MainPicture,
+                    source => source.MapFrom(s => new MainPictureViewModel{ FullPath = s.DeliveryItem.Article.MainPicture.FullPath })
                 );
 
             #endregion

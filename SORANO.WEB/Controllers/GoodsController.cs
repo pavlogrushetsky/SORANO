@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
@@ -94,24 +95,63 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public IActionResult Recommendations(GoodsItemViewModel goods)
+        public async Task<IActionResult> AddRecommendations(string ids)
         {
-            return TryGetActionResult(() =>
+            return await TryGetActionResultAsync(async () =>
             {
-                var viewModel = new GoodsRecommendationsViewModel
+                var splitted = ids.Split(',');
+                var result = await _goodsService.GetAsync(Convert.ToInt32(splitted.First()));
+
+                if (result.Status != ServiceResponseStatus.Success)
                 {
-                    ArticleName = goods.ArticleName,
-                    ArticleTypeName = goods.ArticleTypeName,
-                    ArticleDescription = goods.ArticleDescription,
-                    Currency = goods.Currency,
-                    DeliveryPrice = goods.DeliveryPrice,
-                    Ids = goods.GoodsIds,
-                    LocationName = goods.LocationName,
-                    MainPicture = new MainPictureViewModel { FullPath = goods.ImagePath },
-                    Quantity = goods.Quantity
-                };
+                    TempData["Error"] = "Не удалось загрузить указанные товары.";
+                    return RedirectToAction("Index");
+                }
+
+                var viewModel = _mapper.Map<GoodsRecommendationsViewModel>(result.Result);
+                viewModel.Recommendations = new List<RecommendationViewModel>();
+                viewModel.Ids = ids;
+                viewModel.Quantity = splitted.Length;
 
                 return View(viewModel);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Goods");
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Expand(int articleId, int articleTypeId, int locationId)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                ModelState.RemoveFor("IsFiltered");
+
+                var goodsResult = await _goodsService.GetAllAsync(articleId, articleTypeId, locationId, true);
+
+                if (goodsResult.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось получить список товаров.";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                var goods = _mapper.Map<IEnumerable<GoodsItemViewModel>>(goodsResult.Result).ToList();
+                var first = goods.First();
+                var viewModel = new GoodsIndexViewModel
+                {
+                    Goods = goods.ToList(),
+                    ArticleID = articleId,
+                    ArticleName = first.ArticleName,
+                    ArticleTypeID = articleTypeId,
+                    ArticleTypeName = first.ArticleTypeName,
+                    LocationID = locationId,
+                    LocationName = first.LocationName,
+                    ShowByPiece = true,
+                    IsFiltered = true
+                };
+
+                return View("Index", viewModel);
             }, ex =>
             {
                 TempData["Error"] = ex;
@@ -223,29 +263,7 @@ namespace SORANO.WEB.Controllers
                 TempData["Error"] = ex;
                 return View(model);
             });
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult EditRecommendations(GoodsIndexViewModel model, IList<int> ids)
-        {
-            return TryGetActionResult(() =>
-            {
-                var goodsItemViewModel = model.Goods.SingleOrDefault(g => g.GoodsIds.All(ids.Contains));
-
-                if (goodsItemViewModel == null)
-                {
-                    TempData["Error"] = "Не удалось получить список товаров.";
-                    return RedirectToAction("Index");
-                }
-
-                return RedirectToAction("Recommendations", goodsItemViewModel);
-            }, ex =>
-            {
-                TempData["Error"] = ex;
-                return RedirectToAction("Index");
-            });
-        }
+        }        
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -285,7 +303,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Recommendations(GoodsRecommendationsViewModel model)
+        public async Task<IActionResult> AddRecommendations(GoodsRecommendationsViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
             {
@@ -294,9 +312,12 @@ namespace SORANO.WEB.Controllers
                     return View(model);
                 }
 
-                var goods = _mapper.Map<GoodsDto>(model);
+                if (!model.Recommendations.Any())
+                    return RedirectToAction("Index");
 
-                var result = await _goodsService.UpdateRecommendationsAsync(goods, UserId);
+                var recommendations = _mapper.Map<IEnumerable<RecommendationDto>>(model.Recommendations);
+                var ids = model.Ids.Split(',').Select(id => Convert.ToInt32(id));
+                var result = await _goodsService.AddRecommendationsAsync(ids, recommendations, UserId);
 
                 if (result.Status != ServiceResponseStatus.Success)
                 {
@@ -321,7 +342,7 @@ namespace SORANO.WEB.Controllers
 
             model.Recommendations.Add(new RecommendationViewModel());
 
-            return View("Recommendations", model);
+            return View("AddRecommendations", model);
         }
 
         [HttpPost]
@@ -331,7 +352,7 @@ namespace SORANO.WEB.Controllers
 
             model.Recommendations.RemoveAt(num);
 
-            return View("Recommendations", model);
+            return View("AddRecommendations", model);
         }
 
         [HttpPost]

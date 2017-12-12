@@ -1,6 +1,6 @@
 ﻿@model GoodsItemViewModel
 
-<div class="card">
+<div class="card">   
     <h4 class="card-header">@Model.ArticleName</h4>
     <div class="card-body">
         <h5>@Model.ArticleTypeName</h5>
@@ -8,7 +8,7 @@
     </div>
     @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
     {
-        <img style="height: 200px; width: 100%; display: block; border: none;" src="@Url.Content(Model.ImagePath)" />
+        <img style="height: 200px; width: 100%; display: block; border: none;" src="@Url.Content(Model.ImagePath)"/>
     }
     <div class="card-body">
         <dl class="dl-horizontal">
@@ -37,11 +37,11 @@
         </dl>
     </div>
     <div class="card-footer">
-        @if (Model.GoodsIds.Count == 1)
+        @if (Model.Quantity == 1)
         {
             <a asp-action="Details"
                asp-controller="Goods"
-               asp-route-id="@Model.GoodsIds.First()"
+               asp-route-id="@Model.GoodsIds"
                class="btn btn-default btn-sm"
                data-toggle="tooltip"
                data-placement="bottom"
@@ -49,16 +49,32 @@
                title="">
                 <i class="fa fa-fw fa-info-circle"></i>
             </a>
-        }        
-        <button asp-action="EditRecommendations"
-                asp-route-ids="@Model.GoodsIds"
-                class="btn btn-default btn-sm"
-                data-toggle="tooltip"
-                data-placement="bottom"
-                data-original-title="Редактировать рекомендации"
-                title="">
+        }
+        <a asp-action="AddRecommendations"
+           asp-controller="Goods"
+           asp-route-ids="@Model.GoodsIds"
+           class="btn btn-default btn-sm"
+           data-toggle="tooltip"
+           data-placement="bottom"
+           data-original-title="Добавить рекомендации"
+           title="">
             <i class="fa fa-fw fa-comment"></i>
-        </button>
+        </a>
+        @if (Model.Quantity > 1)
+        {
+            <a asp-action="Expand"
+               asp-controller="Goods"
+               asp-route-articleId="@Model.ArticleID"
+               asp-route-articleTypeId="@Model.ArticleTypeID"
+               asp-route-locationId="@Model.LocationID"
+               class="btn btn-default btn-sm"
+               data-toggle="tooltip"
+               data-placement="bottom"
+               data-original-title="Показать поштучно"
+               title="">
+                <i class="fa fa-fw fa-expand"></i>
+            </a>
+        }        
         <button class="btn btn-default btn-sm"
                 data-toggle="tooltip"
                 data-placement="bottom"

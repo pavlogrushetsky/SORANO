@@ -18,6 +18,6 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<ServiceResponse<GoodsDto>> GetAsync(int id);
 
-        Task<ServiceResponse<GoodsDto>> UpdateRecommendationsAsync(GoodsDto goods, int userId);
+        Task<ServiceResponse<GoodsDto>> AddRecommendationsAsync(IEnumerable<int> ids, IEnumerable<RecommendationDto> recommendations, int userId);
     }
 }

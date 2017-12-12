@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-
-namespace SORANO.WEB.ViewModels.Goods
+﻿namespace SORANO.WEB.ViewModels.Goods
 {
     public class GoodsItemViewModel
     {
-        public IList<int> GoodsIds { get; set; }
+        public string GoodsIds { get; set; }
 
         public int ArticleID { get; set; }
        
