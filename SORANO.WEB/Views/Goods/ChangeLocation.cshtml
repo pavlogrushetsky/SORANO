@@ -1,4 +1,4 @@
-﻿@model GoodsChangeLocationModel
+﻿@model GoodsChangeLocationViewModel
 
 @{
     ViewBag.Title = "SORANO - Перемещение товаров";
@@ -25,67 +25,105 @@
     </ul>
 }
 
-<form asp-action="ChangeLocation"
-      asp-controller="Goods"
-      method="post">
-    <input type="hidden" asp-for="ReturnUrl"/>
-    <input type="hidden" asp-for="ArticleID" />
-    <input type="hidden" asp-for="CurrentLocationID" />
-    <input type="hidden" asp-for="TargetLocationID" />
-    <input type="hidden" asp-for="TargetLocationName" />
-    <input type="hidden" asp-for="MaxCount" />
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div class="row">
-        <div class="col-lg-4 col-md-12 col-sm-12"> 
-            <div class="form-group">
-                <label class="control-label" asp-for="ArticleName"></label>
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon"><i class="fa fa-fw fa-barcode"></i></span>
-                    <input class="form-control input-sm" type="text" asp-for="ArticleName" readonly="readonly" />
+    <form asp-action="ChangeLocation"
+          asp-controller="Goods"
+          method="post">
+        <input type="hidden" asp-for="TargetLocationID" />
+        <input type="hidden" asp-for="TargetLocationName" />
+        <input type="hidden" asp-for="CurrentLocationID" />
+        <input type="hidden" asp-for="CurrentLocationName" />
+        <input type="hidden" asp-for="MaxCount" />
+        <input type="hidden" asp-for="Ids" />
+        <input type="hidden" asp-for="ArticleName" />
+        <input type="hidden" asp-for="ArticleDescription" />
+        <input type="hidden" asp-for="ArticleTypeName" />
+        <input type="hidden" asp-for="MainPicture.FullPath" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @if (Model.Count > 1)
+        {
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="alert alert-dismissible alert-info">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Информация:</strong> Изменения будут сохранены для группы выбранных товаров
+                    </div>
                 </div>
             </div>
-            <div class="form-group">
-                <label class="control-label" asp-for="CurrentLocationName"></label>
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
-                    <input class="form-control input-sm" type="text" asp-for="CurrentLocationName" readonly="readonly" />
+        }
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div style="float: left;">
+                    @if (Model.HasMainPicture)
+                    {
+                        <img src="@Url.Content(Model.MainPicture.FullPath)" />
+                    }
                 </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label" asp-for="TargetLocationID"></label>
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
-                    <select class="form-control input-sm select-location"
-                            asp-for="TargetLocationID">
-                    </select>
+                <div style="float: left;">
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.ArticleName)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.ArticleName)
+                        </dd>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.ArticleDescription)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.ArticleDescription)
+                        </dd>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.ArticleTypeName)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.ArticleTypeName)
+                        </dd>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.CurrentLocationName)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.CurrentLocationName)
+                        </dd>
+                    </dl>
                 </div>
-                <span asp-validation-for="TargetLocationID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label class="control-label" asp-for="Count"></label>
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon"><i class="fa fa-fw fa-hashtag"></i></span>
-                    <input class="form-control input-sm" type="number" min="1" max="@Model.MaxCount" asp-for="Count" placeholder="Количество единиц товара, шт." />
-                </div>
-                <span asp-validation-for="Count" class="text-danger"></span>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="form-group">
-                <a class="btn btn-default btn-sm" href="@Model.ReturnUrl">
-                    <i class="fa fa-fw fa-close"></i>
-                    Отмена
-                </a>
-                <button type="submit" class="btn btn-primary btn-sm">
-                    <i class="fa fa-fw fa-floppy-o"></i>
-                    Сохранить
-                </button>
+        <div class="row">
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="form-group">
+                    <label class="control-label" asp-for="TargetLocationID"></label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
+                        <select class="form-control input-sm select-location"
+                                asp-for="TargetLocationID"></select>
+                    </div>
+                    <span asp-validation-for="TargetLocationID" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" asp-for="Count"></label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"><i class="fa fa-fw fa-hashtag"></i></span>
+                        <input class="form-control input-sm" type="number" min="1" max="@Model.MaxCount" asp-for="Count" placeholder="Количество единиц товара, шт." />
+                    </div>
+                    <span asp-validation-for="Count" class="text-danger"></span>
+                </div>
             </div>
         </div>
-    </div>
-</form>
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="form-group">
+                    <a class="btn btn-default btn-sm" asp-controller="Goods" asp-action="Index">
+                        <i class="fa fa-fw fa-close"></i>
+                        Отмена
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="fa fa-fw fa-save"></i>
+                        Сохранить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
 
 @section Scripts {
     <script src="~/lib/select2/dist/js/select2.full.min.js"></script>

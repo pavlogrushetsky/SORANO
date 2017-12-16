@@ -21,7 +21,7 @@ namespace SORANO.BLL.Extensions
                 Client = model.Client?.ToDto(),
                 SoldByUser = model.SoldByUser?.Login,
                 SaleLocation = model.SaleLocation?.ToDto(),
-                Storages = model.Storages.Select(s => s.ToDto()).ToList(),
+                Storages = model.Storages.OrderByDescending(s => s.FromDate).Select(s => s.ToDto()).ToList(),
                 Quantity = 1
             };
 

@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using SORANO.WEB.ViewModels.Common;
 using SORANO.WEB.ViewModels.Recommendation;
+using SORANO.WEB.ViewModels.Storage;
 
 namespace SORANO.WEB.ViewModels.Goods
 {
@@ -49,6 +50,9 @@ namespace SORANO.WEB.ViewModels.Goods
         public string SoldBy { get; set; }
 
         public string Currency { get; set; }
+
+        [Display(Name = "История перемещения товара")]
+        public IList<StorageViewModel> Storages { get; set; }
 
         [Display(Name = "Рекомендации позиции поставки")]
         public IList<RecommendationViewModel> DeliveryItemRecommendations { get; set; }

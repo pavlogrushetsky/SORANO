@@ -16,6 +16,7 @@ using SORANO.WEB.ViewModels.Goods;
 using SORANO.WEB.ViewModels.Location;
 using SORANO.WEB.ViewModels.LocationType;
 using SORANO.WEB.ViewModels.Recommendation;
+using SORANO.WEB.ViewModels.Storage;
 using SORANO.WEB.ViewModels.Supplier;
 using SORANO.WEB.ViewModels.User;
 
@@ -80,6 +81,20 @@ namespace SORANO.WEB.Mappings
                 .ForMember(
                     dest => dest.AttachmentTypeID,
                     source => source.MapFrom(s => s.TypeID)
+                );
+
+            #endregion
+
+            #region Storage
+
+            CreateMap<StorageDto, StorageViewModel>()
+                .ForMember(
+                    dest => dest.LocationName,
+                    source => source.MapFrom(s => s.Location.Name)
+                )
+                .ForMember(
+                    dest => dest.LocationDescription,
+                    source => source.MapFrom(s => s.Location.Comment)
                 );
 
             #endregion
@@ -342,11 +357,11 @@ namespace SORANO.WEB.Mappings
                 )
                 .ForMember(
                     dest => dest.LocationID,
-                    source => source.MapFrom(s => s.Storages.OrderBy(st => st.FromDate).First().LocationID)
+                    source => source.MapFrom(s => s.Storages.OrderBy(st => st.FromDate).Last().LocationID)
                 )
                 .ForMember(
                     dest => dest.LocationName,
-                    source => source.MapFrom(s => s.Storages.OrderBy(st => st.FromDate).First().Location.Name)
+                    source => source.MapFrom(s => s.Storages.OrderBy(st => st.FromDate).Last().Location.Name)
                 )
                 .ForMember(
                     dest => dest.IsSold,
@@ -400,11 +415,11 @@ namespace SORANO.WEB.Mappings
                 )
                 .ForMember(
                     dest => dest.LocationID,
-                    source => source.MapFrom(s => s.Storages.OrderBy(st => st.FromDate).First().LocationID)
+                    source => source.MapFrom(s => s.Storages.OrderBy(st => st.FromDate).Last().LocationID)
                 )
                 .ForMember(
                     dest => dest.LocationName,
-                    source => source.MapFrom(s => s.Storages.OrderBy(st => st.FromDate).First().Location.Name)
+                    source => source.MapFrom(s => s.Storages.OrderBy(st => st.FromDate).Last().Location.Name)
                 )
                 .ForMember(
                     dest => dest.IsSold,
@@ -450,11 +465,37 @@ namespace SORANO.WEB.Mappings
                 )
                 .ForMember(
                     dest => dest.LocationName,
-                    source => source.MapFrom(s => s.Storages.OrderBy(st => st.FromDate).First().Location.Name)
+                    source => source.MapFrom(s => s.Storages.OrderBy(st => st.FromDate).Last().Location.Name)
                 )
                 .ForMember(
                     dest => dest.MainPicture,
                     source => source.MapFrom(s => new MainPictureViewModel{ FullPath = s.DeliveryItem.Article.MainPicture.FullPath })
+                );
+
+            CreateMap<GoodsDto, GoodsChangeLocationViewModel>()
+                .ForMember(
+                    dest => dest.ArticleName,
+                    source => source.MapFrom(s => s.DeliveryItem.Article.Name)
+                )
+                .ForMember(
+                    dest => dest.ArticleDescription,
+                    source => source.MapFrom(s => s.DeliveryItem.Article.Description)
+                )
+                .ForMember(
+                    dest => dest.ArticleTypeName,
+                    source => source.MapFrom(s => s.DeliveryItem.Article.Type.Name)
+                )
+                .ForMember(
+                    dest => dest.CurrentLocationName,
+                    source => source.MapFrom(s => s.Storages.OrderBy(st => st.FromDate).Last().Location.Name)
+                )
+                .ForMember(
+                    dest => dest.CurrentLocationID,
+                    source => source.MapFrom(s => s.Storages.OrderBy(st => st.FromDate).Last().Location.ID)
+                )
+                .ForMember(
+                    dest => dest.MainPicture,
+                    source => source.MapFrom(s => new MainPictureViewModel { FullPath = s.DeliveryItem.Article.MainPicture.FullPath })
                 );
 
             #endregion

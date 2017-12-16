@@ -213,20 +213,29 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ChangeLocation(int articleId, int currentLocationId, int maxCount, string returnUrl)
+        public async Task<IActionResult> ChangeLocation(string ids)
         {
-            var currentLocation = await _locationService.GetAsync(currentLocationId);
-            var article = await _articleService.GetAsync(articleId);
-
-            return View(new GoodsChangeLocationModel
+            return await TryGetActionResultAsync(async () =>
             {
-                ReturnUrl = returnUrl,
-                ArticleID = articleId,
-                MaxCount = maxCount,
-                Count = 1,
-                CurrentLocationID = currentLocationId,
-                CurrentLocationName = currentLocation.Result.Name,
-                ArticleName = article.Result?.Name//TODO
+                var splitted = ids.Split(',');
+                var result = await _goodsService.GetAsync(Convert.ToInt32(splitted.First()));
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось загрузить указанные товары.";
+                    return RedirectToAction("Index");
+                }
+
+                var viewModel = _mapper.Map<GoodsChangeLocationViewModel>(result.Result);
+                viewModel.Ids = ids;
+                viewModel.MaxCount = splitted.Length;
+                viewModel.Count = viewModel.MaxCount;
+
+                return View(viewModel);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Goods");
             });
         }
 
@@ -356,7 +365,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangeLocation(GoodsChangeLocationModel model)
+        public async Task<IActionResult> ChangeLocation(GoodsChangeLocationViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
             {
@@ -365,14 +374,22 @@ namespace SORANO.WEB.Controllers
                     return View(model);
                 }
 
-                await _goodsService.ChangeLocationAsync(model.ArticleID, model.CurrentLocationID, model.TargetLocationID, model.Count, UserId);
+                var ids = model.Ids.Split(',').Select(id => Convert.ToInt32(id));
+                var result = await _goodsService.ChangeLocationAsync(ids, model.TargetLocationID, model.Count, UserId);
 
-                return Redirect(model.ReturnUrl);
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось переместить товары.";
+                    return RedirectToAction("Index");
+                }
+
+                TempData["Success"] = "Товары были успешно перемещены.";
+
+                return RedirectToAction("Index");
             }, ex =>
             {
-                ModelState.AddModelError("", ex);
-
-                return View(model);
+                TempData["Error"] = ex;
+                return RedirectToAction("Index");
             });
         }
 

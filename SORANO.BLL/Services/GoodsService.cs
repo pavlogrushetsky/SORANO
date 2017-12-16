@@ -25,39 +25,38 @@ namespace SORANO.BLL.Services
                 : new SuccessResponse<GoodsDto>(goods.ToDto());
         }
 
-        public async Task<ServiceResponse<int>> ChangeLocationAsync(int articleId, int currentLocationId, int targetLocationId, int num, int userId)
+        public async Task<ServiceResponse<int>> ChangeLocationAsync(IEnumerable<int> ids, int targetLocationId, int num, int userId)
         {
-            var storages = await UnitOfWork.Get<Storage>().GetAllAsync();
+            if (ids == null)
+                throw new ArgumentNullException(nameof(ids));
 
-            var currentStorages = storages
-                .Where(s => s.LocationID == currentLocationId && s.Goods.DeliveryItem.ArticleID == articleId && !s.ToDate.HasValue)
-                .Take(num)
-                .ToList();
+            var existentEntities = await UnitOfWork.Get<Goods>().FindByAsync(g => ids.Contains(g.ID));
+            var existentGoods = existentEntities.ToList().Take(num).ToList();
 
-            currentStorages.ForEach(storage =>
+            if (!existentGoods.Any())
+                return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
+
+            existentGoods.ForEach(e =>
             {
+                var storage = e.Storages.OrderBy(st => st.FromDate).Last();
                 storage.ToDate = DateTime.Now;
                 storage.UpdateModifiedFields(userId);
-
                 UnitOfWork.Get<Storage>().Update(storage);
-            });
 
-            currentStorages.Select(s => s.Goods).ToList().ForEach(goods =>
-            {
-                var storage = new Storage
+                var newStorage = new Storage
                 {
                     LocationID = targetLocationId,
                     FromDate = DateTime.Now
                 };
 
-                storage.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+                newStorage.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-                goods.Storages.Add(storage);
+                e.Storages.Add(newStorage);
 
-                goods.UpdateModifiedFields(userId);
+                e.UpdateModifiedFields(userId);
 
-                UnitOfWork.Get<Goods>().Update(goods);
-            });
+                UnitOfWork.Get<Goods>().Update(e);
+            });            
             
             await UnitOfWork.SaveAsync();
 
@@ -87,7 +86,7 @@ namespace SORANO.BLL.Services
                     HasDollarRate = g.DeliveryItem.Delivery.DollarRate.HasValue,
                     HasEuroRate = g.DeliveryItem.Delivery.EuroRate.HasValue,
                     g.SaleDate.HasValue,
-                    g.Storages.OrderBy(st => st.FromDate).First().LocationID
+                    g.Storages.OrderBy(st => st.FromDate).Last().LocationID
                 }).Select(gg =>
                 {
                     var firstInGroup = gg.First();
@@ -104,7 +103,7 @@ namespace SORANO.BLL.Services
                 result = result.Where(g => g.DeliveryItem.Article.TypeID == articleTypeID);
 
             if (locationID > 0)
-                result = result.Where(g => g.Storages.OrderBy(st => st.FromDate).First().LocationID == locationID);
+                result = result.Where(g => g.Storages.OrderBy(st => st.FromDate).Last().LocationID == locationID);
 
             response.Result = result;
 
