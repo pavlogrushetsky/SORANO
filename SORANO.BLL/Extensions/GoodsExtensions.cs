@@ -12,15 +12,15 @@ namespace SORANO.BLL.Extensions
             {
                 ID = model.ID,
                 DeliveryItemID = model.DeliveryItemID,
-                ClientID = model.ClientID,
-                SalePrice = model.SalePrice,
-                SaleDate = model.SaleDate,
-                SoldBy = model.SoldBy,
-                SaleLocationID = model.SaleLocationID,
+                //ClientID = model.ClientID,
+                //SalePrice = model.SalePrice,
+                //SaleDate = model.SaleDate,
+                //SoldBy = model.SoldBy,
+                //SaleLocationID = model.SaleLocationID,
                 DeliveryItem = model.DeliveryItem.ToDto(),
-                Client = model.Client?.ToDto(),
-                SoldByUser = model.SoldByUser?.Login,
-                SaleLocation = model.SaleLocation?.ToDto(),
+                //Client = model.Client?.ToDto(),
+                //SoldByUser = model.SoldByUser?.Login,
+                //SaleLocation = model.SaleLocation?.ToDto(),
                 Storages = model.Storages.OrderByDescending(s => s.FromDate).Select(s => s.ToDto()).ToList(),
                 Quantity = 1
             };

@@ -57,6 +57,10 @@ namespace SORANO.DAL.Context
 
         public IDbSet<Role> Roles { get; set; }
 
+        public IDbSet<Sale> Sales { get; set; }
+
+        public IDbSet<SaleItem> SaleItems { get; set; }
+
         public virtual async Task CommitAsync()
         {
             await SaveChangesAsync();
@@ -86,6 +90,8 @@ namespace SORANO.DAL.Context
             builder.Configurations.Add(new RecommendationConfiguration());
             builder.Configurations.Add(new StorageConfiguration());
             builder.Configurations.Add(new SupplierConfiguration());
+            builder.Configurations.Add(new SaleConfiguration());
+            builder.Configurations.Add(new SaleItemConfiguration());
         }
     }
 }

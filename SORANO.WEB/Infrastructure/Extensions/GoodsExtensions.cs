@@ -13,9 +13,9 @@ namespace SORANO.WEB.Infrastructure.Extensions
             return new UserSaleModel
             {
                 ArticleName = goods.DeliveryItem.Article.Name,
-                Location = goods.SaleLocation.Name,
-                Price = goods.SalePrice?.ToString("C", new CultureInfo("uk-UA")),
-                Date = goods.SaleDate?.ToString("dd.MM.yyyy")
+                //Location = goods.SaleLocation.Name,
+                //Price = goods.SalePrice?.ToString("C", new CultureInfo("uk-UA")),
+                //Date = goods.SaleDate?.ToString("dd.MM.yyyy")
             };
         }
 

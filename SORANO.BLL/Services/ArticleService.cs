@@ -118,22 +118,23 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<IDictionary<ArticleDto, int>>> GetArticlesForLocationAsync(int? locationId)
         {
-            var goods = await UnitOfWork.Get<Goods>().GetAllAsync();
+            var goods = await UnitOfWork.Get<SaleItem>().GetAllAsync();
 
-            IDictionary<ArticleDto, int> result;
+            IDictionary<ArticleDto, int> result = null;
 
-            if (!locationId.HasValue || locationId == 0)
-            {                
-                result = goods.Where(g => !g.SaleDate.HasValue)
-                    .GroupBy(g => g.DeliveryItem.Article)
-                    .ToDictionary(gr => gr.Key.ToDto(), gr => gr.Count());
-            }
-            else
-            {
-                result = goods.Where(g => !g.SaleDate.HasValue && g.Storages.Single(s => !s.ToDate.HasValue).LocationID == locationId)
-                    .GroupBy(g => g.DeliveryItem.Article)
-                    .ToDictionary(gr => gr.Key.ToDto(), gr => gr.Count());
-            }            
+            // TODO
+            //if (!locationId.HasValue || locationId == 0)
+            //{                
+            //    result = goods.Where(g => !g.Sale.Date.HasValue)
+            //        .GroupBy(g => g.DeliveryItem.Article)
+            //        .ToDictionary(gr => gr.Key.ToDto(), gr => gr.Count());
+            //}
+            //else
+            //{
+            //    result = goods.Where(g => !g.SaleDate.HasValue && g.Storages.Single(s => !s.ToDate.HasValue).LocationID == locationId)
+            //        .GroupBy(g => g.DeliveryItem.Article)
+            //        .ToDictionary(gr => gr.Key.ToDto(), gr => gr.Count());
+            //}            
 
             return new SuccessResponse<IDictionary<ArticleDto, int>>(result);
         }

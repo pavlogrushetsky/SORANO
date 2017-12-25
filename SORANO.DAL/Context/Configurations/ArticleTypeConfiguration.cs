@@ -2,14 +2,8 @@
 
 namespace SORANO.DAL.Context.Configurations
 {
-    /// <summary>
-    /// Article type configuration
-    /// </summary>
     internal class ArticleTypeConfiguration : StockEntityConfiguration<ArticleType>
     {
-        /// <summary>
-        /// Article type configuration
-        /// </summary>
         public ArticleTypeConfiguration()
         {
             HasMany(a => a.Articles)

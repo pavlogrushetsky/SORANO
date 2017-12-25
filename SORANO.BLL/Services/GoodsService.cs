@@ -112,18 +112,22 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<IEnumerable<GoodsDto>>> GetSoldGoodsAsync()
         {
-            var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
+            //var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
 
-            return new SuccessResponse<IEnumerable<GoodsDto>>(goods.Select(g => g.ToDto()));
+            //return new SuccessResponse<IEnumerable<GoodsDto>>(goods.Select(g => g.ToDto()));
+
+            return null;
         }
 
         public async Task<ServiceResponse<decimal>> GetTotalIncomeAsync()
         {
-            var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
+            //var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
 
-            var sum = goods?.Sum(g => g.SalePrice) ?? 0.0M;
+            //var sum = goods?.Sum(g => g.SalePrice) ?? 0.0M;
 
-            return new SuccessResponse<decimal>(sum);
+            //return new SuccessResponse<decimal>(sum);
+
+            return null;
         }
 
         public async Task<ServiceResponse<int>> SaleAsync(int articleId, int locationId, int clientId, int num, decimal price, int userId)
@@ -145,11 +149,12 @@ namespace SORANO.BLL.Services
 
             currentStorages.Select(s => s.Goods).ToList().ForEach(goods =>
             {
-                goods.SaleDate = DateTime.Now;
-                goods.SaleLocationID = locationId;
-                goods.SoldBy = userId;
-                goods.SalePrice = price;
-                goods.ClientID = clientId;
+                // TODO
+                //goods.SaleDate = DateTime.Now;
+                //goods.SaleLocationID = locationId;
+                //goods.SoldBy = userId;
+                //goods.SalePrice = price;
+                //goods.ClientID = clientId;
 
                 goods.UpdateModifiedFields(userId);
 

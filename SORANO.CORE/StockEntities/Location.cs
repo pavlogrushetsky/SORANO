@@ -14,7 +14,7 @@ namespace SORANO.CORE.StockEntities
 
         public virtual ICollection<Storage> Storages { get; set; } = new HashSet<Storage>();
 
-        public virtual ICollection<Goods> SoldGoods { get; set; } = new HashSet<Goods>();
+        public virtual ICollection<Sale> Sales { get; set; } = new HashSet<Sale>();
 
         public virtual ICollection<Delivery> Deliveries { get; set; } = new HashSet<Delivery>();
     }

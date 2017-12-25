@@ -90,7 +90,7 @@ namespace SORANO.BLL.Services
             if (existentClient == null)
                 return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
 
-            if (existentClient.Goods.Any())
+            if (existentClient.Sales.Any())
                 return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
             existentClient.UpdateDeletedFields(userId);

@@ -3,14 +3,8 @@ using SORANO.CORE.AccountEntities;
 
 namespace SORANO.DAL.Context.Configurations
 {
-    /// <summary>
-    /// Role configuration
-    /// </summary>
     internal class RoleConfiguration : EntityTypeConfiguration<Role>
     {
-        /// <summary>
-        /// Role configuration
-        /// </summary>
         public RoleConfiguration()
         {
             Property(r => r.Name)

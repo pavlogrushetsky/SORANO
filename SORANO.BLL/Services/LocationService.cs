@@ -105,7 +105,7 @@ namespace SORANO.BLL.Services
             if (existentLocation == null)
                 return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
 
-            if (existentLocation.Storages.Any() || existentLocation.SoldGoods.Any())
+            if (existentLocation.Storages.Any() || existentLocation.Sales.Any())
                 return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
             existentLocation.UpdateDeletedFields(userId);
@@ -124,22 +124,25 @@ namespace SORANO.BLL.Services
             var allGoods = await UnitOfWork.Get<Goods>().GetAllAsync();
             Dictionary<LocationDto, int> locations;
 
-            if (!articleId.HasValue || articleId == 0)
-            {
-                locations = allGoods.Where(g => !g.SaleDate.HasValue)
-                    .GroupBy(g => g.Storages.Single(s => !s.ToDate.HasValue).Location)
-                    .ToDictionary(gr => gr.Key.ToDto(), gr => gr.Count());
-            }
-            else
-            {
-                locations = allGoods.Where(g => !g.SaleDate.HasValue && g.DeliveryItem.ArticleID == articleId)
-                        .GroupBy(g => g.Storages.Single(s => !s.ToDate.HasValue).Location)
-                        .ToDictionary(gr => gr.Key.ToDto(), gr => gr.Count());
-            }
+            // TODO
+            //if (!articleId.HasValue || articleId == 0)
+            //{
+            //    locations = allGoods.Where(g => !g.SaleDate.HasValue)
+            //        .GroupBy(g => g.Storages.Single(s => !s.ToDate.HasValue).Location)
+            //        .ToDictionary(gr => gr.Key.ToDto(), gr => gr.Count());
+            //}
+            //else
+            //{
+            //    locations = allGoods.Where(g => !g.SaleDate.HasValue && g.DeliveryItem.ArticleID == articleId)
+            //            .GroupBy(g => g.Storages.Single(s => !s.ToDate.HasValue).Location)
+            //            .ToDictionary(gr => gr.Key.ToDto(), gr => gr.Count());
+            //}
 
-            return !except.HasValue 
-                ? new SuccessResponse<Dictionary<LocationDto, int>>(locations) 
-                : new SuccessResponse<Dictionary<LocationDto, int>>(locations.Where(l => l.Key.ID != except).ToDictionary(l => l.Key, l => l.Value));
+            //return !except.HasValue 
+            //    ? new SuccessResponse<Dictionary<LocationDto, int>>(locations) 
+            //    : new SuccessResponse<Dictionary<LocationDto, int>>(locations.Where(l => l.Key.ID != except).ToDictionary(l => l.Key, l => l.Value));
+
+            return null;
         }
 
         public async Task<ServiceResponse<IEnumerable<LocationDto>>> GetAllAsync(bool withDeleted, string searchTerm)

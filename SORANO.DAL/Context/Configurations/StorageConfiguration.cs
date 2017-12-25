@@ -4,14 +4,8 @@ using System.Data.Entity.Infrastructure.Annotations;
 
 namespace SORANO.DAL.Context.Configurations
 {
-    /// <summary>
-    /// Storage configuration
-    /// </summary>
     internal class StorageConfiguration : StockEntityConfiguration<Storage>
     {
-        /// <summary>
-        /// Storage configuration
-        /// </summary>
         public StorageConfiguration()
         {
             Property(s => s.ToDate)

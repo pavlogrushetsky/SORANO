@@ -55,6 +55,8 @@
     <Compile Include="StockEntities\LocationType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StockEntities\Recommendation.cs" />
+    <Compile Include="StockEntities\Sale.cs" />
+    <Compile Include="StockEntities\SaleItem.cs" />
     <Compile Include="StockEntities\StockEntity.cs" />
     <Compile Include="StockEntities\Storage.cs" />
     <Compile Include="StockEntities\Supplier.cs" />

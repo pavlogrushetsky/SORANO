@@ -5,14 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SORANO.DAL.Context.Configurations
 {
-    /// <summary>
-    /// User configuration
-    /// </summary>
     internal class UserConfiguration : EntityTypeConfiguration<User>
     {
-        /// <summary>
-        /// User configuration
-        /// </summary>
         public UserConfiguration()
         {
             Property(u => u.Password)
@@ -47,9 +41,9 @@ namespace SORANO.DAL.Context.Configurations
                 .WithOptional(e => e.DeletedByUser)
                 .HasForeignKey(e => e.DeletedBy);
 
-            HasMany(u => u.SoldGoods)
-                .WithOptional(g => g.SoldByUser)
-                .HasForeignKey(g => g.SoldBy);
+            HasMany(u => u.Sales)
+                .WithRequired(g => g.User)
+                .HasForeignKey(g => g.UserID);
 
             HasMany(u => u.Roles)
                 .WithMany(r => r.Users)

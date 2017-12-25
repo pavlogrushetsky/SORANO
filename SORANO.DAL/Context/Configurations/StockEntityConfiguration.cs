@@ -1,18 +1,10 @@
 ﻿using System.Data.Entity.ModelConfiguration;
-using SORANO.CORE;
 using SORANO.CORE.StockEntities;
 
 namespace SORANO.DAL.Context.Configurations
 {
-    /// <summary>
-    /// Stock entity abstract configuration
-    /// </summary>
-    /// <typeparam name="T">Stock entity type</typeparam>
     internal abstract class StockEntityConfiguration<T> : EntityTypeConfiguration<T> where T : StockEntity
     {
-        /// <summary>
-        /// Stock entity abstract configuration
-        /// </summary>
         protected StockEntityConfiguration()
         {
             HasKey(e => e.ID);
@@ -34,14 +26,8 @@ namespace SORANO.DAL.Context.Configurations
         }
     }
 
-    /// <summary>
-    /// Stock entity configuration
-    /// </summary>
     internal class StockEntityConfiguration : StockEntityConfiguration<StockEntity>
     {
-        /// <summary>
-        /// Stock entity configuration
-        /// </summary>
         public StockEntityConfiguration()
         {
             HasMany(e => e.Recommendations)

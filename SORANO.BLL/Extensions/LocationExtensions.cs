@@ -19,7 +19,7 @@ namespace SORANO.BLL.Extensions
             };
 
             dto.MapDetails(model);
-            dto.CanBeDeleted = !model.Deliveries.Any() && !model.Storages.Any() && !model.SoldGoods.Any() && !model.IsDeleted;
+            dto.CanBeDeleted = !model.Deliveries.Any() && !model.Storages.Any() && !model.Sales.Any() && !model.IsDeleted;
 
             return dto;
         }
