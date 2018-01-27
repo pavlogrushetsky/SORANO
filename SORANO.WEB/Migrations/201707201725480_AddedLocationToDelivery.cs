@@ -1,8 +1,7 @@
-namespace SORANO.DAL.Migrations
+using System.Data.Entity.Migrations;
+
+namespace SORANO.WEB.Migrations
 {
-    using System;
-    using System.Data.Entity.Migrations;
-    
     public partial class AddedLocationToDelivery : DbMigration
     {
         public override void Up()

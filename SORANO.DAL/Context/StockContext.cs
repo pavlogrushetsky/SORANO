@@ -2,7 +2,6 @@
 using SORANO.CORE.AccountEntities;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Context.Configurations;
-using SORANO.DAL.Migrations;
 using System.Threading.Tasks;
 
 namespace SORANO.DAL.Context
@@ -11,18 +10,6 @@ namespace SORANO.DAL.Context
     {
         public StockContext(string connectionString) : base(connectionString)
         {
-
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<StockContext, Configuration>(true));
-
-            Database.Initialize(true);
-        }
-
-        public StockContext() : base("SORANO")
-        {
-
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<StockContext, Configuration>("SORANO"));
-
-            Database.Initialize(true);
         }
 
         public IDbSet<StockEntity> StockEntities { get; set; }

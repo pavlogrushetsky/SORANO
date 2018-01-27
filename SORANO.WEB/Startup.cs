@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Data.Entity;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -91,7 +92,9 @@ namespace SORANO.WEB
                 routes.MapRoute(
                     "default", 
                     "{controller=Home}/{action=Index}/{id?}");
-            });            
+            });
+
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<StockContext, Migrations.Configuration>());
         }
     }
 }

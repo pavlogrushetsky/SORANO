@@ -1,22 +1,22 @@
-﻿using System.Linq;
+﻿using System;
+using System.Data.Entity.Migrations;
+using System.Linq;
 using SORANO.CORE.AccountEntities;
+using SORANO.CORE.StockEntities;
+using SORANO.DAL.Context;
 
-namespace SORANO.DAL.Migrations
+namespace SORANO.WEB.Migrations
 {
-    using CORE.StockEntities;
-    using System;
-    using System.Data.Entity.Migrations;
+    public class Configuration : DbMigrationsConfiguration<StockContext>
+	{
+	    public Configuration()
+	    {
+	        AutomaticMigrationsEnabled = true;
+	        AutomaticMigrationDataLossAllowed = true;
+	    }
 
-    internal sealed class Configuration : DbMigrationsConfiguration<Context.StockContext>
-    {
-        public Configuration()
-        {
-            AutomaticMigrationsEnabled = true;
-            AutomaticMigrationDataLossAllowed = true;
-        }
-
-        protected override void Seed(Context.StockContext context)
-        {
+	    protected override void Seed(StockContext context)
+	    {
             if (!context.Users.Any() && !context.Roles.Any())
             {
                 var mainDeveloper = context.Users.Add(new User
@@ -80,5 +80,5 @@ namespace SORANO.DAL.Migrations
 
             base.Seed(context);
         }
-    }
+	}
 }

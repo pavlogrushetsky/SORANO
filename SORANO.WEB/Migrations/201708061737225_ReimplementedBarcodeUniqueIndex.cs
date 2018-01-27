@@ -1,7 +1,7 @@
-namespace SORANO.DAL.Migrations
-{
-    using System.Data.Entity.Migrations;
+using System.Data.Entity.Migrations;
 
+namespace SORANO.WEB.Migrations
+{
     public partial class ReimplementedBarcodeUniqueIndex : DbMigration
     {
         string indexName = "IX_UQ_Article_Barcode";

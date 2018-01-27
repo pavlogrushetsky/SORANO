@@ -116,7 +116,7 @@ namespace SORANO.BLL.Services
 
             //return new SuccessResponse<IEnumerable<GoodsDto>>(goods.Select(g => g.ToDto()));
 
-            return null;
+            return new SuccessResponse<IEnumerable<GoodsDto>>(new List<GoodsDto>());
         }
 
         public async Task<ServiceResponse<decimal>> GetTotalIncomeAsync()
@@ -127,7 +127,7 @@ namespace SORANO.BLL.Services
 
             //return new SuccessResponse<decimal>(sum);
 
-            return null;
+            return new SuccessResponse<decimal>();
         }
 
         public async Task<ServiceResponse<int>> SaleAsync(int articleId, int locationId, int clientId, int num, decimal price, int userId)

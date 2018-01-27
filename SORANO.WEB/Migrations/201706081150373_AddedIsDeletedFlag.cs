@@ -1,7 +1,7 @@
-namespace SORANO.DAL.Migrations
-{
-    using System.Data.Entity.Migrations;
+using System.Data.Entity.Migrations;
 
+namespace SORANO.WEB.Migrations
+{
     public partial class AddedIsDeletedFlag : DbMigration
     {
         public override void Up()

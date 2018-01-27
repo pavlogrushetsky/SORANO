@@ -1,7 +1,7 @@
-namespace SORANO.DAL.Migrations
+using System.Data.Entity.Migrations;
+
+namespace SORANO.WEB.Migrations
 {
-    using System.Data.Entity.Migrations;
-    
     public partial class AddedExtensionsToAttachmentType : DbMigration
     {
         public override void Up()
