@@ -304,9 +304,9 @@ namespace SORANO.WEB.Controllers
         #endregion
 
         [HttpPost]
-        public async Task<JsonResult> GetLocations(string term)
+        public async Task<JsonResult> GetLocations(string term, int currentLocationId)
         {
-            var locations = await _locationService.GetAllAsync(false, term);
+            var locations = await _locationService.GetAllAsync(false, term, currentLocationId);
 
             return Json(new
             {

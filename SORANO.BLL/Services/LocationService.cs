@@ -145,7 +145,7 @@ namespace SORANO.BLL.Services
             return null;
         }
 
-        public async Task<ServiceResponse<IEnumerable<LocationDto>>> GetAllAsync(bool withDeleted, string searchTerm)
+        public async Task<ServiceResponse<IEnumerable<LocationDto>>> GetAllAsync(bool withDeleted, string searchTerm, int currentLocationId)
         {
             var response = new SuccessResponse<IEnumerable<LocationDto>>();
 
@@ -153,10 +153,11 @@ namespace SORANO.BLL.Services
 
             var term = searchTerm?.ToLower();
 
+
             var searched = locations
-                .Where(t => string.IsNullOrEmpty(term)
-                            || t.Name.ToLower().Contains(term)
-                            || !string.IsNullOrWhiteSpace(t.Comment) && t.Comment.ToLower().Contains(term));
+                .Where(l => l.ID != currentLocationId && (string.IsNullOrEmpty(term)
+                            || l.Name.ToLower().Contains(term)
+                            || !string.IsNullOrWhiteSpace(l.Comment) && l.Comment.ToLower().Contains(term)));
 
             if (withDeleted)
             {
