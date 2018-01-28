@@ -8,6 +8,8 @@ namespace SORANO.BLL.Services.Abstract
     {
         Task<ServiceResponse<UserDto>> GetAsync(string login, string password);
 
+        Task<ServiceResponse<UserDto>> GetAsync(string login, string password, int? locationID);
+
         Task<ServiceResponse<UserDto>> GetAsync(string login);
 
         Task<ServiceResponse<UserDto>> GetAsync(int id);

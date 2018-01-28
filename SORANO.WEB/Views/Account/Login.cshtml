@@ -5,6 +5,19 @@
     ViewBag.Title = "SORANO - Вход";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/lib/select2/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="~/lib/select2-bootstrap-theme/dist/select2-bootstrap.min.css" />
+    <style>
+        span.select2-selection.select2-selection--single {
+            -ms-border-top-right-radius: 3px !important;
+            border-top-right-radius: 3px !important;
+            -ms-border-bottom-right-radius: 3px !important;
+            border-bottom-right-radius: 3px !important;
+        }
+    </style>
+}
+
 <div class="row">
     <div class="col-md-4 col-md-offset-4">
         <div class="panel panel-primary">
@@ -13,26 +26,37 @@
             </div>
             <div class="panel-body">
                 <form asp-action="Login"
-                        asp-controller="Account"
-                        asp-antiforgery="true"
-                        method="post">
+                      asp-controller="Account"
+                      asp-antiforgery="true"
+                      method="post">
+                    <input type="hidden" asp-for="LocationID" />
+                    <input type="hidden" asp-for="LocationName"/>
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <input type="hidden" asp-for="ReturnUrl" value="@ViewBag.ReturnUrl"/>
-                        <div class="form-group">
-                            <label class="control-label" asp-for="Login"></label>
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-addon"><i class="fa fa-fw fa-user-circle-o"></i></span>
-                                <input class="form-control input-sm" type="text" asp-for="Login" placeholder="Логин" autofocus/>
-                            </div>
-                            <span asp-validation-for="Login" class="text-danger"></span>
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Login"></label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"><i class="fa fa-fw fa-user-circle-o"></i></span>
+                            <input class="form-control input-sm" type="text" asp-for="Login" placeholder="Логин" autofocus/>
                         </div>
+                        <span asp-validation-for="Login" class="text-danger"></span>
+                    </div>
                     <div class="form-group">
                         <label class="control-label" asp-for="Password"></label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
-                            <input class="form-control input-sm" type="password" asp-for="Password" placeholder="Пароль"/>                                   
-                        </div>  
+                            <input class="form-control input-sm" type="password" asp-for="Password" placeholder="Пароль"/>
+                        </div>
                         <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" asp-for="LocationID"></label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
+                            <select class="form-control input-sm select-location"
+                                    asp-for="LocationID"></select>
+                        </div>
+                        <span asp-validation-for="LocationID" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <div class="checkbox">
@@ -47,3 +71,14 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/lib/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/lib/moment/min/moment-with-locales.min.js"></script>
+    <environment names="Development">
+        <script src="~/js/pages/login.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/js/pages/login.min.js" asp-append-version="true"></script>
+    </environment>
+}

@@ -136,14 +136,38 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<UserDto>(user.ToDto());           
         }
 
+        public async Task<ServiceResponse<UserDto>> GetAsync(string login, string password, int? locationId)
+        {
+            var hash = CryptoHelper.Hash(password);
+
+            var user = await _unitOfWork.Get<User>()
+                .GetAsync(u => !u.IsBlocked 
+                    && u.Login.Equals(login) 
+                    && u.Password.Equals(hash));
+
+            if (user == null)
+                return new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound);
+
+            if (!user.Locations.Any())
+                return new SuccessResponse<UserDto>(user.ToDto());
+            
+            if (!locationId.HasValue || !user.Locations.Select(l => l.ID).Contains(locationId.Value))
+                return new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound);
+
+            return new SuccessResponse<UserDto>(user.ToDto());
+        }
+
         public async Task<ServiceResponse<UserDto>> GetAsync(string login, string password)
         {
             var hash = CryptoHelper.Hash(password);
 
-            var user = await _unitOfWork.Get<User>().GetAsync(u => !u.IsBlocked && u.Login.Equals(login) && u.Password.Equals(hash));   
+            var user = await _unitOfWork.Get<User>()
+                .GetAsync(u => !u.IsBlocked
+                               && u.Login.Equals(login)
+                               && u.Password.Equals(hash));
 
-            return user == null 
-                ? new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound) 
+            return user == null
+                ? new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound)
                 : new SuccessResponse<UserDto>(user.ToDto());
         }
 

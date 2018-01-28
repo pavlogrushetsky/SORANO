@@ -36,12 +36,13 @@ namespace SORANO.WEB.Controllers
                 return View(model);
             }
 
-            var result = await UserService.GetAsync(model.Login, model.Password);
+            var result = await UserService.GetAsync(model.Login, model.Password, model.LocationID);
 
             if (result.Status == ServiceResponseStatus.NotFound)
             {
-                ModelState.AddModelError(nameof(model.Login), "Некорректные логин и/или пароль");
-                ModelState.AddModelError(nameof(model.Password), "Некорректные логин и/или пароль");
+                ModelState.AddModelError(nameof(model.Login), "Некорректные параметры входа");
+                ModelState.AddModelError(nameof(model.Password), "Некорректные параметры входа");
+                ModelState.AddModelError(nameof(model.LocationID), "Некорректные параметры входа");
 
                 return View(model);
             }

@@ -22,7 +22,6 @@ using SORANO.WEB.ViewModels.Delivery;
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    [CheckUser]
     public class LocationController : EntityBaseController<LocationCreateUpdateViewModel>
     {
         private readonly ILocationService _locationService;
@@ -44,6 +43,7 @@ namespace SORANO.WEB.Controllers
         #region GET Actions
 
         [HttpGet]
+        [CheckUser]
         public async Task<IActionResult> Index()
         {
             return await TryGetActionResultAsync(async () =>
@@ -73,6 +73,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
+        [CheckUser]
         public IActionResult ShowDeleted(bool show)
         {
             Session.SetBool("ShowDeletedLocations", show);
@@ -81,6 +82,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
+        [CheckUser]
         public async Task<IActionResult> Create(string returnUrl)
         {
             return await TryGetActionResultAsync(async () =>
@@ -110,6 +112,7 @@ namespace SORANO.WEB.Controllers
         }       
 
         [HttpGet]
+        [CheckUser]
         public async Task<IActionResult> Update(int id)
         {
             return await TryGetActionResultAsync(async () =>
@@ -144,6 +147,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
+        [CheckUser]
         public async Task<IActionResult> Details(int id)
         {
             return await TryGetActionResultAsync(async () =>
@@ -164,6 +168,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
+        [CheckUser]
         public async Task<IActionResult> Delete(int id)
         {
             return await TryGetActionResultAsync(async () =>
@@ -186,8 +191,9 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [CheckUser]
         [LoadAttachments]
-        [ValidateModel]
+        [ValidateModel]        
         public async Task<IActionResult> Create(LocationCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return await TryGetActionResultAsync(async () =>
@@ -227,6 +233,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [CheckUser]
         [LoadAttachments]
         [ValidateModel]
         public async Task<IActionResult> Update(LocationCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
@@ -249,6 +256,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
+        [CheckUser]
         public async Task<IActionResult> Delete(LocationDeleteViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
@@ -270,6 +278,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [CheckUser]
         [LoadAttachments]
         public IActionResult CreateType(LocationCreateUpdateViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
@@ -286,6 +295,7 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [CheckUser]
         public IActionResult Cancel(LocationCreateUpdateViewModel model)
         {
             if (string.IsNullOrEmpty(model.ReturnPath))
@@ -304,7 +314,8 @@ namespace SORANO.WEB.Controllers
         #endregion
 
         [HttpPost]
-        public async Task<JsonResult> GetLocations(string term, int currentLocationId)
+        [AllowAnonymous]
+        public async Task<JsonResult> GetLocations(string term, int currentLocationId = 0)
         {
             var locations = await _locationService.GetAllAsync(false, term, currentLocationId);
 
