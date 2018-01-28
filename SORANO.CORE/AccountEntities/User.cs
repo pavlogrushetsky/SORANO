@@ -22,5 +22,7 @@ namespace SORANO.CORE.AccountEntities
         public virtual ICollection<StockEntity> DeletedEntities { get; set; } = new HashSet<StockEntity>();
 
         public virtual ICollection<Sale> Sales { get; set; } = new HashSet<Sale>();
+
+        public virtual ICollection<Location> Locations { get; set; } = new HashSet<Location>();
     }
 }

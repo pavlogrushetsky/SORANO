@@ -54,6 +54,15 @@ namespace SORANO.DAL.Context.Configurations
                     ur.ToTable("UsersRoles");
                 });
 
+            HasMany(u => u.Locations)
+                .WithMany(l => l.Users)
+                .Map(ul =>
+                {
+                    ul.MapLeftKey("UserID");
+                    ul.MapRightKey("LocationID");
+                    ul.ToTable("UsersLocations");
+                });
+
             ToTable("Users");
         }
     }

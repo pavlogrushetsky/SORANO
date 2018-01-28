@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SORANO.CORE.AccountEntities;
 
 namespace SORANO.CORE.StockEntities
 {
@@ -17,5 +18,7 @@ namespace SORANO.CORE.StockEntities
         public virtual ICollection<Sale> Sales { get; set; } = new HashSet<Sale>();
 
         public virtual ICollection<Delivery> Deliveries { get; set; } = new HashSet<Delivery>();
+
+        public virtual ICollection<User> Users { get; set; } = new HashSet<User>();
     }
 }
