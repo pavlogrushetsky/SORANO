@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using SORANO.BLL.Dtos;
 using SORANO.BLL.Services;
 using SORANO.WEB.Infrastructure.Extensions;
-using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.Recommendation;
 
 namespace SORANO.WEB.Controllers
@@ -25,17 +24,14 @@ namespace SORANO.WEB.Controllers
         private readonly IGoodsService _goodsService;
         private readonly ILocationService _locationService;
         private readonly IArticleService _articleService;
-        private readonly IClientService _clientService;
         private readonly IMapper _mapper;
 
-        public GoodsController(IClientService clientService, 
-            IGoodsService goodsService, 
+        public GoodsController(IGoodsService goodsService, 
             ILocationService locationService, 
             IUserService userService, 
             IArticleService articleService,
             IMapper mapper) : base(userService)
         {
-            _clientService = clientService;
             _goodsService = goodsService;
             _locationService = locationService;
             _articleService = articleService;
@@ -417,58 +413,5 @@ namespace SORANO.WEB.Controllers
         }
 
         #endregion 
-
-        [HttpPost]
-        public async Task<JsonResult> GetClients(string term)
-        {
-            var clients = await _clientService.GetAllAsync(false);
-
-            return Json(new
-            {
-                results = clients.Result
-                    .Where(c => string.IsNullOrEmpty(term) || c.Name.Contains(term))
-                    .Select(c => new
-                    {
-                        id = c.ID,
-                        text = c.Name
-                    })
-            });
-        }
-
-        [HttpPost]
-        public async Task<JsonResult> GetArticles(string term, int? locationId)
-        {
-            var articles = await _articleService.GetArticlesForLocationAsync(locationId);
-
-            return Json(new
-            {
-                results = articles.Result//TODO
-                    .Where(a => string.IsNullOrEmpty(term) || a.Key.Name.Contains(term))
-                    .Select(a => new
-                    {
-                        id = a.Key.ID,
-                        text = a.Key.Name,
-                        max = a.Value
-                    })
-            });
-        }
-
-        [HttpPost]
-        public async Task<JsonResult> GetLocations(string term, int? articleId, int? except)
-        {
-            var locations = await _locationService.GetLocationsForArticleAsync(articleId, except);
-
-            return Json(new
-            {
-                results = locations.Result
-                    .Where(a => string.IsNullOrEmpty(term) || a.Key.Name.Contains(term))
-                    .Select(a => new
-                    {
-                        id = a.Key.ID,
-                        text = a.Key.Name,
-                        max = a.Value
-                    })
-            });
-        }
     }
 }

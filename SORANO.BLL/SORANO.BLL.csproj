@@ -57,6 +57,7 @@
     <Compile Include="Dtos\LocationTypeDto.cs" />
     <Compile Include="Dtos\RecommendationDto.cs" />
     <Compile Include="Dtos\RoleDto.cs" />
+    <Compile Include="Dtos\SaleDto.cs" />
     <Compile Include="Dtos\StorageDto.cs" />
     <Compile Include="Dtos\SupplierDto.cs" />
     <Compile Include="Dtos\UserActivityDto.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Services\Abstract\IRoleService.cs" />
     <Compile Include="Services\Abstract\IClientService.cs" />
     <Compile Include="Services\Abstract\IDeliveryService.cs" />
+    <Compile Include="Services\Abstract\ISaleService.cs" />
     <Compile Include="Services\Abstract\ISupplierService.cs" />
     <Compile Include="Services\Abstract\IUserService.cs" />
     <Compile Include="Services\ArticleService.cs" />

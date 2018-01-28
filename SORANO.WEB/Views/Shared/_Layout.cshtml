@@ -43,7 +43,7 @@
                         </a>
                     </li>   
                     <li>
-                        <a asp-controller="Goods" asp-action="Sales">
+                        <a asp-controller="Sale" asp-action="Index">
                             <i class="fa fa-fw fa-handshake-o" aria-hidden="true"></i>
                             Продажи
                         </a>
@@ -54,23 +54,26 @@
                             Товары
                         </a>
                     </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-fw fa-cog" aria-hidden="true"></i>&nbsp;Управление <span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a asp-controller="Article" asp-action="Index"><i class="fa fa-fw fa-barcode" aria-hidden="true"></i>&nbsp;Артикулы и типы артикулов</a></li>
-                            <li><a asp-controller="Supplier" asp-action="Index"><i class="fa fa-fw fa-truck" aria-hidden="true"></i>&nbsp;Поставщики</a></li>
-                            <li><a asp-controller="Client" asp-action="Index"><i class="fa fa-fw fa-address-book" aria-hidden="true"></i>&nbsp;Клиенты</a></li>
-                            <li><a asp-controller="Location" asp-action="Index"><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i>&nbsp;Места и типы мест</a></li>
-                            <li><a asp-controller="AttachmentType" asp-action="Index"><i class="fa fa-fw fa-paperclip" aria-hidden="true"></i>&nbsp;Типы вложений</a></li>
-                            <li class="divider"></li>
-                            @if (User.IsInRole("administrator") || User.IsInRole("developer"))
-                            {
-                                <li>
-                                    <a asp-controller="User" asp-action="Index"><i class="fa fa-fw fa-users" aria-hidden="true"></i>&nbsp;Пользователи</a>
-                                </li>
-                            }
-                        </ul>
-                    </li>
+                    @if (User.IsInRole("developer") || User.IsInRole("administrator") || User.IsInRole("manager"))
+                    {
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-fw fa-cog" aria-hidden="true"></i>&nbsp;Управление <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a asp-controller="Article" asp-action="Index"><i class="fa fa-fw fa-barcode" aria-hidden="true"></i>&nbsp;Артикулы и типы артикулов</a></li>
+                                <li><a asp-controller="Supplier" asp-action="Index"><i class="fa fa-fw fa-truck" aria-hidden="true"></i>&nbsp;Поставщики</a></li>
+                                <li><a asp-controller="Client" asp-action="Index"><i class="fa fa-fw fa-address-book" aria-hidden="true"></i>&nbsp;Клиенты</a></li>
+                                <li><a asp-controller="Location" asp-action="Index"><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i>&nbsp;Места и типы мест</a></li>
+                                <li><a asp-controller="AttachmentType" asp-action="Index"><i class="fa fa-fw fa-paperclip" aria-hidden="true"></i>&nbsp;Типы вложений</a></li>
+                                <li class="divider"></li>
+                                @if (User.IsInRole("administrator") || User.IsInRole("developer"))
+                                {
+                                    <li>
+                                        <a asp-controller="User" asp-action="Index"><i class="fa fa-fw fa-users" aria-hidden="true"></i>&nbsp;Пользователи</a>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }                   
                 </ul>
                 <ul class="nav navbar-nav navbar-right">                    
                     @await Component.InvokeAsync("Account")
