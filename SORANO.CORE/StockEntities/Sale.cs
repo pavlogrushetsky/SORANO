@@ -14,7 +14,13 @@ namespace SORANO.CORE.StockEntities
 
         public bool IsSubmitted { get; set; }
 
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
+
+        public decimal? TotalPrice { get; set; }
+
+        public decimal? DollarRate { get; set; }
+
+        public decimal? EuroRate { get; set; }
 
         public virtual Client Client { get; set; }
 

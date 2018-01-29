@@ -59,6 +59,7 @@ namespace SORANO.WEB.Controllers
                 await ClearAttachments();
 
                 var viewModel = _mapper.Map<SaleIndexViewModel>(salesResult.Result);
+                viewModel.Mode = SaleTableMode.SaleIndex;
 
                 return View(viewModel);
             }, ex =>

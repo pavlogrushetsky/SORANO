@@ -14,6 +14,18 @@ namespace SORANO.DAL.Context.Configurations
                 .WithRequired(si => si.Sale)
                 .HasForeignKey(si => si.SaleID);
 
+            Property(d => d.TotalPrice)
+                .IsOptional()
+                .HasPrecision(38, 2);
+
+            Property(d => d.DollarRate)
+                .IsOptional()
+                .HasPrecision(38, 2);
+
+            Property(d => d.EuroRate)
+                .IsOptional()
+                .HasPrecision(38, 2);
+
             ToTable("Sales");
         }
     }

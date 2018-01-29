@@ -8,7 +8,7 @@ namespace SORANO.DAL.Context.Configurations
         {           
             HasMany(g => g.Storages)
                 .WithRequired(s => s.Goods)
-                .HasForeignKey(s => s.GoodsID);
+                .HasForeignKey(s => s.GoodsID);              
 
             ToTable("Goods");
         }

@@ -128,10 +128,10 @@ namespace SORANO.BLL.Services
         {
             var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == id);
 
-            user.Sales.SelectMany(s => s.Items).ToList().ForEach(g =>
-            {
-                g.DeliveryItem = _unitOfWork.Get<DeliveryItem>().Get(d => d.ID == g.DeliveryItemID);
-            });
+            //user.Sales.SelectMany(s => s.Items.SelectMany(si => si.Goods)).ToList().ForEach(s =>
+            //{
+            //    s.Goods = _unitOfWork.Get<Goods>().Get(g => g.ID == s.GoodsID);
+            //});
 
             return new SuccessResponse<UserDto>(user.ToDto());           
         }

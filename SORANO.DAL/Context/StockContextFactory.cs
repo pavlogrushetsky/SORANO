@@ -6,7 +6,7 @@ namespace SORANO.DAL.Context
     {
         public StockContext Create()
         {           
-            return new StockContext("Data Source=GRUSHETSKY-PC;Initial Catalog=SORANO_DEV;Integrated Security=True");
+            return new StockContext("Server=PHRUSHETSKYI-LP;Database=SORANO_DEV;Trusted_Connection=True;MultipleActiveResultSets=true");
         }
     }
 }

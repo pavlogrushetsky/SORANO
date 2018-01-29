@@ -6,8 +6,12 @@ namespace SORANO.DAL.Context.Configurations
     {
         public SaleItemConfiguration()
         {
+            HasMany(si => si.Goods)
+                .WithOptional(g => g.SaleItem)
+                .HasForeignKey(g => g.SaleItemID);
+
             Property(g => g.Price)
-                .IsRequired()
+                .IsOptional()
                 .HasPrecision(38, 2);
 
             ToTable("SaleItems");

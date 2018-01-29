@@ -237,53 +237,53 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [LoadAttachments]
-        public IActionResult AddItem(DeliveryCreateUpdateViewModel delivery, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public IActionResult AddItem(DeliveryCreateUpdateViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return TryGetActionResult(() =>
             {
-                MemoryCache.Set(CacheKeys.CreateDeliveryItemCacheKey, delivery);
+                MemoryCache.Set(CacheKeys.CreateDeliveryItemCacheKey, model);
                 return RedirectToAction("Create", "DeliveryItem", new { returnUrl });
             }, ex =>
             {
                 TempData["Error"] = ex;
-                return View("Create", delivery);
+                return View("Create", model);
             });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [LoadAttachments]
-        public IActionResult UpdateItem(DeliveryCreateUpdateViewModel delivery, int number, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public IActionResult UpdateItem(DeliveryCreateUpdateViewModel model, int number, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return TryGetActionResult(() =>
             {
-                MemoryCache.Set(CacheKeys.CreateDeliveryItemCacheKey, delivery);
-                MemoryCache.Set(CacheKeys.DeliveryItemCacheKey, delivery.Items[number]);
+                MemoryCache.Set(CacheKeys.CreateDeliveryItemCacheKey, model);
+                MemoryCache.Set(CacheKeys.DeliveryItemCacheKey, model.Items[number]);
                 Session.SetBool(CacheKeys.DeliveryItemCacheValidKey, true);
                 return RedirectToAction("Update", "DeliveryItem", new { number, returnUrl });
             }, ex =>
             {
                 TempData["Error"] = ex;
-                return View("Create", delivery);
+                return View("Create", model);
             });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [LoadAttachments]
-        public IActionResult DeleteItem(DeliveryCreateUpdateViewModel delivery, int number, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public IActionResult DeleteItem(DeliveryCreateUpdateViewModel model, int number, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             return TryGetActionResult(() =>
             {
                 ModelState.Clear();
 
-                delivery.Items.RemoveAt(number);
+                model.Items.RemoveAt(number);
 
-                return View("Create", delivery);
+                return View("Create", model);
             }, ex =>
             {
                 TempData["Error"] = ex;
-                return View("Create", delivery);
+                return View("Create", model);
             });
         }
 

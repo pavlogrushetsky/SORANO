@@ -6,7 +6,11 @@ namespace SORANO.CORE.StockEntities
     {
         public int DeliveryItemID { get; set; }
 
+        public int? SaleItemID { get; set; }
+
         public virtual DeliveryItem DeliveryItem { get; set; }
+
+        public virtual SaleItem SaleItem { get; set; }
 
         public virtual ICollection<Storage> Storages { get; set; } = new HashSet<Storage>();
     }
