@@ -14,6 +14,8 @@
 
         public int SaleItemsCount { get; set; }
 
+        public string Currency { get; set; }
+
         public string Date { get; set; }
 
         public string TotalPrice { get; set; }

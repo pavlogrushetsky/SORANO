@@ -16,6 +16,7 @@ using SORANO.WEB.ViewModels.Goods;
 using SORANO.WEB.ViewModels.Location;
 using SORANO.WEB.ViewModels.LocationType;
 using SORANO.WEB.ViewModels.Recommendation;
+using SORANO.WEB.ViewModels.Sale;
 using SORANO.WEB.ViewModels.Storage;
 using SORANO.WEB.ViewModels.Supplier;
 using SORANO.WEB.ViewModels.User;
@@ -317,6 +318,41 @@ namespace SORANO.WEB.Mappings
                     source => source.MapFrom(s => s)
                 );
             CreateMap<DeliveryItemViewModel, DeliveryItemDto>();
+
+            #endregion
+
+            #region Sale
+
+            CreateMap<SaleDto, SaleViewModel>()
+                .ForMember(
+                    dest => dest.SaleItemsCount,
+                    source => source.MapFrom(s => s.Items.Count())
+                )
+                .ForMember(
+                    dest => dest.LocationName,
+                    source => source.MapFrom(s => s.Location.Name)
+                )
+                .ForMember(
+                    dest => dest.UserName,
+                    source => source.MapFrom(s => s.User.Login)
+                )
+                .ForMember(
+                    dest => dest.ClientName,
+                    source => source.MapFrom(s => s.Client == null ? string.Empty : s.Client.Name)
+                )
+                .ForMember(
+                    dest => dest.Currency,
+                    source => source.MapFrom(s => s.DollarRate.HasValue ? "$" : s.EuroRate.HasValue ? "€" : "₴")
+                )
+                .ForMember(
+                    dest => dest.CanBeUpdated,
+                    source => source.MapFrom(s => s.CanBeDeleted)
+                );
+            CreateMap<IEnumerable<SaleDto>, SaleIndexViewModel>()
+                .ForMember(
+                    dest => dest.Items,
+                    source => source.MapFrom(s => s)
+                );
 
             #endregion
 

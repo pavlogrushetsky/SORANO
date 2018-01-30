@@ -13,6 +13,12 @@ namespace SORANO.BLL.Dtos
 
         public bool IsSubmitted { get; set; }
 
+        public decimal? TotalPrice { get; set; }
+
+        public decimal? DollarRate { get; set; }
+
+        public decimal? EuroRate { get; set; }
+
         public DateTime? Date { get; set; }
 
         public ClientDto Client { get; set; }

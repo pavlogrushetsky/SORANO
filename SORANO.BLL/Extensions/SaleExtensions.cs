@@ -19,6 +19,9 @@ namespace SORANO.BLL.Extensions
                 User = model.User.ToDto(),
                 IsSubmitted = model.IsSubmitted,
                 Date = model.Date,
+                TotalPrice = model.TotalPrice,
+                DollarRate = model.DollarRate,
+                EuroRate = model.EuroRate,
                 Items = model.Items.Where(di => !di.IsDeleted).Select(i => i.ToDto())
             };
 

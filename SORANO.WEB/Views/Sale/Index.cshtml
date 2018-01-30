@@ -2,8 +2,8 @@
 
 @{
     ViewBag.Title = "SORANO - Продажи";
-    ViewBag.Header = "Список";
-    ViewBag.Description = "поставок";
+    ViewBag.Header = "Продажи";
+    ViewBag.Description = "";
     ViewBag.Icon = "fa fa-handshake-o";
 }
 
@@ -91,63 +91,121 @@
                 <table id="sales-datatable" class="table table-striped table-hover">
                     <thead>
                         <tr role="row" class="search-row">
-                            <th><input type="text" class="form-control input-sm" placeholder="Клиент" /></th>
-                            <th><input type="text" class="form-control input-sm" placeholder="Артикул" /></th>
+                            <th><input type="text" class="form-control input-sm" placeholder="Продажа" /></th>
                             <th><input type="text" class="form-control input-sm" placeholder="Место" /></th>
-                            <th><input type="text" class="form-control input-sm" placeholder="Кол-во, шт." /></th>
-                            <th><input type="text" class="form-control input-sm" placeholder="Общая сумма" /></th>
-                            <th><input type="text" class="form-control input-sm" placeholder="Дата" /></th>
+                            <th><input type="text" class="form-control input-sm" placeholder="Продавец" /></th>
+                            <th><input type="text" class="form-control input-sm" placeholder="Клиент" /></th>
+                            <th><input type="text" class="form-control input-sm" placeholder="Позиций" /></th>
+                            <th><input type="text" class="form-control input-sm" placeholder="Сумма" /></th>
+                            <th><input type="text" class="form-control input-sm" placeholder="Статус" /></th>
+                            <th></th>
                         </tr>
                         <tr role="row">
-                            <th><i class="fa fa-fw fa-address-book" aria-hidden="true"></i>Клиент</th>
-                            <th><i class="fa fa-fw fa-barcode" aria-hidden="true"></i>Артикул</th>
-                            <th><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i>Место</th>
-                            <th><i class="fa fa-fw fa-hashtag" aria-hidden="true"></i>Кол-во, шт.</th>
-                            <th><i class="fa fa-fw fa-money" aria-hidden="true"></i>Общая сумма</th>
-                            <th><i class="fa fa-fw fa-calendar" aria-hidden="true"></i>Дата</th>
+                            <th><i class="fa fa-fw fa-calendar"></i>Продажа</th>
+                            <th><i class="fa fa-fw fa-map-marker"></i>Место</th>
+                            <th><i class="fa fa-fw fa-user"></i>Продавец</th>
+                            <th><i class="fa fa-fw fa-address-book"></i>Клиент</th>
+                            <th><i class="fa fa-fw fa-hashtag"></i>Позиций</th>
+                            <th><i class="fa fa-fw fa-money"></i>Сумма</th>
+                            <th><i class="fa fa-fw fa-align-justify"></i>Статус</th>
+                            <th>Действия</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var sale in Model.Items)
                         {
-                            <tr class="@(sale.IsDeleted ? "danger" : "")">
-                                <td>
+                        <tr class="@(sale.IsDeleted ? "danger" : "")">
+                            <td>@sale.Date</td>
+                            <td>
+                                <a asp-controller="Location"
+                                   asp-action="Details"
+                                   asp-route-id="@sale.LocationID"
+                                   data-toggle="tooltip"
+                                   data-placement="bottom"
+                                   data-original-title="Просмотреть информацию о месте продажи"
+                                   title="">
+                                    @sale.LocationName
+                                </a>
+                            </td>
+                            <td>
+                                <a asp-controller="User"
+                                   asp-action="Details"
+                                   asp-route-id="@sale.UserID"
+                                   data-toggle="tooltip"
+                                   data-placement="bottom"
+                                   data-original-title="Просмотреть информацию о продавце"
+                                   title="">
+                                    @sale.UserName
+                                </a>
+                            </td>
+                            <td>
+                                @if (sale.ClientID.HasValue)
+                                {
                                     <a asp-controller="Client"
-                                       asp-action="Details"
-                                       asp-route-id="@sale.ClientID"
-                                       data-toggle="tooltip"
-                                       data-placement="bottom"
-                                       data-original-title="Просмотреть информацию о клиенте"
-                                       title="">
+                                        asp-action="Details"
+                                        asp-route-id="@sale.ClientID"
+                                        data-toggle="tooltip"
+                                        data-placement="bottom"
+                                        data-original-title="Просмотреть информацию о клиенте"
+                                        title="">
                                         @sale.ClientName
                                     </a>
-                                </td>
-                                <td>
-                                    <a asp-controller="Article"
-                                       asp-action="Details"
-                                       asp-route-id="@sale.ArticleID"
-                                       data-toggle="tooltip"
-                                       data-placement="bottom"
-                                       data-original-title="Просмотреть информацию об артикуле"
-                                       title="">
-                                        @sale.ArticleName
+                                }
+                            </td>
+                            <td>@sale.SaleItemsCount</td>
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(sale.TotalPrice))
+                                {
+                                    @sale.TotalPrice @sale.Currency
+                                }                            
+                            </td>
+                            <td>
+                                <span class="label label@(sale.IsSubmitted ? "-success" : "-warning")">
+                                    @(sale.IsSubmitted ? "Подтверждено" : "Не подтверждено")
+                                </span>
+                            </td>
+                            <td nowrap="nowrap">
+                            <a asp-controller="Sale"
+                                asp-action="Details"
+                                asp-route-id="@sale.ID"
+                                class="btn btn-xs btn-default"
+                                data-toggle="tooltip"
+                                data-placement="bottom"
+                                data-original-title="Просмотреть информацию о продаже"
+                                title="">
+                                <i class="fa fa-fw fa-info-circle" aria-hidden="true"></i>
+                            </a>                        
+                            @if (Model.Mode == SaleTableMode.SaleIndex)
+                            {
+                                if (sale.CanBeUpdated)
+                                {
+                                    <a asp-controller="Sale"
+                                    asp-action="Update"
+                                    asp-route-id="@sale.ID"
+                                    class="btn btn-xs btn-default"
+                                    data-toggle="tooltip"
+                                    data-placement="bottom"
+                                    data-original-title="Редактировать продажу"
+                                    title="">
+                                        <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
                                     </a>
-                                </td>
-                                <td>
-                                    <a asp-controller="Location"
-                                       asp-action="Details"
-                                       asp-route-id="@sale.LocationID"
-                                       data-toggle="tooltip"
-                                       data-placement="bottom"
-                                       data-original-title="Просмотреть информацию о месте"
-                                       title="">
-                                        @sale.LocationName
+                                }
+                                if (sale.CanBeDeleted)
+                                {
+                                    <a class="btn btn-xs btn-danger"
+                                    data-toggle="tooltip"
+                                    data-placement="bottom"
+                                    data-original-title="Удалить поставку"
+                                    title=""
+                                    asp-controller="Sale"
+                                    asp-action="Delete"
+                                    asp-route-id="@sale.ID">
+                                        <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
                                     </a>
-                                </td>
-                                <td>@sale.Count</td>
-                                <td>@sale.TotalPrice</td>
-                                <td>@sale.SaleDate</td>
-                            </tr>
+                                }
+                            }                        
+                        </td>  
+                        </tr>
                         }
                     </tbody>
                 </table>
@@ -162,9 +220,9 @@
     <script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
     <script src="~/lib/datatables.net-responsive-bs/js/responsive.bootstrap.min.js"></script>
     <environment names="Development">
-        <script src="~/js/pages/goodsSales.js"></script>
+        <script src="~/js/pages/saleIndex.js"></script>
     </environment>
     <environment names="Staging,Production">
-        <script src="~/js/pages/goodsSales.min.js" asp-append-version="true"></script>
+        <script src="~/js/pages/saleIndex.min.js" asp-append-version="true"></script>
     </environment>
 }

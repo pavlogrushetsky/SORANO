@@ -367,5 +367,16 @@
       "renameLocals": true
     },
     "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/saleIndex.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/saleIndex.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
   }
 ]
