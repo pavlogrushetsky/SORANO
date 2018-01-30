@@ -1,1 +1,244 @@
-﻿
+﻿@model SaleCreateUpdateViewModel
+
+@{
+    var title = "Оформление";
+    var returnUrl = Model.IsUpdate ? Url.Action("Update", "Sale") : Url.Action("Create", "Sale");
+}
+
+@{
+    ViewBag.Title = "SORANO - " + title + " продажи";
+    ViewBag.Header = title;
+    ViewBag.Description = " продажи";
+    ViewBag.Icon = "fa fa-handshake-o";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/datatables.net-bs/css/dataTables.bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/select2/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="~/lib/select2-bootstrap-theme/dist/select2-bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+    <style>
+        span.select2-selection.select2-selection--single {
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+        }
+    </style>
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li><a asp-controller="Sale" asp-action="Index">Продажи</a></li>
+        <li class="active">@title продажи</li>
+    </ul>
+}
+
+<form asp-controller="Sale"
+      asp-action="@(Model.IsUpdate ? "Update" : "Create")"
+      method="post"
+      enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-dismissible alert-info">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Информация:</strong> Поля, отмеченные символом *, являются обязательными для ввода
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6 col-md-12 col-sm-12">
+            <div class="form-group">
+                <label class="control-label" asp-for="LocationID"></label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
+                    <select class="form-control input-sm select-location"
+                            asp-for="LocationID"></select>
+                    <span class="input-group-btn">
+                        <button class="btn btn-default btn-sm"
+                                asp-action="CreateLocation"
+                                asp-route-returnUrl="@returnUrl"
+                                data-toggle="tooltip"
+                                data-placement="right"
+                                data-original-title="Создать место"
+                                title="">
+                            <i class="fa fa-fw fa-plus"></i>
+                        </button>
+                    </span>
+                </div>
+                <span asp-validation-for="LocationID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="ClientID"></label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-address-book"></i></span>
+                    <select class="form-control input-sm select-client"
+                            asp-for="ClientID"></select>
+                    <span class="input-group-btn">
+                        <button class="btn btn-default btn-sm"
+                                asp-action="CreateClient"
+                                asp-route-returnUrl="@returnUrl"
+                                data-toggle="tooltip"
+                                data-placement="right"
+                                data-original-title="Создать клиента"
+                                title="">
+                            <i class="fa fa-fw fa-plus"></i>
+                        </button>
+                    </span>
+                </div>
+                <span asp-validation-for="ClientID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="Date"></label>
+                <div class="input-group input-group-sm date" id="pick-date">
+                    <input class="form-control input-sm" type="text" asp-for="Date" placeholder="Дата продажи" />
+                    <span class="input-group-addon">
+                        <span class="fa fa-fw fa-calendar"></span>
+                    </span>
+                </div>
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Валюта</label>
+                <table class="table table-responsive" style="width: 100%; margin-bottom: 0;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 33%; padding: 0; padding-right: 5px;">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon">
+                                        <input type="radio" name="select_currency" id="select_currency_uah" value="0" style="margin-right: 1px;" />
+                                        <span style="font-weight: bold;">&#8372;</span>
+                                    </span>
+                                    <input type="text" readonly="readonly" class="form-control input-sm" value="1.00" />
+                                </div>
+                            </td>
+                            <td style="width: 33%; padding: 0; padding-right: 5px;">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon">
+                                        <input type="radio" name="select_currency" id="select_currency_usd" value="1" />
+                                        <i class="fa fa-usd"></i>
+                                    </span>
+                                    <input type="text" readonly="readonly" asp-for="DollarRate" class="form-control input-sm" />
+                                </div>
+                                <span asp-validation-for="DollarRate" class="text-danger"></span>
+                            </td>
+                            <td style="width: 33%; padding: 0; padding-right: 5px;">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon">
+                                        <input type="radio" name="select_currency" id="select_currency_eur" value="2" />
+                                        <i class="fa fa-eur"></i>
+                                    </span>
+                                    <input type="text" readonly="readonly" asp-for="EuroRate" class="form-control input-sm" />
+                                </div>
+                                <span asp-validation-for="EuroRate" class="text-danger"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-12 col-sm-12">
+            @Html.Partial("~/Views/Shared/_AttachmentsForm.cshtml", Model)
+            @Html.Partial("~/Views/Shared/_RecommendationsForm.cshtml", Model)
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <label class="control-label">Позиции продажи:</label>
+            @*<span asp-validation-for="Items" class="text-danger"></span>*@
+            <div class="form-group well well-sm">
+                <div id="saleItems">
+                    <table id="sale-items-datatable" class="table table-striped table-hover" style="margin-bottom: 0;">
+                        <thead>
+                            <tr role="row" class="search-row">
+                                <th><input type="text" class="form-control input-sm" placeholder="№" /></th>
+                                <th><input type="text" class="form-control input-sm" placeholder="Товар" /></th>
+                                <th><input type="text" class="form-control input-sm" placeholder="Кол-во, шт." /></th>
+                                <th><input type="text" class="form-control input-sm" placeholder="Цена" /></th>
+                                <th><input type="text" class="form-control input-sm" placeholder="Сумма" /></th>
+                                <th></th>
+                            </tr>
+                            <tr role="row">
+                                <th><i class="fa fa-fw fa-hashtag"></i>№</th>
+                                <th><i class="fa fa-fw fa-shopping-cart"></i>Товар</th>
+                                <th><i class="fa fa-fw fa-hashtag"></i>Кол-во, шт.</th>
+                                <th><i class="fa fa-fw fa-money"></i>Цена</th>
+                                <th><i class="fa fa-fw fa-money"></i>Сумма</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr style="font-weight: bold;">
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td><b>Всего:</b></td>
+                                <td id="sale_totaldiscountprice">@Model.TotalPrice</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0;">
+                                    <button class="btn btn-default btn-sm"
+                                            asp-controller="Sale"
+                                            asp-action="AddItem"
+                                            asp-route-returnUrl="@returnUrl"
+                                            data-toggle="tooltip"
+                                            data-placement="right"
+                                            data-original-title="Добавить позицию"
+                                            title="">
+                                        <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
+                                    </button>
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="form-group">
+                <a class="btn btn-default btn-sm" asp-controller="Sale" asp-action="Index">
+                    <i class="fa fa-fw fa-close"></i>
+                    Отмена
+                </a>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="fa fa-fw fa-save"></i>
+                    Сохранить
+                </button>
+                <button class="btn btn-success btn-sm submit-delivery">
+                    <i class="fa fa-fw fa-check"></i>
+                    Подтвердить
+                </button>
+                <a class="btn btn-warning btn-sm pull-right" asp-action="Deny" asp-controller="Sale">
+                    <i class="fa fa-fw fa-hand-stop-o"></i>
+                    Отменить продажу
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/lib/datatables.net-responsive-bs/js/responsive.bootstrap.min.js"></script>
+    <script src="~/lib/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/lib/moment/min/moment-with-locales.min.js"></script>
+    <script src="~/lib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+    <environment names="Development">
+        <script src="~/js/pages/saleCreate.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/js/pages/saleCreate.min.js" asp-append-version="true"></script>
+    </environment>
+}

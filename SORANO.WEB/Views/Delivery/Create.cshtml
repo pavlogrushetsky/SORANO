@@ -1,7 +1,7 @@
 ﻿@model DeliveryCreateUpdateViewModel
 
 @{
-    var title = Model.IsUpdate ? "Редактирование" : "Создание";
+    var title = "Оформление";
     var returnUrl = Model.IsUpdate ? Url.Action("Update", "Delivery") : Url.Action("Create", "Delivery");
 }
 
