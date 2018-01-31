@@ -134,13 +134,21 @@ select.form-control.attachments.input-validation-error {
     border: 2px solid #e74c3c;
 }
 
-.has-error span.select2-selection.select2-selection--single {
+.has-error span.select2-selection.select2-selection--single, .has-error span.select2-selection.select2-selection--multiple {
     border-color: #e74c3c !important;
 }
 
 span.select2-selection.select2-selection--single {
-    height: 35px !important;
     padding: 6px 9px !important;
+}
+
+span.select2-selection.select2-selection--multiple {
+    padding: 1px 2px !important;
+}
+
+span.select2-selection.select2-selection--single,
+span.select2-selection.select2-selection--multiple {
+    height: 35px !important;   
     font-size: 13px !important;
     border-top-right-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
@@ -195,7 +203,8 @@ span.select2-selection.select2-selection--single {
     border-color: transparent transparent #2c3e50 !important;
 }
 
-.select2-container--bootstrap .select2-selection--single .select2-selection__arrow b {
+.select2-container--bootstrap .select2-selection--single .select2-selection__arrow b, 
+.select2-container--bootstrap .select2-selection--multiple .select2-selection__arrow b {
     border-color: #2c3e50 transparent transparent !important;
 }
 
@@ -209,7 +218,8 @@ span.select2-selection.select2-selection--single {
     color: #b3b6c3 !important;
 }
 
-select:not(.select-attachment-type) + span.select2.select2-container.select2-container--bootstrap > span.selection > span.select2-selection.select2-selection--single {
+select:not(.select-attachment-type) + span.select2.select2-container.select2-container--bootstrap > span.selection > span.select2-selection.select2-selection--single,
+select:not(.select-attachment-type) + span.select2.select2-container.select2-container--bootstrap > span.selection > span.select2-selection.select2-selection--multiple {
     -ms-border-top-left-radius: 0 !important;
     border-top-left-radius: 0 !important;
     -ms-border-bottom-left-radius: 0 !important;

@@ -34,5 +34,10 @@ namespace SORANO.WEB.ViewModels.User
         public IEnumerable<int> RoleIDs { get; set; }
 
         public IList<SelectListItem> Roles { get; set; }
+
+        [Display(Name = "Разрешённые места")]
+        public IEnumerable<int> LocationIds { get; set; }
+
+        public IEnumerable<SelectListItem> LocationNames { get; set; }
     }
 }

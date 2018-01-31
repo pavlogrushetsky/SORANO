@@ -23,6 +23,18 @@
             border-top-left-radius: 0 !important;
             border-bottom-left-radius: 0 !important;
         }
+        #sale-items-table-body td{
+            padding-top: 0;
+            padding-bottom: 0;
+            vertical-align:middle;
+        }
+            #sale-items-table-body td > input, #sale-items-table-body td > select {
+                width: 100%;
+            }
+
+        #sale-items-table-body tr {
+            margin-bottom: 10px;
+        }
     </style>
 }
 
@@ -54,18 +66,7 @@
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
                     <select class="form-control input-sm select-location"
-                            asp-for="LocationID"></select>
-                    <span class="input-group-btn">
-                        <button class="btn btn-default btn-sm"
-                                asp-action="CreateLocation"
-                                asp-route-returnUrl="@returnUrl"
-                                data-toggle="tooltip"
-                                data-placement="right"
-                                data-original-title="Создать место"
-                                title="">
-                            <i class="fa fa-fw fa-plus"></i>
-                        </button>
-                    </span>
+                            asp-for="LocationID" autofocus></select>                    
                 </div>
                 <span asp-validation-for="LocationID" class="text-danger"></span>
             </div>
@@ -149,7 +150,7 @@
             @*<span asp-validation-for="Items" class="text-danger"></span>*@
             <div class="form-group well well-sm">
                 <div id="saleItems">
-                    <table id="sale-items-datatable" class="table table-striped table-hover" style="margin-bottom: 0;">
+                    <table id="sale-items-datatable" class="table table-striped table-hover" style="margin-bottom: 0; border-spacing: 0 2px;">
                         <thead>
                             <tr role="row" class="search-row">
                                 <th><input type="text" class="form-control input-sm" placeholder="№" /></th>
@@ -197,7 +198,86 @@
                                 <td></td>
                             </tr>
                         </tfoot>
-                        <tbody></tbody>
+                        <tbody id="sale-items-table-body">
+                            <tr>
+                                <td>1</td>
+                                <td>
+                                    <select class="form-control input-sm select-location" asp-for="LocationID"></select>
+                                    <span asp-validation-for="LocationID" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input class="form-control input-sm calculate" type="number" min="1" @*asp-for="Quantity" *@ />
+                                </td>
+                                <td>
+                                    <input type="text" @*asp-for="DollarRate" *@ class="form-control input-sm" />
+                                </td>
+                                <td>
+                                    25.00
+                                </td>
+                                <td>
+                                    <button asp-controller="Sale"
+                                            asp-action="ShowRecommendations"
+                                            @*asp-route-number="@i" *@
+                                            asp-route-returnUrl="@returnUrl"
+                                            class="btn btn-sm btn-default"
+                                            data-toggle="tooltip"
+                                            data-placement="bottom"
+                                            data-original-title="Просмотреть рекомендации"
+                                            title="">
+                                        <i class="fa fa-fw fa-commenting" aria-hidden="true"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger"
+                                            data-toggle="tooltip"
+                                            data-placement="bottom"
+                                            data-original-title="Удалить позицию"
+                                            title=""
+                                            asp-controller="Sale"
+                                            asp-action="DeleteItem"
+                                            @*asp-route-number="@i" *@>
+                                        <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>
+                                    <select class="form-control input-sm select-location" asp-for="LocationID"></select>
+                                    <span asp-validation-for="LocationID" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input class="form-control input-sm calculate" type="number" min="1" @*asp-for="Quantity" *@ />
+                                </td>
+                                <td>
+                                    <input type="text" @*asp-for="DollarRate" *@ class="form-control input-sm" />
+                                </td>
+                                <td>
+                                    356.00
+                                </td>
+                                <td nowrap="nowrap">
+                                    <button asp-controller="Sale"
+                                            asp-action="ShowRecommendations"
+                                            @*asp-route-number="@i" *@
+                                            asp-route-returnUrl="@returnUrl"
+                                            class="btn btn-sm btn-default"
+                                            data-toggle="tooltip"
+                                            data-placement="bottom"
+                                            data-original-title="Просмотреть рекомендации"
+                                            title="">
+                                        <i class="fa fa-fw fa-commenting" aria-hidden="true"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger"
+                                            data-toggle="tooltip"
+                                            data-placement="bottom"
+                                            data-original-title="Удалить позицию"
+                                            title=""
+                                            asp-controller="Sale"
+                                            asp-action="DeleteItem"
+                                            @*asp-route-number="@i" *@>
+                                        <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
