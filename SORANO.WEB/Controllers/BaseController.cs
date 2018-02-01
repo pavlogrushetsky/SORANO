@@ -21,6 +21,25 @@ namespace SORANO.WEB.Controllers
             }
         }
 
+        protected int? LocationId
+        {
+            get
+            {
+                var locationId = HttpContext.User.FindFirst("LocationId")?.Value;
+                return string.IsNullOrWhiteSpace(locationId)
+                    ? (int?)null
+                    : int.Parse(locationId);
+            }
+        }
+
+        protected string LocationName
+        {
+            get
+            {
+                return HttpContext.User.FindFirst("LocationName")?.Value;
+            }
+        }
+
         public BaseController(IUserService userService)
         {
             UserService = userService;           

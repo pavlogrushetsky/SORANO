@@ -47,18 +47,20 @@ namespace SORANO.WEB.Controllers
                 return View(model);
             }
 
-            await Authenticate(result.Result, model.RememberMe);
+            await Authenticate(result.Result, model.RememberMe, model.LocationID, model.LocationName);
 
             return string.IsNullOrEmpty(model.ReturnUrl) || model.ReturnUrl.Equals("/")
                 ? RedirectToAction("Index", "Home")
                 : (IActionResult)Redirect(model.ReturnUrl);           
         }
 
-        private async Task Authenticate(UserDto user, bool rememberMe)
+        private async Task Authenticate(UserDto user, bool rememberMe, int? locationId, string locationName)
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login)
+                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login),
+                new Claim("LocationId", locationId?.ToString() ?? string.Empty),
+                new Claim("LocationName", locationName ?? string.Empty)
             };
 
             claims.AddRange(user.Roles.Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role.Name)));

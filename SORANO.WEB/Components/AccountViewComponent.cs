@@ -23,9 +23,14 @@ namespace SORANO.WEB.Components
         {
             var login = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
 
+            var location = HttpContext.User.FindFirst("LocationName")?.Value;
+
             var userResult = await _userService.GetAsync(login);
 
-            return View(_mapper.Map<UserDto, AccountViewModel>(userResult.Result));
+            var model = _mapper.Map<UserDto, AccountViewModel>(userResult.Result);
+            model.LocationName = location;
+
+            return View(model);
         }
     }
 }

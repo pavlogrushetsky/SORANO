@@ -44,6 +44,12 @@
         <input type="hidden" asp-for="@Model.Roles[i].Text" />
         <input type="hidden" asp-for="@Model.Roles[i].Selected" />
     }
+    @for (var i = 0; i < Model.LocationNames.Count; i++)
+    {
+        <input type="hidden" asp-for="@Model.LocationNames[i].Value" />
+        <input type="hidden" asp-for="@Model.LocationNames[i].Text" />
+        <input type="hidden" asp-for="@Model.LocationNames[i].Selected" />
+    }
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     @if (Model.IsUpdate && !Model.CanBeModified)
     {
@@ -135,9 +141,8 @@
                 <div class="form-group">
                     <label class="control-label" asp-for="LocationIds"></label>
                     <div class="input-group input-group-sm">
-                        <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
-                        <select class="form-control input-sm select-location" multiple
-                                asp-for="LocationIds"></select>
+                        <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-map-marker"></i></span>
+                        <select class="form-control input-sm" asp-for="LocationIds" asp-items="@Model.LocationNames"></select>
                     </div>
                     <span asp-validation-for="LocationIds" class="text-danger"></span>
                 </div>

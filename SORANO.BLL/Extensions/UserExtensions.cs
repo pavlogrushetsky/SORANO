@@ -2,6 +2,7 @@
 using System.Linq;
 using SORANO.BLL.Dtos;
 using SORANO.CORE.AccountEntities;
+using SORANO.CORE.StockEntities;
 
 namespace SORANO.BLL.Extensions
 {
@@ -15,7 +16,8 @@ namespace SORANO.BLL.Extensions
                 Login = model.Login,
                 Description = model.Description,
                 IsBlocked = model.IsBlocked,
-                Roles = model.Roles.Select(r => r.ToDto())
+                Roles = model.Roles.Select(r => r.ToDto()),
+                Locations = model.Locations.Select(l => l.ToDto())
             };
 
             var activities = new List<UserActivityDto>();
@@ -36,7 +38,8 @@ namespace SORANO.BLL.Extensions
                 Login = dto.Login,
                 Description = dto.Description,
                 Password = dto.Password,
-                Roles = dto.Roles.Select(r => r.ToEntity()).ToList()
+                Roles = dto.Roles.Select(r => r.ToEntity()).ToList(),
+                Locations = dto.Locations.Select(l => new Location { ID = l.ID }).ToList()
             };
         }
     }

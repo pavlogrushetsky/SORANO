@@ -542,6 +542,10 @@ namespace SORANO.WEB.Mappings
                 .ForMember(
                     dest => dest.Roles,
                     source => source.MapFrom(s => s.Roles.Select(r => r.Description))
+                )
+                .ForMember(
+                    dest => dest.Locations,
+                    source => source.MapFrom(s => s.Locations.Select(r => r.Name))
                 );
             CreateMap<UserActivityDto, UserActivityViewModel>();
             CreateMap<UserActivityType, string>().ConvertUsing<UserActivityTypeToStringConverter>();
@@ -553,11 +557,23 @@ namespace SORANO.WEB.Mappings
                 .ForMember(
                     dest => dest.Roles,
                     source => source.Ignore()
+                )
+                .ForMember(
+                    dest => dest.LocationIds,
+                    source => source.MapFrom(s => s.Locations.Select(r => r.ID))
+                )
+                .ForMember(
+                    dest => dest.LocationNames,
+                    source => source.Ignore()
                 );
             CreateMap<UserDto, UserDetailsViewModel>()
                 .ForMember(
                     dest => dest.Roles,
                     source => source.MapFrom(s => s.Roles.Select(r => r.Description))
+                )
+                .ForMember(
+                    dest => dest.Locations,
+                    source => source.MapFrom(s => s.Locations.Select(r => r.Name))
                 );
             CreateMap<UserDto, UserBlockViewModel>();
             CreateMap<UserDto, UserDeleteViewModel>();
@@ -569,6 +585,13 @@ namespace SORANO.WEB.Mappings
                 .ForMember(
                     dest => dest.Roles,
                     source => source.MapFrom(s => s.RoleIDs.Select(r => new RoleDto
+                    {
+                        ID = r
+                    }))
+                )
+                .ForMember(
+                    dest => dest.Locations,
+                    source => source.MapFrom(s => s.LocationIds.Select(r => new LocationDto
                     {
                         ID = r
                     }))

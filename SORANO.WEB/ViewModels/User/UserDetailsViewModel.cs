@@ -17,6 +17,9 @@ namespace SORANO.WEB.ViewModels.User
         [Display(Name = "Роли")]
         public IEnumerable<string> Roles { get; set; }
 
+        [Display(Name = "Разоешённые места")]
+        public IEnumerable<string> Locations { get; set; }
+
         [Display(Name = "Статус")]
         public bool IsBlocked { get; set; }
 

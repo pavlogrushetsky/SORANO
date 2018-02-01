@@ -18,13 +18,16 @@ namespace SORANO.WEB.Controllers
     public class UserController : BaseController
     {
         private readonly IRoleService _roleService;
+        private readonly ILocationService _locationService;
         private readonly IMapper _mapper;
 
         public UserController(IUserService userService, 
             IRoleService roleService,
+            ILocationService locationService,
             IMapper mapper) : base(userService)
         {
             _roleService = roleService;
+            _locationService = locationService;
             _mapper = mapper;
         }
 
@@ -72,7 +75,19 @@ namespace SORANO.WEB.Controllers
                     Text = r.Description
                 });
 
-                return View(new UserCreateUpdateViewModel { Roles = userRoles.ToList()});
+                var locations = await _locationService.GetAllAsync(false);
+
+                var userLocations = locations.Result.Select(l => new SelectListItem
+                {
+                    Value = l.ID.ToString(),
+                    Text = l.Name
+                });
+
+                return View(new UserCreateUpdateViewModel
+                {
+                    Roles = userRoles.ToList(),
+                    LocationNames = userLocations.ToList()
+                });
             }, OnFault);           
         }
 
@@ -100,7 +115,17 @@ namespace SORANO.WEB.Controllers
                     Selected = result.Result.Roles.Select(x => x.ID).Contains(r.ID)
                 });
 
+                var locations = await _locationService.GetAllAsync(false);
+
+                var userLocations = locations.Result.Select(l => new SelectListItem
+                {
+                    Value = l.ID.ToString(),
+                    Text = l.Name,
+                    Selected = result.Result.Locations.Select(x => x.ID).Contains(l.ID)
+                });
+
                 model.Roles = userRoles.ToList();
+                model.LocationNames = userLocations.ToList();
                 model.IsUpdate = true;
                 model.CanBeModified = id != UserId;
 

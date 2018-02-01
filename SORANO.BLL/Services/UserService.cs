@@ -47,6 +47,11 @@ namespace SORANO.BLL.Services
 
             entity.Roles = rolesToAttach.ToList();
 
+            var locations = await _unitOfWork.Get<Location>().GetAllAsync();
+            var locationsToAttach = locations.Where(l => user.Locations.Select(x => x.ID).Contains(l.ID));
+
+            entity.Locations = locationsToAttach.ToList();
+
             _unitOfWork.Get<User>().Add(entity);
 
             await _unitOfWork.SaveAsync();
@@ -94,6 +99,24 @@ namespace SORANO.BLL.Services
                 if (!user.Roles.Select(r => r.ID).Contains(er.ID))
                 {
                     existentUser.Roles.Remove(er);
+                }
+            });
+
+            var locations = await _unitOfWork.Get<Location>().GetAllAsync();
+
+            user.Locations.ToList().ForEach(l =>
+            {
+                if (!existentUser.Locations.Select(er => er.ID).Contains(l.ID))
+                {
+                    existentUser.Locations.Add(locations.Single(x => x.ID == l.ID));
+                }
+            });
+
+            existentUser.Locations.ToList().ForEach(er =>
+            {
+                if (!user.Locations.Select(r => r.ID).Contains(er.ID))
+                {
+                    existentUser.Locations.Remove(er);
                 }
             });
 

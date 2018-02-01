@@ -38,6 +38,6 @@ namespace SORANO.WEB.ViewModels.User
         [Display(Name = "Разрешённые места")]
         public IEnumerable<int> LocationIds { get; set; }
 
-        public IEnumerable<SelectListItem> LocationNames { get; set; }
+        public IList<SelectListItem> LocationNames { get; set; }
     }
 }
