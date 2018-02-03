@@ -413,5 +413,15 @@ namespace SORANO.WEB.Controllers
         }
 
         #endregion 
+
+        //[HttpPost]
+        //public async Task<JsonResult> GetGoods(string term, int locationId)
+        //{
+        //    var articles = await _articleService.GetAllAsync(false, term);
+
+        //    var selectModels = _mapper.Map<IEnumerable<ArticleSelectViewModel>>(articles.Result);
+
+        //    return Json(new { results = selectModels.OrderBy(s => s.Name) });
+        //}
     }
 }

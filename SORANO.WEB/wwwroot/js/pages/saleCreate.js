@@ -1,34 +1,7 @@
 ﻿$(document).ready(function () {
     $.fn.select2.defaults.set('theme', 'bootstrap');
 
-    $('#pick-date').datetimepicker({
-        locale: 'ru',
-        format: 'DD.MM.YYYY',
-        showTodayButton: true,
-        showClear: true,
-        showClose: true,
-        icons: {
-            clear: 'fa fa-trash',
-            close: 'fa fa-times',
-            today: 'fa fa-calendar-check-o'
-        },
-        tooltips: {
-            today: 'Текущая дата',
-            clear: 'Очистить выбор',
-            close: 'Закрыть окно',
-            nextMonth: 'Следующий месяц',
-            prevMonth: 'Предыдущий месяц',
-            selectMonth: 'Выбрать месяц',
-            selectYear: 'Выбрать год',
-            selectDecade: 'Выбрать десятилетие',
-            nextYear: 'Следующий год',
-            nextDecade: 'Следующее десятилетие',
-            prevYear: 'Предыдущий год',
-            prevDecade: 'Предыдущее десятилетие'
-        }
-    });
-
-    initSaleItemsDataTable();
+    initDateTimePicker('#pick-date');
 
     initGenericSelect({
         selectElementClass: '.select-location',
@@ -51,6 +24,10 @@
         placeholderText: 'Клиент',
         url: '/Client/GetClients'
     });
+
+    initGoodsSelect();
+
+    initSaleItemsDataTable();   
 
     var allowChangeLocation = $("#AllowChangeLocation");
     if (allowChangeLocation.val() !== 'True')
@@ -81,6 +58,53 @@
 
     updateCurrencyRates();
 });
+
+function initGoodsSelect() {
+    var selectElement = $(".select-goods");
+
+    selectElement.select2({
+        "language": {
+            "noResults": function () {
+                return "Товары не найдены";
+            },
+            "searching": function () {
+                return "Поиск товаров...";
+            },
+            "errorLoading": function () {
+                return "Невозможно загрузить результаты поиска";
+            }
+        },
+        placeholder: "Товар",
+        minimumInputLength: 0,
+        ajax: {
+            url: '/Goods/GetGoods',
+            dataType: 'json',
+            type: 'POST',
+            delay: 100,
+            data: function (params) {
+                var queryParameters = {
+                    term: params.term
+                }
+                return queryParameters;
+            },
+            results: function (data) {
+                return {
+                    results: $.map(data, function (item) {
+                        return {
+                            text: item.text,
+                            id: item.id,
+                            desc: item.desc
+                        }
+                    })
+                };
+            },
+            cache: true
+        },
+        escapeMarkup: function (markup) { return markup; },
+        templateResult: formatData,
+        templateSelection: formatDataSelection
+    });
+}
 
 function updateCurrencyRates() {
     var value = $('#SelectedCurrency').val();

@@ -61,6 +61,35 @@ function keypressHandler(e) {
     }
 }
 
+function initDateTimePicker(element) {
+    $(element).datetimepicker({
+        locale: 'ru',
+        format: 'DD.MM.YYYY',
+        showTodayButton: true,
+        showClear: true,
+        showClose: true,
+        icons: {
+            clear: 'fa fa-trash',
+            close: 'fa fa-times',
+            today: 'fa fa-calendar-check-o'
+        },
+        tooltips: {
+            today: 'Текущая дата',
+            clear: 'Очистить выбор',
+            close: 'Закрыть окно',
+            nextMonth: 'Следующий месяц',
+            prevMonth: 'Предыдущий месяц',
+            selectMonth: 'Выбрать месяц',
+            selectYear: 'Выбрать год',
+            selectDecade: 'Выбрать десятилетие',
+            nextYear: 'Следующий год',
+            nextDecade: 'Следующее десятилетие',
+            prevYear: 'Предыдущий год',
+            prevDecade: 'Предыдущее десятилетие'
+        }
+    });
+}
+
 function initGenericSelect(model) {
     var selectElement = $(model.selectElementClass);
     var valueElement = $(model.valueElementId);

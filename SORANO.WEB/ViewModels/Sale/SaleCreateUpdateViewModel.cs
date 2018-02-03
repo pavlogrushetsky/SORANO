@@ -1,4 +1,5 @@
-﻿using SORANO.WEB.ViewModels.Common;
+﻿using System.Collections.Generic;
+using SORANO.WEB.ViewModels.Common;
 using System.ComponentModel.DataAnnotations;
 
 namespace SORANO.WEB.ViewModels.Sale
@@ -31,5 +32,7 @@ namespace SORANO.WEB.ViewModels.Sale
         public bool AllowChangeLocation { get; set; } = true;
 
         public bool AllowCreation { get; set; }
+
+        public IList<SaleItemViewModel> Items { get; set; } = new List<SaleItemViewModel>();
     }
 }

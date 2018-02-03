@@ -102,6 +102,13 @@ namespace SORANO.WEB.Controllers
                 }
 
                 model.AllowCreation = AllowCreation;
+                model.Items.Add(new SaleItemViewModel
+                {
+                    Number = 1,
+                    Quantity = 1,
+                    UnitPrice = "0.0",
+                    GrossPrice = "0.0"
+                });
 
                 if (!LocationId.HasValue)
                     return View(model);
