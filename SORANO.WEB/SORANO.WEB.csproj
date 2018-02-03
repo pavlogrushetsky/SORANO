@@ -62,6 +62,9 @@
     <Folder Include="wwwroot\attachments\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="wwwroot\sorano.ico" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Update="Migrations\201705031910003_Initial.Designer.cs">
       <DependentUpon>201705031910003_Initial.cs</DependentUpon>
     </Compile>

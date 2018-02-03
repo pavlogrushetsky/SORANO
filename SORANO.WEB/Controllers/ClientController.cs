@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -232,6 +233,25 @@ namespace SORANO.WEB.Controllers
         }
 
         #endregion
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<JsonResult> GetClients(string term)
+        {
+            var locations = await _clientService.GetAllAsync(false, term);
+
+            return Json(new
+            {
+                results = locations.Result?
+                    .Select(t => new
+                    {
+                        id = t.ID,
+                        text = t.Name,
+                        desc = t.Description ?? string.Empty
+                    })
+                    .OrderBy(t => t.text)
+            });
+        }
 
         private IActionResult OnFault(string ex)
         {

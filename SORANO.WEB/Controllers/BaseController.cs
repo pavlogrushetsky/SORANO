@@ -32,13 +32,15 @@ namespace SORANO.WEB.Controllers
             }
         }
 
-        protected string LocationName
-        {
-            get
-            {
-                return HttpContext.User.FindFirst("LocationName")?.Value;
-            }
-        }
+        protected bool IsDeveloper => HttpContext.User.IsInRole("developer");
+
+        protected bool IsAdministrator => HttpContext.User.IsInRole("administrator");
+
+        protected bool IsManager => HttpContext.User.IsInRole("manager");
+
+        protected bool AllowCreation => IsAdministrator || IsManager || IsDeveloper;
+
+        protected string LocationName => HttpContext.User.FindFirst("LocationName")?.Value;
 
         public BaseController(IUserService userService)
         {

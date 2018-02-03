@@ -29,7 +29,85 @@
     });
 
     initSaleItemsDataTable();
+
+    initGenericSelect({
+        selectElementClass: '.select-location',
+        valueElementId: '#LocationID',
+        displayElementId: '#LocationName',
+        noResultsText: 'Магазины не найдены',
+        searchingText: 'Поиск магазинов...',
+        errorLoadingText: 'Невозможно загрузить результаты поиска',
+        placeholderText: 'Магазин',
+        url: '/Location/GetLocations'
+    });
+
+    initGenericSelect({
+        selectElementClass: '.select-client',
+        valueElementId: '#ClientID',
+        displayElementId: '#ClientName',
+        noResultsText: 'Клиенты не найдены',
+        searchingText: 'Поиск клиентов...',
+        errorLoadingText: 'Невозможно загрузить результаты поиска',
+        placeholderText: 'Клиент',
+        url: '/Client/GetClients'
+    });
+
+    var allowChangeLocation = $("#AllowChangeLocation");
+    if (allowChangeLocation.val() !== 'True')
+        $(".select-location").attr('disabled', 'disabled');
+
+    $('input[type=radio][name=select_currency]').change(function () {
+        var value = $(this).val();
+        if (value === '0') {
+            $('#DollarRate').val('');
+            $('#EuroRate').val('');
+            $('#DollarRate').prop('readonly', true);
+            $('#EuroRate').prop('readonly', true);
+            $('#SelectedCurrency').val('₴');
+        } else if (value === '1') {
+            $('#DollarRate').prop('readonly', false);
+            $('#DollarRate').val('0.00');
+            $('#EuroRate').val('');
+            $('#EuroRate').prop('readonly', true);
+            $('#SelectedCurrency').val('$');
+        } else if (value === '2') {
+            $('#EuroRate').prop('readonly', false);
+            $('#EuroRate').val('0.00');
+            $('#DollarRate').val('');
+            $('#DollarRate').prop('readonly', true);
+            $('#SelectedCurrency').val('€');
+        }
+    });
+
+    updateCurrencyRates();
 });
+
+function updateCurrencyRates() {
+    var value = $('#SelectedCurrency').val();
+    if (value === '₴') {
+        $('#DollarRate').val('');
+        $('#EuroRate').val('');
+        $('#DollarRate').prop('readonly', true);
+        $('#EuroRate').prop('readonly', true);
+        $('#select_currency_uah').prop('checked', true);
+        $('#select_currency_usd').prop('checked', false);
+        $('#select_currency_eur').prop('checked', false);
+    } else if (value === '$') {
+        $('#DollarRate').prop('readonly', false);
+        $('#EuroRate').val('');
+        $('#EuroRate').prop('readonly', true);
+        $('#select_currency_uah').prop('checked', false);
+        $('#select_currency_usd').prop('checked', true);
+        $('#select_currency_eur').prop('checked', false);
+    } else if (value === '€') {
+        $('#EuroRate').prop('readonly', false);
+        $('#DollarRate').val('');
+        $('#DollarRate').prop('readonly', true);
+        $('#select_currency_uah').prop('checked', false);
+        $('#select_currency_usd').prop('checked', false);
+        $('#select_currency_eur').prop('checked', true);
+    }
+}
 
 function initSaleItemsDataTable() {
     var table = $("#sale-items-datatable").DataTable({

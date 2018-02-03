@@ -27,5 +27,9 @@ namespace SORANO.WEB.ViewModels.Sale
         public string EuroRate { get; set; }
 
         public bool IsSubmitted { get; set; }
+
+        public bool AllowChangeLocation { get; set; } = true;
+
+        public bool AllowCreation { get; set; }
     }
 }

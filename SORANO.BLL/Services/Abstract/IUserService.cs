@@ -12,6 +12,8 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<ServiceResponse<UserDto>> GetAsync(string login);
 
+        Task<ServiceResponse<UserDto>> GetAsync(string login, int? locationId);
+
         Task<ServiceResponse<UserDto>> GetAsync(int id);
 
         ServiceResponse<UserDto> Get(string login);

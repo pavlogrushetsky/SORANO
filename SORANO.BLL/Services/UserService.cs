@@ -138,12 +138,27 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<bool>(true);
         }
 
+        public async Task<ServiceResponse<UserDto>> GetAsync(string login, int? locationId)
+        {
+            var user = await _unitOfWork.Get<User>().GetAsync(u => u.Login.Equals(login));
+
+            if (user == null)
+                return new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound);
+
+            if (!user.Locations.Any())
+                return new SuccessResponse<UserDto>(user.ToDto());
+
+            if (!locationId.HasValue || !user.Locations.Select(l => l.ID).Contains(locationId.Value))
+                return new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound);
+
+            return new SuccessResponse<UserDto>(user.ToDto());
+        }
+
         public async Task<ServiceResponse<UserDto>> GetAsync(string login)
         {
-            var user = await _unitOfWork.Get<User>().GetAsync(u => u.Login.Equals(login)); 
-            
-            return user == null 
-                ? new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound) 
+            var user = await _unitOfWork.Get<User>().GetAsync(u => u.Login.Equals(login));
+            return user == null
+                ? new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound)
                 : new SuccessResponse<UserDto>(user.ToDto());
         }
 

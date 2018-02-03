@@ -59,7 +59,7 @@ namespace SORANO.WEB.Controllers
                 await ClearAttachments();
 
                 var viewModel = _mapper.Map<SaleIndexViewModel>(salesResult.Result);
-                viewModel.Mode = SaleTableMode.SaleIndex;
+                viewModel.Mode = SaleTableMode.SaleIndex;                
 
                 return View(viewModel);
             }, ex =>
@@ -98,8 +98,17 @@ namespace SORANO.WEB.Controllers
                     model = new SaleCreateUpdateViewModel
                     {
                         MainPicture = new MainPictureViewModel()
-                    };
+                    };                   
                 }
+
+                model.AllowCreation = AllowCreation;
+
+                if (!LocationId.HasValue)
+                    return View(model);
+
+                model.LocationID = LocationId.Value;
+                model.LocationName = LocationName;
+                model.AllowChangeLocation = false;
 
                 return View(model);
             }, OnFault);
