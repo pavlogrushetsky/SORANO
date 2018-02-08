@@ -22,7 +22,7 @@ namespace SORANO.BLL.Extensions
                 TotalPrice = model.TotalPrice,
                 DollarRate = model.DollarRate,
                 EuroRate = model.EuroRate,
-                Items = model.Items.Where(di => !di.IsDeleted).Select(i => i.ToDto())
+                Goods = model.Goods.Where(di => !di.IsDeleted).Select(i => i.ToDto())
             };
 
             dto.MapDetails(model);

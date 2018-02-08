@@ -326,7 +326,7 @@ namespace SORANO.WEB.Mappings
             CreateMap<SaleDto, SaleViewModel>()
                 .ForMember(
                     dest => dest.SaleItemsCount,
-                    source => source.MapFrom(s => s.Items.Count())
+                    source => source.MapFrom(s => s.Goods.Count())
                 )
                 .ForMember(
                     dest => dest.LocationName,

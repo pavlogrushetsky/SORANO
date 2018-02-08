@@ -118,7 +118,7 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<IDictionary<ArticleDto, int>>> GetArticlesForLocationAsync(int? locationId)
         {
-            var goods = await UnitOfWork.Get<SaleItem>().GetAllAsync();
+            var goods = await UnitOfWork.Get<Goods>().GetAllAsync();
 
             IDictionary<ArticleDto, int> result = null;
 

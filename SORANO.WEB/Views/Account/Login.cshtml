@@ -29,7 +29,6 @@
                       asp-controller="Account"
                       asp-antiforgery="true"
                       method="post">
-                    <input type="hidden" asp-for="LocationID" />
                     <input type="hidden" asp-for="LocationName"/>
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <input type="hidden" asp-for="ReturnUrl" value="@ViewBag.ReturnUrl"/>

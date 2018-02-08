@@ -1,5 +1,6 @@
 ﻿$(document).ready(function () {
     $.fn.select2.defaults.set('theme', 'bootstrap');
+    initAttachmentTypeSelect();
 
     initDateTimePicker('#pick-date');
 
@@ -27,7 +28,7 @@
 
     initGoodsSelect();
 
-    initSaleItemsDataTable();   
+    //initSaleItemsDataTable();   
 
     var allowChangeLocation = $("#AllowChangeLocation");
     if (allowChangeLocation.val() !== 'True')

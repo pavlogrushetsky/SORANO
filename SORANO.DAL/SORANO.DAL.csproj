@@ -62,7 +62,6 @@
     <Compile Include="Context\Configurations\RecommendationConfiguration.cs" />
     <Compile Include="Context\Configurations\RoleConfiguration.cs" />
     <Compile Include="Context\Configurations\SaleConfiguration.cs" />
-    <Compile Include="Context\Configurations\SaleItemConfiguration.cs" />
     <Compile Include="Context\Configurations\StockEntityConfiguration.cs" />
     <Compile Include="Context\Configurations\StorageConfiguration.cs" />
     <Compile Include="Context\Configurations\SupplierConfiguration.cs" />

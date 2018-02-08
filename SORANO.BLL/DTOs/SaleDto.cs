@@ -27,6 +27,6 @@ namespace SORANO.BLL.Dtos
 
         public UserDto User { get; set; }
 
-        public IEnumerable<SaleItemDto> Items { get; set; } = new HashSet<SaleItemDto>();
+        public IEnumerable<GoodsDto> Goods { get; set; } = new HashSet<GoodsDto>();
     }
 }

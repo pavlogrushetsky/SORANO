@@ -14,6 +14,8 @@ namespace SORANO.BLL.Dtos
 
         public decimal? SalePrice { get; set; }
 
+        public decimal? Price { get; set; }
+
         public DateTime? SaleDate { get; set; }
 
         public int? SoldBy { get; set; }
@@ -31,5 +33,11 @@ namespace SORANO.BLL.Dtos
         public IEnumerable<StorageDto> Storages { get; set; }
 
         public int Quantity { get; set; }
+
+        public int? SaleID { get; set; }
+
+        public SaleDto Sale { get; set; }
+
+        public bool IsSold { get; set; }
     }
 }

@@ -200,6 +200,30 @@ namespace SORANO.BLL.Services
 
             return new SuccessResponse<GoodsDto>();
         }
+
+        public async Task<ServiceResponse<IEnumerable<GoodsDto>>> GetAvailableForLocationAsync(int locationId, int saleId, bool selectedOnly = false)
+        {
+            if (locationId == 0)
+                return new ServiceResponse<IEnumerable<GoodsDto>>(ServiceResponseStatus.InvalidOperation);
+
+            var location = await UnitOfWork.Get<Location>().GetAsync(locationId);
+
+            var goods = location.Storages.Where(s => !s.ToDate.HasValue).Select(s => s.Goods).Where(g =>
+                g.Storages.OrderBy(st => st.FromDate).Last().LocationID == locationId
+                && !g.IsDeleted
+                && (!g.SaleID.HasValue || g.SaleID == saleId && !g.IsSold));
+
+            var dtos = goods.Select(a =>
+            {
+                var dto = a.ToDto();
+                dto.IDs = new List<int> { dto.ID };
+                return dto;
+            }).ToList();
+
+            return !dtos.Any() 
+                ? new ServiceResponse<IEnumerable<GoodsDto>>(ServiceResponseStatus.NotFound) 
+                : new SuccessResponse<IEnumerable<GoodsDto>>(dtos);
+        }
     }
 }
 

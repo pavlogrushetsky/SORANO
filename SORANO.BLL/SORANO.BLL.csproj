@@ -58,7 +58,6 @@
     <Compile Include="Dtos\RecommendationDto.cs" />
     <Compile Include="Dtos\RoleDto.cs" />
     <Compile Include="Dtos\SaleDto.cs" />
-    <Compile Include="Dtos\SaleItemDto.cs" />
     <Compile Include="Dtos\StorageDto.cs" />
     <Compile Include="Dtos\SupplierDto.cs" />
     <Compile Include="Dtos\UserActivityDto.cs" />
@@ -77,7 +76,6 @@
     <Compile Include="Extensions\LocationTypeExtensions.cs" />
     <Compile Include="Extensions\GoodsExtensions.cs" />
     <Compile Include="Extensions\SaleExtensions.cs" />
-    <Compile Include="Extensions\SaleItemExtensions.cs" />
     <Compile Include="Extensions\StockEntityExtensions.cs" />
     <Compile Include="Extensions\StorageExtensions.cs" />
     <Compile Include="Extensions\SupplierExtensions.cs" />

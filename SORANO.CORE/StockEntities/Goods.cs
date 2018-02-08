@@ -6,11 +6,15 @@ namespace SORANO.CORE.StockEntities
     {
         public int DeliveryItemID { get; set; }
 
-        public int? SaleItemID { get; set; }
+        public int? SaleID { get; set; }
+
+        public decimal? Price { get; set; }
+
+        public bool IsSold { get; set; }
 
         public virtual DeliveryItem DeliveryItem { get; set; }
 
-        public virtual SaleItem SaleItem { get; set; }
+        public virtual Sale Sale { get; set; }
 
         public virtual ICollection<Storage> Storages { get; set; } = new HashSet<Storage>();
     }

@@ -28,6 +28,6 @@ namespace SORANO.CORE.StockEntities
 
         public User User { get; set; }
 
-        public virtual ICollection<SaleItem> Items { get; set; } = new HashSet<SaleItem>();
+        public virtual ICollection<Goods> Goods { get; set; } = new HashSet<Goods>();
     }
 }

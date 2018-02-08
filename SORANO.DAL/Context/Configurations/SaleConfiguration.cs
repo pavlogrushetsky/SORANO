@@ -10,8 +10,8 @@ namespace SORANO.DAL.Context.Configurations
                 .IsOptional()
                 .HasColumnType("datetime2");
 
-            HasMany(s => s.Items)
-                .WithRequired(si => si.Sale)
+            HasMany(s => s.Goods)
+                .WithOptional(si => si.Sale)
                 .HasForeignKey(si => si.SaleID);
 
             Property(d => d.TotalPrice)

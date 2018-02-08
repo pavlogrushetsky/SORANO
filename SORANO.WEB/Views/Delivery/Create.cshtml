@@ -300,19 +300,19 @@
                                 <td>@Model.Items[i].GrossPrice</td>
                                 <td>@Model.Items[i].Discount</td>
                                 <td>@Model.Items[i].DiscountedPrice</td>
-                                <td>
+                                <td nowrap="nowrap">
                                     <button asp-controller="Delivery"
                                             asp-action="UpdateItem"
                                             asp-route-number="@i"
                                             asp-route-returnUrl="@returnUrl"
-                                            class="btn btn-xs btn-default"
+                                            class="btn btn-sm btn-default"
                                             data-toggle="tooltip"
                                             data-placement="bottom"
                                             data-original-title="Редактировать позицию"
                                             title="">
                                         <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
                                     </button>
-                                    <button class="btn btn-xs btn-danger"
+                                    <button class="btn btn-sm btn-danger"
                                             data-toggle="tooltip"
                                             data-placement="bottom"
                                             data-original-title="Удалить позицию"

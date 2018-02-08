@@ -16,7 +16,9 @@ namespace SORANO.WEB.ViewModels.Sale
 
         public string ClientName { get; set; }
 
-        public string TotalPrice { get; set; }
+        public string TotalPrice { get; set; } = "0.0";
+
+        public int SelectedCount { get; set; }
 
         public string SelectedCurrency { get; set; } = "₴";
 
@@ -32,7 +34,7 @@ namespace SORANO.WEB.ViewModels.Sale
         public bool AllowChangeLocation { get; set; } = true;
 
         public bool AllowCreation { get; set; }
-
-        public IList<SaleItemViewModel> Items { get; set; } = new List<SaleItemViewModel>();
+        
+        public List<SaleItemsGroupViewModel> Items { get; set; } = new List<SaleItemsGroupViewModel>();
     }
 }

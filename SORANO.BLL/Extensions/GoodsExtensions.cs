@@ -12,6 +12,10 @@ namespace SORANO.BLL.Extensions
             {
                 ID = model.ID,
                 DeliveryItemID = model.DeliveryItemID,
+                SaleID = model.SaleID,
+                Sale = model.Sale?.ToDto(),
+                IsSold = model.IsSold,
+                Price = model.Price,
                 //ClientID = model.ClientID,TODO
                 //SalePrice = model.SalePrice,
                 //SaleDate = model.SaleDate,
