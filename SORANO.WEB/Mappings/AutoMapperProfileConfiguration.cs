@@ -353,6 +353,12 @@ namespace SORANO.WEB.Mappings
                     dest => dest.Items,
                     source => source.MapFrom(s => s)
                 );
+            CreateMap<SaleDto, SaleCreateUpdateViewModel>()
+                .ForMember(
+                    dest => dest.SelectedCurrency,
+                    source => source.MapFrom(s => s.DollarRate.HasValue ? "$" : s.EuroRate.HasValue ? "€" : "₴")
+                );
+            CreateMap<SaleDto, SaleDeleteViewModel>();
 
             #endregion
 

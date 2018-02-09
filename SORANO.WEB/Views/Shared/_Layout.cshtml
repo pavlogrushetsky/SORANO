@@ -47,6 +47,7 @@
                         <a asp-controller="Sale" asp-action="Index">
                             <i class="fa fa-fw fa-handshake-o" aria-hidden="true"></i>
                             Продажи
+                            @await Component.InvokeAsync("SalesUnsubmittedCount")
                         </a>
                     </li> 
                     <li>

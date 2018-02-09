@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SORANO.CORE.AccountEntities;
 
 namespace SORANO.BLL.Services
 {
@@ -31,17 +32,45 @@ namespace SORANO.BLL.Services
             return response;
         }
 
-        public Task<ServiceResponse<SaleDto>> GetAsync(int id)
+        public async Task<ServiceResponse<SaleDto>> GetAsync(int id)
         {
-            throw new NotImplementedException();
+            var sale = await UnitOfWork.Get<Sale>().GetAsync(id);
+
+            return sale == null
+                ? new ServiceResponse<SaleDto>(ServiceResponseStatus.NotFound)
+                : new SuccessResponse<SaleDto>(sale.ToDto());
         }
 
-        public Task<ServiceResponse<int>> CreateAsync(SaleDto article, int userId)
+        public async Task<ServiceResponse<int>> CreateAsync(SaleDto sale, int userId)
         {
-            throw new NotImplementedException();
+            if (sale == null)
+                throw new ArgumentNullException(nameof(sale));
+
+            var entity = sale.ToEntity();
+
+            entity.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+
+            var location = await UnitOfWork.Get<Location>().GetAsync(entity.LocationID);
+            location.UpdateModifiedFields(userId);
+
+            if (entity.ClientID.HasValue)
+            {
+                var client = await UnitOfWork.Get<Client>().GetAsync(entity.ClientID.Value);
+                client.UpdateModifiedFields(userId);
+            }
+
+            entity.Recommendations?.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            entity.Attachments?.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+
+            var added = UnitOfWork.Get<Sale>().Add(entity);
+
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<int>(added.ID);
+
         }
 
-        public Task<ServiceResponse<SaleDto>> UpdateAsync(SaleDto article, int userId)
+        public Task<ServiceResponse<SaleDto>> UpdateAsync(SaleDto sale, int userId)
         {
             throw new NotImplementedException();
         }
@@ -52,5 +81,25 @@ namespace SORANO.BLL.Services
         }
 
         #endregion
+
+        public async Task<ServiceResponse<int>> GetUnsubmittedCountAsync(int userId, int? locationId)
+        {
+            var deliveries = await UnitOfWork.Get<Sale>().FindByAsync(s => !s.IsSubmitted && !s.IsDeleted && s.UserID == userId && (!locationId.HasValue || s.LocationID == locationId.Value));
+
+            return new SuccessResponse<int>(deliveries?.Count() ?? 0);
+        }
+
+        public async Task<ServiceResponse<IEnumerable<SaleDto>>> GetAllAsync(bool withDeleted, int userId, int? locationId)
+        {
+            var response = new SuccessResponse<IEnumerable<SaleDto>>();
+
+            var sales = await UnitOfWork.Get<Sale>().FindByAsync(s => s.UserID == userId && (!locationId.HasValue || s.LocationID == locationId.Value));
+
+            response.Result = !withDeleted
+                ? sales.Where(s => !s.IsDeleted).Select(s => s.ToDto())
+                : sales.Select(s => s.ToDto());
+
+            return response;
+        }
     }
 }

@@ -1,15 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using SORANO.BLL.Dtos;
 using SORANO.BLL.Services;
 using SORANO.BLL.Services.Abstract;
-using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Infrastructure.Filters;
-using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.Sale;
 
 namespace SORANO.WEB.Controllers
@@ -46,7 +46,7 @@ namespace SORANO.WEB.Controllers
             {
                 var showDeleted = Session.GetBool("ShowDeletedSales");
 
-                var salesResult = await _saleService.GetAllAsync(showDeleted);
+                var salesResult = await _saleService.GetAllAsync(showDeleted, UserId, LocationId);
 
                 if (salesResult.Status != ServiceResponseStatus.Success)
                 {
@@ -59,7 +59,8 @@ namespace SORANO.WEB.Controllers
                 await ClearAttachments();
 
                 var viewModel = _mapper.Map<SaleIndexViewModel>(salesResult.Result);
-                viewModel.Mode = SaleTableMode.SaleIndex;                
+                viewModel.Mode = SaleTableMode.SaleIndex;
+                viewModel.ShowLocation = !LocationId.HasValue;
 
                 return View(viewModel);
             }, ex =>
@@ -82,37 +83,68 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                SaleCreateUpdateViewModel model;
-
-                if (TryGetCached(out var cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
-                {
-                    model = cachedForSelectMainPicture;
-                    await CopyMainPicture(model);
-                }
-                else if (TryGetCached(out var cachedForCreateSaleItem, CacheKeys.CreateSaleItemCacheKey, CacheKeys.CreateSaleItemCacheValidKey))
-                {
-                    model = cachedForCreateSaleItem;
-                }
-                else
-                {
-                    model = new SaleCreateUpdateViewModel
-                    {
-                        MainPicture = new MainPictureViewModel()
-                    };                   
-                }
-
-                model.AllowCreation = AllowCreation;
-                // TODO
-                //model.Items.Add(new SaleItemViewModel());
+                var model = new SaleCreateUpdateViewModel { AllowCreation = AllowCreation };
 
                 if (!LocationId.HasValue)
                     return View(model);
 
+                var result = await _saleService.CreateAsync(new SaleDto
+                {
+                    LocationID = LocationId.Value,
+                    UserID = UserId,
+                    Date = DateTime.Now
+                }, UserId);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось оформить продажу.";
+                    return RedirectToAction("Index");
+                }
+
+                TempData["Success"] = "Продажа оформлена. Для отмены нажмите \"Отменить продажу\". Для подтверждения оформления нажмите \"Подтвердить\".";
+
+                model.ID = result.Result;
                 model.LocationID = LocationId.Value;
                 model.LocationName = LocationName;
                 model.AllowChangeLocation = false;
 
                 return View(model);
+            }, OnFault);
+        }
+
+        public async Task<IActionResult> Update(int id)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _saleService.GetAsync(id);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанную поставку.";
+                    return RedirectToAction("Index");
+                }
+
+                var model = _mapper.Map<SaleCreateUpdateViewModel>(result.Result);
+                model.IsUpdate = true;
+                model.AllowChangeLocation = false;
+
+                return View("Create", model);
+            }, OnFault);
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _saleService.GetAsync(id);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанную продажу.";
+                    return RedirectToAction("Index");
+                }
+
+                return View(_mapper.Map<SaleDeleteViewModel>(result.Result));
             }, OnFault);
         }
 

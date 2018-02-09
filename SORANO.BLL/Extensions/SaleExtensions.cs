@@ -35,7 +35,16 @@ namespace SORANO.BLL.Extensions
         {
             var entity = new Sale
             {
-
+                ID = dto.ID,
+                ClientID = dto.ClientID,
+                LocationID = dto.LocationID,
+                UserID = dto.UserID,
+                Date = dto.Date,
+                TotalPrice = dto.TotalPrice,
+                DollarRate = dto.DollarRate,
+                EuroRate = dto.EuroRate,
+                Recommendations = dto.Recommendations?.Select(r => r.ToEntity()).ToList(),
+                Attachments = dto.Attachments?.Select(a => a.ToEntity()).ToList()
             };
 
             return entity;

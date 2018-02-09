@@ -92,7 +92,10 @@
                     <thead>
                         <tr role="row" class="search-row">
                             <th><input type="text" class="form-control input-sm" placeholder="Продажа" /></th>
+                            @if (Model.ShowLocation)
+                            {
                             <th><input type="text" class="form-control input-sm" placeholder="Место" /></th>
+                            }                            
                             <th><input type="text" class="form-control input-sm" placeholder="Продавец" /></th>
                             <th><input type="text" class="form-control input-sm" placeholder="Клиент" /></th>
                             <th><input type="text" class="form-control input-sm" placeholder="Позиций" /></th>
@@ -102,7 +105,10 @@
                         </tr>
                         <tr role="row">
                             <th><i class="fa fa-fw fa-calendar"></i>Продажа</th>
+                            @if (Model.ShowLocation)
+                            {
                             <th><i class="fa fa-fw fa-map-marker"></i>Место</th>
+                            }                            
                             <th><i class="fa fa-fw fa-user"></i>Продавец</th>
                             <th><i class="fa fa-fw fa-address-book"></i>Клиент</th>
                             <th><i class="fa fa-fw fa-hashtag"></i>Позиций</th>
@@ -116,17 +122,20 @@
                         {
                         <tr class="@(sale.IsDeleted ? "danger" : "")">
                             <td>@sale.Date</td>
-                            <td>
-                                <a asp-controller="Location"
-                                   asp-action="Details"
-                                   asp-route-id="@sale.LocationID"
-                                   data-toggle="tooltip"
-                                   data-placement="bottom"
-                                   data-original-title="Просмотреть информацию о месте продажи"
-                                   title="">
-                                    @sale.LocationName
-                                </a>
-                            </td>
+                            @if (Model.ShowLocation)
+                            {
+                                <td>
+                                    <a asp-controller="Location"
+                                       asp-action="Details"
+                                       asp-route-id="@sale.LocationID"
+                                       data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       data-original-title="Просмотреть информацию о месте продажи"
+                                       title="">
+                                        @sale.LocationName
+                                    </a>
+                                </td>
+                            }                            
                             <td>
                                 <a asp-controller="User"
                                    asp-action="Details"
@@ -192,15 +201,15 @@
                                 }
                                 if (sale.CanBeDeleted)
                                 {
-                                    <a class="btn btn-xs btn-danger"
+                                    <a class="btn btn-xs btn-warning"
                                     data-toggle="tooltip"
                                     data-placement="bottom"
-                                    data-original-title="Удалить поставку"
+                                    data-original-title="Отменить продажу"
                                     title=""
                                     asp-controller="Sale"
                                     asp-action="Delete"
                                     asp-route-id="@sale.ID">
-                                        <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
+                                        <i class="fa fa-fw fa-hand-stop-o" aria-hidden="true"></i>
                                     </a>
                                 }
                             }                        
