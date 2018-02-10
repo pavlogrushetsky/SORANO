@@ -152,6 +152,26 @@ namespace SORANO.WEB.Controllers
 
         #region POST Actions
 
+        [HttpPost]
+        public async Task<IActionResult> Delete(SaleDeleteViewModel model)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _saleService.DeleteAsync(model.ID, UserId);
+
+                if (result.Status == ServiceResponseStatus.Success)
+                {
+                    TempData["Success"] = "Оформление продажи было успешно отменено.";
+                }
+                else
+                {
+                    TempData["Error"] = "Не удалось отменить оформление продажи.";
+                }
+
+                return RedirectToAction("Index");
+            }, OnFault);
+        }
+
         #endregion
 
         private IActionResult OnFault(string ex)

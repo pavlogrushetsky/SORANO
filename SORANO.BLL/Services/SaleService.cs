@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SORANO.CORE.AccountEntities;
 
 namespace SORANO.BLL.Services
 {
@@ -75,9 +74,32 @@ namespace SORANO.BLL.Services
             throw new NotImplementedException();
         }
 
-        public Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
+        public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
         {
-            throw new NotImplementedException();
+            var existentSale = await UnitOfWork.Get<Sale>().GetAsync(id);
+
+            if (existentSale == null)
+                return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
+
+            if (existentSale.IsSubmitted)
+                return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
+
+            var saleGoodsIds = existentSale.Goods.Select(g => g.ID);
+            var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => saleGoodsIds.Contains(g.ID));
+
+            goods.ToList().ForEach(g =>
+            {
+                g.SaleID = null;
+                g.Price = null;
+                g.UpdateModifiedFields(userId);
+                UnitOfWork.Get<Goods>().Update(g);
+            });
+
+            UnitOfWork.Get<Sale>().Delete(existentSale);
+
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<int>(id);
         }
 
         #endregion
