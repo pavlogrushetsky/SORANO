@@ -14,7 +14,7 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<ServiceResponse<decimal>> GetTotalIncomeAsync();
 
-        Task<ServiceResponse<IEnumerable<GoodsDto>>> GetAllAsync(int articleID = 0, int articleTypeID = 0, int locationID = 0, bool byPiece = false);
+        Task<ServiceResponse<IEnumerable<GoodsDto>>> GetAllAsync(int articleID = 0, int articleTypeID = 0, int locationID = 0, bool byPiece = false, int status = 0);
 
         Task<ServiceResponse<IEnumerable<GoodsDto>>> GetAvailableForLocationAsync(int locationId, int saleId, bool selectedOnly = false); 
 

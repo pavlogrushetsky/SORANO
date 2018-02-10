@@ -58,6 +58,24 @@
     });
 
     updateCurrencyRates();
+
+    $('.sale-items-groups-tree > ul > li > table').attr('title', 'Свернуть ветку');
+    $('.sale-items-groups-tree > ul > li > table').on('click', function (e) {
+        var target = $(e.target);
+        if (!target.is("input") && !target.is('button') && !target.is('i')) {
+            var children = $(this).parent('li').find(' > ul > li');
+            if (children.is(":visible")) {
+                children.hide('fast');
+                $(this).attr('title', 'Развернуть ветку');
+                $(this).find(' > table').show('fast');
+            } else {
+                children.show('fast');
+                $(this).attr('title', 'Свернуть ветку');
+                $(this).find(' > table').hide('fast');
+            }
+            e.stopPropagation();
+        }        
+    });
 });
 
 function initGoodsSelect() {

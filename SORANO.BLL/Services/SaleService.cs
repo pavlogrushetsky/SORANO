@@ -123,5 +123,38 @@ namespace SORANO.BLL.Services
 
             return response;
         }
+
+        public async Task<ServiceResponse<int>> AddGoodsAsync(int goodsId, int saleId, int userId)
+        {
+            var goods = await UnitOfWork.Get<Goods>().GetAsync(goodsId);
+            if (goods == null || goods.SaleID.HasValue && goods.SaleID != saleId)
+                return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
+
+            goods.SaleID = saleId;
+            goods.UpdateModifiedFields(userId);
+
+            UnitOfWork.Get<Goods>().Update(goods);
+
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<int>(goodsId);
+        }
+
+        public async Task<ServiceResponse<int>> RemoveGoodsAsync(int goodsId, int saleId, int userId)
+        {
+            var goods = await UnitOfWork.Get<Goods>().GetAsync(goodsId);
+            if (goods?.SaleID == null || goods.SaleID != saleId)
+                return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
+
+            goods.SaleID = null;
+            goods.Price = null;
+            goods.UpdateModifiedFields(userId);
+
+            UnitOfWork.Get<Goods>().Update(goods);
+
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<int>(goodsId);
+        }
     }
 }

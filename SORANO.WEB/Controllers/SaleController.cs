@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Dtos;
@@ -153,6 +154,7 @@ namespace SORANO.WEB.Controllers
         #region POST Actions
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(SaleDeleteViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
@@ -170,6 +172,50 @@ namespace SORANO.WEB.Controllers
 
                 return RedirectToAction("Index");
             }, OnFault);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [LoadAttachments]
+        public async Task<IActionResult> AddGoods(SaleCreateUpdateViewModel model, int goodsid, IFormFile mainPictureFile, IFormFileCollection attachments)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _saleService.AddGoodsAsync(goodsid, model.ID, UserId);
+
+                if (result.Status == ServiceResponseStatus.NotFound)
+                {
+                    TempData["Error"] = "Не удалось добавить выбранный товар. Возможно, выбранный товар уже продан.";
+                }
+
+                return View("Create", model);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return View("Create", model);
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [LoadAttachments]
+        public async Task<IActionResult> RemoveGoods(SaleCreateUpdateViewModel model, int goodsid, IFormFile mainPictureFile, IFormFileCollection attachments)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _saleService.RemoveGoodsAsync(goodsid, model.ID, UserId);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось добавить выбранный товар. Возможно, выбранный товар уже продан.";
+                }
+
+                return View("Create", model);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return View("Create", model);
+            });
         }
 
         #endregion

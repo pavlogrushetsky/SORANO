@@ -1,1 +1,55 @@
 ﻿@model IList<SaleItemsGroupViewModel>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                <div class="input-group input-group-sm pull-left">
+                    <input class="form-control input-sm" type="text" placeholder="Поиск ..." />
+                    <span class="input-group-addon">
+                        <span class="fa fa-fw fa-search"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-4 col-xs-12">
+                <div style="text-align: center;">
+                    <span>Выбрано </span><span class="badge">@ViewBag.SelectedCount</span><span> товаров на сумму </span><span class="badge">@ViewBag.TotalPrice @ViewBag.SelectedCurrency</span>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                <a class="btn btn-default btn-sm pull-right"
+                   asp-controller="Sale"
+                   asp-action="Refresh"
+                   data-toggle="tooltip"
+                   data-placement="right"
+                   data-original-title="Обновить список товаров"
+                   title="">
+                    <i class="fa fa-fw fa-refresh" style="color: #2c3e50" aria-hidden="true"></i>
+                </a>
+                <a class="btn btn-default btn-sm pull-right"
+                   asp-controller="Sale"
+                   asp-action="ShowSelected"
+                   asp-route-show=@(true ? "false" : "true")
+                   data-toggle="tooltip"
+                   data-placement="right"
+                   data-original-title=@(true ? "Отобразить выбранные товары" : "Отобразить все товары")
+                   title="">
+                    <i class="fa fa-fw @(true ? "fa-eye" : "fa-eye-slash")" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @if (Model.Any())
+        {
+            <div class="sale-items-groups-tree">
+                <ul>
+                    @foreach (var saleGroup in Model)
+                    {
+                        @Html.Partial("Components/SaleItems/_ItemsGroupTreeNode", saleGroup)
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>

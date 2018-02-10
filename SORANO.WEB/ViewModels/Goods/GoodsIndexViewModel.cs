@@ -26,7 +26,7 @@ namespace SORANO.WEB.ViewModels.Goods
         public string SearchTerm { get; set; }
 
         [Display(Name = "Статус:")]
-        public bool ShowSold { get; set; }
+        public int Status { get; set; }
 
         [Display(Name = "Отображение:")]
         public bool ShowByPiece { get; set; }

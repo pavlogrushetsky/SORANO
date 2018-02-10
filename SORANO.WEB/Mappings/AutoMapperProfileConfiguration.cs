@@ -407,8 +407,8 @@ namespace SORANO.WEB.Mappings
                 )
                 .ForMember(
                     dest => dest.IsSold,
-                    source => source.MapFrom(s => s.SaleDate.HasValue)
-                )
+                    source => source.MapFrom(s => s.SaleID.HasValue)
+                )                
                 .ForMember(
                     dest => dest.ImagePath,
                     source => source.MapFrom(s => s.DeliveryItem.Article.MainPicture.FullPath)

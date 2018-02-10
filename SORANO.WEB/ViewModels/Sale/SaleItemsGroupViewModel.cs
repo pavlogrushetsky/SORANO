@@ -16,6 +16,10 @@ namespace SORANO.WEB.ViewModels.Sale
 
         public bool IsSelected { get; set; }
 
+        public bool HasMainPicture => !string.IsNullOrWhiteSpace(MainPicturePath);
+
+        public string MainPicturePath { get; set; }
+
         public List<SaleItemViewModel> Items { get; set; } = new List<SaleItemViewModel>();
     }
 }

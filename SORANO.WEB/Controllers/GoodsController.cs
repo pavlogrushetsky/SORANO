@@ -247,7 +247,7 @@ namespace SORANO.WEB.Controllers
             {
                 ModelState.RemoveFor("IsFiltered");
 
-                var goodsResult = await _goodsService.GetAllAsync(model.ArticleID, model.ArticleTypeID, model.LocationID, model.ShowByPiece);
+                var goodsResult = await _goodsService.GetAllAsync(model.ArticleID, model.ArticleTypeID, model.LocationID, model.ShowByPiece, model.Status);
 
                 if (goodsResult.Status != ServiceResponseStatus.Success)
                 {
@@ -259,7 +259,8 @@ namespace SORANO.WEB.Controllers
                 var viewModel = new GoodsIndexViewModel
                 {
                     Goods = goods.ToList(),
-                    IsFiltered = true
+                    IsFiltered = true,
+                    Status = model.Status
                 };
 
                 return View(viewModel);
@@ -278,7 +279,7 @@ namespace SORANO.WEB.Controllers
             {
                 model.ShowByPiece = false;
                 model.ShowNumber = 10;
-                model.ShowSold = false;
+                model.Status = 0;
                 model.ArticleID = 0;
                 model.ArticleTypeID = 0;
                 model.IsFiltered = false;

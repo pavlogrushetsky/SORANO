@@ -9,5 +9,9 @@ namespace SORANO.BLL.Services.Abstract
         Task<ServiceResponse<int>> GetUnsubmittedCountAsync(int userId, int? locationId);
 
         Task<ServiceResponse<IEnumerable<SaleDto>>> GetAllAsync(bool withDeleted, int userId, int? locationId);
+
+        Task<ServiceResponse<int>> AddGoodsAsync(int goodsId, int saleId, int userId);
+
+        Task<ServiceResponse<int>> RemoveGoodsAsync(int goodsId, int saleId, int userId);
     }
 }
