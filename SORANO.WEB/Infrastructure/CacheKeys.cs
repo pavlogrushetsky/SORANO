@@ -16,16 +16,6 @@
 
         public static readonly string AttachmentTypesCacheKey = "AttachmentTypesCache";
 
-        public static readonly string LocationTypesCacheKey = "LocationTypesCache";
-
-        public static readonly string ArticlesCacheKey = "ArticlesCache";
-
-        public static readonly string ArticleTypesCacheKey = "ArticleTypesCache";
-
-        public static readonly string LocationsCacheKey = "LocationsCache";
-
-        public static readonly string SuppliersCacheKey = "SuppliersCache";
-
         public static readonly string CreateLocationCacheKey = "CreateLocationCache";
 
         public static readonly string CreateLocationCacheValidKey = "CreateLocationCacheValid";
@@ -37,5 +27,17 @@
         public static readonly string CreateArticleCacheKey = "CreateArticleCache";
 
         public static readonly string CreateArticleCacheValidKey = "CreateArticleValidCache";
+
+        public static readonly string CreateDeliveryItemCacheKey = "CreateDeliveryItemCache";
+
+        public static readonly string CreateDeliveryItemCacheValidKey = "CreateDeliveryItemValidCache";
+
+        public static readonly string DeliveryItemCacheKey = "DeliveryItemCacheKey";
+
+        public static readonly string DeliveryItemCacheValidKey = "DeliveryItemCacheValidKey";
+
+        public static readonly string CreateSaleItemCacheKey = "CreateSaleItemCacheKey";
+
+        public static readonly string CreateSaleItemCacheValidKey = "CreateSaleItemCacheValidKey";
     }
 }

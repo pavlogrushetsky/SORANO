@@ -5,10 +5,8 @@ using System.Threading.Tasks;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
-using SORANO.BLL.Properties;
-using SORANO.CORE.AccountEntities;
-using System.Data;
-using SORANO.BLL.Helpers;
+using SORANO.BLL.Extensions;
+using SORANO.BLL.Dtos;
 
 namespace SORANO.BLL.Services
 {
@@ -18,53 +16,60 @@ namespace SORANO.BLL.Services
         {            
         }
 
-        public async Task<Delivery> CreateAsync(Delivery delivery, int userId)
+        #region CRUD methods
+
+        public async Task<ServiceResponse<IEnumerable<DeliveryDto>>> GetAllAsync(bool withDeleted)
+        {
+            var response = new SuccessResponse<IEnumerable<DeliveryDto>>();
+
+            var deliveries = await UnitOfWork.Get<Delivery>().GetAllAsync();
+
+            response.Result = !withDeleted
+                ? deliveries.Where(d => !d.IsDeleted).Select(d => d.ToDto())
+                : deliveries.Select(d => d.ToDto());
+
+            return response;
+        }
+
+        public async Task<ServiceResponse<DeliveryDto>> GetAsync(int id)
+        {
+            var delivery = await UnitOfWork.Get<Delivery>().GetAsync(d => d.ID == id);
+
+            return delivery == null 
+                ? new ServiceResponse<DeliveryDto>(ServiceResponseStatus.NotFound) 
+                : new SuccessResponse<DeliveryDto>(delivery.ToDto());
+        }
+
+        public async Task<ServiceResponse<int>> CreateAsync(DeliveryDto delivery, int userId)
         {
             if (delivery == null)
-            {
-                throw new ArgumentNullException(nameof(delivery), Resource.DeliveryCannotBeNullException);
-            }
+                throw new ArgumentNullException(nameof(delivery));
 
-            if (delivery.ID != 0)
-            {
-                throw new ArgumentException(Resource.DeliveryInvalidIdentifierException, nameof(delivery.ID));
-            }
+            var entity = delivery.ToEntity();
 
-            var user = await _unitOfWork.Get<User>().GetAsync(s => s.ID == userId);
+            entity.UpdateCreatedFields(userId).UpdateModifiedFields(userId);            
 
-            if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
-            }
-
-            delivery.UpdateCreatedFields(userId).UpdateModifiedFields(userId);            
-
-            var supplier = await _unitOfWork.Get<Supplier>().GetAsync(s => s.ID == delivery.SupplierID);
+            var supplier = await UnitOfWork.Get<Supplier>().GetAsync(s => s.ID == delivery.SupplierID);
 
             supplier.UpdateModifiedFields(userId);
 
-            var location = await _unitOfWork.Get<Location>().GetAsync(l => l.ID == delivery.LocationID);
+            var location = await UnitOfWork.Get<Location>().GetAsync(l => l.ID == delivery.LocationID);
 
             location.UpdateModifiedFields(userId);
 
-            foreach (var item in delivery.Items)
+            foreach (var item in entity.Items)
             {
                 item.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+                item.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+                item.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             }
 
-            foreach (var recommendation in delivery.Recommendations)
-            {
-                recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            }
+            entity.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            entity.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-            foreach (var attachment in delivery.Attachments)
+            if (entity.IsSubmitted)
             {
-                attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            }
-
-            if (delivery.IsSubmitted)
-            {
-                foreach (var item in delivery.Items)
+                foreach (var item in entity.Items)
                 {
                     for (var i = 0; i < item.Quantity; i++)
                     {
@@ -86,58 +91,33 @@ namespace SORANO.BLL.Services
                 }
             }
 
-            var saved = _unitOfWork.Get<Delivery>().Add(delivery);
+            var saved = UnitOfWork.Get<Delivery>().Add(entity);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
 
-            return saved;
+            return new SuccessResponse<int>(saved.ID);
         }
 
-        public async Task<Delivery> UpdateAsync(Delivery delivery, int userId)
+        public async Task<ServiceResponse<DeliveryDto>> UpdateAsync(DeliveryDto delivery, int userId)
         {
             if (delivery == null)
+                throw new ArgumentNullException(nameof(delivery));
+
+            var existentEntity = await UnitOfWork.Get<Delivery>().GetAsync(d => d.ID == delivery.ID);
+
+            if (existentEntity == null)
+                return new ServiceResponse<DeliveryDto>(ServiceResponseStatus.NotFound);
+
+            var entity = delivery.ToEntity();
+
+            existentEntity.UpdateFields(entity);
+            existentEntity.UpdateModifiedFields(userId);
+
+            UpdateDeliveryItems(entity, existentEntity, userId);
+
+            if (entity.IsSubmitted)
             {
-                throw new ArgumentNullException(nameof(delivery), Resource.DeliveryCannotBeNullException);
-            }
-
-            if (delivery.ID <= 0)
-            {
-                throw new ArgumentException(Resource.DeliveryInvalidIdentifierException, nameof(delivery.ID));
-            }
-
-            var user = await _unitOfWork.Get<User>().GetAsync(s => s.ID == userId);
-
-            if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
-            }
-
-            var existentDelivery = await _unitOfWork.Get<Delivery>().GetAsync(d => d.ID == delivery.ID);
-
-            if (existentDelivery == null)
-            {
-                throw new ObjectNotFoundException(Resource.DeliveryNotFoundException);
-            }
-
-            existentDelivery.BillNumber = delivery.BillNumber;
-            existentDelivery.DeliveryDate = delivery.DeliveryDate;
-            existentDelivery.LocationID = delivery.LocationID;
-            existentDelivery.DollarRate = delivery.DollarRate;
-            existentDelivery.EuroRate = delivery.EuroRate;
-            existentDelivery.IsSubmitted = delivery.IsSubmitted;
-            existentDelivery.PaymentDate = delivery.PaymentDate;
-            existentDelivery.SupplierID = delivery.SupplierID;
-            existentDelivery.TotalDiscount = delivery.TotalDiscount;
-            existentDelivery.TotalDiscountedPrice = delivery.TotalDiscountedPrice;
-            existentDelivery.TotalGrossPrice = delivery.TotalGrossPrice;
-
-            existentDelivery.UpdateModifiedFields(userId);
-
-            UpdateDeliveryItems(delivery, existentDelivery, userId);
-
-            if (delivery.IsSubmitted)
-            {
-                foreach (var item in delivery.Items)
+                foreach (var item in existentEntity.Items)
                 {
                     for (var i = 0; i < item.Quantity; i++)
                     {
@@ -159,74 +139,50 @@ namespace SORANO.BLL.Services
                 }
             }
 
-            UpdateAttachments(delivery, existentDelivery, userId);
+            UpdateAttachments(entity, existentEntity, userId);
+            UpdateRecommendations(entity, existentEntity, userId);
 
-            UpdateRecommendations(delivery, existentDelivery, userId);
+            var updated = UnitOfWork.Get<Delivery>().Update(existentEntity);
 
-            var updated = _unitOfWork.Get<Delivery>().Update(existentDelivery);
+            await UnitOfWork.SaveAsync();
 
-            await _unitOfWork.SaveAsync();
+            return new SuccessResponse<DeliveryDto>(updated.ToDto());
+        }               
 
-            return updated;
-        }
-
-        public async Task<IEnumerable<Delivery>> GetAllAsync(bool withDeleted)
+        public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
         {
-            var deliveries = await _unitOfWork.Get<Delivery>().GetAllAsync();
+            var existentDelivery = await UnitOfWork.Get<Delivery>().GetAsync(t => t.ID == id);
 
-            if (!withDeleted)
-            {
-                return deliveries.Where(d => !d.IsDeleted);
-            }
-
-            return deliveries;
-        }
-
-        public async Task<Delivery> GetIncludeAllAsync(int id)
-        {
-            var delivery = await _unitOfWork.Get<Delivery>().GetAsync(s => s.ID == id);
-
-            return delivery;
-        }
-
-        public async Task<int> GetUnsubmittedCountAsync()
-        {
-            var deliveries = await _unitOfWork.Get<Delivery>().FindByAsync(d => !d.IsSubmitted && !d.IsDeleted);
-
-            return deliveries.Count();
-        }
-
-        public async Task DeleteAsync(int id, int userId)
-        {
-            var existentDelivery = await _unitOfWork.Get<Delivery>().GetAsync(t => t.ID == id);
+            if (existentDelivery == null)
+                return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
 
             if (existentDelivery.IsSubmitted)
-            {
-                throw new Exception(Resource.DeliveryCannotBeDeletedException);
-            }
+                return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
             existentDelivery.UpdateDeletedFields(userId);
 
-            _unitOfWork.Get<Delivery>().Update(existentDelivery);
+            UnitOfWork.Get<Delivery>().Update(existentDelivery);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<int>(id);
         }
+
+        #endregion
 
         private void UpdateDeliveryItems(Delivery from, Delivery to, int userId)
         {
-            // Remove deleted items for existent entity
             to.Items
                 .Where(d => !from.Items.Select(x => x.ID).Contains(d.ID))
                 .ToList()
                 .ForEach(d =>
                 {
                     d.UpdateDeletedFields(userId);
-                    _unitOfWork.Get<DeliveryItem>().Delete(d);
+                    UnitOfWork.Get<DeliveryItem>().Update(d);
                 });
 
-            // Update existent items
             from.Items
-                .Where(d => to.Attachments.Select(x => x.ID).Contains(d.ID))
+                .Where(d => to.Items.Select(x => x.ID).Contains(d.ID))
                 .ToList()
                 .ForEach(d =>
                 {
@@ -242,24 +198,35 @@ namespace SORANO.BLL.Services
                     di.Quantity = d.Quantity;
                     di.UnitPrice = d.UnitPrice;
                     di.UpdateModifiedFields(userId);
+                    UpdateAttachments(d, di, userId);
+                    UpdateRecommendations(d, di, userId);
                 });
 
-            // Add newly created items to existent entity
             from.Items
-                .Where(d => !to.Attachments.Select(x => x.ID).Contains(d.ID))
+                .Where(d => !to.Items.Select(x => x.ID).Contains(d.ID))
                 .ToList()
                 .ForEach(d =>
                 {
+                    d.DeliveryID = to.ID;
                     d.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+                    d.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+                    d.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
                     to.Items.Add(d);
                 });
         }
 
-        public async Task<int> GetSubmittedCountAsync()
+        public async Task<ServiceResponse<int>> GetSubmittedCountAsync()
         {
-            var deliveries = await _unitOfWork.Get<Delivery>().FindByAsync(d => d.IsSubmitted && !d.IsDeleted);
+            var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(d => d.IsSubmitted && !d.IsDeleted);
 
-            return deliveries.Count();
+            return new SuccessResponse<int>(deliveries?.Count() ?? 0);
         }
+
+        public async Task<ServiceResponse<int>> GetUnsubmittedCountAsync()
+        {
+            var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(d => !d.IsSubmitted && !d.IsDeleted);
+
+            return new SuccessResponse<int>(deliveries?.Count() ?? 0);
+        }        
     }
 }

@@ -1,34 +1,40 @@
 ﻿using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
-using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using MimeTypes;
+using SORANO.BLL.Dtos;
+using SORANO.BLL.Services;
 using SORANO.WEB.Infrastructure;
-using SORANO.WEB.Models;
+using SORANO.WEB.Infrastructure.Filters;
+using SORANO.WEB.ViewModels.Attachment;
+using SORANO.WEB.ViewModels.Client;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    public class ClientController : EntityBaseController<ClientModel>
+    [CheckUser]
+    public class ClientController : EntityBaseController<ClientCreateUpdateViewModel>
     {
         private readonly IClientService _clientService;
+        private readonly IMapper _mapper;
 
         public ClientController(IClientService clientService, 
             IUserService userService,
             IHostingEnvironment environment,
             IAttachmentTypeService attachmentTypeService,
             IAttachmentService attachmentService,
-            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
+            IMemoryCache memoryCache, 
+            IMapper mapper) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
         {
             _clientService = clientService;
+            _mapper = mapper;
         }
 
         #region GET Actions
@@ -36,15 +42,28 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            bool showDeleted = Session.GetBool("ShowDeletedClients");
+            return await TryGetActionResultAsync(async () =>
+            {
+                var showDeleted = Session.GetBool("ShowDeletedClients");
 
-            var clients = await _clientService.GetAllAsync(showDeleted);
+                var clientsResult = await _clientService.GetAllAsync(showDeleted);
 
-            ViewBag.ShowDeleted = showDeleted;
+                if (clientsResult.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось получить список клиентов.";
+                    return RedirectToAction("Index", "Home");
+                }
 
-            await ClearAttachments();
+                ViewBag.ShowDeleted = showDeleted;
 
-            return View(clients.Select(s => s.ToModel()).ToList());
+                await ClearAttachments();
+
+                return View(_mapper.Map<IEnumerable<ClientIndexViewModel>>(clientsResult.Result));
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Home");
+            });
         }
 
         [HttpGet]
@@ -58,66 +77,90 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            ClientModel model;
+            return await TryGetActionResultAsync(async () =>
+            {
+                ClientCreateUpdateViewModel model;
 
-            if (TryGetCached(out ClientModel cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
-            {
-                model = cachedModel;
-                await CopyMainPicture(model);
-            }
-            else
-            {
-                model = new ClientModel
+                if (TryGetCached(out var cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
                 {
-                    MainPicture = new AttachmentModel()
-                };
-            }
+                    model = cachedModel;
+                    await CopyMainPicture(model);
+                }
+                else
+                {
+                    model = new ClientCreateUpdateViewModel
+                    {
+                        MainPicture = new MainPictureViewModel()
+                    };
+                }
 
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
-
-            return View(model);
-        }
+                return View(model);
+            }, OnFault);            
+        }       
 
         [HttpGet]
         public async Task<IActionResult> Update(int id)
-        {            
-            ClientModel model;
-
-            if (TryGetCached(out ClientModel cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedModel.ID == id)
-            {
-                model = cachedModel;
-                await CopyMainPicture(model);
-            }
-            else
-            {
-                var client = await _clientService.GetAsync(id);
-
-                model = client.ToModel();
-            }
-
-
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
-
-            ViewData["IsEdit"] = true;
-
-            return View("Create", model);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Delete(int id)
         {
-            var client = await _clientService.GetAsync(id);
+            return await TryGetActionResultAsync(async () =>
+            {
+                ClientCreateUpdateViewModel model;
 
-            return View(client.ToModel());
+                if (TryGetCached(out var cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedModel.ID == id)
+                {
+                    model = cachedModel;
+                    await CopyMainPicture(model);
+                }
+                else
+                {
+                    var client = await _clientService.GetAsync(id);
+
+                    if (client.Status != ServiceResponseStatus.Success)
+                    {
+                        TempData["Error"] = "Не удалось найти указанного клиента.";
+                        return RedirectToAction("Index");
+                    }
+
+                    model = _mapper.Map<ClientCreateUpdateViewModel>(client.Result);
+                    model.IsUpdate = true;
+                }
+
+                return View("Create", model);
+            }, OnFault);           
         }
 
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var client = await _clientService.GetIncludeAllAsync(id);
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _clientService.GetAsync(id);
 
-            return View(client.ToModel());
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанного клиента.";
+                    return RedirectToAction("Index");
+                }
+
+                return View(_mapper.Map<ClientDetailsViewModel>(result.Result));
+            }, OnFault);            
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _clientService.GetAsync(id);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанного клиента.";
+                    return RedirectToAction("Index");
+                }
+
+                return View(_mapper.Map<ClientDeleteViewModel>(result.Result));
+            }, OnFault);
+        }       
 
         #endregion
 
@@ -125,110 +168,95 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ClientModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        [LoadAttachments]
+        [ValidateModel]
+        public async Task<IActionResult> Create(ClientCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            var attachmentTypes = new List<SelectListItem>();
-
-            // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
-                attachmentTypes = await GetAttachmentTypes();
-                ViewBag.AttachmentTypes = attachmentTypes;
+                var client = _mapper.Map<ClientDto>(model);
 
-                await LoadMainPicture(model, mainPictureFile);
-                await LoadAttachments(model, attachments);
+                var result = await _clientService.CreateAsync(client, UserId);
 
-                // Check the model
-                if (!ModelState.IsValid)
+                if (result.Status != ServiceResponseStatus.Success)
                 {
-                    return View(model);
+                    TempData["Error"] = "Не удалось создать клиента.";
+                    return RedirectToAction("Index");
                 }
 
-                var client = model.ToEntity();
-
-                // Get current user
-                var currentUser = await GetCurrentUser();
-
-                client = await _clientService.CreateAsync(client, currentUser.ID);
-
-                // If succeeded
-                if (client != null)
-                {
-                    return RedirectToAction("Index", "Client");
-                }
-
-                // If failed
-                ModelState.AddModelError("", "Не удалось создать нового клиента.");
-                return View(model);
-            }, ex =>
-            {
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ModelState.AddModelError("", ex);
-                return View(model);
-            });
+                TempData["Success"] = $"Клиент \"{model.Name}\" был успешно создан.";
+                return RedirectToAction("Index");
+            }, OnFault);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(ClientModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        [LoadAttachments]
+        [ValidateModel]
+        public async Task<IActionResult> Update(ClientCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            var attachmentTypes = new List<SelectListItem>();
-
-            // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
-                attachmentTypes = await GetAttachmentTypes();
-                ViewBag.AttachmentTypes = attachmentTypes;
+                var client = _mapper.Map<ClientDto>(model);
 
-                await LoadMainPicture(model, mainPictureFile);
-                await LoadAttachments(model, attachments);
+                var result = await _clientService.UpdateAsync(client, UserId);
 
-                // Check the model
-                if (!ModelState.IsValid)
+                if (result.Status != ServiceResponseStatus.Success)
                 {
-                    ViewData["IsEdit"] = true;
-                    return View("Create", model);
+                    TempData["Error"] = "Не удалось обновить клиента.";
+                    return RedirectToAction("Index");
                 }
 
-                var client = model.ToEntity();
-
-                // Get current user
-                var currentUser = await GetCurrentUser();
-
-                client = await _clientService.UpdateAsync(client, currentUser.ID);
-
-                // If succeeded
-                if (client != null)
-                {
-                    return RedirectToAction("Index", "Client");
-                }
-
-                // If failed
-                ModelState.AddModelError("", "Не удалось обновить клиента.");
-                ViewData["IsEdit"] = true;
-                return View("Create", model);
-            }, ex =>
-            {
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ModelState.AddModelError("", ex);
-                ViewData["IsEdit"] = true;
-                return View("Create", model);
-            });
+                TempData["Success"] = $"Клиент \"{model.Name}\" был успешно обновлён.";
+                return RedirectToAction("Index");
+            }, OnFault);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(ClientModel model)
+        public async Task<IActionResult> Delete(ClientDeleteViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var currentUser = await GetCurrentUser();
+                var result = await _clientService.DeleteAsync(model.ID, UserId);
 
-                await _clientService.DeleteAsync(model.ID, currentUser.ID);
+                if (result.Status == ServiceResponseStatus.Success)
+                {
+                    TempData["Success"] = $"Клиент \"{model.Name}\" был успешно помечен как удалённый.";
+                }
+                else
+                {
+                    TempData["Error"] = "Не удалось удалить клиента.";
+                }
 
-                return RedirectToAction("Index", "Client");
-            }, ex => RedirectToAction("Index", "Client"));
+                return RedirectToAction("Index");
+            }, OnFault);
         }
 
         #endregion
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<JsonResult> GetClients(string term)
+        {
+            var locations = await _clientService.GetAllAsync(false, term);
+
+            return Json(new
+            {
+                results = locations.Result?
+                    .Select(t => new
+                    {
+                        id = t.ID,
+                        text = t.Name,
+                        desc = t.Description ?? string.Empty
+                    })
+                    .OrderBy(t => t.text)
+            });
+        }
+
+        private IActionResult OnFault(string ex)
+        {
+            TempData["Error"] = ex;
+            return RedirectToAction("Index");
+        }
     }
 }

@@ -1,17 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.Infrastructure.Annotations;
-using SORANO.CORE.StockEntities;
+﻿using SORANO.CORE.StockEntities;
 
 namespace SORANO.DAL.Context.Configurations
 {
-    /// <summary>
-    /// Article configuration
-    /// </summary>
     internal class ArticleConfiguration : StockEntityConfiguration<Article>
     {
-        /// <summary>
-        /// Article configuration
-        /// </summary>
         public ArticleConfiguration()
         {
             HasMany(a => a.DeliveryItems)

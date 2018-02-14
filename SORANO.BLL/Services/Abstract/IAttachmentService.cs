@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SORANO.CORE.StockEntities;
+using SORANO.BLL.Dtos;
 
 namespace SORANO.BLL.Services.Abstract
 {
     public interface IAttachmentService
     {
-        Task<IEnumerable<string>> GetAllForAsync(string type);
+        Task<ServiceResponse<IEnumerable<string>>> GetAllForAsync(string type);
 
-        Task<IEnumerable<Attachment>> GetPicturesExceptAsync(int currentMainPictureId);
+        Task<ServiceResponse<IEnumerable<AttachmentDto>>> GetPicturesExceptAsync(int currentMainPictureId);
 
-        Task<bool> HasMainPictureAsync(int id, int mainPictureId);
+        Task<ServiceResponse<bool>> HasMainPictureAsync(int id, int mainPictureId);
     }
 }

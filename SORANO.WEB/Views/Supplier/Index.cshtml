@@ -1,4 +1,4 @@
-﻿@model IList<SupplierModel>
+﻿@model IEnumerable<SupplierIndexViewModel>
 
 @{
     ViewBag.Title = "SORANO - Поставщики";
@@ -24,7 +24,7 @@
         <div class="panel panel-primary">
             <div class="panel-heading">
                 Таблица поставщиков
-                <span class="badge" style="margin-left: 5px;">@Model.Count</span>
+                <span class="badge" style="margin-left: 5px;">@Model.Count()</span>
                 <a class="btn btn-default btn-xs pull-right"
                    asp-controller="Supplier"
                    asp-action="Create"
@@ -47,26 +47,26 @@
                 <div class="clearfix"></div>
             </div>
             <div class="panel-body">
-                <table id="suppliers-datatable" class="table table-striped table-bordered table-hover table-responsive">
+                <table id="suppliers-datatable" class="table table-striped table-hover">
                     <thead>
                         <tr role="row" class="search-row">
-                            <th style="width: 5%" rowspan="1" colspan="1"></th>
-                            <th style="width: 30%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Название" /></th>
-                            <th style="width: 53%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Описание" /></th>
-                            <th style="width: 12%" rowspan="1" colspan="1"></th>
+                            <th><input type="text" class="form-control input-sm" placeholder="Изменён" /></th>
+                            <th><input type="text" class="form-control input-sm" placeholder="Название" /></th>
+                            <th><input type="text" class="form-control input-sm" placeholder="Описание" /></th>
+                            <th></th>
                         </tr>
                         <tr role="row">
-                            <th style="width: 5%">ID</th>
-                            <th style="width: 30%"><i class="fa fa-fw fa-truck" aria-hidden="true"></i>&nbsp;Название</th>
-                            <th style="width: 53%"><i class="fa fa-fw fa-align-justify" aria-hidden="true"></i>&nbsp;Описание</th>
-                            <th style="width: 12%">Действия</th>
+                            <th><i class="fa fa-fw fa-calendar"></i>Изменён</th>
+                            <th><i class="fa fa-fw fa-truck"></i>Название</th>
+                            <th><i class="fa fa-fw fa-align-justify"></i>Описание</th>
+                            <th>Действия</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var supplier in Model)
                         {
                             <tr class="@(supplier.IsDeleted ? "danger" : "")">
-                                <td>@supplier.ID</td>
+                                <td>@supplier.Modified</td>
                                 <td>
                                     <a asp-controller="Supplier"
                                        asp-action="Details"

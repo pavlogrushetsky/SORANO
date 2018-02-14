@@ -1,17 +1,26 @@
-﻿using SORANO.BLL.Helpers;
-using SORANO.CORE.StockEntities;
+﻿using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 using System.Linq;
+using SORANO.BLL.Extensions;
+using SORANO.CORE.AccountEntities;
+using System.Threading.Tasks;
 
 namespace SORANO.BLL.Services
 {
     public abstract class BaseService
     {
-        protected readonly IUnitOfWork _unitOfWork;
+        protected readonly IUnitOfWork UnitOfWork;
 
         protected BaseService(IUnitOfWork unitOfWork)
         {
-            _unitOfWork = unitOfWork;
+            UnitOfWork = unitOfWork;
+        }
+
+        protected async Task<bool> IsAccessDenied(int userId)
+        {
+            var user = await UnitOfWork.Get<User>().GetAsync(u => u.ID == userId);
+
+            return user == null || user.IsBlocked;
         }
 
         protected void UpdateRecommendations(StockEntity from, StockEntity to, int userId)
@@ -23,7 +32,7 @@ namespace SORANO.BLL.Services
                 .ForEach(r =>
                 {
                     r.UpdateDeletedFields(userId);
-                    _unitOfWork.Get<Recommendation>().Update(r);
+                    UnitOfWork.Get<Recommendation>().Update(r);
                 });
 
             // Update existent recommendations
@@ -63,7 +72,7 @@ namespace SORANO.BLL.Services
                 .ForEach(a =>
                 {
                     a.ParentEntities.Remove(to);
-                    _unitOfWork.Get<Attachment>().Delete(a);
+                    UnitOfWork.Get<Attachment>().Delete(a);
                 });
 
             // Update existent attachments

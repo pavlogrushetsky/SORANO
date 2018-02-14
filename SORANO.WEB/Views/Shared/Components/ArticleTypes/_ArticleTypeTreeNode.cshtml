@@ -1,0 +1,89 @@
+﻿@model ArticleTypeIndexViewModel
+
+<li id="@Model.ID" class="@(Model.IsDeleted ? "deleted" : "")">
+    <table>
+        <tr>
+            <td rowspan="2"><i class="fa fa-fw fa-tag"></i></td>
+            <td>
+                <a class="toggle-article-type-info"
+                   href="javascript:void(0);">
+                    @Model.Name
+                </a>               
+            </td>
+        </tr>
+        <tr class="article-type-description">
+            <td>@Model.Description</td>
+        </tr>
+        <tr>            
+            <td></td>
+            <td>
+                <div class="article-type-info" id="article-type-info-@(Model.ID)">
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div style="float:left;">
+                                @if (Model.HasMainPicture)
+                                {
+                                    <img src="@Url.Content(Model.MainPicturePath)" />
+                                }
+                            </div>
+                            <div style="float:left;">
+                                
+                            </div>
+                        </div>
+                        <div class="row">
+                            <a class="btn btn-sm btn-default"
+                               asp-controller="ArticleType"
+                               asp-action="Details"
+                               asp-route-id="@Model.ID"
+                               data-toggle="tooltip"
+                               data-placement="bottom"
+                               data-original-title="Просмотреть информацию о типе артикулов"
+                               title="">
+                                <i class="fa fa-fw fa-info-circle"></i>
+                            </a>
+                            @if (!Model.IsDeleted)
+                            {
+                                <a class="btn btn-sm btn-default"
+                                   asp-controller="ArticleType"
+                                   asp-action="Update"
+                                   asp-route-id="@Model.ID"
+                                   data-toggle="tooltip"
+                                   data-placement="bottom"
+                                   data-original-title="Редактировать тип артикулов"
+                                   title="">
+                                    <i class="fa fa-fw fa-pencil-square"></i>
+                                </a>
+                            }
+                            @if (Model.CanBeDeleted)
+                            {
+                                <a class="btn btn-sm btn-danger"
+                                   asp-controller="ArticleType"
+                                   asp-action="Delete"
+                                   asp-route-id="@Model.ID"
+                                   data-toggle="tooltip"
+                                   data-placement="bottom"
+                                   data-original-title="Удалить тип артикулов"
+                                   title="">
+                                    <i class="fa fa-fw fa-trash"></i>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>               
+            </td>
+        </tr>
+    </table>
+    @if (Model.HasChildTypes || Model.HasArticles)
+    {
+        <ul>
+            @foreach (var child in Model.ChildTypes)
+            {
+                @Html.Partial("Components/ArticleTypes/_ArticleTypeTreeNode", child)
+            }  
+            @foreach (var article in Model.Articles)
+            {
+                @Html.Partial("Components/ArticleTypes/_ArticleTreeNode", article)
+            }           
+        </ul>
+    }  
+</li>

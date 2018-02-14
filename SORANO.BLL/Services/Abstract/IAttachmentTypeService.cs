@@ -1,23 +1,13 @@
-﻿using SORANO.CORE.StockEntities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using SORANO.BLL.Dtos;
 
 namespace SORANO.BLL.Services.Abstract
 {
-    public interface IAttachmentTypeService
+    public interface IAttachmentTypeService : IBaseService<AttachmentTypeDto>
     {
-        Task<IEnumerable<AttachmentType>> GetAllAsync();
+        Task<ServiceResponse<int>> GetMainPictureTypeIdAsync(int userId);
 
-        Task<int> GetMainPictureTypeIDAsync();
-
-        Task<AttachmentType> GetAsync(int id);
-
-        Task<AttachmentType> CreateAsync(AttachmentType attachmentType, int userId);
-
-        Task<AttachmentType> UpdateAsync(AttachmentType attachmentType, int userId);
-
-        Task DeleteAsync(int id, int userId);
-
-        Task<bool> Exists(string name, int attachmentTypeId = 0);
+        Task<ServiceResponse<IEnumerable<AttachmentTypeDto>>> GetAllAsync(string searchTerm);       
     }
 }

@@ -1,45 +1,36 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using SORANO.BLL.Dtos;
 using SORANO.BLL.Services.Abstract;
-using SORANO.WEB.Models;
+using SORANO.WEB.ViewModels.Account;
 
 namespace SORANO.WEB.Components
 {
-    /// <summary>
-    /// View component for rendering login view
-    /// </summary>
     public class AccountViewComponent : ViewComponent
     {
         private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-        /// <summary>
-        /// /// <summary>
-        /// View component for rendering Login view
-        /// </summary>
-        /// </summary>
-        /// <param name="userService">User service</param>
-        public AccountViewComponent(IUserService userService)
+        public AccountViewComponent(IUserService userService, IMapper mapper)
         {
             _userService = userService;
+            _mapper = mapper;
         }
 
-        /// <summary>
-        /// Invoke component asynchronously
-        /// </summary>
-        /// <returns>Component's default view</returns>
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var login = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
 
-            var user = await _userService.GetAsync(login);
+            var location = HttpContext.User.FindFirst("LocationName")?.Value;
 
-            return View(new AccountModel
-            {
-                ID = user.ID,
-                Description = user.Description,
-                Login = user.Login
-            });
+            var userResult = await _userService.GetAsync(login);
+
+            var model = _mapper.Map<UserDto, AccountViewModel>(userResult.Result);
+            model.LocationName = location;
+
+            return View(model);
         }
     }
 }

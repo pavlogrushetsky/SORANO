@@ -2,14 +2,8 @@
 
 namespace SORANO.DAL.Context.Configurations
 {
-    /// <summary>
-    /// Client configuration
-    /// </summary>
     internal class ClientConfiguration : StockEntityConfiguration<Client>
     {
-        /// <summary>
-        /// Client configuration
-        /// </summary>
         public ClientConfiguration()
         {
             Property(c => c.Name)
@@ -28,7 +22,7 @@ namespace SORANO.DAL.Context.Configurations
                 .IsOptional()
                 .HasMaxLength(1000);
 
-            HasMany(c => c.Goods)
+            HasMany(c => c.Sales)
                 .WithOptional(g => g.Client)
                 .HasForeignKey(g => g.ClientID);
 

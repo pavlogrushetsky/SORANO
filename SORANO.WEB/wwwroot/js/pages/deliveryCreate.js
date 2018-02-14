@@ -1,29 +1,33 @@
 ﻿$(document).ready(function () {
     $.fn.select2.defaults.set('theme', 'bootstrap');
-    $('.select-article').select2({
-        "language": {
-            "noResults": function() {
-                return "Артикулы не найдены";
-            }
-        }
-    });
-    $('.select-supplier').select2({
-        "language": {
-            "noResults": function () {
-                return "Поставщики не найдены";
-            }
-        }
-    });
-    $('.select-location').select2({
-        "language": {
-            "noResults": function () {
-                return "Места не найдены";
-            }
-        }
+    initAttachmentTypeSelect();
+
+    initGenericSelect({
+        selectElementClass: '.select-location',
+        valueElementId: '#LocationID',
+        displayElementId: '#LocationName',
+        noResultsText: 'Места не найдены',
+        searchingText: 'Поиск мест...',
+        errorLoadingText: 'Невозможно загрузить результаты поиска',
+        placeholderText: 'Место поставки',
+        url: '/Location/GetLocations'
     });
 
+    initGenericSelect({
+        selectElementClass: '.select-supplier',
+        valueElementId: '#SupplierID',
+        displayElementId: '#SupplierName',
+        noResultsText: 'Поставщики не найдены',
+        searchingText: 'Поиск поставщиков...',
+        errorLoadingText: 'Невозможно загрузить результаты поиска',
+        placeholderText: 'Поставщик',
+        url: '/Supplier/GetSuppliers'
+    });
+
+    initDeliveryItemsDataTable();
+
     $('.submit-delivery').on('click', function () {
-        $('#Status').val(true);
+        $('#IsSubmitted').val(true);
     });
 
     $('#pick-delivery-date').datetimepicker({
@@ -86,85 +90,22 @@
             $('#DollarRate').val('');
             $('#EuroRate').val('');
             $('#DollarRate').prop('readonly', true);
-            $('#EuroRate').prop('readonly', true);            
+            $('#EuroRate').prop('readonly', true);    
+            $('#SelectedCurrency').val('₴');
         } else if (value === '1') {
             $('#DollarRate').prop('readonly', false);
             $('#DollarRate').val('0.00');
             $('#EuroRate').val('');
             $('#EuroRate').prop('readonly', true);
+            $('#SelectedCurrency').val('$');
         } else if (value === '2') {
             $('#EuroRate').prop('readonly', false);
             $('#EuroRate').val('0.00');
             $('#DollarRate').val('');
             $('#DollarRate').prop('readonly', true);
-        }
-        $('#SelectedCurrency').val(value);
+            $('#SelectedCurrency').val('€');
+        }        
     });
-
-    $('.delivery_item_quantity').bind('keyup mouseup',
-        function() {
-            var id = $(this).attr('id');
-            var quantity = $(this).val();
-            if (isNumeric(quantity)) {
-                var matches = id.match(/\d+$/);
-                if (matches) {
-                    var number = matches[0];
-                    var unitPrice = $('#delivery_item_unitprice_' + number).val();
-                    var discount = $('#delivery_item_discount_' + number).val();
-                    if (isNumeric(unitPrice) && isNumeric(discount)) {
-                        var grossPrice = quantity * unitPrice;
-                        var discountPrice = grossPrice - discount;
-                        $('#DeliveryItems_' + number + '__GrossPrice').val(formatDecimal(grossPrice));
-                        $('#DeliveryItems_' + number + '__DiscountPrice').val(formatDecimal(discountPrice));
-                        updateTotalGrossPrice();
-                        updateTotalDiscountPrice();
-                    }
-                }
-            }            
-        });
-
-    $('.delivery_item_unitprice').bind('keyup mouseup',
-        function () {
-            var id = $(this).attr('id');
-            var unitPrice = $(this).val();
-            if (isNumeric(unitPrice)) {
-                var matches = id.match(/\d+$/);
-                if (matches) {
-                    var number = matches[0];
-                    var quantity = $('#delivery_item_quantity_' + number).val();
-                    var discount = $('#delivery_item_discount_' + number).val();
-                    if (isNumeric(quantity) && isNumeric(discount)) {
-                        var grossPrice = quantity * unitPrice;
-                        var discountPrice = grossPrice - discount;
-                        $('#DeliveryItems_' + number + '__GrossPrice').val(formatDecimal(grossPrice));
-                        $('#DeliveryItems_' + number + '__DiscountPrice').val(formatDecimal(discountPrice));
-                        updateTotalGrossPrice();
-                        updateTotalDiscountPrice();
-                    }
-                }
-            }
-        });
-
-    $('.delivery_item_discount').bind('keyup mouseup',
-        function () {
-            var id = $(this).attr('id');
-            var discount = $(this).val();
-            if (isNumeric(discount)) {
-                var matches = id.match(/\d+$/);
-                if (matches) {
-                    var number = matches[0];
-                    var quantity = $('#delivery_item_quantity_' + number).val();
-                    var unitPrice = $('#delivery_item_unitprice_' + number).val();
-                    if (isNumeric(quantity) && isNumeric(unitPrice)) {
-                        var grossPrice = quantity * unitPrice;
-                        var discountPrice = grossPrice - discount;
-                        $('#DeliveryItems_' + number + '__DiscountPrice').val(formatDecimal(discountPrice));
-                        updateTotalDiscount();
-                        updateTotalDiscountPrice();
-                    }
-                }
-            }
-        });
 
     updateCurrencyRates();
 
@@ -173,9 +114,42 @@
     updateTotalDiscountPrice();
 });
 
+function initDeliveryItemsDataTable() {
+    var table = $("#delivery-items-datatable").DataTable({
+        responsive: true,
+        "autoWidth": false,
+        "scrollX": false,
+        "columnDefs": [
+            { "orderable": false, "targets": 7 }
+        ],
+        "order": [[0, "asc"]],
+        "pagingType": "numbers",
+        "language": {
+            "lengthMenu": "Отобразить _MENU_ позиций на странице",
+            "zeroRecords": "Позиции отсутствуют",
+            "info": "Отображение страницы _PAGE_ из _PAGES_",
+            "infoEmpty": "Записи отсутствуют",
+            "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+            "search": "Поиск"
+        },
+        "drawCallback": function () {
+            $('.pagination').addClass('pagination-sm');
+        }
+    });
+
+    table.columns().eq(0).each(function (colIdx) {
+        $('input', $('#delivery-items-datatable th')[colIdx]).on('keyup change', function () {
+            table
+                .column(colIdx)
+                .search(this.value)
+                .draw();
+        });
+    });
+}
+
 function updateCurrencyRates() {
     var value = $('#SelectedCurrency').val();
-    if (value === '0') {
+    if (value === '₴') {
         $('#DollarRate').val('');
         $('#EuroRate').val('');
         $('#DollarRate').prop('readonly', true);
@@ -183,14 +157,14 @@ function updateCurrencyRates() {
         $('#select_currency_uah').prop('checked', true);
         $('#select_currency_usd').prop('checked', false);
         $('#select_currency_eur').prop('checked', false);
-    } else if (value === '1') {
+    } else if (value === '$') {
         $('#DollarRate').prop('readonly', false);
         $('#EuroRate').val('');
         $('#EuroRate').prop('readonly', true);
         $('#select_currency_uah').prop('checked', false);
         $('#select_currency_usd').prop('checked', true);
         $('#select_currency_eur').prop('checked', false);
-    } else if (value === '2') {
+    } else if (value === '€') {
         $('#EuroRate').prop('readonly', false);
         $('#DollarRate').val('');
         $('#DollarRate').prop('readonly', true);
@@ -202,7 +176,7 @@ function updateCurrencyRates() {
 
 function updateTotalGrossPrice() {
     var totalGrossPrice = 0;
-    $('.delivery_item_grossprice').each(function() {
+    $('.delivery-item-grossprice').each(function() {
         var value = $(this).val();
         if (isNumeric(value)) {
             totalGrossPrice += parseFloat(value);
@@ -214,7 +188,7 @@ function updateTotalGrossPrice() {
 
 function updateTotalDiscount() {
     var totalDiscount = 0;
-    $('.delivery_item_discount').each(function() {
+    $('.delivery-item-discount').each(function() {
         var value = $(this).val();
         if (isNumeric(value)) {
             totalDiscount += parseFloat(value);
@@ -226,16 +200,12 @@ function updateTotalDiscount() {
 
 function updateTotalDiscountPrice() {
     var totalDiscountPrice = 0;
-    $('.delivery_item_discountprice').each(function () {
+    $('.delivery-item-discountprice').each(function () {
         var value = $(this).val();
         if (isNumeric(value)) {
             totalDiscountPrice += parseFloat(value);
         }
     });
-    $('#TotalDiscountPrice').val(formatDecimal(totalDiscountPrice));
+    $('#TotalDiscountedPrice').val(formatDecimal(totalDiscountPrice));
     $('#delivery_totaldiscountprice').text(formatDecimal(totalDiscountPrice));
-}
-
-function getMimeType(num) {
-    getMimeType(num, "Delivery/GetMimeType?id=");
 }

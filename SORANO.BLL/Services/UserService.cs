@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SORANO.BLL.Dtos;
+using SORANO.BLL.Extensions;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.AccountEntities;
 using SORANO.BLL.Helpers;
-using SORANO.BLL.Properties;
 using SORANO.DAL.Repositories;
 using SORANO.CORE.StockEntities;
 
@@ -20,45 +21,63 @@ namespace SORANO.BLL.Services
             _unitOfWork = unitOfWork;
         }        
 
-        /// <summary>
-        /// Get all users including all related data
-        /// </summary>
-        /// <returns>List of users with all related data</returns>
-        public async Task<List<User>> GetAllIncludeAllAsync()
+        public async Task<ServiceResponse<IEnumerable<UserDto>>> GetAllAsync()
         {
             var users = await _unitOfWork.Get<User>().GetAllAsync();
 
-            return users.ToList();       
+            return new SuccessResponse<IEnumerable<UserDto>>(users.Select(u => u.ToDto()));       
         }
 
-        public async Task<User> CreateAsync(User user)
+        public async Task<ServiceResponse<UserDto>> CreateAsync(UserDto user)
         {
-            if (user.ID != 0)
-            {
-                throw new ArgumentException(Resource.UserInvalidIdentifierException);
-            }
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
 
-            user.Password = CryptoHelper.Hash(user.Password);
+            var usersWithSameLogin = await _unitOfWork.Get<User>()
+                .FindByAsync(u => u.Login.Equals(user.Login) && u.ID != user.ID);
+
+            if (usersWithSameLogin.Any())
+                return new ServiceResponse<UserDto>(ServiceResponseStatus.AlreadyExists);
+
+            var entity = user.ToEntity();
+            entity.Password = CryptoHelper.Hash(user.Password);
 
             var roles = await _unitOfWork.Get<Role>().GetAllAsync();
-
             var rolesToAttach = roles.Where(r => user.Roles.Select(x => x.ID).Contains(r.ID));
 
-            user.Roles = rolesToAttach.ToList();
+            entity.Roles = rolesToAttach.ToList();
 
-            var added = _unitOfWork.Get<User>().Add(user);
+            var locations = await _unitOfWork.Get<Location>().GetAllAsync();
+            var locationsToAttach = locations.Where(l => user.Locations.Select(x => x.ID).Contains(l.ID));
+
+            entity.Locations = locationsToAttach.ToList();
+
+            _unitOfWork.Get<User>().Add(entity);
 
             await _unitOfWork.SaveAsync();
 
-            return added;          
+            return new SuccessResponse<UserDto>();          
         }
 
-        public async Task<User> UpdateAsync(User user)
+        public async Task<ServiceResponse<UserDto>> UpdateAsync(UserDto user)
         {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
             var existentUser = await _unitOfWork.Get<User>().GetAsync(user.ID);
+
+            if (existentUser == null)
+                return new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound);
+
+            var usersWithSameLogin = await _unitOfWork.Get<User>()
+                .FindByAsync(u => u.Login.Equals(user.Login) && u.ID != user.ID);
+
+            if (usersWithSameLogin.Any())
+                return new ServiceResponse<UserDto>(ServiceResponseStatus.AlreadyExists);
 
             existentUser.Login = user.Login;
             existentUser.Description = user.Description;
+            existentUser.IsBlocked = user.IsBlocked;
 
             if (!string.IsNullOrEmpty(user.Password))
             {
@@ -67,7 +86,6 @@ namespace SORANO.BLL.Services
 
             var roles = await _unitOfWork.Get<Role>().GetAllAsync();
 
-            // Add new roles
             user.Roles.ToList().ForEach(r =>
             {
                 if (!existentUser.Roles.Select(er => er.ID).Contains(r.ID))
@@ -76,7 +94,6 @@ namespace SORANO.BLL.Services
                 }
             });
 
-            // Remove deleted roles
             existentUser.Roles.ToList().ForEach(er =>
             {
                 if (!user.Roles.Select(r => r.ID).Contains(er.ID))
@@ -85,52 +102,114 @@ namespace SORANO.BLL.Services
                 }
             });
 
-            var updated = _unitOfWork.Get<User>().Update(existentUser);
+            var locations = await _unitOfWork.Get<Location>().GetAllAsync();
+
+            user.Locations.ToList().ForEach(l =>
+            {
+                if (!existentUser.Locations.Select(er => er.ID).Contains(l.ID))
+                {
+                    existentUser.Locations.Add(locations.Single(x => x.ID == l.ID));
+                }
+            });
+
+            existentUser.Locations.ToList().ForEach(er =>
+            {
+                if (!user.Locations.Select(r => r.ID).Contains(er.ID))
+                {
+                    existentUser.Locations.Remove(er);
+                }
+            });
+
+            _unitOfWork.Get<User>().Update(existentUser);
 
             await _unitOfWork.SaveAsync();
 
-            return updated;
+            return new SuccessResponse<UserDto>();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<ServiceResponse<bool>> DeleteAsync(int id)
         {
             var existentUser = await _unitOfWork.Get<User>().GetAsync(u => u.ID == id);
 
             _unitOfWork.Get<User>().Delete(existentUser);
 
-            await _unitOfWork.SaveAsync();           
+            await _unitOfWork.SaveAsync(); 
+            
+            return new SuccessResponse<bool>(true);
         }
 
-        public async Task<User> GetAsync(string login)
+        public async Task<ServiceResponse<UserDto>> GetAsync(string login, int? locationId)
         {
-            return await _unitOfWork.Get<User>().GetAsync(u => u.Login.Equals(login));           
+            var user = await _unitOfWork.Get<User>().GetAsync(u => u.Login.Equals(login));
+
+            if (user == null)
+                return new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound);
+
+            if (!user.Locations.Any())
+                return new SuccessResponse<UserDto>(user.ToDto());
+
+            if (!locationId.HasValue || !user.Locations.Select(l => l.ID).Contains(locationId.Value))
+                return new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound);
+
+            return new SuccessResponse<UserDto>(user.ToDto());
         }
 
-        public async Task<User> GetIncludeAllAsync(int id)
+        public async Task<ServiceResponse<UserDto>> GetAsync(string login)
+        {
+            var user = await _unitOfWork.Get<User>().GetAsync(u => u.Login.Equals(login));
+            return user == null
+                ? new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound)
+                : new SuccessResponse<UserDto>(user.ToDto());
+        }
+
+        public async Task<ServiceResponse<UserDto>> GetAsync(int id)
         {
             var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == id);
 
-            user.SoldGoods.ToList().ForEach(g =>
-            {
-                g.DeliveryItem = _unitOfWork.Get<DeliveryItem>().Get(d => d.ID == g.DeliveryItemID);
-            });
+            //user.Sales.SelectMany(s => s.Items.SelectMany(si => si.Goods)).ToList().ForEach(s =>
+            //{
+            //    s.Goods = _unitOfWork.Get<Goods>().Get(g => g.ID == s.GoodsID);
+            //});
 
-            return user;           
+            return new SuccessResponse<UserDto>(user.ToDto());           
         }
 
-        public async Task<User> GetAsync(int id)
-        {
-            return await _unitOfWork.Get<User>().GetAsync(u => u.ID == id);         
-        }
-
-        public async Task<User> GetAsync(string login, string password)
+        public async Task<ServiceResponse<UserDto>> GetAsync(string login, string password, int? locationId)
         {
             var hash = CryptoHelper.Hash(password);
 
-            return await _unitOfWork.Get<User>().GetAsync(u => !u.IsBlocked && u.Login.Equals(login) && u.Password.Equals(hash));          
+            var user = await _unitOfWork.Get<User>()
+                .GetAsync(u => !u.IsBlocked 
+                    && u.Login.Equals(login) 
+                    && u.Password.Equals(hash));
+
+            if (user == null)
+                return new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound);
+
+            if (!user.Locations.Any())
+                return new SuccessResponse<UserDto>(user.ToDto());
+            
+            if (!locationId.HasValue || !user.Locations.Select(l => l.ID).Contains(locationId.Value))
+                return new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound);
+
+            return new SuccessResponse<UserDto>(user.ToDto());
         }
 
-        public async Task ChangePasswordAsync(string login, string newPassword)
+        public async Task<ServiceResponse<UserDto>> GetAsync(string login, string password)
+        {
+            var hash = CryptoHelper.Hash(password);
+
+            var user = await _unitOfWork.Get<User>()
+                .GetAsync(u => !u.IsBlocked
+                               && u.Login.Equals(login)
+                               && u.Password.Equals(hash));
+
+            return user == null
+                ? new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound)
+                : new SuccessResponse<UserDto>(user.ToDto());
+        }
+
+        public async Task<ServiceResponse<bool>> ChangePasswordAsync(string login, string newPassword)
         {
             var user = await _unitOfWork.Get<User>().GetAsync(u => u.Login.Equals(login));
 
@@ -138,19 +217,28 @@ namespace SORANO.BLL.Services
 
             _unitOfWork.Get<User>().Update(user);
 
-            await _unitOfWork.SaveAsync();           
+            await _unitOfWork.SaveAsync();  
+            
+            return new SuccessResponse<bool>(true);
         }
 
-        public async Task<bool> Exists(string login, int userId = 0)
+        public async Task<ServiceResponse<bool>> Exists(string login, int userId = 0)
         {
             if (string.IsNullOrEmpty(login))
             {
-                return false;
+                return new SuccessResponse<bool>();
             }
 
             var userWithSameLogin = await _unitOfWork.Get<User>().FindByAsync(u => u.Login.Equals(login) && u.ID != userId);
 
-            return userWithSameLogin.Any();
+            return new SuccessResponse<bool>(userWithSameLogin.Any());
+        }
+
+        public ServiceResponse<UserDto> Get(string login)
+        {
+            var user = _unitOfWork.Get<User>().Get(u => u.Login.Equals(login));
+
+            return new SuccessResponse<UserDto>(user.ToDto());
         }
     }
 }

@@ -1,19 +1,21 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
-using SORANO.WEB.Models;
 using System;
 using System.Threading.Tasks;
+using SORANO.WEB.Infrastructure.Filters;
+using SORANO.WEB.ViewModels;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager,editor,user")]
-    public class HomeController : Controller
+    [CheckUser]
+    public class HomeController : BaseController
     {
         private readonly IDeliveryService _deliveryService;
         private readonly IGoodsService _goodsService;
 
-        public HomeController(IDeliveryService deliveryService, IGoodsService goodsService)
+        public HomeController(IDeliveryService deliveryService, IGoodsService goodsService, IUserService userService) : base(userService)
         {
             _deliveryService = deliveryService;
             _goodsService = goodsService;
@@ -26,8 +28,8 @@ namespace SORANO.WEB.Controllers
 
             return View(new DashboardModel
             {
-                DeliveriesCount = deliveriesCount,
-                TotalIncome = Math.Round(totalIncome).ToString() + " ₴"
+                DeliveriesCount = deliveriesCount.Result,
+                TotalIncome = Math.Round(totalIncome.Result) + " ₴"
             });
         }
     }

@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using SORANO.WEB.Models;
+using SORANO.WEB.ViewModels.Client;
 
 namespace SORANO.WEB.Validators
 {
-    public class ClientValidator : AbstractValidator<ClientModel>
+    public class ClientValidator : AbstractValidator<ClientCreateUpdateViewModel>
     {
         public ClientValidator()
         {

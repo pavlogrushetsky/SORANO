@@ -2,19 +2,13 @@
 
 namespace SORANO.DAL.Context.Configurations
 {
-    /// <summary>
-    /// Location configuration
-    /// </summary>
     internal class LocationConfiguration : StockEntityConfiguration<Location>
     {
-        /// <summary>
-        /// Location configuration
-        /// </summary>
         public LocationConfiguration()
         {
-            HasMany(l => l.SoldGoods)
-                .WithOptional(g => g.SaleLocation)
-                .HasForeignKey(g => g.SaleLocationID);
+            HasMany(l => l.Sales)
+                .WithRequired(g => g.Location)
+                .HasForeignKey(g => g.LocationID);
 
             Property(l => l.Name)
                 .IsRequired()

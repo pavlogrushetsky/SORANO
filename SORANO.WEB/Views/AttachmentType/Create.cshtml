@@ -1,8 +1,7 @@
-﻿@model AttachmentTypeModel
+﻿@model AttachmentTypeCreateUpdateViewModel
 
 @{
-    var isEdit = ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"];
-    var title = isEdit ? "Редактирование" : "Создание";
+    var title = Model.IsUpdate ? "Редактирование" : "Создание";
 }
 
 @{
@@ -15,35 +14,34 @@
 @section Breadcrumb {
     <ul class="breadcrumb">
         <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
-        <li class="active">Управление</li>
         <li><a asp-controller="AttachmentType" asp-action="Index">Типы вложений</a></li>
         <li class="active">@title типа вложений</li>
     </ul>
 }
-
-<div class="col-lg-4 col-md-12 col-sm-12">
-    <div class="row" style="margin-left: 0;">
-        @if (isEdit && Model.Name.Equals("Основное изображение"))
-        {
-            <p class="text-info">
-                <i class="fa fa-fw fa-info" aria-hidden="true"></i>
-                Тип вложения "Основное изображение" не может быть изменён.
-            </p>
-        }
-    </div>
-    <div class="row" style="margin-left: 0;">           
-        <form asp-action="@(isEdit ? "Update" : "Create")"
-                asp-controller="AttachmentType"
-                method="post">
-            <input type="hidden" asp-for="ID" />
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            @if (!isEdit || !Model.Name.Equals("Основное изображение"))
-            {
+      
+<form asp-action="@(Model.IsUpdate ? "Update" : "Create")"
+        asp-controller="AttachmentType"
+        method="post">
+    <input type="hidden" asp-for="ID" />
+    <input type="hidden" asp-for="IsUpdate" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    @if (!Model.IsUpdate || Model.CanBeUpdated)
+    {
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="alert alert-dismissible alert-info">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <strong>Информация:</strong> Поля, отмеченные символом *, являются обязательными для ввода
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 col-md-12 col-sm-12">
                 <div class="form-group">
                     <label class="control-label" asp-for="Name"></label>
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"><i class="fa fa-fw fa-paperclip"></i></span>
-                        <input class="form-control input-sm" type="text" asp-for="Name" placeholder="Название" />
+                        <input class="form-control input-sm" type="text" asp-for="Name" placeholder="Название" autofocus/>
                     </div>
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
@@ -59,24 +57,39 @@
                     <label class="control-label" asp-for="Extensions"></label>
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"><i class="fa fa-fw fa-filter"></i></span>
-                        <input class="form-control input-sm" type="text" asp-for="Extensions" placeholder="Расширения" />
+                        <input class="form-control input-sm" type="text" asp-for="Extensions" placeholder="Расширения"/>
                     </div>
                     <span asp-validation-for="Extensions" class="text-danger"></span>
                 </div>
-            }                
-            <div class="form-group">                            
+            </div>
+        </div>
+    }
+    @if(Model.IsUpdate && !Model.CanBeUpdated)
+    {
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="alert alert-dismissible alert-danger">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <strong>Ошибка!</strong> Тип вложения "Основное изображение" не может быть изменён.
+                </div>
+            </div>
+        </div>
+    }
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="form-group">
                 <a class="btn btn-default btn-sm" asp-controller="AttachmentType" asp-action="Index">
                     <i class="fa fa-fw fa-close"></i>
                     Отмена
                 </a>
-                @if (!isEdit || !Model.Name.Equals("Основное изображение"))
+                @if (!Model.IsUpdate || Model.CanBeUpdated)
                 {
                     <button type="submit" class="btn btn-primary btn-sm">
-                        <i class="fa fa-fw fa-check"></i>
+                        <i class="fa fa-fw fa-save"></i>
                         Сохранить
                     </button>
-                }                            
+                }
             </div>
-        </form>
+        </div>
     </div>
-</div>
+</form>

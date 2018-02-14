@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using SORANO.WEB.Models;
+using SORANO.WEB.ViewModels.Location;
 
 namespace SORANO.WEB.Validators
 {
-    public class LocationValidator : AbstractValidator<LocationModel>
+    public class LocationValidator : AbstractValidator<LocationCreateUpdateViewModel>
     {
         public LocationValidator()
         {
@@ -24,11 +24,7 @@ namespace SORANO.WEB.Validators
                 .WithMessage("Длина коментария не должна превышать 1000 символов");
 
             RuleFor(l => l.TypeID)
-                .Must(l =>
-                {
-                    int.TryParse(l, out int id);
-                    return id > 0;
-                })
+                .GreaterThan(0)
                 .WithMessage("Необходимо указать тип");
 
             RuleForEach(l => l.Attachments)

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace SORANO.BLL.DTOs
+namespace SORANO.BLL.Dtos
 {
-    public class AllGoodsDTO
+    public class AllGoodsDto
     {
         public int ArticleId { get; set; }
 
@@ -10,6 +10,6 @@ namespace SORANO.BLL.DTOs
 
         public string ArticleImage { get; set; }
 
-        public List<GoodsGroupDTO> Goods { get; set; }
+        public List<GoodsGroupDto> Goods { get; set; }
     }
 }

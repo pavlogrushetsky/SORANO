@@ -1,4 +1,4 @@
-﻿@model SelectMainPictureModel
+﻿@model SelectMainPictureViewModel
 
 @{
     ViewBag.Title = "SORANO - Выбор изображения";
@@ -42,8 +42,14 @@
                 </div>
             }
             <div class="form-group">
-                <button type="submit" class="btn btn-default btn-sm" asp-action="Cancel">Отмена</button>
-                <button type="submit" class="btn btn-primary btn-sm" asp-action="Select">Сохранить</button>
+                <button type="submit" class="btn btn-default btn-sm" asp-action="Cancel">
+                    <i class="fa fa-fw fa-close"></i>
+                    Отмена
+                </button>
+                <button type="submit" class="btn btn-primary btn-sm" asp-action="Select">
+                    <i class="fa fa-fw fa-save"></i>
+                    Сохранить
+                </button>
             </div>
         </form>
     </div>

@@ -1,23 +1,12 @@
-﻿using SORANO.CORE.StockEntities;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using SORANO.BLL.Dtos;
 
 namespace SORANO.BLL.Services.Abstract
 {
-    public interface IDeliveryService
+    public interface IDeliveryService : IBaseService<DeliveryDto>
     {
-        Task<IEnumerable<Delivery>> GetAllAsync(bool withDeleted);
+        Task<ServiceResponse<int>> GetUnsubmittedCountAsync();
 
-        Task<Delivery> GetIncludeAllAsync(int id);
-
-        Task<Delivery> CreateAsync(Delivery delivery, int userId);
-
-        Task<Delivery> UpdateAsync(Delivery delivery, int userId);
-
-        Task DeleteAsync(int id, int userId);
-
-        Task<int> GetUnsubmittedCountAsync();
-
-        Task<int> GetSubmittedCountAsync();
+        Task<ServiceResponse<int>> GetSubmittedCountAsync();
     }
 }

@@ -8,8 +8,6 @@ function initLocationSelect() {
     var selectLocation = $('.select-location');
     var locationId = $('#TargetLocationID');
     var locationName = $('#TargetLocationName');
-    var currentLocationId = $('#CurrentLocationID');
-
     selectLocation.select2({
         "language": {
             "noResults": function () {
@@ -25,14 +23,14 @@ function initLocationSelect() {
         placeholder: "Место",
         minimumInputLength: 0,
         ajax: {
-            url: 'GetLocations',
+            url: '/Location/GetLocations',
             dataType: 'json',
             type: 'POST',
             delay: 100,
             data: function (params) {
                 var queryParameters = {
                     term: params.term,
-                    except: currentLocationId.val()
+                    currentLocationId: $('#CurrentLocationID').val()
                 }
                 return queryParameters;
             },
@@ -41,17 +39,21 @@ function initLocationSelect() {
                     results: $.map(data, function (item) {
                         return {
                             text: item.text,
-                            id: item.id
+                            id: item.id,
+                            desc: item.desc
                         }
                     })
                 };
             },
             cache: true
-        }
+        },
+        escapeMarkup: function (markup) { return markup; },
+        templateResult: formatData,
+        templateSelection: formatDataSelection
     });
 
     if (locationId.val() > 0) {
-        selectLocation.append($('<option></option>').attr('value', locationId.val()).text(locationName.val()));
+        selectLocation.append($('<option selected></option>').attr('value', locationId.val()).text(locationName.val()));
     }
 
     selectLocation.on("select2:opening", function () {
@@ -69,4 +71,14 @@ function initLocationSelect() {
             locationName.val('');
         }
     });
+}
+
+function formatData(data) {
+    if (data.loading) return data.text;
+
+    return '<div>' + data.text + '</div><div><small style="color: #95a5a6;">' + data.desc + '</small></div>';
+}
+
+function formatDataSelection(data) {
+    return data.text;
 }

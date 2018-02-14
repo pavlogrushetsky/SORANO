@@ -1,0 +1,324 @@
+﻿@model GoodsDetailsViewModel
+
+@{
+    ViewBag.Title = "SORANO - Детали товара";
+    ViewBag.Header = "Детали";
+    ViewBag.Description = "товара";
+    ViewBag.Icon = "fa fa-fw fa-info-circle";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/datatables.net-bs/css/dataTables.bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" />
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li><a asp-controller="Goods" asp-action="Index">Товары</a></li>
+        <li class="active">Детали товара</li>
+    </ul>
+}
+
+<div class="col-lg-12">
+    <div class="row">
+        <div style="float:left;">
+            @if (Model.HasMainPicture)
+            {
+                <img src="@Url.Content(Model.MainPicturePath)" />
+            }
+        </div>
+        <div style="float:left;">
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.ID)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ID)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.ArticleName)
+                </dt>
+                <dd>
+                    <a asp-controller="Article"
+                       asp-action="Details"
+                       asp-route-id="@Model.ArticleID"
+                       data-toggle="tooltip"
+                       data-placement="right"
+                       data-original-title="Просмотреть информацию об артикуле"
+                       title="">
+                        @Html.DisplayFor(model => model.ArticleName)
+                    </a>
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.ArticleDescription)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ArticleDescription)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.ArticleTypeName)
+                </dt>
+                <dd>
+                    <a asp-controller="ArticleType"
+                       asp-action="Details"
+                       asp-route-id="@Model.ArticleTypeID"
+                       data-toggle="tooltip"
+                       data-placement="right"
+                       data-original-title="Просмотреть информацию о типе артикула"
+                       title="">
+                        @Html.DisplayFor(model => model.ArticleTypeName)
+                    </a>
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.LocationName)
+                </dt>
+                <dd>
+                    <a asp-controller="Location"
+                       asp-action="Details"
+                       asp-route-id="@Model.LocationID"
+                       data-toggle="tooltip"
+                       data-placement="right"
+                       data-original-title="Просмотреть информацию о складе"
+                       title="">
+                        @Html.DisplayFor(model => model.LocationName)
+                    </a>
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.DeliveryBillNumber)
+                </dt>
+                <dd>
+                    <a asp-controller="Delivery"
+                       asp-action="Details"
+                       asp-route-id="@Model.DeliveryID"
+                       data-toggle="tooltip"
+                       data-placement="right"
+                       data-original-title="Просмотреть информацию о поставке"
+                       title="">
+                        @Html.DisplayFor(model => model.DeliveryBillNumber)
+                    </a>
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.DeliveryDate)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.DeliveryDate)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.DeliveryPrice)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.DeliveryPrice) @Html.DisplayFor(model => model.Currency)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.IsSold)
+                </dt>
+                <dd>
+                    <span class="label label@(!Model.IsSold ? "-success" : "-warning")">
+                        @(!Model.IsSold ? "В наличии" : "Нет на складе")
+                    </span>
+                </dd> 
+                @if (Model.IsSold)
+                {
+                    <dt>
+                        @Html.DisplayNameFor(model => model.SaleDate)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => model.SaleDate)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => model.SalePrice)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => model.SalePrice) ₴
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => model.SoldBy)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => model.SoldBy)
+                    </dd>
+                }                                                             
+                <dt>
+                    @Html.DisplayNameFor(model => model.Created)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Created)
+                </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.CreatedBy)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Modified)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Modified)
+                </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.ModifiedBy)
+                </dd>
+            </dl>
+        </div>
+    </div>
+    <div class="row" style="margin-top:10px;">
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseStorages">
+                            <span>
+                                <i class="fa fa-fw fa-map-signs" aria-hidden="true"></i>
+                                @Html.DisplayNameFor(m => m.Storages)
+                                <span class="badge pull-right">@Model.Storages.Count</span>
+                            </span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseStorages" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                        <div class="storages-timeline">
+                            <ul class="storages-timeline-list">
+                                @for (var i = 0; i < Model.Storages.Count; i++)
+                                {
+                                    <li>
+                                        <div class="storages-timeline-icon @(i == 0 ? "last" : "")">
+                                            <i class="fa fa-fw fa-map-signs"></i>
+                                        </div>
+                                        <div class="storages-timeline-time">
+                                            <small>@Model.Storages[i].FromDate</small>
+                                        </div>
+                                        <div class="storages-timeline-content">
+                                            <a asp-controller="Location"
+                                               asp-action="Details"
+                                               asp-route-id="@Model.Storages[i].LocationID"
+                                               data-toggle="tooltip"
+                                               data-placement="right"
+                                               data-original-title="Просмотреть информацию о складе"
+                                               title="">
+                                                @Model.Storages[i].LocationName
+                                            </a>
+                                            <h6 class="text-muted">@Model.Storages[i].LocationDescription</h6>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseRecommendations">
+                            <span>
+                                <i class="fa fa-fw fa-comments" aria-hidden="true"></i>
+                                @Html.DisplayNameFor(m => m.Recommendations)
+                                <span class="badge pull-right">@Model.Recommendations.Count</span>
+                            </span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseRecommendations" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                        @Html.Partial("~/Views/Shared/_RecommendationsDetails.cshtml", Model.Recommendations)
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseDeliveryRecommendations">
+                            <span>
+                                <i class="fa fa-fw fa-comments" aria-hidden="true"></i>
+                                @Html.DisplayNameFor(m => m.DeliveryRecommendations)
+                                <span class="badge pull-right">@Model.DeliveryRecommendations.Count</span>
+                            </span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseDeliveryRecommendations" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <table id="delivery-recommendations-datatable" class="table table-striped table-hover">
+                            <thead>
+                            <tr role="row" class="search-row">
+                                <th><input type="text" class="form-control input-sm" placeholder="Коментарий"/></th>
+                                <th><input type="text" class="form-control input-sm" placeholder="Значение"/></th>
+                            </tr>
+                            <tr role="row">
+                                <th><i class="fa fa-fw fa-comment" aria-hidden="true"></i>Коментарий</th>
+                                <th><i class="fa fa-fw fa-hashtag" aria-hidden="true"></i>Значение</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var recommendation in Model.DeliveryRecommendations)
+                            {
+                                <tr>
+                                    <td>@recommendation.Comment</td>
+                                    <td>@recommendation.Value</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseDeliveryItemRecommendations">
+                            <span>
+                                <i class="fa fa-fw fa-comments" aria-hidden="true"></i>
+                                @Html.DisplayNameFor(m => m.DeliveryItemRecommendations)
+                                <span class="badge pull-right">@Model.DeliveryItemRecommendations.Count</span>
+                            </span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseDeliveryItemRecommendations" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <table id="delivery-item-recommendations-datatable" class="table table-striped table-hover">
+                            <thead>
+                            <tr role="row" class="search-row">
+                                <th><input type="text" class="form-control input-sm" placeholder="Коментарий"/></th>
+                                <th><input type="text" class="form-control input-sm" placeholder="Значение"/></th>
+                            </tr>
+                            <tr role="row">
+                                <th><i class="fa fa-fw fa-comment" aria-hidden="true"></i>Коментарий</th>
+                                <th><i class="fa fa-fw fa-hashtag" aria-hidden="true"></i>Значение</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var recommendation in Model.DeliveryItemRecommendations)
+                            {
+                                <tr>
+                                    <td>@recommendation.Comment</td>
+                                    <td>@recommendation.Value</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <a class="btn btn-default btn-sm" asp-action="Index" asp-controller="Goods">
+            <i class="fa fa-fw fa-arrow-left"></i>
+            Назад
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/lib/datatables.net-responsive-bs/js/responsive.bootstrap.min.js"></script>
+    <environment names="Development">
+        <script src="~/js/pages/goodsDetails.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/js/pages/goodsDetails.min.js" asp-append-version="true"></script>
+    </environment>
+}

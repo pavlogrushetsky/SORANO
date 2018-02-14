@@ -1,17 +1,13 @@
-﻿@model IList<ArticleTypeModel>
+﻿@model IEnumerable<ArticleTypeIndexViewModel>
 
 @if (Model.Any())
 {
-    <input class="form-control input-sm" style="font-weight: bold;" placeholder="Поиск артикулов и типов артикулов" type="text" id="article-search" />
-    <br />
-    <div class="tree">
-        <article-types-tree elements="@Model.ToList()" detailed="true" show-articles="true"></article-types-tree>
+    <div class="article-types-tree">
+        <ul>
+            @foreach (var type in Model)
+            {
+                @Html.Partial("Components/ArticleTypes/_ArticleTypeTreeNode", type)
+            }
+        </ul>
     </div>
-}
-else
-{
-    <p class="text-info">
-        <i class="fa fa-fw fa-info" aria-hidden="true"></i>
-        Типы артикулов отсутствуют
-    </p>
 }

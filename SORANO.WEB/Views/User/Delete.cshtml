@@ -1,4 +1,4 @@
-﻿@model UserModel
+﻿@model UserDeleteViewModel
 
 @{
     ViewBag.Title = "SORANO - Удаление пользователя";
@@ -10,22 +10,21 @@
 @section Breadcrumb {
     <ul class="breadcrumb">
         <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
-        <li><a asp-controller="User" asp-action="List">Пользователи</a></li>
+        <li><a asp-controller="User" asp-action="Index">Пользователи</a></li>
         <li class="active">Удаление пользователя</li>
     </ul>
 }
 
-<div class="col-lg-6 col-sm-12">
-    <div class="row">
-        <p class="@(Model.CanBeDeleted ? "text-warning" : "text-danger")">
-            <i class="fa fa-fw fa-exclamation" aria-hidden="true"></i>
-            @(Model.CanBeDeleted
-                ? "Вы уверены, что хотите удалить следующего пользователя?"
-                : "Пользователь не может быть удалён, так как у него есть связанные с ним действия или он является текущим пользователем в системе.")
-        </p>
-    </div>
-    <br/>
-    <div class="row">
+<div class="row">
+    @await Component.InvokeAsync("CanBeDeleted", new
+    {
+        canBeDeleted = Model.CanBeDeleted,
+        error = "Пользователь не может быть удалён, так как у него есть связанные с ним действия или он является текущим пользователем в системе.",
+        warning = "Вы уверены, что хотите удалить следующего пользователя?"
+    })
+</div>
+<div class="row">
+    <div class="col-lg-12">
         <dl class="dl-horizontal">
             <dt>
                 @Html.DisplayNameFor(model => model.Login)
@@ -42,15 +41,19 @@
         </dl>
         <form asp-action="Delete">
             <input type="hidden" asp-for="ID" />
+            <input type="hidden" asp-for="Login" />
             <div class="form-group">
-                <a class="btn btn-default btn-sm" asp-controller="User" asp-action="List">
+                <a class="btn btn-default btn-sm" asp-controller="User" asp-action="Index">
                     <i class="fa fa-fw fa-close"></i>
                     Отмена
                 </a>
-                <button type="submit" class="btn btn-danger btn-sm @(Model.CanBeDeleted ? "" : "disabled")">
-                    <i class="fa fa-fw fa-trash"></i>
-                    Удалить
-                </button>
+                @if (Model.CanBeDeleted)
+                {
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fa fa-fw fa-trash"></i>
+                        Удалить
+                    </button>
+                }                
             </div>
         </form>
     </div>

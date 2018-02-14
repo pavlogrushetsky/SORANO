@@ -1,37 +1,30 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
-using SORANO.WEB.Infrastructure.Extensions;
-using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using SORANO.WEB.ViewModels.ArticleType;
 
 namespace SORANO.WEB.Components
 {
-    /// <summary>
-    /// View component for rendering article types tree view
-    /// </summary>
     public class ArticleTypesViewComponent : ViewComponent
     {
         private readonly IArticleTypeService _articleTypeService;
+        private readonly IMapper _mapper;
 
-        /// <summary>
-        /// View component for rendering article types tree view
-        /// </summary>
-        /// <param name="articleTypeService">Article types service</param>
-        public ArticleTypesViewComponent(IArticleTypeService articleTypeService)
+        public ArticleTypesViewComponent(IArticleTypeService articleTypeService, IMapper mapper)
         {
             _articleTypeService = articleTypeService;
+            _mapper = mapper;
         }
 
-        /// <summary>
-        /// Invoke component asynchronously
-        /// </summary>
-        /// <param name="withDeleted">Show deleted article types</param>
-        /// <returns>Component's default view</returns>
         public async Task<IViewComponentResult> InvokeAsync(bool withDeleted = false)
         {
-            var articleTypes = await _articleTypeService.GetAllAsync(withDeleted);
+            var result = await _articleTypeService.GetTreeAsync(withDeleted);
 
-            return View(articleTypes.Select(t => t.ToModel()).ToList().ToTree());
+            var viewModels = _mapper.Map<IEnumerable<ArticleTypeIndexViewModel>>(result.Result);
+
+            return View(viewModels);
         }
     }
 }

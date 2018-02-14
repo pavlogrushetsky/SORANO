@@ -1,4 +1,4 @@
-﻿@model List<AttachmentModel>
+﻿@model IList<AttachmentViewModel>
 
 <table id="attachments-datatable" class="table table-striped table-hover table-responsive" style="width: 100%;">
     <thead>
@@ -14,25 +14,25 @@
         </tr>
     </thead>
     <tbody>
-        @for (int i = 0; i < Model.Count; i++)
-        {
-            <tr>
-                <td>@Model[i].Name</td>
-                <td>@Model[i].Type.Name</td>
-                <td>
-                    @* ReSharper disable once Mvc.ActionNotResolved *@
-                    <a asp-action="DownloadFile"
-                       asp-route-path="@Model[i].FullPath"
-                       asp-route-name="@Model[i].Name"
-                       class="btn btn-xs btn-success"
-                       data-toggle="tooltip"
-                       data-placement="right"
-                       data-original-title="Скачать вложение"
-                       title="">
-                        <i class="fa fa-fw fa-download" aria-hidden="true"></i>
-                    </a>
-                </td>
-            </tr>
-        }
+    @foreach (var a in Model)
+    {
+        <tr>
+            <td>@a.Name</td>
+            <td>@a.TypeName</td>
+            <td>
+                @* ReSharper disable once Mvc.ActionNotResolved *@
+                <a asp-action="DownloadFile"
+                   asp-route-path="@a.FullPath"
+                   asp-route-name="@a.Name"
+                   class="btn btn-xs btn-success"
+                   data-toggle="tooltip"
+                   data-placement="right"
+                   data-original-title="Скачать вложение"
+                   title="">
+                    <i class="fa fa-fw fa-download" aria-hidden="true"></i>
+                </a>
+            </td>
+        </tr>
+    }
     </tbody>
 </table>

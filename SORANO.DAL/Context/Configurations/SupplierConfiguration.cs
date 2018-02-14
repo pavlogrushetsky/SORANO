@@ -2,14 +2,8 @@
 
 namespace SORANO.DAL.Context.Configurations
 {
-    /// <summary>
-    /// Supplier configuration
-    /// </summary>
     internal class SupplierConfiguration : StockEntityConfiguration<Supplier>
     {
-        /// <summary>
-        /// Supplier configuration
-        /// </summary>
         public SupplierConfiguration()
         {
             Property(s => s.Name)

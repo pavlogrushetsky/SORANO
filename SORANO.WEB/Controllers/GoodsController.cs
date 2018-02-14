@@ -1,30 +1,41 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
-using SORANO.WEB.Models;
+using SORANO.WEB.Infrastructure.Filters;
+using SORANO.WEB.ViewModels;
+using SORANO.WEB.ViewModels.Goods;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using SORANO.BLL.Dtos;
+using SORANO.BLL.Services;
 using SORANO.WEB.Infrastructure.Extensions;
+using SORANO.WEB.ViewModels.Recommendation;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager,editor,user")]
+    [CheckUser]
     public class GoodsController : BaseController
     {
         private readonly IGoodsService _goodsService;
         private readonly ILocationService _locationService;
         private readonly IArticleService _articleService;
-        private readonly IClientService _clientService;
+        private readonly IMapper _mapper;
 
-        public GoodsController(IClientService clientService, IGoodsService goodsService, ILocationService locationService, IUserService userService, IArticleService articleService) : base(userService)
+        public GoodsController(IGoodsService goodsService, 
+            ILocationService locationService, 
+            IUserService userService, 
+            IArticleService articleService,
+            IMapper mapper) : base(userService)
         {
-            _clientService = clientService;
             _goodsService = goodsService;
             _locationService = locationService;
             _articleService = articleService;
+            _mapper = mapper;
         }
 
         #region GET Actions
@@ -32,9 +43,117 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var goods = await _goodsService.GetAllAsync();
+            return await TryGetActionResultAsync(async () =>
+            {
+                var goodsResult = await _goodsService.GetAllAsync();
 
-            return View(goods.Select(g => g.ToIndexModel()).ToList());
+                if (goodsResult.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось получить список товаров.";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                var goods = _mapper.Map<IEnumerable<GoodsItemViewModel>>(goodsResult.Result);
+                var viewModel = new GoodsIndexViewModel
+                {
+                    Goods = goods.ToList()
+                };
+
+                return View(viewModel);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Home");
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _goodsService.GetAsync(id);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанный товар.";
+                    return RedirectToAction("Index");
+                }
+
+                var viewModel = _mapper.Map<GoodsDetailsViewModel>(result.Result);
+
+                return View(viewModel);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Goods");
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AddRecommendations(string ids)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var splitted = ids.Split(',');
+                var result = await _goodsService.GetAsync(Convert.ToInt32(splitted.First()));
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось загрузить указанные товары.";
+                    return RedirectToAction("Index");
+                }
+
+                var viewModel = _mapper.Map<GoodsRecommendationsViewModel>(result.Result);
+                viewModel.Recommendations = new List<RecommendationViewModel>();
+                viewModel.Ids = ids;
+                viewModel.Quantity = splitted.Length;
+
+                return View(viewModel);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Goods");
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Expand(int articleId, int articleTypeId, int locationId, int status)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                ModelState.RemoveFor("IsFiltered");
+
+                var goodsResult = await _goodsService.GetAllAsync(articleId, articleTypeId, locationId, true, status);
+
+                if (goodsResult.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось получить список товаров.";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                var goods = _mapper.Map<IEnumerable<GoodsItemViewModel>>(goodsResult.Result).ToList();
+                var first = goods.First();
+                var viewModel = new GoodsIndexViewModel
+                {
+                    Goods = goods.ToList(),
+                    ArticleID = articleId,
+                    ArticleName = first.ArticleName,
+                    ArticleTypeID = articleTypeId,
+                    ArticleTypeName = first.ArticleTypeName,
+                    LocationID = locationId,
+                    LocationName = first.LocationName,
+                    ShowByPiece = true,
+                    IsFiltered = true,
+                    Status = status
+                };
+
+                return View("Index", viewModel);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Goods");
+            });
         }
 
         [HttpGet]
@@ -42,7 +161,7 @@ namespace SORANO.WEB.Controllers
         {
             var goods = await _goodsService.GetSoldGoodsAsync();
 
-            var sales = goods.GroupBy(g => new { g.ClientID, g.DeliveryItem.ArticleID, g.SaleLocationID, g.SaleDate.Value.Date, g.SalePrice })
+            var sales = goods.Result.GroupBy(g => new { g.ClientID, g.DeliveryItem.ArticleID, g.SaleLocationID, g.SaleDate.Value.Date, g.SalePrice })
                     .Select(g => new SaleModel
                     {
                         ClientID = g.Key.ClientID.Value,
@@ -50,7 +169,7 @@ namespace SORANO.WEB.Controllers
                         ArticleID = g.Key.ArticleID,
                         ArticleName = g.First().DeliveryItem.Article.Name,
                         Count = g.Count(),
-                        LocationID = g.Key.SaleLocationID.Value,
+                        LocationID = g.Key.SaleLocationID ?? 0,//TODO
                         LocationName = g.First().SaleLocation.Name,
                         TotalPrice = (g.Count() * g.Key.SalePrice.Value).ToString("0.00") + " ₴",
                         SaleDate = g.Key.Date.ToString("dd.MM.yyyy")
@@ -66,14 +185,14 @@ namespace SORANO.WEB.Controllers
             if (currentLocationId.HasValue)
             {
                 var location = await _locationService.GetAsync(currentLocationId.Value);
-                locationName = location?.Name;
+                locationName = location.Result?.Name;
             }
 
             var articleName = string.Empty;
             if (articleId.HasValue)
             {
                 var article = await _articleService.GetAsync(articleId.Value);
-                articleName = article?.Name;
+                articleName = article.Result?.Name;//TODO
             }
 
             return View(new SaleModel
@@ -91,20 +210,29 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ChangeLocation(int articleId, int currentLocationId, int maxCount, string returnUrl)
+        public async Task<IActionResult> ChangeLocation(string ids)
         {
-            var currentLocation = await _locationService.GetAsync(currentLocationId);
-            var article = await _articleService.GetAsync(articleId);
-
-            return View(new GoodsChangeLocationModel
+            return await TryGetActionResultAsync(async () =>
             {
-                ReturnUrl = returnUrl,
-                ArticleID = articleId,
-                MaxCount = maxCount,
-                Count = 1,
-                CurrentLocationID = currentLocationId,
-                CurrentLocationName = currentLocation.Name,
-                ArticleName = article.Name
+                var splitted = ids.Split(',');
+                var result = await _goodsService.GetAsync(Convert.ToInt32(splitted.First()));
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось загрузить указанные товары.";
+                    return RedirectToAction("Index");
+                }
+
+                var viewModel = _mapper.Map<GoodsChangeLocationViewModel>(result.Result);
+                viewModel.Ids = ids;
+                viewModel.MaxCount = splitted.Length;
+                viewModel.Count = viewModel.MaxCount;
+
+                return View(viewModel);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Goods");
             });
         }
 
@@ -113,7 +241,76 @@ namespace SORANO.WEB.Controllers
         #region POST Actions
 
         [HttpPost]
-        public async Task<IActionResult> ChangeLocation(GoodsChangeLocationModel model)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Index(GoodsIndexViewModel model)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                ModelState.RemoveFor("IsFiltered");
+
+                var goodsResult = await _goodsService.GetAllAsync(model.ArticleID, model.ArticleTypeID, model.LocationID, model.ShowByPiece, model.Status);
+
+                if (goodsResult.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось получить список товаров.";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                var goods = _mapper.Map<IEnumerable<GoodsItemViewModel>>(goodsResult.Result);
+                var viewModel = new GoodsIndexViewModel
+                {
+                    Goods = goods.ToList(),
+                    IsFiltered = true,
+                    Status = model.Status
+                };
+
+                return View(viewModel);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return View(model);
+            });
+        }        
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetFilters(GoodsIndexViewModel model)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                model.ShowByPiece = false;
+                model.ShowNumber = 10;
+                model.Status = 0;
+                model.ArticleID = 0;
+                model.ArticleTypeID = 0;
+                model.IsFiltered = false;
+                ModelState.Clear();
+
+                var goodsResult = await _goodsService.GetAllAsync();
+
+                if (goodsResult.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось получить список товаров.";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                var goods = _mapper.Map<IEnumerable<GoodsItemViewModel>>(goodsResult.Result);
+                var viewModel = new GoodsIndexViewModel
+                {
+                    Goods = goods.ToList()
+                };
+
+                return View("Index", viewModel);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return View("Index", model);
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddRecommendations(GoodsRecommendationsViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
             {
@@ -122,16 +319,75 @@ namespace SORANO.WEB.Controllers
                     return View(model);
                 }
 
-                var currentUser = await GetCurrentUser();
+                if (!model.Recommendations.Any())
+                    return RedirectToAction("Index");
 
-                await _goodsService.ChangeLocationAsync(model.ArticleID, model.CurrentLocationID, model.TargetLocationID, model.Count, currentUser.ID);
+                var recommendations = _mapper.Map<IEnumerable<RecommendationDto>>(model.Recommendations);
+                var ids = model.Ids.Split(',').Select(id => Convert.ToInt32(id));
+                var result = await _goodsService.AddRecommendationsAsync(ids, recommendations, UserId);
 
-                return Redirect(model.ReturnUrl);
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось обновить рекомендации.";
+                    return RedirectToAction("Index");
+                }
+
+                TempData["Success"] = "Рекомендации были успешно обновлены.";
+
+                return RedirectToAction("Index");
             }, ex =>
             {
-                ModelState.AddModelError("", ex);
+                TempData["Error"] = ex;
+                return RedirectToAction("Index");
+            });
+        }
 
-                return View(model);
+        [HttpPost]
+        public virtual IActionResult AddRecommendation(GoodsRecommendationsViewModel model)
+        {
+            ModelState.Clear();
+
+            model.Recommendations.Add(new RecommendationViewModel());
+
+            return View("AddRecommendations", model);
+        }
+
+        [HttpPost]
+        public virtual IActionResult DeleteRecommendation(GoodsRecommendationsViewModel model, int num)
+        {
+            ModelState.Clear();
+
+            model.Recommendations.RemoveAt(num);
+
+            return View("AddRecommendations", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeLocation(GoodsChangeLocationViewModel model)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                var ids = model.Ids.Split(',').Select(id => Convert.ToInt32(id));
+                var result = await _goodsService.ChangeLocationAsync(ids, model.TargetLocationID, model.Count, UserId);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось переместить товары.";
+                    return RedirectToAction("Index");
+                }
+
+                TempData["Success"] = "Товары были успешно перемещены.";
+
+                return RedirectToAction("Index");
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index");
             });
         }
 
@@ -145,11 +401,9 @@ namespace SORANO.WEB.Controllers
                     return View(model);
                 }
 
-                var currentUser = await GetCurrentUser();
-
                 var parsed = decimal.TryParse(model.SalePrice, NumberStyles.Any, new CultureInfo("en-US"), out decimal salePrice);
 
-                await _goodsService.SaleAsync(model.ArticleID, model.LocationID, model.ClientID, model.Count, salePrice, currentUser.ID);
+                await _goodsService.SaleAsync(model.ArticleID, model.LocationID, model.ClientID, model.Count, salePrice, UserId);
 
                 return Redirect(model.ReturnUrl);
             }, ex =>
@@ -162,57 +416,14 @@ namespace SORANO.WEB.Controllers
 
         #endregion 
 
-        [HttpPost]
-        public async Task<JsonResult> GetClients(string term)
-        {
-            var clients = await _clientService.GetAllAsync(false);
+        //[HttpPost]
+        //public async Task<JsonResult> GetGoods(string term, int locationId)
+        //{
+        //    var articles = await _articleService.GetAllAsync(false, term);
 
-            return Json(new
-            {
-                results = clients
-                    .Where(c => string.IsNullOrEmpty(term) || c.Name.Contains(term))
-                    .Select(c => new
-                    {
-                        id = c.ID,
-                        text = c.Name
-                    })
-            });
-        }
+        //    var selectModels = _mapper.Map<IEnumerable<ArticleSelectViewModel>>(articles.Result);
 
-        [HttpPost]
-        public async Task<JsonResult> GetArticles(string term, int? locationId)
-        {
-            var articles = await _articleService.GetArticlesForLocationAsync(locationId);
-
-            return Json(new
-            {
-                results = articles
-                    .Where(a => string.IsNullOrEmpty(term) || a.Key.Name.Contains(term))
-                    .Select(a => new
-                    {
-                        id = a.Key.ID,
-                        text = a.Key.Name,
-                        max = a.Value
-                    })
-            });
-        }
-
-        [HttpPost]
-        public async Task<JsonResult> GetLocations(string term, int? articleId, int? except)
-        {
-            var locations = await _locationService.GetLocationsForArticleAsync(articleId, except);
-
-            return Json(new
-            {
-                results = locations
-                    .Where(a => string.IsNullOrEmpty(term) || a.Key.Name.Contains(term))
-                    .Select(a => new
-                    {
-                        id = a.Key.ID,
-                        text = a.Key.Name,
-                        max = a.Value
-                    })
-            });
-        }
+        //    return Json(new { results = selectModels.OrderBy(s => s.Name) });
+        //}
     }
 }

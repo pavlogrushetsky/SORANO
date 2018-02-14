@@ -1,28 +1,31 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using SORANO.BLL.Dtos;
+using SORANO.BLL.Services;
 using SORANO.BLL.Services.Abstract;
+using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Extensions;
+using SORANO.WEB.Infrastructure.Filters;
+using SORANO.WEB.ViewModels.Attachment;
+using SORANO.WEB.ViewModels.Location;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.AspNetCore.Http;
-using MimeTypes;
-using SORANO.WEB.Infrastructure;
-using SORANO.WEB.Models;
+using SORANO.WEB.ViewModels.Delivery;
 
 // ReSharper disable Mvc.ViewNotResolved
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    public class LocationController : EntityBaseController<LocationModel>
+    public class LocationController : EntityBaseController<LocationCreateUpdateViewModel>
     {
         private readonly ILocationService _locationService;
-        private readonly ILocationTypeService _locationTypeService;
+        private readonly IMapper _mapper;
 
         public LocationController(ILocationService locationService, 
             IUserService userService,
@@ -30,31 +33,47 @@ namespace SORANO.WEB.Controllers
             ILocationTypeService locationTypeService, 
             IAttachmentTypeService attachmentTypeService,
             IAttachmentService attachmentService,
-            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
+            IMemoryCache memoryCache, 
+            IMapper mapper) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
         {
             _locationService = locationService;
-            _locationTypeService = locationTypeService;
+            _mapper = mapper;
         }
 
         #region GET Actions
 
         [HttpGet]
+        [CheckUser]
         public async Task<IActionResult> Index()
         {
-            var showDeletedLocations = Session.GetBool("ShowDeletedLocations");
-            var showDeletedLocationTypes = Session.GetBool("ShowDeletedLocationTypes");
+            return await TryGetActionResultAsync(async () =>
+            {
+                var showDeletedLocations = Session.GetBool("ShowDeletedLocations");
+                var showDeletedLocationTypes = Session.GetBool("ShowDeletedLocationTypes");
 
-            var locations = await _locationService.GetAllAsync(showDeletedLocations);
+                var locationsResult = await _locationService.GetAllAsync(showDeletedLocations);
 
-            ViewBag.ShowDeletedLocations = showDeletedLocations;
-            ViewBag.ShowDeletedLocationTypes = showDeletedLocationTypes;
+                if (locationsResult.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось получить список мест.";
+                    return RedirectToAction("Index", "Home");
+                }
 
-            await ClearAttachments();
+                ViewBag.ShowDeletedLocations = showDeletedLocations;
+                ViewBag.ShowDeletedLocationTypes = showDeletedLocationTypes;
 
-            return View(locations.Select(l => l.ToModel()).ToList());
+                await ClearAttachments();
+
+                return View(_mapper.Map<IEnumerable<LocationIndexViewModel>>(locationsResult.Result));
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Home");
+            });          
         }
 
         [HttpGet]
+        [CheckUser]
         public IActionResult ShowDeleted(bool show)
         {
             Session.SetBool("ShowDeletedLocations", show);
@@ -63,77 +82,107 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
+        [CheckUser]
         public async Task<IActionResult> Create(string returnUrl)
-        {           
-            LocationModel model;
-
-            if (TryGetCached(out LocationModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
-            {
-                model = cachedForSelectMainPicture;
-                await CopyMainPicture(model);
-            }
-            else if (TryGetCached(out LocationModel cachedForCreateType, CacheKeys.CreateLocationTypeCacheKey, CacheKeys.CreateLocationTypeCacheValidKey))
-            {
-                model = cachedForCreateType;
-            }
-            else
-            {
-                model = new LocationModel
-                {
-                    MainPicture = new AttachmentModel(),
-                    ReturnPath = returnUrl
-                };
-            }
-
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
-            ViewBag.LocationTypes = await GetLocationTypes();
-
-            return View(model);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Update(int id)
-        {            
-            LocationModel model;
-
-            if (TryGetCached(out LocationModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedForSelectMainPicture.ID == id)
-            {
-                model = cachedForSelectMainPicture;
-                await CopyMainPicture(model);
-            }
-            else if (TryGetCached(out LocationModel cachedForCreateType, CacheKeys.CreateLocationTypeCacheKey, CacheKeys.CreateLocationTypeCacheValidKey) && cachedForCreateType.ID == id)
-            {
-                model = cachedForCreateType;
-            }
-            else
-            {
-                var location = await _locationService.GetAsync(id);
-
-                model = location.ToModel();
-            }
-
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
-            ViewBag.LocationTypes = await GetLocationTypes();
-
-            ViewData["IsEdit"] = true;
-
-            return View("Create", model);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Delete(int id)
         {
-            var location = await _locationService.GetAsync(id);
+            return await TryGetActionResultAsync(async () =>
+            {
+                LocationCreateUpdateViewModel model;
 
-            return View(location.ToModel());
+                if (TryGetCached(out var cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
+                {
+                    model = cachedForSelectMainPicture;
+                    await CopyMainPicture(model);
+                }
+                else if (TryGetCached(out var cachedForCreateType, CacheKeys.CreateLocationTypeCacheKey, CacheKeys.CreateLocationTypeCacheValidKey))
+                {
+                    model = cachedForCreateType;
+                }
+                else
+                {
+                    model = new LocationCreateUpdateViewModel
+                    {
+                        MainPicture = new MainPictureViewModel(),
+                        ReturnPath = returnUrl
+                    };
+                }
+
+                return View(model);
+            }, OnFault);            
+        }       
+
+        [HttpGet]
+        [CheckUser]
+        public async Task<IActionResult> Update(int id)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                LocationCreateUpdateViewModel model;
+
+                if (TryGetCached(out var cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedForSelectMainPicture.ID == id)
+                {
+                    model = cachedForSelectMainPicture;
+                    await CopyMainPicture(model);
+                }
+                else if (TryGetCached(out var cachedForCreateType, CacheKeys.CreateLocationTypeCacheKey, CacheKeys.CreateLocationTypeCacheValidKey) && cachedForCreateType.ID == id)
+                {
+                    model = cachedForCreateType;
+                }
+                else
+                {
+                    var result = await _locationService.GetAsync(id);
+
+                    if (result.Status != ServiceResponseStatus.Success)
+                    {
+                        TempData["Error"] = "Не удалось найти указанное место.";
+                        return RedirectToAction("Index");
+                    }
+
+                    model = _mapper.Map<LocationCreateUpdateViewModel>(result.Result);
+                    model.IsUpdate = true;
+                }
+
+                return View("Create", model);
+            }, OnFault);          
         }
 
         [HttpGet]
+        [CheckUser]
         public async Task<IActionResult> Details(int id)
         {
-            var location = await _locationService.GetAsync(id);
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _locationService.GetAsync(id);
 
-            return View(location.ToModel());
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанное место.";
+                    return RedirectToAction("Index");
+                }
+
+                var viewModel = _mapper.Map<LocationDetailsViewModel>(result.Result);
+                viewModel.Deliveries.Mode = DeliveryTableMode.LocationDetails;
+
+                return View(viewModel);
+            }, OnFault);
+        }
+
+        [HttpGet]
+        [CheckUser]
+        public async Task<IActionResult> Delete(int id)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _locationService.GetAsync(id);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанное место.";
+                    return RedirectToAction("Index");
+                }
+
+                return View(_mapper.Map<LocationDeleteViewModel>(result.Result));
+            }, OnFault);
         }
 
         #endregion
@@ -142,161 +191,119 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(LocationModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        [CheckUser]
+        [LoadAttachments]
+        [ValidateModel]        
+        public async Task<IActionResult> Create(LocationCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            var attachmentTypes = new List<SelectListItem>();
-            var locationTypes = new List<SelectListItem>();
-
-            // Try to get result
             return await TryGetActionResultAsync(async () =>
-            {
-                attachmentTypes = await GetAttachmentTypes();
-                locationTypes = await GetLocationTypes();
+            {            
+                var location = _mapper.Map<LocationDto>(model);
 
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ViewBag.LocationTypes = locationTypes;
+                var result = await _locationService.CreateAsync(location, UserId);
 
-                await LoadMainPicture(model, mainPictureFile);
-                await LoadAttachments(model, attachments);
-
-                // Check the model
-                if (!ModelState.IsValid)
+                if (result.Status != ServiceResponseStatus.Success)
                 {
-                    return View(model);
-                }                
-
-                // Convert model to location entity
-                var location = model.ToEntity();
-
-                // Get current user
-                var currentUser = await GetCurrentUser();
-
-                // Call correspondent service method to create new location
-                location = await _locationService.CreateAsync(location, currentUser.ID);
-
-                // If succeeded
-                if (location != null)
-                {
-                    if (string.IsNullOrEmpty(model.ReturnPath))
-                    {
-                        return RedirectToAction("Index", "Location");
-                    }
-
-                    if (_memoryCache.TryGetValue(CacheKeys.CreateLocationCacheKey, out DeliveryModel cachedDelivery))
-                    {
-                        cachedDelivery.Location = location.ToModel();
-                        cachedDelivery.LocationID = location.ID.ToString();
-                        _memoryCache.Set(CacheKeys.CreateLocationCacheKey, cachedDelivery);
-                        Session.SetBool(CacheKeys.CreateLocationCacheValidKey, true);
-                    }
-                    else
-                    {
-                        return BadRequest();
-                    }
-
-                    return Redirect(model.ReturnPath);
+                    TempData["Error"] = "Не удалось создать место.";
+                    return RedirectToAction("Index");
                 }
 
-                // If failed
-                ModelState.AddModelError("", "Не удалось создать новое место.");
-                return View(model);
+                TempData["Success"] = $"Место \"{model.Name}\" было успешно создано.";
+
+                if (string.IsNullOrEmpty(model.ReturnPath))
+                {
+                    return RedirectToAction("Index");
+                }
+
+                if (MemoryCache.TryGetValue(CacheKeys.CreateLocationCacheKey, out DeliveryCreateUpdateViewModel cachedDelivery))
+                {
+                    cachedDelivery.LocationName = model.Name;
+                    cachedDelivery.LocationID = result.Result;
+                    MemoryCache.Set(CacheKeys.CreateLocationCacheKey, cachedDelivery);
+                    Session.SetBool(CacheKeys.CreateLocationCacheValidKey, true);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+
+                return Redirect(model.ReturnPath);
+            }, OnFault);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [CheckUser]
+        [LoadAttachments]
+        [ValidateModel]
+        public async Task<IActionResult> Update(LocationCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var location = _mapper.Map<LocationDto>(model);
+
+                var result = await _locationService.UpdateAsync(location, UserId);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось обновить место.";
+                    return RedirectToAction("Index");
+                }
+
+                TempData["Success"] = $"Место \"{model.Name}\" было успешно обновлёно.";
+                return RedirectToAction("Index");
+            }, OnFault);
+        }
+
+        [HttpPost]
+        [CheckUser]
+        public async Task<IActionResult> Delete(LocationDeleteViewModel model)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _locationService.DeleteAsync(model.ID, UserId);
+
+                if (result.Status == ServiceResponseStatus.Success)
+                {
+                    TempData["Success"] = $"Место \"{model.Name}\" было успешноо помечено как удалённое.";
+                }
+                else
+                {
+                    TempData["Error"] = "Не удалось удалить место.";
+                }
+
+                return RedirectToAction("Index");
+            }, OnFault);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [CheckUser]
+        [LoadAttachments]
+        public IActionResult CreateType(LocationCreateUpdateViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        {
+            return TryGetActionResult(() =>
+            {
+                MemoryCache.Set(CacheKeys.CreateLocationTypeCacheKey, model);
+                return RedirectToAction("Create", "LocationType", new { returnUrl });
             }, ex =>
             {
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ViewBag.LocationTypes = locationTypes;
-                ModelState.AddModelError("", ex);
-                return View(model);
-            });
+                TempData["Error"] = ex;
+                return View("Create", model);
+            });           
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(LocationModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
-        {
-            var attachmentTypes = new List<SelectListItem>();
-            var locationTypes = new List<SelectListItem>();
-
-            // Try to get result
-            return await TryGetActionResultAsync(async () =>
-            {
-                attachmentTypes = await GetAttachmentTypes();
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ViewBag.LocationTypes = await GetLocationTypes();
-
-                await LoadMainPicture(model, mainPictureFile);
-                await LoadAttachments(model, attachments);
-
-                // Check the model
-                if (!ModelState.IsValid)
-                {
-                    ViewData["IsEdit"] = true;
-                    return View(model);
-                }
-
-                // Convert model to location entity
-                var location = model.ToEntity();
-
-                // Get current user
-                var currentUser = await GetCurrentUser();
-
-                // Call correspondent service method to update location
-                location = await _locationService.UpdateAsync(location, currentUser.ID);
-
-                // If succeeded
-                if (location != null)
-                {
-                    return RedirectToAction("Index", "Location");
-                }
-
-                // If failed
-                ModelState.AddModelError("", "Не удалось обновить место.");
-                ViewData["IsEdit"] = true;
-                return View(model);
-            }, ex =>
-            {
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ViewBag.LocationTypes = locationTypes;
-                ModelState.AddModelError("", ex);
-                ViewData["IsEdit"] = true;
-                return View(model);
-            });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Delete(LocationModel model)
-        {
-            return await TryGetActionResultAsync(async () =>
-            {
-                var currentUser = await GetCurrentUser();
-
-                await _locationService.DeleteAsync(model.ID, currentUser.ID);
-
-                return RedirectToAction("Index", "Location");
-            }, ex => RedirectToAction("Index", "Location"));
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateType(LocationModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
-        {
-            await LoadMainPicture(model, mainPictureFile);
-            await LoadAttachments(model, attachments);
-
-            _memoryCache.Set(CacheKeys.CreateLocationTypeCacheKey, model);
-
-            return RedirectToAction("Create", "LocationType", new { returnUrl });
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Cancel(LocationModel model)
+        [CheckUser]
+        public IActionResult Cancel(LocationCreateUpdateViewModel model)
         {
             if (string.IsNullOrEmpty(model.ReturnPath))
             {
                 return RedirectToAction("Index", "Location");
             }
 
-            if (_memoryCache.TryGetValue(CacheKeys.CreateLocationCacheKey, out DeliveryModel _))
+            if (MemoryCache.TryGetValue(CacheKeys.CreateLocationCacheKey, out DeliveryCreateUpdateViewModel _))
             {
                 Session.SetBool(CacheKeys.CreateLocationCacheValidKey, true);
             }
@@ -306,28 +313,29 @@ namespace SORANO.WEB.Controllers
 
         #endregion
 
-        private async Task<List<SelectListItem>> GetLocationTypes()
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<JsonResult> GetLocations(string term, int currentLocationId = 0)
         {
-            var types = await _locationTypeService.GetAllAsync(false);
+            var locations = await _locationService.GetAllAsync(false, term, currentLocationId);
 
-            var locationTypes = new List<SelectListItem>
+            return Json(new
             {
-                new SelectListItem
-                {
-                    Value = "0",
-                    Text = "-- Тип места --"
-                }
-            };
+                results = locations.Result?
+                    .Select(t => new
+                    {
+                        id = t.ID,
+                        text = t.Name,
+                        desc = t.Comment ?? string.Empty
+                    })
+                    .OrderBy(t => t.text)
+            });
+        }
 
-            locationTypes.AddRange(types.Select(l => new SelectListItem
-            {
-                Value = l.ID.ToString(),
-                Text = l.Name
-            }));
-
-            _memoryCache.Set(CacheKeys.LocationTypesCacheKey, locationTypes);
-
-            return locationTypes;
+        private IActionResult OnFault(string ex)
+        {
+            TempData["Error"] = ex;
+            return RedirectToAction("Index");
         }
     }
 }

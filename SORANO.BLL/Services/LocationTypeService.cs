@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SORANO.BLL.Services.Abstract;
-using SORANO.BLL.Properties;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 using System;
-using SORANO.CORE.AccountEntities;
-using System.Data;
 using System.Linq;
-using SORANO.BLL.Helpers;
+using SORANO.BLL.Extensions;
+using SORANO.BLL.Dtos;
 
 namespace SORANO.BLL.Services
 {
@@ -18,155 +16,141 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<IEnumerable<LocationType>> GetAllAsync(bool withDeleted)
-        {
-            var locationTypes = await _unitOfWork.Get<LocationType>().GetAllAsync();
+        #region CRUD methods
 
-            if (!withDeleted)
+        public async Task<ServiceResponse<IEnumerable<LocationTypeDto>>> GetAllAsync(bool withDeleted)
+        {
+            var response = new SuccessResponse<IEnumerable<LocationTypeDto>>();
+
+            var locationTypes = await UnitOfWork.Get<LocationType>().GetAllAsync();
+
+            if (withDeleted)
             {
-                var filtered = locationTypes.Where(t => !t.IsDeleted).ToList();
-                filtered.ForEach(t =>
-                {
-                    t.Locations = t.Locations.Where(c => !c.IsDeleted).ToList();
-                });
-                return filtered;
+                response.Result = locationTypes.Select(t => t.ToDto());
+                return response;
             }
 
-            return locationTypes;
+            var filtered = locationTypes.Where(t => !t.IsDeleted).ToList();
+            filtered.ForEach(t =>
+            {
+                t.Locations = t.Locations.Where(c => !c.IsDeleted).ToList();
+            });
+
+            response.Result = filtered.Select(t => t.ToDto());
+            return response;
         }
 
-        public async Task<LocationType> GetAsync(int id)
+        public async Task<ServiceResponse<LocationTypeDto>> GetAsync(int id)
         {
-            return await _unitOfWork.Get<LocationType>().GetAsync(l => l.ID == id);
-        }
+            var locationType = await UnitOfWork.Get<LocationType>().GetAsync(t => t.ID == id);
 
-        public async Task<LocationType> GetIncludeAllAsync(int id)
-        {
-            var locationType = await _unitOfWork.Get<LocationType>().GetAsync(l => l.ID == id);
-
-            return locationType;
-        }
-
-        public async Task<LocationType> CreateAsync(LocationType locationType, int userId)
-        {
-            // Check passed location type
             if (locationType == null)
-            {
-                throw new ArgumentNullException(nameof(locationType), Resource.LocationTypeCannotBeNullException);
-            }
+                return new ServiceResponse<LocationTypeDto>(ServiceResponseStatus.NotFound);
 
-            // Identifier of new location type must be equal 0
-            if (locationType.ID != 0)
-            {
-                throw new ArgumentException(Resource.LocationTypeInvalidIdentifierException, nameof(locationType.ID));
-            }
-
-            // Get user by specified identifier
-            var user = await _unitOfWork.Get<User>().GetAsync(s => s.ID == userId);
-
-            // Check user
-            if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
-            }
-
-            // Update created and modified fields for location type
-            locationType.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-
-            // Update created and modified fields for each location type recommendation
-            foreach (var recommendation in locationType.Recommendations)
-            {
-                recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            }
-
-            foreach (var attachment in locationType.Attachments)
-            {
-                attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            }
-
-            var saved = _unitOfWork.Get<LocationType>().Add(locationType);
-
-            await _unitOfWork.SaveAsync();
-
-            return saved;
+            return new SuccessResponse<LocationTypeDto>(locationType.ToDto());
         }
 
-        public async Task<LocationType> UpdateAsync(LocationType locationType, int userId)
+        public async Task<ServiceResponse<int>> CreateAsync(LocationTypeDto locationType, int userId)
         {
-            // Check passed location type
             if (locationType == null)
-            {
-                throw new ArgumentNullException(nameof(locationType), Resource.LocationTypeCannotBeNullException);
-            }
+                throw new ArgumentNullException(nameof(locationType));
 
-            // Identifier of location type must be > 0
-            if (locationType.ID <= 0)
-            {
-                throw new ArgumentException(Resource.LocationTypeInvalidIdentifierException, nameof(locationType.ID));
-            }            
+            var locationTypes = await UnitOfWork.Get<LocationType>().FindByAsync(t => t.Name.Equals(locationType.Name) && t.ID != locationType.ID);
 
-            // Get user by specified identifier
-            var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
+            if (locationTypes.Any())
+                return new ServiceResponse<int>(ServiceResponseStatus.AlreadyExists);
 
-            // Check user
-            if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
-            }
+            var entity = locationType.ToEntity();
 
-            // Get existent location type by identifier
-            var existentLocationType = await _unitOfWork.Get<LocationType>().GetAsync(t => t.ID == locationType.ID);
+            entity.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            entity.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            entity.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-            // Check existent location type
+            var added = UnitOfWork.Get<LocationType>().Add(entity);
+
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<int>(added.ID);
+        }
+
+        public async Task<ServiceResponse<LocationTypeDto>> UpdateAsync(LocationTypeDto locationType, int userId)
+        {
+            if (locationType == null)
+                throw new ArgumentNullException(nameof(locationType));
+
+            var existentEntity = await UnitOfWork.Get<LocationType>().GetAsync(t => t.ID == locationType.ID);
+
+            if (existentEntity == null)
+                return new ServiceResponse<LocationTypeDto>(ServiceResponseStatus.NotFound);
+
+            var locationTypes = await UnitOfWork.Get<LocationType>().FindByAsync(t => t.Name.Equals(locationType.Name) && t.ID != locationType.ID);
+
+            if (locationTypes.Any())
+                return new ServiceResponse<LocationTypeDto>(ServiceResponseStatus.AlreadyExists);
+
+            var entity = locationType.ToEntity();
+
+            existentEntity.UpdateFields(entity);
+            existentEntity.UpdateModifiedFields(userId);
+
+            UpdateRecommendations(entity, existentEntity, userId);
+            UpdateAttachments(entity, existentEntity, userId);
+
+            UnitOfWork.Get<LocationType>().Update(existentEntity);
+
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<LocationTypeDto>();
+        }
+
+        public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
+        {
+            var existentLocationType = await UnitOfWork.Get<LocationType>().GetAsync(t => t.ID == id);
+
             if (existentLocationType == null)
-            {
-                throw new ObjectNotFoundException(Resource.LocationTypeNotFoundException);
-            }
-
-            // Update fields
-            existentLocationType.Name = locationType.Name;
-            existentLocationType.Description = locationType.Description;
-
-            // Update modified fields for existent location type
-            existentLocationType.UpdateModifiedFields(userId);
-
-            UpdateRecommendations(locationType, existentLocationType, userId);
-
-            UpdateAttachments(locationType, existentLocationType, userId);
-
-            var updated = _unitOfWork.Get<LocationType>().Update(existentLocationType);
-
-            await _unitOfWork.SaveAsync();
-
-            return updated;
-        }
-
-        public async Task DeleteAsync(int id, int userId)
-        {
-            var existentLocationType = await _unitOfWork.Get<LocationType>().GetAsync(t => t.ID == id);
+                return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
 
             if (existentLocationType.Locations.Any())
-            {
-                throw new Exception(Resource.LocationTypeCannotBeDeletedException);
-            }
+                return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
             existentLocationType.UpdateDeletedFields(userId);
 
-            _unitOfWork.Get<LocationType>().Update(existentLocationType);
+            UnitOfWork.Get<LocationType>().Update(existentLocationType);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<int>(id);
         }
 
-        public async Task<bool> Exists(string name, int locationTypeId = 0)
+        #endregion
+
+        public async Task<ServiceResponse<IEnumerable<LocationTypeDto>>> GetAllAsync(bool withDeleted, string searchTerm)
         {
-            if (string.IsNullOrEmpty(name))
+            var response = new SuccessResponse<IEnumerable<LocationTypeDto>>();
+
+            var locationTypes = await UnitOfWork.Get<LocationType>().GetAllAsync();
+
+            var term = searchTerm?.ToLower();
+
+            var searched = locationTypes
+                .Where(t => string.IsNullOrEmpty(term)
+                            || t.Name.ToLower().Contains(term)
+                            || t.Description.ToLower().Contains(term));
+
+            if (withDeleted)
             {
-                return false;
+                response.Result = searched.Select(t => t.ToDto());
+                return response;
             }
 
-            var locationTypes = await _unitOfWork.Get<LocationType>().FindByAsync(t => t.Name.Equals(name) && t.ID != locationTypeId);
+            var filtered = searched.Where(t => !t.IsDeleted).ToList();
+            filtered.ForEach(t =>
+            {
+                t.Locations = t.Locations.Where(c => !c.IsDeleted).ToList();
+            });
 
-            return locationTypes.Any();
+            response.Result = filtered.Select(t => t.ToDto());
+            return response;
         }
     }
 }

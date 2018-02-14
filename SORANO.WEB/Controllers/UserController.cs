@@ -1,141 +1,193 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
-using SORANO.WEB.Infrastructure.Extensions;
-using SORANO.WEB.Models;
+using SORANO.WEB.Infrastructure.Filters;
+using AutoMapper;
+using SORANO.BLL.Services;
+using SORANO.WEB.ViewModels.User;
+using System.Linq;
+using SORANO.BLL.Dtos;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer, administrator")]
+    [CheckUser]
     public class UserController : BaseController
     {
         private readonly IRoleService _roleService;
+        private readonly ILocationService _locationService;
+        private readonly IMapper _mapper;
 
-        public UserController(IUserService userService, IRoleService roleService) : base(userService)
+        public UserController(IUserService userService, 
+            IRoleService roleService,
+            ILocationService locationService,
+            IMapper mapper) : base(userService)
         {
             _roleService = roleService;
+            _locationService = locationService;
+            _mapper = mapper;
         }
 
         #region GET Actions
 
-        /// <summary>
-        /// Get all users
-        /// </summary>
-        /// <returns>List view</returns>
         [HttpGet]
-        public async Task<IActionResult> List()
+        public async Task<IActionResult> Index()
         {
-            var users = await _userService.GetAllIncludeAllAsync();
-
-            var models = new List<UserModel>();
-
-            var currentUser = await GetCurrentUser();
-
-            users.ForEach(u =>
+            return await TryGetActionResultAsync(async () => 
             {
-                models.Add(u.ToModel(u.ID == currentUser.ID));
-            });
+                var usersResult = await UserService.GetAllAsync();
 
-            return View(models);
-        }
+                if (usersResult.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось получить список пользователей.";
+                    return RedirectToAction("Index", "Home");
+                }
 
-        /// <summary>
-        /// Delete specified user
-        /// </summary>
-        /// <param name="id">User identifier</param>
-        /// <returns>Delete view</returns>
-        [HttpGet]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var user = await _userService.GetIncludeAllAsync(id);
+                var models = _mapper.Map<IEnumerable<UserIndexViewModel>>(usersResult.Result);
+                foreach (var user in models)
+                {
+                    user.CanBeBlocked = user.ID != UserId;
+                    user.CanBeDeleted = user.ID != UserId;
+                }
 
-            var currentUser = await GetCurrentUser();
 
-            return View(user.ToModel(user.ID == currentUser.ID));
-        }
-
-        /// <summary>
-        /// Block specified user
-        /// </summary>
-        /// <param name="id">User identifier</param>
-        /// <returns>Block view</returns>
-        [HttpGet]
-        public async Task<IActionResult> Block(int id)
-        {
-            var user = await _userService.GetAsync(id);
-
-            var currentUser = await GetCurrentUser();
-
-            return View(user.ToModel(user.ID == currentUser.ID));
-        }
-
-        /// <summary>
-        /// Update specified user
-        /// </summary>
-        /// <param name="id">User identifier</param>
-        /// <returns>Update view</returns>
-        [HttpGet]
-        public async Task<IActionResult> Update(int id)
-        {           
-            var user = await _userService.GetAsync(id);
-
-            var currentUser = await GetCurrentUser();
-
-            var model = user.ToModel(user.ID == currentUser.ID);
-
-            var roles = await _roleService.GetAllAsync();
-
-            var userRoles = roles.Select(r => new SelectListItem
+                return View(models);
+            }, ex => 
             {
-                Value = r.ID.ToString(),
-                Text = r.Description,
-                Selected = user.Roles.Select(x => x.ID).Contains(r.ID)
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Home");
             });
-
-            ViewBag.Roles = userRoles;
-
-            ViewData["IsEdit"] = true;
-
-            return View("Create", model);
         }
 
-        /// <summary>
-        /// Create new user
-        /// </summary>
-        /// <returns>Create view</returns>
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var roles = await _roleService.GetAllAsync();
-
-            var userRoles = roles.Select(r => new SelectListItem
+            return await TryGetActionResultAsync(async () => 
             {
-                Value = r.ID.ToString(),
-                Text = r.Description
-            });
+                var roles = await _roleService.GetAllAsync();
 
-            ViewBag.Roles = userRoles;
+                var userRoles = roles.Result.Select(r => new SelectListItem
+                {
+                    Value = r.ID.ToString(),
+                    Text = r.Description
+                });
 
-            return View(new UserModel());
+                var locations = await _locationService.GetAllAsync(false);
+
+                var userLocations = locations.Result.Select(l => new SelectListItem
+                {
+                    Value = l.ID.ToString(),
+                    Text = l.Name
+                });
+
+                return View(new UserCreateUpdateViewModel
+                {
+                    Roles = userRoles.ToList(),
+                    LocationNames = userLocations.ToList()
+                });
+            }, OnFault);           
         }
 
-        /// <summary>
-        /// Get user details
-        /// </summary>
-        /// <param name="id">User identifier</param>
-        /// <returns>Details view</returns>
+        [HttpGet]
+        public async Task<IActionResult> Update(int id)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await UserService.GetAsync(id);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанного пользователя.";
+                    return RedirectToAction("Index");
+                }
+
+                var model = _mapper.Map<UserCreateUpdateViewModel>(result.Result);
+
+                var roles = await _roleService.GetAllAsync();
+
+                var userRoles = roles.Result.Select(r => new SelectListItem
+                {
+                    Value = r.ID.ToString(),
+                    Text = r.Description,
+                    Selected = result.Result.Roles.Select(x => x.ID).Contains(r.ID)
+                });
+
+                var locations = await _locationService.GetAllAsync(false);
+
+                var userLocations = locations.Result.Select(l => new SelectListItem
+                {
+                    Value = l.ID.ToString(),
+                    Text = l.Name,
+                    Selected = result.Result.Locations.Select(x => x.ID).Contains(l.ID)
+                });
+
+                model.Roles = userRoles.ToList();
+                model.LocationNames = userLocations.ToList();
+                model.IsUpdate = true;
+                model.CanBeModified = id != UserId;
+
+                return View("Create", model);
+            }, OnFault);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await UserService.GetAsync(id);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанного пользователя.";
+                    return RedirectToAction("Index");
+                }
+
+                var model = _mapper.Map<UserDeleteViewModel>(result.Result);
+                model.CanBeDeleted = id != UserId;
+
+                return View(model);
+            }, OnFault);           
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Block(int id)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await UserService.GetAsync(id);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанного пользователя.";
+                    return RedirectToAction("Index");
+                }
+
+                var model = _mapper.Map<UserBlockViewModel>(result.Result);
+                model.CanBeBlocked = id != UserId;
+
+                return View(model);
+            }, OnFault);            
+        }         
+
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var user = await _userService.GetIncludeAllAsync(id);
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await UserService.GetAsync(id);
 
-            var currentUser = await GetCurrentUser();
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанного пользователя.";
+                    return RedirectToAction("Index");
+                }
 
-            return View(user.ToModel(user.ID == currentUser.ID));
+                return View(_mapper.Map<UserDetailsViewModel>(result.Result));
+            }, OnFault);           
         }
 
         #endregion
@@ -144,121 +196,121 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete([Bind("ID")]UserModel model)
-        {
-            await _userService.DeleteAsync(model.ID);
-
-            return RedirectToAction("List");
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Block([Bind("ID")]UserModel model)
-        {
-            var user = await _userService.GetAsync(model.ID);
-
-            user.IsBlocked = !user.IsBlocked;
-
-            await _userService.UpdateAsync(user);
-
-            return RedirectToAction("List");
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(UserModel model)
+        public async Task<IActionResult> Delete(UserBlockViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var roles = await _roleService.GetAllAsync();
+                var result = await UserService.DeleteAsync(model.ID);
 
-                var userRoles = roles.Select(r => new SelectListItem
+                if (result.Status == ServiceResponseStatus.Success)
                 {
-                    Value = r.ID.ToString(),
-                    Text = r.Description
-                });
-
-                ViewBag.Roles = userRoles;
-
-                var exists = await _userService.Exists(model.Login, model.ID);
-
-                if (exists)
+                    TempData["Success"] = $"Пользователь \"{model.Login}\" был успешно удалён.";
+                }
+                else
                 {
-                    ModelState.AddModelError("Login", "Пользователь с таким логином уже существует");
+                    TempData["Error"] = "Не удалось удалить пользователя.";
                 }
 
+                return RedirectToAction("Index");
+            }, OnFault);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Block(UserBlockViewModel model)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var user = await UserService.GetAsync(model.ID);
+
+                user.Result.IsBlocked = !user.Result.IsBlocked;
+
+                var result = await UserService.UpdateAsync(user.Result);
+
+                if (result.Status == ServiceResponseStatus.Success)
+                {
+                    var status = user.Result.IsBlocked ? "заблокирован" : "разблокирован";
+                    TempData["Success"] = $"Пользователь \"{model.Login}\" был успешно {status}.";
+                }
+                else
+                {
+                    TempData["Error"] = "Не удалось обновить пользователя.";
+                }                
+
+                return RedirectToAction("Index");
+            }, OnFault);           
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(UserCreateUpdateViewModel model)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
                 if (!ModelState.IsValid)
                 {
-                    ViewData["IsEdit"] = true;
                     return View("Create", model);
                 }
 
-                var user = model.ToEntity();
+                var user = _mapper.Map<UserDto>(model);
 
-                user = await _userService.UpdateAsync(user);
+                var result = await UserService.UpdateAsync(user);
 
-                if (user != null)
+                switch (result.Status)
                 {
-                    return RedirectToAction("List", "User");
+                    case ServiceResponseStatus.NotFound:
+                    case ServiceResponseStatus.InvalidOperation:
+                        TempData["Error"] = "Не удалось обновить пользователя.";
+                        return RedirectToAction("Index");
+                    case ServiceResponseStatus.AlreadyExists:
+                        ModelState.AddModelError("Login", "Пользователь с таким логином уже существует.");
+                        return View("Create", model);
                 }
 
-                ModelState.AddModelError("", "Не удалось обновить пользователя.");
-                ViewData["IsEdit"] = true;
-                return View("Create", model);
-            }, ex =>
-            {
-                ModelState.AddModelError("", ex);
-                ViewData["IsEdit"] = true;
-                return View("Create", model);
-            });
+                TempData["Success"] = $"Пользователь \"{model.Login}\" был успешно обновлён.";
+
+                return RedirectToAction("Index");
+            }, OnFault);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(UserModel model)
+        public async Task<IActionResult> Create(UserCreateUpdateViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var roles = await _roleService.GetAllAsync();
-
-                var userRoles = roles.Select(r => new SelectListItem
-                {
-                    Value = r.ID.ToString(),
-                    Text = r.Description
-                });
-
-                ViewBag.Roles = userRoles;
-
-                var exists = await _userService.Exists(model.Login);
-
-                if (exists)
-                {
-                    ModelState.AddModelError("Login", "Пользователь с таким логином уже существует");
-                }
-
                 if (!ModelState.IsValid)
                 {
                     return View(model);
                 }
 
-                var user = model.ToEntity();
+                var user = _mapper.Map<UserDto>(model);
 
-                user = await _userService.CreateAsync(user);
+                var result = await UserService.CreateAsync(user);
 
-                if (user != null)
+                switch (result.Status)
                 {
-                    return RedirectToAction("List", "User");
+                    case ServiceResponseStatus.NotFound:
+                    case ServiceResponseStatus.InvalidOperation:
+                        TempData["Error"] = "Не удалось создать пользователя.";
+                        return RedirectToAction("Index");
+                    case ServiceResponseStatus.AlreadyExists:
+                        ModelState.AddModelError("Login", "Пользователь с таким логином уже существует.");
+                        return View(model);
                 }
 
-                ModelState.AddModelError("Login", "Пользователь с таким логином уже существует в системе");
-                return View(model);
-            }, ex =>
-            {
-                ModelState.AddModelError("", ex);
-                return View(model);
-            });
+                TempData["Success"] = $"Пользователь \"{model.Login}\" был успешно создан.";
+
+                return RedirectToAction("Index");
+            }, OnFault);
         }
 
-        #endregion                     
+        #endregion
+
+        private IActionResult OnFault(string ex)
+        {
+            TempData["Error"] = ex;
+            return RedirectToAction("Index");
+        }
     }
 }
