@@ -124,13 +124,14 @@ namespace SORANO.BLL.Services
             return response;
         }
 
-        public async Task<ServiceResponse<int>> AddGoodsAsync(int goodsId, int saleId, int userId)
+        public async Task<ServiceResponse<int>> AddGoodsAsync(int goodsId, decimal? price, int saleId, int userId)
         {
             var goods = await UnitOfWork.Get<Goods>().GetAsync(goodsId);
             if (goods == null || goods.SaleID.HasValue && goods.SaleID != saleId)
                 return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
 
             goods.SaleID = saleId;
+            goods.Price = price;
             goods.UpdateModifiedFields(userId);
 
             UnitOfWork.Get<Goods>().Update(goods);
@@ -138,6 +139,26 @@ namespace SORANO.BLL.Services
             await UnitOfWork.SaveAsync();
 
             return new SuccessResponse<int>(goodsId);
+        }
+
+        public async Task<ServiceResponse<IEnumerable<int>>> AddGoodsAsync(IEnumerable<int> goodsIds, int saleId, int userId)
+        {
+            var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => goodsIds.Contains(g.ID) && !g.SaleID.HasValue);
+            var goodsList = goods?.ToList();
+            if (goodsList == null || !goodsList.Any())
+                return new ServiceResponse<IEnumerable<int>>(ServiceResponseStatus.NotFound);
+
+            goodsList.ForEach(g =>
+            {
+                g.SaleID = saleId;
+                g.UpdateModifiedFields(userId);
+
+                UnitOfWork.Get<Goods>().Update(g);
+            });
+
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<IEnumerable<int>>(goodsList.Select(g => g.ID));
         }
 
         public async Task<ServiceResponse<int>> RemoveGoodsAsync(int goodsId, int saleId, int userId)
@@ -155,6 +176,27 @@ namespace SORANO.BLL.Services
             await UnitOfWork.SaveAsync();
 
             return new SuccessResponse<int>(goodsId);
+        }
+
+        public async Task<ServiceResponse<IEnumerable<int>>> RemoveGoodsAsync(IEnumerable<int> goodsIds, int saleId, int userId)
+        {
+            var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => goodsIds.Contains(g.ID) && g.SaleID.HasValue && g.SaleID.Value == saleId);
+            var goodsList = goods?.ToList();
+            if (goodsList == null || !goodsList.Any())
+                return new ServiceResponse<IEnumerable<int>>(ServiceResponseStatus.NotFound);
+
+            goodsList.ForEach(g =>
+            {
+                g.SaleID = null;
+                g.Price = null;
+                g.UpdateModifiedFields(userId);
+
+                UnitOfWork.Get<Goods>().Update(g);
+            });
+
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<IEnumerable<int>>(goodsList.Select(g => g.ID));
         }
     }
 }

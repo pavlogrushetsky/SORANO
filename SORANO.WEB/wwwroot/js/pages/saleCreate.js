@@ -1,5 +1,18 @@
-﻿$(document).ready(function () {
+﻿$(window).load(function() {
+    var posReader = localStorage["posStorage"];
+    if (posReader) {
+        $(document).scrollTop(posReader);
+        localStorage.removeItem("posStorage");
+    }
+});
+
+$(document).ready(function () {
     $.fn.select2.defaults.set('theme', 'bootstrap');
+
+    $('button.add-goods, button.remove-goods').on('click', function() {
+        localStorage["posStorage"] = $(document).scrollTop();
+    });
+
     initAttachmentTypeSelect();
 
     initDateTimePicker('#pick-date');
@@ -27,6 +40,45 @@
     });
 
     initGoodsSelect();
+
+    for (var i = 0, len = localStorage.length; i < len; ++i) {
+        var key = '#' + localStorage.key(i);
+        if (key.startsWith('#sale_group_')) {
+            var children = $(key).parent('li').find(' > ul > li');
+            var value = localStorage.getItem(localStorage.key(i));
+            if (!children.is(':visible') && value === 'true') {
+                children.show('fast');
+                $(key).attr('title', 'Свернуть ветку');
+                $(key).find(' > table').hide('fast');
+            }
+        }
+    }   
+
+    $('.sale-items-groups-tree > ul > li > table').attr('title', 'Свернуть ветку');
+    $('.sale-items-groups-tree > ul > li > table').on('click', function (e) {       
+        var target = $(e.target);       
+        if (!target.is("input") && !target.is('button') && !target.is('i')) {
+            var children = $(this).parent('li').find(' > ul > li');
+            if (children.is(":visible")) {
+                localStorage.setItem($(this).attr('id'), 'false');
+                children.hide('fast');
+                $(this).attr('title', 'Развернуть ветку');
+                $(this).find(' > table').show('fast');
+            } else {
+                localStorage.setItem($(this).attr('id'), 'true');
+                children.show('fast');
+                $(this).attr('title', 'Свернуть ветку');
+                $(this).find(' > table').hide('fast');
+            }
+            e.stopPropagation();
+        }
+    });
+
+    $('button.add-goods').on('click', function (e) {
+        var input = $(e.target).closest('tr').find('input.sale-item-price');   
+        var price = input.val();
+        input.val(formatDecimal(price));
+    });
 
     //initSaleItemsDataTable();   
 
@@ -59,23 +111,23 @@
 
     updateCurrencyRates();
 
-    $('.sale-items-groups-tree > ul > li > table').attr('title', 'Свернуть ветку');
-    $('.sale-items-groups-tree > ul > li > table').on('click', function (e) {
-        var target = $(e.target);
-        if (!target.is("input") && !target.is('button') && !target.is('i')) {
-            var children = $(this).parent('li').find(' > ul > li');
-            if (children.is(":visible")) {
-                children.hide('fast');
-                $(this).attr('title', 'Развернуть ветку');
-                $(this).find(' > table').show('fast');
-            } else {
-                children.show('fast');
-                $(this).attr('title', 'Свернуть ветку');
-                $(this).find(' > table').hide('fast');
-            }
-            e.stopPropagation();
-        }        
-    });
+    //$('.sale-items-groups-tree > ul > li > table').attr('title', 'Свернуть ветку');
+    //$('.sale-items-groups-tree > ul > li > table').on('click', function (e) {
+    //    var target = $(e.target);
+    //    if (!target.is("input") && !target.is('button') && !target.is('i')) {
+    //        var children = $(this).parent('li').find(' > ul > li');
+    //        if (children.is(":visible")) {
+    //            children.hide('fast');
+    //            $(this).attr('title', 'Развернуть ветку');
+    //            $(this).find(' > table').show('fast');
+    //        } else {
+    //            children.show('fast');
+    //            $(this).attr('title', 'Свернуть ветку');
+    //            $(this).find(' > table').hide('fast');
+    //        }
+    //        e.stopPropagation();
+    //    }        
+    //});
 });
 
 function initGoodsSelect() {

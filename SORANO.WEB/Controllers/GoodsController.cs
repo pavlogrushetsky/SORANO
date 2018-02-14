@@ -118,13 +118,13 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Expand(int articleId, int articleTypeId, int locationId)
+        public async Task<IActionResult> Expand(int articleId, int articleTypeId, int locationId, int status)
         {
             return await TryGetActionResultAsync(async () =>
             {
                 ModelState.RemoveFor("IsFiltered");
 
-                var goodsResult = await _goodsService.GetAllAsync(articleId, articleTypeId, locationId, true);
+                var goodsResult = await _goodsService.GetAllAsync(articleId, articleTypeId, locationId, true, status);
 
                 if (goodsResult.Status != ServiceResponseStatus.Success)
                 {
@@ -144,7 +144,8 @@ namespace SORANO.WEB.Controllers
                     LocationID = locationId,
                     LocationName = first.LocationName,
                     ShowByPiece = true,
-                    IsFiltered = true
+                    IsFiltered = true,
+                    Status = status
                 };
 
                 return View("Index", viewModel);

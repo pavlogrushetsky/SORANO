@@ -10,8 +10,12 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<ServiceResponse<IEnumerable<SaleDto>>> GetAllAsync(bool withDeleted, int userId, int? locationId);
 
-        Task<ServiceResponse<int>> AddGoodsAsync(int goodsId, int saleId, int userId);
+        Task<ServiceResponse<int>> AddGoodsAsync(int goodsId, decimal? price, int saleId, int userId);
 
         Task<ServiceResponse<int>> RemoveGoodsAsync(int goodsId, int saleId, int userId);
+
+        Task<ServiceResponse<IEnumerable<int>>> AddGoodsAsync(IEnumerable<int> goodsIds, int saleId, int userId);
+
+        Task<ServiceResponse<IEnumerable<int>>> RemoveGoodsAsync(IEnumerable<int> goodsIds, int saleId, int userId);
     }
 }

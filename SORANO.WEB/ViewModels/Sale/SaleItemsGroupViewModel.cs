@@ -20,6 +20,8 @@ namespace SORANO.WEB.ViewModels.Sale
 
         public string MainPicturePath { get; set; }
 
+        public string GoodsIds { get; set; }
+
         public List<SaleItemViewModel> Items { get; set; } = new List<SaleItemViewModel>();
     }
 }

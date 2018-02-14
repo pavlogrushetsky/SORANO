@@ -42,6 +42,9 @@ namespace SORANO.WEB.Components
             {
                 var goods = result.Result.ToList();
 
+                if (selectedOnly)
+                    goods = goods.Where(g => g.SaleID.HasValue && g.SaleID == saleId).ToList();
+
                 viewModel = goods.GroupBy(g => new
                 {
                     g.DeliveryItem.ArticleID
@@ -50,7 +53,7 @@ namespace SORANO.WEB.Components
                     var items = group.AsEnumerable().ToList();
                     var first = items.First();
 
-                    return new SaleItemsGroupViewModel
+                    var model = new SaleItemsGroupViewModel
                     {
                         ArticleName = first.DeliveryItem.Article.Name,
                         ArticleTypeName = first.DeliveryItem.Article.Type.Name,
@@ -81,6 +84,9 @@ namespace SORANO.WEB.Components
                             }).ToList()
                         }).ToList()
                     };
+
+                    model.GoodsIds = model.Items.Select(id => id.GoodsId.ToString()).Aggregate((i, j) => i + ',' + j);
+                    return model;
                 }).ToList();
 
                 ViewBag.SelectedCount = viewModel.Sum(i => i.SelectedCount);
