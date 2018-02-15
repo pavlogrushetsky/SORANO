@@ -56,26 +56,23 @@
                             Товары
                         </a>
                     </li>
-                    @* ReSharper disable once UlTagContainsNonLiElements *@
-                    <manager>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-fw fa-cog" aria-hidden="true"></i>&nbsp;Управление <span class="caret"></span></a>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a asp-controller="Article" asp-action="Index"><i class="fa fa-fw fa-barcode" aria-hidden="true"></i>&nbsp;Артикулы и типы артикулов</a></li>
-                                <li><a asp-controller="Supplier" asp-action="Index"><i class="fa fa-fw fa-truck" aria-hidden="true"></i>&nbsp;Поставщики</a></li>
-                                <li><a asp-controller="Client" asp-action="Index"><i class="fa fa-fw fa-address-book" aria-hidden="true"></i>&nbsp;Клиенты</a></li>
-                                <li><a asp-controller="Location" asp-action="Index"><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i>&nbsp;Места и типы мест</a></li>
-                                <li><a asp-controller="AttachmentType" asp-action="Index"><i class="fa fa-fw fa-paperclip" aria-hidden="true"></i>&nbsp;Типы вложений</a></li>
-                                @* ReSharper disable once UlTagContainsNonLiElements *@
-                                <administrator>
-                                    <li class="divider"></li>
-                                    <li>
-                                        <a asp-controller="User" asp-action="Index"><i class="fa fa-fw fa-users" aria-hidden="true"></i>&nbsp;Пользователи</a>
-                                    </li>
-                                </administrator>
-                            </ul>
-                        </li>
-                    </manager>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-fw fa-cog" aria-hidden="true"></i>&nbsp;Управление <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a asp-controller="Article" asp-action="Index"><i class="fa fa-fw fa-barcode" aria-hidden="true"></i>&nbsp;Артикулы и типы артикулов</a></li>
+                            <li><a asp-controller="Supplier" asp-action="Index"><i class="fa fa-fw fa-truck" aria-hidden="true"></i>&nbsp;Поставщики</a></li>
+                            <li><a asp-controller="Client" asp-action="Index"><i class="fa fa-fw fa-address-book" aria-hidden="true"></i>&nbsp;Клиенты</a></li>
+                            <li><a asp-controller="Location" asp-action="Index"><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i>&nbsp;Места и типы мест</a></li>
+                            <li><a asp-controller="AttachmentType" asp-action="Index"><i class="fa fa-fw fa-paperclip" aria-hidden="true"></i>&nbsp;Типы вложений</a></li>
+                            @* ReSharper disable once UlTagContainsNonLiElements *@
+                            <administrator>
+                                <li class="divider"></li>
+                                <li>
+                                    <a asp-controller="User" asp-action="Index"><i class="fa fa-fw fa-users" aria-hidden="true"></i>&nbsp;Пользователи</a>
+                                </li>
+                            </administrator>
+                        </ul>
+                    </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     @await Component.InvokeAsync("Account")

@@ -17,8 +17,7 @@ using SORANO.WEB.ViewModels.ArticleType;
 using SORANO.WEB.ViewModels.Attachment;
 
 namespace SORANO.WEB.Controllers
-{
-    [Authorize(Roles = "developer,administrator,manager")]
+{    
     [CheckUser]
     public class ArticleTypeController : EntityBaseController<ArticleTypeCreateUpdateViewModel>
     {
@@ -40,6 +39,7 @@ namespace SORANO.WEB.Controllers
         #region GET Actions
 
         [HttpGet]
+        [Authorize(Roles = "developer,administrator,manager,user")]
         public IActionResult ShowDeleted(bool show)
         {
             Session.SetBool("ShowDeletedArticleTypes", show);
@@ -48,6 +48,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "developer,administrator,manager")]
         public async Task<IActionResult> Create(string returnUrl)
         {
             return await TryGetActionResultAsync(async () =>
@@ -73,6 +74,7 @@ namespace SORANO.WEB.Controllers
         }                
 
         [HttpGet]
+        [Authorize(Roles = "developer,administrator,manager")]
         public async Task<IActionResult> Update(int id)
         {
             return await TryGetActionResultAsync(async () =>
@@ -103,6 +105,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "developer,administrator,manager,user")]
         public async Task<IActionResult> Details(int id)
         {
             return await TryGetActionResultAsync(async () =>
@@ -123,6 +126,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "developer,administrator,manager")]
         public async Task<IActionResult> Delete(int id)
         {
             return await TryGetActionResultAsync(async () =>
@@ -144,6 +148,7 @@ namespace SORANO.WEB.Controllers
         #region POST Actions
 
         [HttpPost]
+        [Authorize(Roles = "developer,administrator,manager")]
         [ValidateAntiForgeryToken]
         [LoadAttachments]
         [ValidateModel]
@@ -186,6 +191,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "developer,administrator,manager")]
         [ValidateAntiForgeryToken]
         [LoadAttachments]
         [ValidateModel]
@@ -210,6 +216,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "developer,administrator,manager")]
         public async Task<IActionResult> Delete(ArticleTypeDeleteViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
@@ -230,6 +237,7 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "developer,administrator,manager")]
         [ValidateAntiForgeryToken]
         public IActionResult Cancel(ArticleTypeCreateUpdateViewModel model)
         {

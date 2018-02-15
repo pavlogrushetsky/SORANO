@@ -25,15 +25,17 @@
             <div class="panel-heading">
                 Таблица поставщиков
                 <span class="badge" style="margin-left: 5px;">@Model.Count()</span>
-                <a class="btn btn-default btn-xs pull-right"
-                   asp-controller="Supplier"
-                   asp-action="Create"
-                   data-toggle="tooltip"
-                   data-placement="right"
-                   data-original-title="Добавить поставщика"
-                   title="">
-                    <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
-                </a>
+                <manager>
+                    <a class="btn btn-default btn-xs pull-right"
+                       asp-controller="Supplier"
+                       asp-action="Create"
+                       data-toggle="tooltip"
+                       data-placement="right"
+                       data-original-title="Добавить поставщика"
+                       title="">
+                        <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
+                    </a>
+                </manager>                
                 <a class="btn btn-default btn-xs pull-right"
                    asp-controller="Supplier"
                    asp-action="ShowDeleted"
@@ -90,8 +92,7 @@
                                        title="">
                                         <i class="fa fa-fw fa-info-circle" aria-hidden="true"></i>
                                     </a>
-                                    @if (!supplier.IsDeleted)
-                                    {
+                                    <manager condition="@(!supplier.IsDeleted)">
                                         <a asp-controller="Supplier"
                                            asp-action="Update"
                                            asp-route-id="@supplier.ID"
@@ -102,20 +103,18 @@
                                            title="">
                                             <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
                                         </a>
-                                        if (supplier.CanBeDeleted)
-                                        {
-                                            <a class="btn btn-xs btn-danger"
-                                               data-toggle="tooltip"
-                                               data-placement="bottom"
-                                               data-original-title="Удалить поставщика"
-                                               title=""
-                                               asp-controller="Supplier"
-                                               asp-action="Delete"
-                                               asp-route-id="@supplier.ID">
-                                                <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
-                                            </a>
-                                        }
-                                    }                                    
+                                        <a class="btn btn-xs btn-danger"
+                                           data-toggle="tooltip"
+                                           data-placement="bottom"
+                                           data-original-title="Удалить поставщика"
+                                           title=""
+                                           asp-controller="Supplier"
+                                           asp-action="Delete"
+                                           asp-route-id="@supplier.ID"
+                                           condition="@supplier.CanBeDeleted">
+                                            <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
+                                        </a>
+                                    </manager>                                  
                                 </td>
                             </tr>
                         }
