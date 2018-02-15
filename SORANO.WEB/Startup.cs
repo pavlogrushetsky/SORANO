@@ -49,6 +49,7 @@ namespace SORANO.WEB
             });
 
             services.AddScoped(_ => new StockContext(Configuration.GetConnectionString("SORANO")));
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IUserService, UserService>();

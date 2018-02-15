@@ -47,10 +47,13 @@ namespace SORANO.BLL.Services
 
             entity.Roles = rolesToAttach.ToList();
 
-            var locations = await _unitOfWork.Get<Location>().GetAllAsync();
-            var locationsToAttach = locations.Where(l => user.Locations.Select(x => x.ID).Contains(l.ID));
+            if (user.Locations != null && user.Locations.Any())
+            {
+                var locations = await _unitOfWork.Get<Location>().GetAllAsync();
+                var locationsToAttach = locations.Where(l => user.Locations.Select(x => x.ID).Contains(l.ID));
 
-            entity.Locations = locationsToAttach.ToList();
+                entity.Locations = locationsToAttach.ToList();
+            }            
 
             _unitOfWork.Get<User>().Add(entity);
 

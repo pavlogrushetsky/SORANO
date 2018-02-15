@@ -39,7 +39,7 @@ namespace SORANO.BLL.Extensions
                 Description = dto.Description,
                 Password = dto.Password,
                 Roles = dto.Roles.Select(r => r.ToEntity()).ToList(),
-                Locations = dto.Locations.Select(l => new Location { ID = l.ID }).ToList()
+                Locations = dto.Locations?.Select(l => new Location { ID = l.ID }).ToList()
             };
         }
     }
