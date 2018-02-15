@@ -1,8 +1,12 @@
 ﻿@using SORANO.WEB.Infrastructure.Extensions
-@model AccountModel
+@model AccountViewModel
 
 <li class="dropdown">    
     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+        @if (!string.IsNullOrWhiteSpace(Model.LocationName))
+        {
+            <i class="fa fa-fw fa-map-marker" aria-hidden="true"></i><span style="margin-right: 20px;">@Model.LocationName</span>
+        }        
         <i class="fa fa-fw fa-user-circle" aria-hidden="true"></i>@Model.Login <span class="caret"></span>
     </a>
     <ul class="dropdown-menu" role="menu">

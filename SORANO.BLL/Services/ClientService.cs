@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
-using SORANO.BLL.Properties;
-using SORANO.CORE.AccountEntities;
-using System.Data;
-using SORANO.BLL.Helpers;
 using System.Linq;
+using SORANO.BLL.Extensions;
+using SORANO.BLL.Dtos;
+using System;
 
 namespace SORANO.BLL.Services
 {
@@ -18,126 +16,115 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<Client> CreateAsync(Client client, int userId)
+        #region CRUD methods
+
+        public async Task<ServiceResponse<IEnumerable<ClientDto>>> GetAllAsync(bool withDeleted)
+        {
+            var response = new SuccessResponse<IEnumerable<ClientDto>>();
+
+            var clients = await UnitOfWork.Get<Client>().GetAllAsync();
+
+            response.Result = !withDeleted
+                ? clients.Where(c => !c.IsDeleted).Select(c => c.ToDto())
+                : clients.Select(c => c.ToDto());
+
+            return response;
+        }
+
+        public async Task<ServiceResponse<ClientDto>> GetAsync(int id)
+        {
+            var client = await UnitOfWork.Get<Client>().GetAsync(s => s.ID == id);
+
+            return client == null 
+                ? new ServiceResponse<ClientDto>(ServiceResponseStatus.NotFound) 
+                : new SuccessResponse<ClientDto>(client.ToDto());
+        }
+
+        public async Task<ServiceResponse<int>> CreateAsync(ClientDto client, int userId)
         {
             if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client), Resource.ClientCannotBeNullException);
-            }
+                throw new ArgumentNullException(nameof(client));
 
-            if (client.ID != 0)
-            {
-                throw new ArgumentException(Resource.ClientInvalidIdentifierException, nameof(client.ID));
-            }
+            var entity = client.ToEntity();
 
-            var user = await _unitOfWork.Get<User>().GetAsync(s => s.ID == userId);
+            entity.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            entity.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            entity.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-            if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
-            }
+            var added = UnitOfWork.Get<Client>().Add(entity);
 
-            client.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            await UnitOfWork.SaveAsync();
 
-            foreach (var recommendation in client.Recommendations)
-            {
-                recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            }
+            return new SuccessResponse<int>(added.ID);
+        }       
 
-            foreach (var attachment in client.Attachments)
-            {
-                attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            }
-
-            var saved = _unitOfWork.Get<Client>().Add(client);
-
-            await _unitOfWork.SaveAsync();
-
-            return saved;
-        }
-
-        public async Task<IEnumerable<Client>> GetAllAsync(bool withDeleted)
-        {
-            var clients = await _unitOfWork.Get<Client>().GetAllAsync();
-
-            if (!withDeleted)
-            {
-                return clients.Where(s => !s.IsDeleted);
-            }
-
-            return clients;
-        }
-
-        public async Task<Client> GetAsync(int id)
-        {
-            return await _unitOfWork.Get<Client>().GetAsync(s => s.ID == id);
-        }
-
-        public async Task<Client> GetIncludeAllAsync(int id)
-        {
-            var client = await _unitOfWork.Get<Client>().GetAsync(s => s.ID == id);
-
-            return client;
-        }
-
-        public async Task<Client> UpdateAsync(Client client, int userId)
+        public async Task<ServiceResponse<ClientDto>> UpdateAsync(ClientDto client, int userId)
         {
             if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client), Resource.ClientCannotBeNullException);
-            }
+                throw new ArgumentNullException(nameof(client));
 
-            if (client.ID <= 0)
-            {
-                throw new ArgumentException(Resource.ClientInvalidIdentifierException, nameof(client.ID));
-            }
+            var existentEntity = await UnitOfWork.Get<Client>().GetAsync(t => t.ID == client.ID);
 
-            var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
+            if (existentEntity == null)
+                return new ServiceResponse<ClientDto>(ServiceResponseStatus.NotFound);
 
-            if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
-            }
+            var entity = client.ToEntity();
 
-            var existentClient = await _unitOfWork.Get<Client>().GetAsync(t => t.ID == client.ID);
+            existentEntity.UpdateFields(entity);        
+            existentEntity.UpdateModifiedFields(userId);
+
+            UpdateAttachments(entity, existentEntity, userId);
+            UpdateRecommendations(entity, existentEntity, userId);
+
+            UnitOfWork.Get<Client>().Update(existentEntity);
+
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<ClientDto>();
+        }
+
+        public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
+        {
+            var existentClient = await UnitOfWork.Get<Client>().GetAsync(t => t.ID == id);
 
             if (existentClient == null)
-            {
-                throw new ObjectNotFoundException(Resource.ClientNotFoundException);
-            }
+                return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
 
-            existentClient.Name = client.Name;
-            existentClient.Description = client.Description;
-            existentClient.PhoneNumber = client.PhoneNumber;
-            existentClient.CardNumber = client.CardNumber;
-
-            existentClient.UpdateModifiedFields(userId);
-
-            UpdateAttachments(client, existentClient, userId);
-
-            UpdateRecommendations(client, existentClient, userId);
-
-            var updated = _unitOfWork.Get<Client>().Update(existentClient);
-
-            await _unitOfWork.SaveAsync();
-
-            return updated;
-        }
-
-        public async Task DeleteAsync(int id, int userId)
-        {
-            var existentClient = await _unitOfWork.Get<Client>().GetAsync(t => t.ID == id);
-
-            if (existentClient.Goods.Any())
-            {
-                throw new Exception(Resource.ClientCannotBeDeletedException);
-            }
+            if (existentClient.Sales.Any())
+                return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
             existentClient.UpdateDeletedFields(userId);
 
-            _unitOfWork.Get<Client>().Update(existentClient);
+            UnitOfWork.Get<Client>().Update(existentClient);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<int>(id);
         }
+
+        public async Task<ServiceResponse<IEnumerable<ClientDto>>> GetAllAsync(bool withDeleted, string searchTerm)
+        {
+            var response = new SuccessResponse<IEnumerable<ClientDto>>();
+
+            var clients = await UnitOfWork.Get<Client>().GetAllAsync();
+
+            var term = searchTerm?.ToLower();
+
+            var searched = clients
+                .Where(l => string.IsNullOrEmpty(term)
+                    || l.Name.ToLower().Contains(term)
+                    || !string.IsNullOrWhiteSpace(l.Description) && l.Description.ToLower().Contains(term));
+
+            if (withDeleted)
+            {
+                response.Result = searched.Select(t => t.ToDto());
+                return response;
+            }
+
+            response.Result = searched.Where(t => !t.IsDeleted).Select(t => t.ToDto());
+            return response;
+        }
+
+        #endregion
     }
 }

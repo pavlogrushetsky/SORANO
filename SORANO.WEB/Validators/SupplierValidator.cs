@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using SORANO.WEB.Models;
+using SORANO.WEB.ViewModels.Supplier;
 
 namespace SORANO.WEB.Validators
 {
-    public class SupplierValidator : AbstractValidator<SupplierModel>
+    public class SupplierValidator : AbstractValidator<SupplierCreateUpdateViewModel>
     {
         public SupplierValidator()
         {

@@ -4,11 +4,9 @@ using System.Threading.Tasks;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
-using SORANO.BLL.Properties;
-using SORANO.CORE.AccountEntities;
-using System.Data;
-using SORANO.BLL.Helpers;
 using System.Linq;
+using SORANO.BLL.Extensions;
+using SORANO.BLL.Dtos;
 
 namespace SORANO.BLL.Services
 {
@@ -18,138 +16,115 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<Supplier> CreateAsync(Supplier supplier, int userId)
+        #region CRUD methods
+
+        public async Task<ServiceResponse<IEnumerable<SupplierDto>>> GetAllAsync(bool withDeleted)
         {
-            // Check passed supplier
+            var response = new SuccessResponse<IEnumerable<SupplierDto>>();
+
+            var suppliers = await UnitOfWork.Get<Supplier>().GetAllAsync();
+
+            response.Result = !withDeleted
+                ? suppliers.Where(s => !s.IsDeleted).Select(s => s.ToDto())
+                : suppliers.Select(a => a.ToDto());
+
+            return response;
+        }
+
+        public async Task<ServiceResponse<SupplierDto>> GetAsync(int id)
+        {
+            var supplier = await UnitOfWork.Get<Supplier>().GetAsync(s => s.ID == id);
+
+            return supplier == null 
+                ? new ServiceResponse<SupplierDto>(ServiceResponseStatus.NotFound) 
+                : new SuccessResponse<SupplierDto>(supplier.ToDto());
+        }
+
+        public async Task<ServiceResponse<int>> CreateAsync(SupplierDto supplier, int userId)
+        {
             if (supplier == null)
-            {
-                throw new ArgumentNullException(nameof(supplier), Resource.SupplierCannotBeNullException);
-            }
+                throw new ArgumentNullException(nameof(supplier));
 
-            // Identifier of new supplier must be equal 0
-            if (supplier.ID != 0)
-            {
-                throw new ArgumentException(Resource.SupplierInvalidIdentifierException, nameof(supplier.ID));
-            }
+            var entity = supplier.ToEntity();
 
-            // Get user by specified identifier
-            var user = await _unitOfWork.Get<User>().GetAsync(s => s.ID == userId);
+            entity.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            entity.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            entity.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-            // Check user
-            if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
-            }
+            var added = UnitOfWork.Get<Supplier>().Add(entity);
 
-            // Update created and modified fields for supplier
-            supplier.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            await UnitOfWork.SaveAsync();
 
-            // Update created and modified fields for each supplier recommendation
-            foreach (var recommendation in supplier.Recommendations)
-            {
-                recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            }
+            return new SuccessResponse<int>(added.ID);
+        }        
 
-            foreach (var attachment in supplier.Attachments)
-            {
-                attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            }
-
-            var saved = _unitOfWork.Get<Supplier>().Add(supplier);
-
-            await _unitOfWork.SaveAsync();
-
-            return saved;
-        }
-
-        public async Task<IEnumerable<Supplier>> GetAllAsync(bool withDeleted)
+        public async Task<ServiceResponse<SupplierDto>> UpdateAsync(SupplierDto supplier, int userId)
         {
-            var suppliers = await _unitOfWork.Get<Supplier>().GetAllAsync();
-
-            if (!withDeleted)
-            {
-                return suppliers.Where(s => !s.IsDeleted);
-            }
-
-            return suppliers;
-        }
-
-        public async Task<Supplier> GetAsync(int id)
-        {
-            return await _unitOfWork.Get<Supplier>().GetAsync(s => s.ID == id);
-        }
-
-        public async Task<Supplier> GetIncludeAllAsync(int id)
-        {
-            var supplier = await _unitOfWork.Get<Supplier>().GetAsync(s => s.ID == id);
-
-            return supplier;
-        }
-
-        public async Task<Supplier> UpdateAsync(Supplier supplier, int userId)
-        {
-            // Check passed supplier
             if (supplier == null)
-            {
-                throw new ArgumentNullException(nameof(supplier), Resource.SupplierCannotBeNullException);
-            }
+                throw new ArgumentNullException(nameof(supplier));
 
-            // Identifier of supplier must be > 0
-            if (supplier.ID <= 0)
-            {
-                throw new ArgumentException(Resource.SupplierInvalidIdentifierException, nameof(supplier.ID));
-            }
+            var existentEntity = await UnitOfWork.Get<Supplier>().GetAsync(t => t.ID == supplier.ID);
 
-            // Get user by specified identifier
-            var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
+            if (existentEntity == null)
+                return new ServiceResponse<SupplierDto>(ServiceResponseStatus.NotFound);
 
-            // Check user
-            if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
-            }
+            var entity = supplier.ToEntity();
 
-            // Get existent supplier by identifier
-            var existentSupplier = await _unitOfWork.Get<Supplier>().GetAsync(t => t.ID == supplier.ID);
+            existentEntity.UpdateFields(entity);
+            existentEntity.UpdateModifiedFields(userId);
 
-            // Check existent supplier
+            UpdateAttachments(entity, existentEntity, userId);
+            UpdateRecommendations(entity, existentEntity, userId);
+
+            UnitOfWork.Get<Supplier>().Update(existentEntity);
+
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<SupplierDto>();
+        }
+
+        public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
+        {
+            var existentSupplier = await UnitOfWork.Get<Supplier>().GetAsync(t => t.ID == id);
+
             if (existentSupplier == null)
-            {
-                throw new ObjectNotFoundException(Resource.SupplierNotFoundException);
-            }
-
-            // Update fields
-            existentSupplier.Name = supplier.Name;
-            existentSupplier.Description = supplier.Description;
-
-            // Update modified fields for existent article
-            existentSupplier.UpdateModifiedFields(userId);
-
-            UpdateAttachments(supplier, existentSupplier, userId);
-
-            UpdateRecommendations(supplier, existentSupplier, userId);
-
-            var updated = _unitOfWork.Get<Supplier>().Update(existentSupplier);
-
-            await _unitOfWork.SaveAsync();
-
-            return updated;
-        }
-
-        public async Task DeleteAsync(int id, int userId)
-        {
-            var existentSupplier = await _unitOfWork.Get<Supplier>().GetAsync(t => t.ID == id);
+                return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
 
             if (existentSupplier.Deliveries.Any())
-            {
-                throw new Exception(Resource.SupplierCannotBeDeletedException);
-            }
+                return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
             existentSupplier.UpdateDeletedFields(userId);
 
-            _unitOfWork.Get<Supplier>().Update(existentSupplier);
+            UnitOfWork.Get<Supplier>().Update(existentSupplier);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<int>(id);
+        }
+
+        #endregion
+
+        public async Task<ServiceResponse<IEnumerable<SupplierDto>>> GetAllAsync(bool withDeleted, string searchTerm)
+        {
+            var response = new SuccessResponse<IEnumerable<SupplierDto>>();
+
+            var suppliers = await UnitOfWork.Get<Supplier>().GetAllAsync();
+
+            var term = searchTerm?.ToLower();
+
+            var searched = suppliers
+                .Where(t => string.IsNullOrEmpty(term)
+                            || t.Name.ToLower().Contains(term)
+                            || t.Description.ToLower().Contains(term));
+
+            if (withDeleted)
+            {
+                response.Result = searched.Select(t => t.ToDto());
+                return response;
+            }
+
+            response.Result = searched.Where(t => !t.IsDeleted).Select(t => t.ToDto());
+            return response;
         }
     }
 }

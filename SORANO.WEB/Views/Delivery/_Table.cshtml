@@ -1,0 +1,136 @@
+﻿@model DeliveryIndexViewModel
+    
+<table id="deliveries-datatable" class="table table-striped table-hover">
+    <thead>
+        <tr role="row" class="search-row">
+            <th><input type="text" class="form-control input-sm" placeholder="Поставка" /></th>
+            <th><input type="text" class="form-control input-sm" placeholder="Номер" /></th>
+            @if (Model.Mode != DeliveryTableMode.SupplierDetails)
+            {
+                <th><input type="text" class="form-control input-sm" placeholder="Поставщик" /></th>
+            } 
+            @if (Model.Mode != DeliveryTableMode.LocationDetails)
+            {
+                <th><input type="text" class="form-control input-sm" placeholder="Место" /></th>
+            }            
+            <th><input type="text" class="form-control input-sm" placeholder="Оплата" /></th>
+            <th><input type="text" class="form-control input-sm" placeholder="Позиций" /></th>
+            <th><input type="text" class="form-control input-sm" placeholder="Сумма" /></th>
+            <th><input type="text" class="form-control input-sm" placeholder="Статус" /></th>
+            <th></th>           
+        </tr>
+        <tr role="row">
+            <th><i class="fa fa-fw fa-calendar"></i>Поставка</th>
+            <th><i class="fa fa-fw fa-cart-arrow-down"></i>Номер</th>
+            @if (Model.Mode != DeliveryTableMode.SupplierDetails)
+            {
+                <th><i class="fa fa-fw fa-truck"></i>Поставщик</th>
+            }      
+            @if (Model.Mode != DeliveryTableMode.LocationDetails)
+            {
+                <th><i class="fa fa-fw fa-map-marker"></i>Место</th>
+            }            
+            <th><i class="fa fa-fw fa-calendar"></i>Оплата</th>
+            <th><i class="fa fa-fw fa-hashtag"></i>Позиций</th>
+            <th><i class="fa fa-fw fa-money"></i>Сумма</th>
+            <th><i class="fa fa-fw fa-align-justify"></i>Статус</th>
+            <th>Действия</th>            
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var delivery in Model.Items)
+        {
+            <tr class="@(delivery.IsDeleted ? "danger" : "")">
+                <td>@delivery.DeliveryDate</td>
+                <td>
+                    <a asp-controller="Delivery"
+                       asp-action="Details"
+                       asp-route-id="@delivery.ID"
+                       data-toggle="tooltip"
+                       data-placement="bottom"
+                       data-original-title="Просмотреть информацию о поставке"
+                       title="">
+                        @delivery.BillNumber
+                    </a>
+                </td>
+                @if (Model.Mode != DeliveryTableMode.SupplierDetails)
+                {
+                    <td>
+                        <a asp-controller="Supplier"
+                           asp-action="Details"
+                           asp-route-id="@delivery.SupplierID"
+                           data-toggle="tooltip"
+                           data-placement="bottom"
+                           data-original-title="Просмотреть информацию о поставщике"
+                           title="">
+                            @delivery.SupplierName
+                        </a>
+                    </td>
+                }     
+                @if (Model.Mode != DeliveryTableMode.LocationDetails)
+                {
+                    <td>
+                        <a asp-controller="Location"
+                           asp-action="Details"
+                           asp-route-id="@delivery.LocationID"
+                           data-toggle="tooltip"
+                           data-placement="bottom"
+                           data-original-title="Просмотреть информацию о месте поставки"
+                           title="">
+                            @delivery.LocationName
+                        </a>
+                    </td>
+                }                
+                <td>@delivery.PaymentDate</td>
+                <td>@delivery.DeliveryItemsCount</td>
+                <td>@delivery.TotalPrice @delivery.Currency</td>
+                <td>
+                    <span class="label label@(delivery.IsSubmitted ? "-success" : "-warning")">
+                        @(delivery.IsSubmitted ? "Подтверждено" : "Не подтверждено")
+                    </span>
+                </td>
+                <td nowrap="nowrap">
+                    <a asp-controller="Delivery"
+                        asp-action="Details"
+                        asp-route-id="@delivery.ID"
+                        class="btn btn-xs btn-default"
+                        data-toggle="tooltip"
+                        data-placement="bottom"
+                        data-original-title="Просмотреть информацию о поставке"
+                        title="">
+                        <i class="fa fa-fw fa-info-circle" aria-hidden="true"></i>
+                    </a>                        
+                    @if (Model.Mode == DeliveryTableMode.DeliveryIndex)
+                    {
+                        if (delivery.CanBeUpdated)
+                        {
+                            <a asp-controller="Delivery"
+                            asp-action="Update"
+                            asp-route-id="@delivery.ID"
+                            class="btn btn-xs btn-default"
+                            data-toggle="tooltip"
+                            data-placement="bottom"
+                            data-original-title="Редактировать поставку"
+                            title="">
+                                <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
+                            </a>
+                        }
+                        if (delivery.CanBeDeleted)
+                        {
+                            <a class="btn btn-xs btn-danger"
+                            data-toggle="tooltip"
+                            data-placement="bottom"
+                            data-original-title="Удалить поставку"
+                            title=""
+                            asp-controller="Delivery"
+                            asp-action="Delete"
+                            asp-route-id="@delivery.ID">
+                                <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
+                            </a>
+                        }
+                    }                        
+                </td>               
+            </tr>
+        }
+    </tbody>
+</table>

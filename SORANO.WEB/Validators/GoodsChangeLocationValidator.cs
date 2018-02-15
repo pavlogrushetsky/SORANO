@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using SORANO.WEB.Models;
+using SORANO.WEB.ViewModels.Goods;
 
 namespace SORANO.WEB.Validators
 {
-    public class GoodsChangeLocationValidator : AbstractValidator<GoodsChangeLocationModel>
+    public class GoodsChangeLocationValidator : AbstractValidator<GoodsChangeLocationViewModel>
     {
         public GoodsChangeLocationValidator()
         {
@@ -18,6 +18,10 @@ namespace SORANO.WEB.Validators
             RuleFor(g => g.Count)
                 .Must((g, c) => c <= g.MaxCount)
                 .WithMessage("Указанное значение превышает доступное количество товара");
+
+            RuleFor(g => g.TargetLocationID)
+                .Must((g, c) => c != g.CurrentLocationID)
+                .WithMessage("Необходимо указать другой склад");
         }
     }
 }

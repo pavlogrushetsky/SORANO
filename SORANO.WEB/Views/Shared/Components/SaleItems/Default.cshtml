@@ -1,0 +1,18 @@
+﻿@model IList<SaleItemsGroupViewModel>
+    
+<div class="pull-right" style="margin-bottom: 20px;">
+    <span>Выбрано </span><span class="badge">@ViewBag.SelectedCount</span><span> товаров на сумму </span><span class="badge">@ViewBag.TotalPrice @ViewBag.SelectedCurrency</span>
+</div>    
+
+@if (Model.Any())
+{  
+    <br/>
+    <div class="sale-items-groups-tree">
+        <ul>
+            @foreach (var saleGroup in Model)
+            {
+                @Html.Partial("Components/SaleItems/_ItemsGroupTreeNode", saleGroup)
+            }
+        </ul>
+    </div>
+}

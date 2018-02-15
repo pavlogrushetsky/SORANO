@@ -1,8 +1,7 @@
-﻿@model ClientModel
+﻿@model ClientCreateUpdateViewModel
 
 @{
-    var isEdit = ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"];
-    var title = isEdit ? "Редактирование" : "Создание";
+    var title = Model.IsUpdate ? "Редактирование" : "Создание";
 }
 
 @{
@@ -10,6 +9,11 @@
     ViewBag.Header = title;
     ViewBag.Description = " клиента";
     ViewBag.Icon = "fa fa-fw fa-address-book";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/select2/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="~/lib/select2-bootstrap-theme/dist/select2-bootstrap.min.css" />
 }
 
 @section Breadcrumb {
@@ -20,29 +24,38 @@
     </ul>
 }
 
-<form asp-action="@(isEdit ? "Update" : "Create")"
+<form asp-action="@(Model.IsUpdate ? "Update" : "Create")"
       asp-controller="Client"
       method="post"
       enctype="multipart/form-data">
     <input type="hidden" asp-for="ID" />
+    <input type="hidden" asp-for="IsUpdate" />
     @for (var i = 0; i < Model.Recommendations.Count; i++)
     {
         <input type="hidden" asp-for="@Model.Recommendations[i].ID" />
-        <input type="hidden" asp-for="@Model.Recommendations[i].ParentID" />
     }
     @for (int i = 0; i < Model.Attachments.Count; i++)
     {
         <input type="hidden" asp-for="@Model.Attachments[i].ID" />
         <input type="hidden" asp-for="@Model.Attachments[i].IsNew" />
         <input type="hidden" asp-for="@Model.Attachments[i].FullPath" />
-        <input type="hidden" asp-for="@Model.Attachments[i].Type.MimeTypes" />
-        <input type="hidden" asp-for="@Model.Attachments[i].Type.Name" />
+        <input type="hidden" asp-for="@Model.Attachments[i].MimeTypes" />
+        <input type="hidden" asp-for="@Model.Attachments[i].TypeName" />
+        <input type="hidden" asp-for="@Model.Attachments[i].TypeID" />
     }
     @Html.HiddenFor(m => m.MainPicture.ID)
     @Html.HiddenFor(m => m.MainPicture.Name)
     @Html.HiddenFor(m => m.MainPicture.FullPath)
     @Html.HiddenFor(m => m.MainPicture.TypeID)
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-dismissible alert-info">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Информация:</strong> Поля, отмеченные символом *, являются обязательными для ввода
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-3 col-md-12 col-sm-12">
             @Html.Partial("~/Views/Shared/_MainPictureForm.cshtml", Model)
@@ -52,7 +65,7 @@
                 <label class="control-label" asp-for="Name"></label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-address-card"></i></span>
-                    <input class="form-control input-sm" type="text" asp-for="Name" placeholder="Имя"/>
+                    <input class="form-control input-sm" type="text" asp-for="Name" placeholder="Имя" autofocus/>
                 </div>
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
@@ -94,7 +107,7 @@
                     Отмена
                 </a>
                 <button type="submit" class="btn btn-primary btn-sm">
-                    <i class="fa fa-fw fa-check"></i>
+                    <i class="fa fa-fw fa-save"></i>
                     Сохранить
                 </button>
             </div>
@@ -103,6 +116,7 @@
 </form>
 
 @section Scripts {
+    <script src="~/lib/select2/dist/js/select2.full.min.js"></script>
     <environment names="Development">
         <script src="~/js/pages/clientCreate.js"></script>
     </environment>

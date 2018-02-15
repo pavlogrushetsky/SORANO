@@ -1,24 +1,33 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Services.Abstract;
-using SORANO.WEB.Infrastructure.Extensions;
-using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
-using SORANO.WEB.Models;
+using SORANO.BLL.Dtos;
+using SORANO.BLL.Services;
+using SORANO.WEB.Infrastructure.Filters;
+using SORANO.WEB.ViewModels.AttachmentType;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    public class AttachmentTypeController : EntityBaseController<AttachmentTypeModel>
+    [CheckUser]
+    public class AttachmentTypeController : EntityBaseController<AttachmentTypeCreateUpdateViewModel>
     {
+        private readonly IMapper _mapper;
+
         public AttachmentTypeController(IAttachmentTypeService attachmentTypeService, 
             IUserService userService,
             IHostingEnvironment environment,
             IAttachmentService attachmentService,
-            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
+            IMemoryCache memoryCache, 
+            IMapper mapper) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
         {
+            _mapper = mapper;
         }
 
         #region GET Actions
@@ -26,35 +35,65 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            await CacheAttachmentTypes();
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await AttachmentTypeService.GetAllAsync(true);
 
-            var attachmentTypes = await _attachmentTypeService.GetAllAsync();          
-
-            return View(attachmentTypes.Select(a => a.ToModel()).ToList());
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось получить список типов вложений.";
+                    return RedirectToAction("Index", "Home");
+                }
+               
+                return View(_mapper.Map<IEnumerable<AttachmentTypeIndexViewModel>>(result.Result));
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Home");
+            });          
         }
 
         [HttpGet]
         public IActionResult Create()
         {
-            return View(new AttachmentTypeModel());
+            return View(new AttachmentTypeCreateUpdateViewModel());
         }
 
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            var attachmentType = await _attachmentTypeService.GetAsync(id);
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await AttachmentTypeService.GetAsync(id);
 
-            ViewData["IsEdit"] = true;
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанный тип вложений.";
+                    return RedirectToAction("Index");
+                }
 
-            return View("Create", attachmentType.ToModel());
-        }
+                var model = _mapper.Map<AttachmentTypeCreateUpdateViewModel>(result.Result);
+                model.IsUpdate = true;
+
+                return View("Create", model);
+            }, OnFault);           
+        }       
 
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var attachmentType = await _attachmentTypeService.GetAsync(id);
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await AttachmentTypeService.GetAsync(id);
 
-            return View(attachmentType.ToModel());
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанный тип вложений.";
+                    return RedirectToAction("Index");
+                }
+                
+                return View(_mapper.Map<AttachmentTypeDeleteViewModel>(result.Result));
+            }, OnFault);            
         }
 
         #endregion
@@ -63,96 +102,115 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(AttachmentTypeModel model)
+        [ValidateModel]
+        public async Task<IActionResult> Create(AttachmentTypeCreateUpdateViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var exists = await _attachmentTypeService.Exists(model.Name);
+                var attachmentType = _mapper.Map<AttachmentTypeCreateUpdateViewModel, AttachmentTypeDto>(model);
 
-                if (exists)
+                var result = await AttachmentTypeService.CreateAsync(attachmentType, UserId);
+
+                switch (result.Status)
                 {
-                    ModelState.AddModelError("Name", "Тип вложений с таким названием уже существует");
+                    case ServiceResponseStatus.NotFound:
+                    case ServiceResponseStatus.InvalidOperation:
+                        TempData["Error"] = "Не удалось создать тип вложений.";
+                        return RedirectToAction("Index");
+                    case ServiceResponseStatus.AlreadyExists:
+                        ModelState.AddModelError("Name", "Тип вложений с таким названием уже существует.");
+                        return View(model);
                 }
 
-                if (!ModelState.IsValid)
-                {
-                    return View(model);
-                }
-
-                var attachmentType = model.ToEntity();
-
-                var currentUser = await GetCurrentUser();
-
-                attachmentType = await _attachmentTypeService.CreateAsync(attachmentType, currentUser.ID);
-
-                if (attachmentType != null)
-                {                    
-                    return RedirectToAction("Index", "AttachmentType");
-                }
-
-                ModelState.AddModelError("", "Не удалось создать новый тип вложений.");
-                return View(model);
-            }, ex =>
-            {
-                ModelState.AddModelError("", ex);
-                return View(model);
-            });
+                TempData["Success"] = $"Тип вложений \"{model.Name}\" был успешно создан.";
+                return RedirectToAction("Index");
+            }, OnFault);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(AttachmentTypeModel model)
+        [ValidateModel]
+        public async Task<IActionResult> Update(AttachmentTypeCreateUpdateViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var exists = await _attachmentTypeService.Exists(model.Name, model.ID);
+                var attachmentType = _mapper.Map<AttachmentTypeDto>(model);
 
-                if (exists)
+                var result = await AttachmentTypeService.UpdateAsync(attachmentType, UserId);
+
+                switch (result.Status)
                 {
-                    ModelState.AddModelError("Name", "Тип вложений с таким названием уже существует");
+                    case ServiceResponseStatus.NotFound:
+                    case ServiceResponseStatus.InvalidOperation:
+                        TempData["Error"] = "Не удалось обновить тип вложений.";
+                        return RedirectToAction("Index");
+                    case ServiceResponseStatus.AlreadyExists:
+                        ModelState.AddModelError("Name", "Тип вложений с таким названием уже существует.");
+                        return View("Create", model);
                 }
 
-                if (!ModelState.IsValid)
-                {
-                    ViewData["IsEdit"] = true;
-                    return View("Create", model);
-                }
+                TempData["Success"] = $"Тип вложений \"{model.Name}\" был успешно обновлён.";
+                return RedirectToAction("Index");
+            }, OnFault);
+        }
 
-                var attachmentType = model.ToEntity();
-
-                var currentUser = await GetCurrentUser();
-
-                attachmentType = await _attachmentTypeService.UpdateAsync(attachmentType, currentUser.ID);
-
-                if (attachmentType != null)
-                {
-                    return RedirectToAction("Index", "AttachmentType");
-                }
-
-                ModelState.AddModelError("", "Не удалось обновить тип вложений.");
-                ViewData["IsEdit"] = true;
-                return View("Create", model);
-            }, ex =>
+        [HttpPost]
+        public async Task<IActionResult> Delete(AttachmentTypeDeleteViewModel model)
+        {
+            return await TryGetActionResultAsync(async () =>
             {
-                ModelState.AddModelError("", ex);
-                ViewData["IsEdit"] = true;
-                return View("Create", model);
+                var result = await AttachmentTypeService.DeleteAsync(model.ID, UserId);
+
+                if (result.Status == ServiceResponseStatus.Success)
+                {
+                    TempData["Success"] = $"Тип вложений \"{model.Name}\" был успешно помечен как удалённый.";
+                }
+                else
+                {
+                    TempData["Error"] = "Не удалось удалить тип вложений.";
+                }
+
+                return RedirectToAction("Index");
+            }, OnFault);
+        }
+
+        #endregion
+
+        [HttpPost]
+        public async Task<JsonResult> GetAttachmentTypes(string term)
+        {
+            var attachmentTypes = await AttachmentTypeService.GetAllAsync(term);
+
+            return Json(new
+            {
+                results = attachmentTypes.Result?
+                    .Select(t => new
+                    {
+                        id = t.ID,
+                        text = t.Name,
+                        exts = t.Extensions,
+                        desc = t.Comment
+                    })
+                    .OrderBy(t => t.text)
             });
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(AttachmentTypeModel model)
+        public virtual async Task<string> GetMimeTypes(int id)
         {
-            return await TryGetActionResultAsync(async () =>
-            {
-                var currentUser = await GetCurrentUser();
+            var result = await AttachmentTypeService.GetAsync(id);
 
-                await _attachmentTypeService.DeleteAsync(model.ID, currentUser.ID);
+            if (result.Status != ServiceResponseStatus.Success)
+                return string.Empty;
 
-                return RedirectToAction("Index", "AttachmentType");
-            }, ex => RedirectToAction("Index", "AttachmentType"));
+            var model = _mapper.Map<AttachmentTypeIndexViewModel>(result.Result);
+            return model.MimeTypes;
         }
 
-        #endregion
+        private IActionResult OnFault(string ex)
+        {
+            TempData["Error"] = ex;
+            return RedirectToAction("Index");
+        }
     }
 }

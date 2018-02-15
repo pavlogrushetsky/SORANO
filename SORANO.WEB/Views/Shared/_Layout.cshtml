@@ -2,11 +2,12 @@
 
 <html>
 <head>
-    <meta charset="utf-8"/>
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>@ViewBag.Title</title>
-    <link rel="stylesheet" href="~/lib/bootswatch-dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css" />    
+    <link rel="icon" href="@Url.Content("~/sorano.ico")" />
+    <link rel="stylesheet" href="~/lib/bootswatch-dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
@@ -17,7 +18,7 @@
     <environment names="Staging,Production">
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
-    @RenderSection("Styles", false)    
+    @RenderSection("Styles", false)
 </head>
 <body>
     <nav class="navbar navbar-default navbar-fixed-top">
@@ -43,9 +44,10 @@
                         </a>
                     </li>   
                     <li>
-                        <a asp-controller="Goods" asp-action="Sales">
+                        <a asp-controller="Sale" asp-action="Index">
                             <i class="fa fa-fw fa-handshake-o" aria-hidden="true"></i>
                             Продажи
+                            @await Component.InvokeAsync("SalesUnsubmittedCount")
                         </a>
                     </li> 
                     <li>
@@ -54,23 +56,26 @@
                             Товары
                         </a>
                     </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-fw fa-cog" aria-hidden="true"></i>&nbsp;Управление <span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a asp-controller="Article" asp-action="Index"><i class="fa fa-fw fa-barcode" aria-hidden="true"></i>&nbsp;Артикулы и типы артикулов</a></li>
-                            <li><a asp-controller="Supplier" asp-action="Index"><i class="fa fa-fw fa-truck" aria-hidden="true"></i>&nbsp;Поставщики</a></li>
-                            <li><a asp-controller="Client" asp-action="Index"><i class="fa fa-fw fa-address-book" aria-hidden="true"></i>&nbsp;Клиенты</a></li>
-                            <li><a asp-controller="Location" asp-action="Index"><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i>&nbsp;Места и типы мест</a></li>
-                            <li><a asp-controller="AttachmentType" asp-action="Index"><i class="fa fa-fw fa-paperclip" aria-hidden="true"></i>&nbsp;Типы вложений</a></li>
-                            <li class="divider"></li>
-                            @if (User.IsInRole("administrator") || User.IsInRole("developer"))
-                            {
-                                <li>
-                                    <a asp-controller="User" asp-action="List"><i class="fa fa-fw fa-users" aria-hidden="true"></i>&nbsp;Пользователи</a>
-                                </li>
-                            }
-                        </ul>
-                    </li>
+                    @if (User.IsInRole("developer") || User.IsInRole("administrator") || User.IsInRole("manager"))
+                    {
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-fw fa-cog" aria-hidden="true"></i>&nbsp;Управление <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a asp-controller="Article" asp-action="Index"><i class="fa fa-fw fa-barcode" aria-hidden="true"></i>&nbsp;Артикулы и типы артикулов</a></li>
+                                <li><a asp-controller="Supplier" asp-action="Index"><i class="fa fa-fw fa-truck" aria-hidden="true"></i>&nbsp;Поставщики</a></li>
+                                <li><a asp-controller="Client" asp-action="Index"><i class="fa fa-fw fa-address-book" aria-hidden="true"></i>&nbsp;Клиенты</a></li>
+                                <li><a asp-controller="Location" asp-action="Index"><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i>&nbsp;Места и типы мест</a></li>
+                                <li><a asp-controller="AttachmentType" asp-action="Index"><i class="fa fa-fw fa-paperclip" aria-hidden="true"></i>&nbsp;Типы вложений</a></li>
+                                <li class="divider"></li>
+                                @if (User.IsInRole("administrator") || User.IsInRole("developer"))
+                                {
+                                    <li>
+                                        <a asp-controller="User" asp-action="Index"><i class="fa fa-fw fa-users" aria-hidden="true"></i>&nbsp;Пользователи</a>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }                   
                 </ul>
                 <ul class="nav navbar-nav navbar-right">                    
                     @await Component.InvokeAsync("Account")
@@ -85,18 +90,56 @@
                     @RenderSection("Breadcrumb", false)
                     <h2>
                         <i class="@ViewBag.Icon"></i>
-                        @ViewBag.Header 
+                        @ViewBag.Header
                         <small>@ViewBag.Description</small>
                     </h2>
                 </div>
-            </div>
+            </div>            
+        </div>
+        <div class="row">
+            @if (TempData.ContainsKey("Error"))
+            {
+                <div class="col-lg-12">
+                    <div class="alert alert-dismissible alert-danger">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Ошибка!</strong> @TempData["Error"]
+                    </div>
+                </div>
+            }
+            @if (TempData.ContainsKey("Success"))
+            {
+                <div class="col-lg-12">
+                    <div class="alert alert-dismissible alert-success">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        @TempData["Success"]
+                    </div>
+                </div>
+            }
+            @if (TempData.ContainsKey("Info"))
+            {
+                <div class="col-lg-12">
+                    <div class="alert alert-dismissible alert-info">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Информация:</strong> @TempData["Info"]
+                    </div>
+                </div>
+            }
+            @if (TempData.ContainsKey("Warning"))
+            {
+                <div class="col-lg-12">
+                    <div class="alert alert-dismissible alert-warning">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Внимание!</strong> @TempData["Warning"]
+                    </div>
+                </div>
+            }
         </div>
         <div class="row">
             <div class="col-lg-12">
                 @RenderBody()
             </div>
-        </div>        
-        <hr/>
+        </div>
+        <hr />
         <footer>
             <div class="row">
                 <div class="col-lg-12">
@@ -105,6 +148,7 @@
             </div>
         </footer>
     </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootswatch-dist/js/bootstrap.min.js"></script>
     <environment names="Development">

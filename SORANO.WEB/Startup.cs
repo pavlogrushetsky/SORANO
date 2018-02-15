@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Data.Entity;
+using AutoMapper;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +12,7 @@ using SORANO.DAL.Context;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using SORANO.DAL.Repositories;
 using FluentValidation.AspNetCore;
+using SORANO.WEB.Mappings;
 
 namespace SORANO.WEB
 {
@@ -29,6 +32,13 @@ namespace SORANO.WEB
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var mappingConfig = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(new AutoMapperProfileConfiguration());
+            });
+
+            services.AddSingleton(mappingConfig.CreateMapper());
+
             services.AddMvc().AddFluentValidation(v => v.RegisterValidatorsFromAssemblyContaining<Startup>());
 
             services.AddDistributedMemoryCache();
@@ -40,10 +50,7 @@ namespace SORANO.WEB
 
             services.AddScoped(_ => new StockContext(Configuration.GetConnectionString("SORANO")));
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
-
             services.AddTransient<IUnitOfWork, UnitOfWork>();
-
-            // Add dependencies for services
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IRoleService, RoleService>();
             services.AddTransient<IArticleService, ArticleService>();
@@ -56,6 +63,7 @@ namespace SORANO.WEB
             services.AddTransient<IClientService, ClientService>();
             services.AddTransient<IDeliveryService, DeliveryService>();
             services.AddTransient<IGoodsService, GoodsService>();
+            services.AddTransient<ISaleService, SaleService>();
 
             services.AddMemoryCache();
         }
@@ -85,7 +93,9 @@ namespace SORANO.WEB
                 routes.MapRoute(
                     "default", 
                     "{controller=Home}/{action=Index}/{id?}");
-            });            
+            });
+
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<StockContext, Migrations.Configuration>());
         }
     }
 }

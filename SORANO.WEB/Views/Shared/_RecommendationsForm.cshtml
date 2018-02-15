@@ -1,9 +1,9 @@
-﻿@model EntityBaseModel
+﻿@model BaseCreateUpdateViewModel
 
 <div class="form-group">
     <label class="control-label">Рекомендации:</label>
     <div id="recommendations">
-        <table class="table table-responsive" style="width: 100%; margin-bottom: 0;">
+        <table class="table" style="margin-bottom: 0;">
             @if (Model.Recommendations.Any())
             {
                 <tbody>
@@ -13,19 +13,17 @@
                         <td style="padding: 0; width: 60%; padding-right: 5px; padding-bottom: 5px;">
                             <div class="input-group input-group-sm">
                                 <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-comment"></i></span>
-                                <textarea style="resize: vertical;" class="form-control input-sm recommendations" rows="1" asp-for="@Model.Recommendations[i].Comment"></textarea>
+                                <textarea class="form-control input-sm recommendations" rows="1" asp-for="@Model.Recommendations[i].Comment"></textarea>
                             </div>
                             <span asp-validation-for="@Model.Recommendations[i].Comment" class="text-danger"></span>
                         </td>
                         <td style="padding: 0; width: 40%; padding-bottom: 5px;">
                             <div class="input-group input-group-sm">
-                                <input class="form-control input-sm recommendations" type="text" asp-for="@Model.Recommendations[i].ValueString" />
+                                <input class="form-control input-sm recommendations" type="text" asp-for="@Model.Recommendations[i].Value" />
                                 <span class="input-group-btn">
                                     @* ReSharper disable once Mvc.ActionNotResolved *@
                                     <button class="btn btn-danger btn-sm"
-                                            type="submit"
                                             asp-action="DeleteRecommendation"
-                                            asp-route-isEdit="@(ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"])"
                                             asp-route-num="@i"
                                             data-toggle="tooltip"
                                             data-placement="right"
@@ -35,7 +33,7 @@
                                     </button>
                             </span>
                             </div>  
-                            <span asp-validation-for="@Model.Recommendations[i].ValueString" class="text-danger"></span>
+                            <span asp-validation-for="@Model.Recommendations[i].Value" class="text-danger"></span>
                         </td>
                     </tr>
                 }
@@ -46,9 +44,7 @@
                 <td style="padding: 0;">
                     @* ReSharper disable once Mvc.ActionNotResolved *@
                     <button class="btn btn-default btn-sm"
-                            type="submit"
                             asp-action="AddRecommendation"
-                            asp-route-isEdit="@(ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"])"
                             data-toggle="tooltip"
                             data-placement="right"
                             data-original-title="Добавить рекомендацию"

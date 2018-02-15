@@ -15,9 +15,12 @@
 function initLocationsDataTable() {
     var locationsTable = $("#locations-datatable").DataTable({
         responsive: true,
+        "autoWidth": false,
+        "scrollX": false,
         "columnDefs": [
-            { "orderable": false, "targets": 3 }
+            { "orderable": false, "targets": 4 }
         ],
+        "order": [[0, "desc"]],
         "pagingType": "numbers",
         "language": {
             "lengthMenu": "Отобразить _MENU_ мест на странице",
@@ -45,9 +48,12 @@ function initLocationsDataTable() {
 function initLocationTypesDataTable() {
     var locationTypesTable = $("#location-types-datatable").DataTable({
         responsive: true,
+        "autoWidth": false,
+        "scrollX": false,
         "columnDefs": [
             { "orderable": false, "targets": 3 }
         ],
+        "order": [[0, "desc"]],
         "pagingType": "numbers",
         "language": {
             "lengthMenu": "Отобразить _MENU_ типов мест на странице",

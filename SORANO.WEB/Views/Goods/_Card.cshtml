@@ -1,0 +1,100 @@
+﻿@model GoodsItemViewModel
+
+<div class="card">   
+    <h4 class="card-header">@Model.ArticleName</h4>
+    <div class="card-body">
+        <h5>@Model.ArticleTypeName</h5>
+        <h6 class="text-muted">@Model.ArticleDescription</h6>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
+    {
+        <img style="height: 200px; width: 100%; display: block; border: none;" src="@Url.Content(Model.ImagePath)"/>
+    }
+    <div class="card-body">
+        <dl class="dl-horizontal">
+            <dt>Цена поставки:</dt>
+            <dd style="font-size: 15px; font-weight: bold;">@Model.DeliveryPrice @Model.Currency</dd>
+            <dt>Количество, шт.:</dt>
+            <dd>@Model.Quantity</dd>
+            <dt>Склад:</dt>
+            <dd>
+                <a asp-controller="Location"
+                   asp-action="Details"
+                   asp-route-id="@Model.LocationID"
+                   data-toggle="tooltip"
+                   data-placement="right"
+                   data-original-title="Просмотреть информацию о складе"
+                   title="">
+                    @Html.DisplayFor(model => model.LocationName)
+                </a>
+            </dd>
+            <dt>Статус:</dt>
+            <dd>
+                <span class="label label@(!Model.IsSold ? "-success" : "-warning")">
+                    @(!Model.IsSold ? "В наличии" : "Отложен")
+                </span>
+            </dd>
+        </dl>
+    </div>
+    <div class="card-footer">
+        @if (Model.Quantity == 1)
+        {
+            <a asp-action="Details"
+               asp-controller="Goods"
+               asp-route-id="@Model.GoodsIds"
+               class="btn btn-default btn-sm"
+               data-toggle="tooltip"
+               data-placement="bottom"
+               data-original-title="Просмотреть информацию о товаре"
+               title="">
+                <i class="fa fa-fw fa-info-circle"></i>
+            </a>
+        }
+        <a asp-action="AddRecommendations"
+           asp-controller="Goods"
+           asp-route-ids="@Model.GoodsIds"
+           class="btn btn-default btn-sm"
+           data-toggle="tooltip"
+           data-placement="bottom"
+           data-original-title="Добавить рекомендации"
+           title="">
+            <i class="fa fa-fw fa-comment"></i>
+        </a>
+        @if (Model.Quantity > 1)
+        {
+            <a asp-action="Expand"
+               asp-controller="Goods"
+               asp-route-articleId="@Model.ArticleID"
+               asp-route-articleTypeId="@Model.ArticleTypeID"
+               asp-route-locationId="@Model.LocationID"
+               asp-route-status="@(Model.IsSold ? 1 : 0)"
+               class="btn btn-default btn-sm"
+               data-toggle="tooltip"
+               data-placement="bottom"
+               data-original-title="Показать поштучно"
+               title="">
+                <i class="fa fa-fw fa-expand"></i>
+            </a>
+        }                
+        @if (!Model.IsSold)
+        {
+            <a asp-action="ChangeLocation" 
+               asp-controller="Goods"
+               asp-route-ids="@Model.GoodsIds"
+               class="btn btn-default btn-sm"
+               data-toggle="tooltip"
+               data-placement="bottom"
+               data-original-title="Переместить на другой склад"
+               title="">
+                <i class="fa fa-fw fa-location-arrow"></i>
+            </a>
+            <button class="btn btn-primary btn-sm"
+                    data-toggle="tooltip"
+                    data-placement="bottom"
+                    data-original-title="Оформить продажу"
+                    title="">
+                <i class="fa fa-fw fa-handshake-o"></i>
+            </button>
+        }        
+    </div>
+</div>

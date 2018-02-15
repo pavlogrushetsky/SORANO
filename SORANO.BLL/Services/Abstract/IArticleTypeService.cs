@@ -1,19 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SORANO.CORE.StockEntities;
+using SORANO.BLL.Dtos;
 
 namespace SORANO.BLL.Services.Abstract
 {
-    public interface IArticleTypeService
+    public interface IArticleTypeService : IBaseService<ArticleTypeDto>
     {
-        Task<IEnumerable<ArticleType>> GetAllAsync(bool withDeleted);
+        Task<ServiceResponse<IEnumerable<ArticleTypeDto>>> GetTreeAsync(bool withDeleted);
 
-        Task<ArticleType> GetAsync(int id);
-
-        Task<ArticleType> CreateAsync(ArticleType articleType, int userId);
-
-        Task<ArticleType> UpdateAsync(ArticleType articleType, int userId);
-
-        Task DeleteAsync(int id, int userId);
+        Task<ServiceResponse<IEnumerable<ArticleTypeDto>>> GetAllAsync(bool withDeleted, string searchTerm, int currentTypeId = 0);
     }
 }

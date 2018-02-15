@@ -1,34 +1,41 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
-using SORANO.BLL.Services.Abstract;
-using SORANO.WEB.Infrastructure.Extensions;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using MimeTypes;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using SORANO.BLL.Dtos;
+using SORANO.BLL.Services;
+using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure;
-using SORANO.WEB.Models;
+using SORANO.WEB.Infrastructure.Extensions;
+using SORANO.WEB.Infrastructure.Filters;
+using SORANO.WEB.ViewModels.Attachment;
+using SORANO.WEB.ViewModels.Supplier;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using SORANO.WEB.ViewModels.Delivery;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    public class SupplierController : EntityBaseController<SupplierModel>
+    [CheckUser]
+    public class SupplierController : EntityBaseController<SupplierCreateUpdateViewModel>
     {
         private readonly ISupplierService _supplierService;
+        private readonly IMapper _mapper;
 
         public SupplierController(ISupplierService supplierService, 
             IUserService userService,
             IHostingEnvironment environment,
             IAttachmentTypeService attachmentTypeService,
             IAttachmentService attachmentService,
-            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
+            IMemoryCache memoryCache,
+            IMapper mapper) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
         {
             _supplierService = supplierService;
+            _mapper = mapper;
         }
 
         #region GET Actions
@@ -36,15 +43,28 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            bool showDeleted = Session.GetBool("ShowDeletedSuppliers");
+            return await TryGetActionResultAsync(async () =>
+            {
+                bool showDeleted = Session.GetBool("ShowDeletedSuppliers");
 
-            var suppliers = await _supplierService.GetAllAsync(showDeleted);
+                var suppliersResult = await _supplierService.GetAllAsync(showDeleted);
 
-            ViewBag.ShowDeleted = showDeleted;
+                if (suppliersResult.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось получить список поставщиков.";
+                    return RedirectToAction("Index", "Home");
+                }
 
-            await ClearAttachments();
+                ViewBag.ShowDeleted = showDeleted;
 
-            return View(suppliers.Select(s => s.ToModel()).ToList());
+                await ClearAttachments();
+
+                return View(_mapper.Map<IEnumerable<SupplierIndexViewModel>>(suppliersResult.Result));
+            }, ex => 
+            {
+                TempData["Error"] = ex;
+                return RedirectToAction("Index", "Home");
+            });          
         }
 
         [HttpGet]
@@ -58,66 +78,93 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(string returnUrl)
         {
-            SupplierModel model;
+            return await TryGetActionResultAsync(async () =>
+            {
+                SupplierCreateUpdateViewModel model;
 
-            if (TryGetCached(out SupplierModel cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
-            {
-                model = cachedModel;
-                await CopyMainPicture(model);
-            }
-            else
-            {
-                model = new SupplierModel
+                if (TryGetCached(out var cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
                 {
-                    MainPicture = new AttachmentModel(),
-                    ReturnPath = returnUrl
-                };
-            }
+                    model = cachedModel;
+                    await CopyMainPicture(model);
+                }
+                else
+                {
+                    model = new SupplierCreateUpdateViewModel
+                    {
+                        MainPicture = new MainPictureViewModel(),
+                        ReturnPath = returnUrl
+                    };
+                }
 
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
-
-            return View(model);
+                return View(model);
+            }, OnFault);            
         }
 
         [HttpGet]
         public async Task<IActionResult> Update(int id)
-        {            
-            SupplierModel model;
-
-            if (TryGetCached(out SupplierModel cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedModel.ID == id)
+        {
+            return await TryGetActionResultAsync(async () =>
             {
-                model = cachedModel;
-                await CopyMainPicture(model);
-            }
-            else
+                SupplierCreateUpdateViewModel model;
+
+                if (TryGetCached(out var cachedModel, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedModel.ID == id)
+                {
+                    model = cachedModel;
+                    await CopyMainPicture(model);
+                }
+                else
+                {
+                    var result = await _supplierService.GetAsync(id);
+
+                    if (result.Status != ServiceResponseStatus.Success)
+                    {
+                        TempData["Error"] = "Не удалось найти указанного поставщика.";
+                        return RedirectToAction("Index");
+                    }
+
+                    model = _mapper.Map<SupplierCreateUpdateViewModel>(result.Result);
+                    model.IsUpdate = true;
+                }
+
+                return View("Create", model);
+            }, OnFault);
+        }        
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            return await TryGetActionResultAsync(async () =>
             {
-                var supplier = await _supplierService.GetAsync(id);
+                var result = await _supplierService.GetAsync(id);
 
-                model = supplier.ToModel();
-            }
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанного поставщика.";
+                    return RedirectToAction("Index");
+                }
 
+                var viewModel = _mapper.Map<SupplierDetailsViewModel>(result.Result);
+                viewModel.Deliveries.Mode = DeliveryTableMode.SupplierDetails;
 
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
-
-            ViewData["IsEdit"] = true;
-
-            return View("Create", model);
+                return View(viewModel);
+            }, OnFault);
         }
 
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var supplier = await _supplierService.GetAsync(id);
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _supplierService.GetAsync(id);
 
-            return View(supplier.ToModel());
-        }
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанного поставщика.";
+                    return RedirectToAction("Index");
+                }
 
-        [HttpGet]
-        public async Task<IActionResult> Details(int id)
-        {
-            var supplier = await _supplierService.GetIncludeAllAsync(id);
-
-            return View(supplier.ToModel());
+                return View(_mapper.Map<SupplierDeleteViewModel>(result.Result));
+            }, OnFault);
         }
 
         #endregion
@@ -126,141 +173,98 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SupplierModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        [LoadAttachments]
+        [ValidateModel]
+        public async Task<IActionResult> Create(SupplierCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            var attachmentTypes = new List<SelectListItem>();
-
-            // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
-                attachmentTypes = await GetAttachmentTypes();
-                ViewBag.AttachmentTypes = attachmentTypes;
+                var supplier = _mapper.Map<SupplierDto>(model);
 
-                await LoadMainPicture(model, mainPictureFile);
-                await LoadAttachments(model, attachments);
+                var result = await _supplierService.CreateAsync(supplier, UserId);
 
-                // Check the model
-                if (!ModelState.IsValid)
+                if (result.Status != ServiceResponseStatus.Success)
                 {
-                    return View(model);
+                    TempData["Error"] = "Не удалось создать поставщика.";
+                    return RedirectToAction("Index");
                 }
 
-                // Convert model to supplier entity
-                var supplier = model.ToEntity();
+                TempData["Success"] = $"Поставщик \"{model.Name}\" был успешно создан.";
 
-                // Get current user
-                var currentUser = await GetCurrentUser();
-
-                // Call correspondent service method to create new supplier
-                supplier = await _supplierService.CreateAsync(supplier, currentUser.ID);
-
-                // If succeeded
-                if (supplier != null)
+                if (string.IsNullOrEmpty(model.ReturnPath))
                 {
-                    if (string.IsNullOrEmpty(model.ReturnPath))
-                    {
-                        return RedirectToAction("Index", "Supplier");
-                    }
-
-                    if (_memoryCache.TryGetValue(CacheKeys.CreateSupplierCacheKey, out DeliveryModel cachedDelivery))
-                    {
-                        cachedDelivery.Supplier = supplier.ToModel();
-                        cachedDelivery.SupplierID = supplier.ID.ToString();
-                        _memoryCache.Set(CacheKeys.CreateSupplierCacheKey, cachedDelivery);
-                        Session.SetBool(CacheKeys.CreateSupplierCacheValidKey, true);
-                    }
-                    else
-                    {
-                        return BadRequest();
-                    }
-
-                    return Redirect(model.ReturnPath);
+                    return RedirectToAction("Index");
                 }
 
-                // If failed
-                ModelState.AddModelError("", "Не удалось создать нового поставщика.");
-                return View(model);
-            }, ex =>
-            {
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ModelState.AddModelError("", ex);
-                return View(model);
-            });
+                if (MemoryCache.TryGetValue(CacheKeys.CreateSupplierCacheKey, out DeliveryCreateUpdateViewModel cachedDelivery))
+                {
+                    cachedDelivery.SupplierName = model.Name;
+                    cachedDelivery.SupplierID = result.Result;
+                    MemoryCache.Set(CacheKeys.CreateSupplierCacheKey, cachedDelivery);
+                    Session.SetBool(CacheKeys.CreateSupplierCacheValidKey, true);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+
+                return Redirect(model.ReturnPath);
+            }, OnFault);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(SupplierModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        [LoadAttachments]
+        [ValidateModel]
+        public async Task<IActionResult> Update(SupplierCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            var attachmentTypes = new List<SelectListItem>();
-
-            // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
-                attachmentTypes = await GetAttachmentTypes();
-                ViewBag.AttachmentTypes = attachmentTypes;
+                var supplier = _mapper.Map<SupplierDto>(model);
 
-                await LoadMainPicture(model, mainPictureFile);
-                await LoadAttachments(model, attachments);
+                var result = await _supplierService.UpdateAsync(supplier, UserId);
 
-                // Check the model
-                if (!ModelState.IsValid)
+                if (result.Status != ServiceResponseStatus.Success)
                 {
-                    ViewData["IsEdit"] = true;
-                    return View("Create", model);
+                    TempData["Error"] = "Не удалось обновить поставщика.";
+                    return RedirectToAction("Index");
                 }
 
-                // Convert model to supplier entity
-                var supplier = model.ToEntity();
-
-                // Get current user
-                var currentUser = await GetCurrentUser();
-
-                // Call correspondent service method to update supplier
-                supplier = await _supplierService.UpdateAsync(supplier, currentUser.ID);
-
-                // If succeeded
-                if (supplier != null)
-                {
-                    return RedirectToAction("Index", "Supplier");
-                }
-
-                // If failed
-                ModelState.AddModelError("", "Не удалось обновить поставщика.");
-                ViewData["IsEdit"] = true;
-                return View("Create", model);
-            }, ex =>
-            {
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ModelState.AddModelError("", ex);
-                ViewData["IsEdit"] = true;
-                return View("Create", model);
-            });
+                TempData["Success"] = $"Поставщик \"{model.Name}\" был успешно обновлён.";
+                return RedirectToAction("Index");
+            }, OnFault);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(SupplierModel model)
+        public async Task<IActionResult> Delete(SupplierDeleteViewModel model)
         {
             return await TryGetActionResultAsync(async () =>
             {
-                var currentUser = await GetCurrentUser();
+                var result = await _supplierService.DeleteAsync(model.ID, UserId);
 
-                await _supplierService.DeleteAsync(model.ID, currentUser.ID);
+                if (result.Status == ServiceResponseStatus.Success)
+                {
+                    TempData["Success"] = $"Поставщик \"{model.Name}\" был успешно помечен как удалённый.";
+                }
+                else
+                {
+                    TempData["Error"] = "Не удалось удалить поставщика.";
+                }
 
-                return RedirectToAction("Index", "Supplier");
-            }, ex => RedirectToAction("Index", "Supplier"));
+                return RedirectToAction("Index");
+            }, OnFault);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Cancel(SupplierModel model)
+        public IActionResult Cancel(SupplierCreateUpdateViewModel model)
         {
             if (string.IsNullOrEmpty(model.ReturnPath))
             {
                 return RedirectToAction("Index", "Supplier");
             }
 
-            if (_memoryCache.TryGetValue(CacheKeys.CreateSupplierCacheKey, out DeliveryModel _))
+            if (MemoryCache.TryGetValue(CacheKeys.CreateSupplierCacheKey, out DeliveryCreateUpdateViewModel _))
             {
                 Session.SetBool(CacheKeys.CreateSupplierCacheValidKey, true);
             }
@@ -269,5 +273,29 @@ namespace SORANO.WEB.Controllers
         }
 
         #endregion
+
+        [HttpPost]
+        public async Task<JsonResult> GetSuppliers(string term)
+        {
+            var suppliers = await _supplierService.GetAllAsync(false, term);
+
+            return Json(new
+            {
+                results = suppliers.Result?
+                    .Select(t => new
+                    {
+                        id = t.ID,
+                        text = t.Name,
+                        desc = t.Description ?? string.Empty
+                    })
+                    .OrderBy(t => t.text)
+            });
+        }
+
+        private IActionResult OnFault(string ex)
+        {
+            TempData["Error"] = ex;
+            return RedirectToAction("Index");
+        }
     }
 }

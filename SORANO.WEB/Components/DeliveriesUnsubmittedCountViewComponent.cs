@@ -17,7 +17,7 @@ namespace SORANO.WEB.Components
         {
             var count = await _deliveryService.GetUnsubmittedCountAsync();
 
-            return View(count);
+            return View(count.Result);
         }
     }
 }

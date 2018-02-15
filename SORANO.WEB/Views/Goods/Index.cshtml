@@ -1,4 +1,4 @@
-﻿@model List<GoodsIndexModel>
+﻿@model GoodsIndexViewModel
 
 @{
     ViewBag.Title = "SORANO - Товары";
@@ -8,8 +8,16 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/lib/datatables.net-bs/css/dataTables.bootstrap.min.css" />
-    <link rel="stylesheet" href="~/lib/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/select2/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="~/lib/select2-bootstrap-theme/dist/select2-bootstrap.min.css" />
+    <style>
+        span.select2-selection.select2-selection--single {
+            -ms-border-top-right-radius: 3px !important;
+            border-top-right-radius: 3px !important;
+            -ms-border-bottom-right-radius: 3px !important;
+            border-bottom-right-radius: 3px !important;
+        }
+    </style>
 }
 
 @section Breadcrumb {
@@ -19,86 +27,156 @@
     </ul>
 }
 
-<div class="row">
-    <div class="col-lg-12">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                Список товаров
+<form asp-action="Index"
+      asp-controller="Goods"
+      method="post">
+    <input type="hidden" asp-for="ArticleID" />
+    <input type="hidden" asp-for="ArticleName" />
+    <input type="hidden" asp-for="ArticleTypeID" />
+    <input type="hidden" asp-for="ArticleTypeName" />
+    <input type="hidden" asp-for="LocationID" />
+    <input type="hidden" asp-for="LocationName" />
+    <input type="hidden" asp-for="IsFiltered" />
+    @if (!Model.Goods.Any())
+    {
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="alert alert-dismissible alert-info">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <strong>Информация:</strong> Товары, удовлетворяющие заданным критериям, отсутствуют
+                </div>
             </div>
-            <div class="panel-body">
-                <table id="goods-datatable" class="table table-striped table-bordered table-hover table-responsive">
-                    <thead>
-                    <tr role="row" class="search-row">
-                        <th style="width: 20%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Артикул" /></th>
-                        <th style="width: 20%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Место" /></th>
-                        <th style="width: 20%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Поставка" /></th>
-                        <th style="width: 20%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Кол-во, шт." /></th>
-                        <th style="width: 20%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Цена поставки" /></th>
-                    </tr>
-                    <tr role="row">
-                        <th style="width: 20%"><i class="fa fa-fw fa-barcode" aria-hidden="true"></i>&nbsp;Артикул</th>
-                        <th style="width: 20%"><i class="fa fa-fw fa-map-signs" aria-hidden="true"></i>&nbsp;Место</th>
-                        <th style="width: 20%"><i class="fa fa-fw fa-cart-arrow-down" aria-hidden="true"></i>&nbsp;Поставка</th>
-                        <th style="width: 20%"><i class="fa fa-fw fa-hashtag" aria-hidden="true"></i>&nbsp;Кол-во, шт</th>
-                        <th style="width: 20%"><i class="fa fa-fw fa-money" aria-hidden="true"></i>&nbsp;Цена поставки</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var goodsGroup in Model)
-                    {
-                        for (var i = 0; i < goodsGroup.Goods?.Count; i++)
-                        {
-                            <tr>
-                                <td>
-                                    <a asp-controller="Article"
-                                       asp-action="Details"
-                                       asp-route-id="@goodsGroup.ArticleId"
-                                       data-toggle="tooltip"
-                                       data-placement="bottom"
-                                       data-original-title="Просмотреть информацию об артикуле"
-                                       title="">
-                                        @goodsGroup.ArticleName
-                                    </a>
-                                </td>
-                                <td>
-                                    <a asp-controller="Location"
-                                       asp-action="Details"
-                                       asp-route-id="@goodsGroup.Goods?[i].LocationId"
-                                       data-toggle="tooltip"
-                                       data-placement="bottom"
-                                       data-original-title="Просмотреть информацию о месте"
-                                       title="">
-                                        @goodsGroup.Goods?[i].LocationName
-                                    </a>
-                                </td>
-                                <td>
-                                    <a asp-controller="Delivery"
-                                       asp-action="Details"
-                                       asp-route-id="@goodsGroup.Goods?[i].DeliveryId"
-                                       data-toggle="tooltip"
-                                       data-placement="bottom"
-                                       data-original-title="Просмотреть информацию о поставке"
-                                       title="">
-                                        @goodsGroup.Goods?[i].BillNumber
-                                    </a>
-                                </td>
-                                <td>@goodsGroup.Goods?[i].Count</td>
-                                <td>@goodsGroup.Goods?[i].DeliveryPrice</td>
-                            </tr>
-                        }                        
-                    }
-                    </tbody>
-                </table>
+        </div>
+    }
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel @(Model.IsFiltered ? "panel-info" : "panel-default")">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" href="#collapseFilters">
+                            <span>
+                                <i class="fa fa-fw fa-filter" aria-hidden="true"></i>
+                                Панель фильтров
+                            </span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseFilters" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                                <div class="form-group">
+                                    <label class="control-label" asp-for="SearchTerm"></label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon"><i class="fa fa-fw fa-search"></i></span>
+                                        <input class="form-control input-sm" type="text" asp-for="SearchTerm" placeholder="Поиск" autofocus />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                                <div class="form-group">
+                                    <label class="control-label" asp-for="ShowNumber"></label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon"><i class="fa fa-fw fa-hashtag"></i></span>
+                                        <select class="form-control input-sm"
+                                                asp-for="ShowNumber">
+                                            <option value="10">10</option>
+                                            <option value="25">25</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                                <div class="form-group">
+                                    <label class="control-label" asp-for="ShowByPiece"></label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon"><i class="fa fa-fw fa-object-group"></i></span>
+                                        <select class="form-control input-sm"
+                                                asp-for="ShowByPiece">
+                                            <option value="false">Группировать</option>
+                                            <option value="true">Поштучно</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                                <div class="form-group">
+                                    <label class="control-label" asp-for="ArticleName"></label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon"><i class="fa fa-fw fa-tag"></i></span>
+                                        <select class="form-control input-sm select-article"
+                                                asp-for="ArticleID"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                                <div class="form-group">
+                                    <label class="control-label" asp-for="ArticleTypeName"></label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon"><i class="fa fa-fw fa-tags"></i></span>
+                                        <select class="form-control input-sm select-article-type"
+                                                asp-for="ArticleTypeID"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                                <div class="form-group">
+                                    <label class="control-label" asp-for="LocationName"></label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon"><i class="fa fa-fw fa-map-signs"></i></span>
+                                        <select class="form-control input-sm select-location"
+                                                asp-for="LocationID"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                                <div class="form-group">
+                                    <label class="control-label" asp-for="Status"></label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon"><i class="fa fa-fw fa-align-justify"></i></span>
+                                        <select class="form-control input-sm"
+                                                asp-for="Status">
+                                            <option value="0">В наличии</option>
+                                            <option value="1">Отложено</option>
+                                            <option value="2">Все</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="form-group">
+                            <button class="btn btn-default btn-sm" asp-action="ResetFilters">
+                                <i class="fa fa-fw fa-close"></i>
+                                Сбросить
+                            </button>
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="fa fa-fw fa-filter"></i>
+                                Применить
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+</form>
+<div class="row goods-cards-row">
+    @foreach (var item in Model.Goods)
+    {
+        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            @Html.Partial("~/Views/Goods/_Card.cshtml", item)
+        </div>
+    }
 </div>
 
 @section Scripts {
-    <script src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script src="~/lib/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-    <script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="~/lib/datatables.net-responsive-bs/js/responsive.bootstrap.min.js"></script>
+    <script src="~/lib/select2/dist/js/select2.full.min.js"></script>
     <environment names="Development">
         <script src="~/js/pages/goodsIndex.js"></script>
     </environment>

@@ -4,46 +4,51 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
-using SORANO.CORE.AccountEntities;
+using SORANO.BLL.Services;
 
 namespace SORANO.WEB.Controllers
 {
-    /// <summary>
-    /// Controller to perform controllers' base functionality
-    /// </summary>
     public class BaseController : Controller
     {
-        protected readonly IUserService _userService;
+        protected readonly IUserService UserService;
 
-        /// <summary>
-        /// Controller to perform controllers' base functionality
-        /// </summary>
-        /// <param name="userService">Users' service</param>
+        protected int UserId
+        {
+            get
+            {
+                var userResult = UserService.Get(HttpContext.User.FindFirst(ClaimTypes.Name)?.Value);
+                return userResult.Status == ServiceResponseStatus.Success ? userResult.Result.ID : 0;
+            }
+        }
+
+        protected int? LocationId
+        {
+            get
+            {
+                var locationId = HttpContext.User.FindFirst("LocationId")?.Value;
+                return string.IsNullOrWhiteSpace(locationId)
+                    ? (int?)null
+                    : int.Parse(locationId);
+            }
+        }
+
+        protected bool IsDeveloper => HttpContext.User.IsInRole("developer");
+
+        protected bool IsAdministrator => HttpContext.User.IsInRole("administrator");
+
+        protected bool IsManager => HttpContext.User.IsInRole("manager");
+
+        protected bool AllowCreation => IsAdministrator || IsManager || IsDeveloper;
+
+        protected string LocationName => HttpContext.User.FindFirst("LocationName")?.Value;
+
         public BaseController(IUserService userService)
         {
-            _userService = userService;
+            UserService = userService;           
         }
 
-        /// <summary>
-        /// Context session
-        /// </summary>
         protected ISession Session => HttpContext.Session;
 
-        /// <summary>
-        /// Get currently logged in user
-        /// </summary>
-        /// <returns></returns>
-        protected async Task<User> GetCurrentUser()
-        {
-            return await _userService.GetAsync(HttpContext.User.FindFirst(ClaimTypes.Name)?.Value);
-        }
-
-        /// <summary>
-        /// Try to perform controller logic asynchronously
-        /// </summary>
-        /// <param name="function">Function to try to perform</param>
-        /// <param name="onFault">Function to perform if failed</param>
-        /// <returns>Result</returns>
         protected async Task<IActionResult> TryGetActionResultAsync(Func<Task<IActionResult>> function, Func<string, IActionResult> onFault)
         {
             IActionResult result;
@@ -54,18 +59,13 @@ namespace SORANO.WEB.Controllers
             }
             catch (Exception ex)
             {
-                result = onFault.Invoke(ex.Message);
+                // TODO Log in database
+                result = onFault.Invoke("Не удалось выполнить операцию из-за непредвиденного исключения. Обратитесь к системному администратору.");
             }
 
             return result;
         }
 
-        /// <summary>
-        /// Try to perform controller logic
-        /// </summary>
-        /// <param name="function">Function to try to perform</param>
-        /// <param name="onFault">Function to perform if failed</param>
-        /// <returns>Result</returns>
         protected IActionResult TryGetActionResult(Func<IActionResult> function, Func<string, IActionResult> onFault)
         {
             IActionResult result;

@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SORANO.BLL.Helpers;
-using SORANO.BLL.Properties;
 using SORANO.BLL.Services.Abstract;
-using SORANO.CORE.AccountEntities;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 using System.Linq;
+using SORANO.BLL.Dtos;
+using SORANO.BLL.Extensions;
+using System;
 
 namespace SORANO.BLL.Services
 {
@@ -18,163 +16,152 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<IEnumerable<Article>> GetAllAsync(bool withDeleted)
+        #region CRUD methods
+
+        public async Task<ServiceResponse<IEnumerable<ArticleDto>>> GetAllAsync(bool withDeleted)
         {
-            var articles = await _unitOfWork.Get<Article>().GetAllAsync();
+            var response = new SuccessResponse<IEnumerable<ArticleDto>>();
 
-            if (!withDeleted)
-            {
-                return articles.Where(a => !a.IsDeleted);
-            }
+            var articles = await UnitOfWork.Get<Article>().GetAllAsync();
 
-            return articles;
+            response.Result = !withDeleted 
+                ? articles.Where(a => !a.IsDeleted).Select(a => a.ToDto()) 
+                : articles.Select(a => a.ToDto());
+
+            return response;
         }
 
-        public async Task<Article> GetAsync(int id)
+        public async Task<ServiceResponse<ArticleDto>> GetAsync(int id)
         {
-            return await _unitOfWork.Get<Article>().GetAsync(a => a.ID == id);
+            var article = await UnitOfWork.Get<Article>().GetAsync(a => a.ID == id);
+
+            return article == null 
+                ? new ServiceResponse<ArticleDto>(ServiceResponseStatus.NotFound) 
+                : new SuccessResponse<ArticleDto>(article.ToDto());
         }
 
-        public async Task<Article> CreateAsync(Article article, int userId)
+        public async Task<ServiceResponse<int>> CreateAsync(ArticleDto article, int userId)
         {
-            // Check passed article
             if (article == null)
-            {
-                throw new ArgumentNullException(nameof(article), Resource.ArticleCannotBeNullException);
-            }
+                throw new ArgumentNullException(nameof(article));
 
-            // Identifier of new article must be equal 0
-            if (article.ID != 0)
-            {
-                throw new ArgumentException(Resource.ArticleInvalidIdentifierException, nameof(article.ID));
-            }
+            var articlesWithSameBarcode = await UnitOfWork.Get<Article>()
+                .FindByAsync(a => a.Barcode.Equals(article.Barcode) && a.ID != article.ID);
 
-            // Get user by specified identifier
-            var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
+            if (articlesWithSameBarcode.Any())
+                return new ServiceResponse<int>(ServiceResponseStatus.AlreadyExists);
 
-            // Check user
-            if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
-            }
+            var entity = article.ToEntity();
 
-            // Update created and modified fields for article
-            article.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            entity.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            entity.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            entity.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-            // Update created and modified fields for each article recommendation
-            foreach (var recommendation in article.Recommendations)
-            {
-                recommendation.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            }
+            var added = UnitOfWork.Get<Article>().Add(entity);
 
-            foreach (var attachment in article.Attachments)
-            {
-                attachment.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            }
+            await UnitOfWork.SaveAsync();
 
-            var saved = _unitOfWork.Get<Article>().Add(article);
-
-            await _unitOfWork.SaveAsync();
-
-            return saved;
+            return new SuccessResponse<int>(added.ID);
         }
 
-        public async Task<Article> UpdateAsync(Article article, int userId)
+        public async Task<ServiceResponse<ArticleDto>> UpdateAsync(ArticleDto article, int userId)
         {
-            // Check passed article
             if (article == null)
-            {
-                throw new ArgumentNullException(nameof(article), Resource.ArticleCannotBeNullException);
-            }
+                throw new ArgumentNullException(nameof(article));
 
-            // Identifier of new article must be > 0
-            if (article.ID <= 0)
-            {
-                throw new ArgumentException(Resource.ArticleInvalidIdentifierException, nameof(article.ID));
-            }
+            var existentEntity = await UnitOfWork.Get<Article>().GetAsync(t => t.ID == article.ID);
 
-            // Get user by specified identifier
-            var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == userId);
+            if (existentEntity == null)
+                return new ServiceResponse<ArticleDto>(ServiceResponseStatus.NotFound);
 
-            // Check user
-            if (user == null)
-            {
-                throw new ObjectNotFoundException(Resource.UserNotFoundException);
-            }
+            var articlesWithSameBarcode = await UnitOfWork.Get<Article>()
+                .FindByAsync(a => a.Barcode.Equals(article.Barcode) && a.ID != article.ID);
 
-            // Get existent article by identifier
-            var existentArticle = await _unitOfWork.Get<Article>().GetAsync(t => t.ID == article.ID);
+            if (articlesWithSameBarcode.Any())
+                return new ServiceResponse<ArticleDto>(ServiceResponseStatus.AlreadyExists);
 
-            // Check existent article
+            var entity = article.ToEntity();
+
+            existentEntity.UpdateFields(entity);
+            existentEntity.UpdateModifiedFields(userId);
+
+            UpdateAttachments(entity, existentEntity, userId);
+            UpdateRecommendations(entity, existentEntity, userId);
+
+            UnitOfWork.Get<Article>().Update(existentEntity);
+
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<ArticleDto>();
+        }
+
+        public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
+        {
+            var existentArticle = await UnitOfWork.Get<Article>().GetAsync(t => t.ID == id);
+
             if (existentArticle == null)
-            {
-                throw new ObjectNotFoundException(Resource.ArticleNotFoundException);
-            }
-
-            // Update fields
-            existentArticle.Name = article.Name;
-            existentArticle.Description = article.Description;
-            existentArticle.Producer = article.Producer;
-            existentArticle.Code = article.Code;
-            existentArticle.Barcode = article.Barcode;
-            existentArticle.TypeID = article.TypeID;
-
-            // Update modified fields for existent article
-            existentArticle.UpdateModifiedFields(userId);
-
-            UpdateAttachments(article, existentArticle, userId);
-
-            UpdateRecommendations(article, existentArticle, userId);
-
-            var updated = _unitOfWork.Get<Article>().Update(existentArticle);
-
-            await _unitOfWork.SaveAsync();
-
-            return updated;
-        }
-
-        public async Task DeleteAsync(int id, int userId)
-        {
-            var existentArticle = await _unitOfWork.Get<Article>().GetAsync(t => t.ID == id);
+                return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
 
             if (existentArticle.DeliveryItems.Any())
-            {
-                throw new Exception(Resource.ArticleCannotBeDeletedException);
-            }
+                return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
             existentArticle.UpdateDeletedFields(userId);
 
-            _unitOfWork.Get<Article>().Update(existentArticle);
+            UnitOfWork.Get<Article>().Update(existentArticle);
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<int>(id);
         }
 
-        public async Task<bool> BarcodeExistsAsync(string barcode, int articleId = 0)
+        #endregion
+
+        public async Task<ServiceResponse<IDictionary<ArticleDto, int>>> GetArticlesForLocationAsync(int? locationId)
         {
-            if (string.IsNullOrEmpty(barcode))
+            var goods = await UnitOfWork.Get<Goods>().GetAllAsync();
+
+            IDictionary<ArticleDto, int> result = null;
+
+            // TODO
+            //if (!locationId.HasValue || locationId == 0)
+            //{                
+            //    result = goods.Where(g => !g.Sale.Date.HasValue)
+            //        .GroupBy(g => g.DeliveryItem.Article)
+            //        .ToDictionary(gr => gr.Key.ToDto(), gr => gr.Count());
+            //}
+            //else
+            //{
+            //    result = goods.Where(g => !g.SaleDate.HasValue && g.Storages.Single(s => !s.ToDate.HasValue).LocationID == locationId)
+            //        .GroupBy(g => g.DeliveryItem.Article)
+            //        .ToDictionary(gr => gr.Key.ToDto(), gr => gr.Count());
+            //}            
+
+            return new SuccessResponse<IDictionary<ArticleDto, int>>(result);
+        }
+
+        public async Task<ServiceResponse<IEnumerable<ArticleDto>>> GetAllAsync(bool withDeleted, string searchTerm)
+        {
+            var response = new SuccessResponse<IEnumerable<ArticleDto>>();
+
+            var articles = await UnitOfWork.Get<Article>().GetAllAsync();
+
+            var term = searchTerm?.ToLower();
+
+            var searched = articles
+                .Where(a => string.IsNullOrEmpty(term)
+                            || a.Name.ToLower().Contains(term)
+                            || a.Type.Name.ToLower().Contains(term)
+                            || !string.IsNullOrWhiteSpace(a.Code) && a.Code.ToLower().Contains(term)
+                            || !string.IsNullOrWhiteSpace(a.Barcode) && a.Barcode.ToLower().Contains(term));
+
+            if (withDeleted)
             {
-                return false;
+                response.Result = searched.Select(t => t.ToDto());
+                return response;
             }
 
-            var articlesWithSameBarcode = await _unitOfWork.Get<Article>().FindByAsync(a => a.Barcode.Equals(barcode) && a.ID != articleId);
-
-            return articlesWithSameBarcode.Any();
-        }
-
-        public async Task<Dictionary<Article, int>> GetArticlesForLocationAsync(int? locationId)
-        {
-            var goods = await _unitOfWork.Get<Goods>().GetAllAsync();
-
-            if (!locationId.HasValue || locationId == 0)
-            {                
-                return goods.Where(g => !g.SaleDate.HasValue)
-                    .GroupBy(g => g.DeliveryItem.Article)
-                    .ToDictionary(gr => gr.Key, gr => gr.Count());
-            }
-
-            return goods.Where(g => !g.SaleDate.HasValue && g.Storages.Single(s => !s.ToDate.HasValue).LocationID == locationId)
-                .GroupBy(g => g.DeliveryItem.Article)
-                .ToDictionary(gr => gr.Key, gr => gr.Count());
+            response.Result = searched.Where(t => !t.IsDeleted).Select(t => t.ToDto());
+            return response;
         }
     }
 }

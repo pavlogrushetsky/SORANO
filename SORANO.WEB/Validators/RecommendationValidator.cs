@@ -1,13 +1,13 @@
 ﻿using FluentValidation;
-using SORANO.WEB.Models;
+using SORANO.WEB.ViewModels.Recommendation;
 
 namespace SORANO.WEB.Validators
 {
-    public class RecommendationValidator : AbstractValidator<RecommendationModel>
+    public class RecommendationValidator : AbstractValidator<RecommendationViewModel>
     {
         public RecommendationValidator()
         {
-            RuleFor(r => r.ValueString)
+            RuleFor(r => r.Value)
                 .Matches(@"^[0-9]+(\.[0-9]{1,2})?$")
                 .WithMessage("Значение должно быть в формате x.xx");
 

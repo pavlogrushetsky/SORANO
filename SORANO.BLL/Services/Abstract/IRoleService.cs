@@ -1,11 +1,11 @@
-﻿using SORANO.CORE.AccountEntities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using SORANO.BLL.Dtos;
 
 namespace SORANO.BLL.Services.Abstract
 {
     public interface IRoleService
     {
-        Task<IEnumerable<Role>> GetAllAsync();
+        Task<ServiceResponse<IEnumerable<RoleDto>>> GetAllAsync();
     }
 }

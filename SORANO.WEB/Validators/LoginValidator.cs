@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using SORANO.WEB.Models;
+using SORANO.WEB.ViewModels.Account;
 
 namespace SORANO.WEB.Validators
 {
-    public class LoginValidator : AbstractValidator<LoginModel>
+    public class LoginValidator : AbstractValidator<LoginViewModel>
     {
         public LoginValidator()
         {

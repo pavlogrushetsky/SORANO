@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using SORANO.WEB.Models;
+using SORANO.WEB.ViewModels.LocationType;
 
 namespace SORANO.WEB.Validators
 {
-    public class LocationTypeValidator : AbstractValidator<LocationTypeModel>
+    public class LocationTypeValidator : AbstractValidator<LocationTypeCreateUpdateViewModel>
     {
         public LocationTypeValidator()
         {

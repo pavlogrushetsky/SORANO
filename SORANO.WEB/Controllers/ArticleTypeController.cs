@@ -1,32 +1,40 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Extensions;
 using Microsoft.Extensions.Caching.Memory;
+using SORANO.BLL.Dtos;
+using SORANO.BLL.Services;
 using SORANO.WEB.Infrastructure;
-using SORANO.WEB.Models;
+using SORANO.WEB.Infrastructure.Filters;
+using SORANO.WEB.ViewModels.Article;
+using SORANO.WEB.ViewModels.ArticleType;
+using SORANO.WEB.ViewModels.Attachment;
 
 namespace SORANO.WEB.Controllers
 {
     [Authorize(Roles = "developer,administrator,manager")]
-    public class ArticleTypeController : EntityBaseController<ArticleTypeModel>
+    [CheckUser]
+    public class ArticleTypeController : EntityBaseController<ArticleTypeCreateUpdateViewModel>
     {
         private readonly IArticleTypeService _articleTypeService;
+        private readonly IMapper _mapper;
 
         public ArticleTypeController(IArticleTypeService articleTypeService, 
             IUserService userService,
             IHostingEnvironment environment,
             IAttachmentTypeService attachmentTypeService,
             IAttachmentService attachmentService,
-            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
+            IMemoryCache memoryCache, 
+            IMapper mapper) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
         {
             _articleTypeService = articleTypeService;
+            _mapper = mapper;
         }
 
         #region GET Actions
@@ -42,239 +50,195 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(string returnUrl)
         {
-            ArticleTypeModel model;
+            return await TryGetActionResultAsync(async () =>
+            {
+                ArticleTypeCreateUpdateViewModel model;
 
-            if (TryGetCached(out ArticleTypeModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
-            {
-                model = cachedForSelectMainPicture;
-                await CopyMainPicture(model);
-            }
-            else
-            {
-                model = new ArticleTypeModel
+                if (TryGetCached(out var cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey))
                 {
-                    MainPicture = new AttachmentModel(),
-                    ReturnPath = returnUrl                    
-                };
-            }
+                    model = cachedForSelectMainPicture;
+                    await CopyMainPicture(model);
+                }
+                else
+                {
+                    model = new ArticleTypeCreateUpdateViewModel
+                    {
+                        MainPicture = new MainPictureViewModel(),
+                        ReturnPath = returnUrl
+                    };
+                }
 
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
-            ViewBag.ArticleTypes = await GetArticleTypes();
-
-            return View(model);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Brief(int id)
-        {
-            var type = await _articleTypeService.GetAsync(id);
-
-            await ClearAttachments();
-
-            return PartialView("_Brief", type.ToModel());
-        }
+                return View(model);
+            }, OnFault);            
+        }                
 
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            ArticleTypeModel model;
-
-            if (TryGetCached(out ArticleTypeModel cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedForSelectMainPicture.ID == id)
+            return await TryGetActionResultAsync(async () =>
             {
-                model = cachedForSelectMainPicture;
-                await CopyMainPicture(model);
-            }
-            else
-            {
-                var articleType = await _articleTypeService.GetAsync(id);
+                ArticleTypeCreateUpdateViewModel model;
 
-                model = articleType.ToModel();
-            }
+                if (TryGetCached(out var cachedForSelectMainPicture, CacheKeys.SelectMainPictureCacheKey, CacheKeys.SelectMainPictureCacheValidKey) && cachedForSelectMainPicture.ID == id)
+                {
+                    model = cachedForSelectMainPicture;
+                    await CopyMainPicture(model);
+                }
+                else
+                {
+                    var result = await _articleTypeService.GetAsync(id);
 
-            ViewBag.AttachmentTypes = await GetAttachmentTypes();
-            ViewBag.ArticleTypes = await GetArticleTypes(id);
+                    if (result.Status != ServiceResponseStatus.Success)
+                    {
+                        TempData["Error"] = "Не удалось найти указанный тип артикулов.";
+                        return RedirectToAction("Index", "Article");
+                    }
 
-            ViewData["IsEdit"] = true;
+                    model = _mapper.Map<ArticleTypeCreateUpdateViewModel>(result.Result);
+                    model.IsUpdate = true;
+                }
 
-            return View("Create", model);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var articleType = await _articleTypeService.GetAsync(id);
-
-            return View(articleType.ToModel());
+                return View("Create", model);
+            }, OnFault);            
         }
 
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var articleType = await _articleTypeService.GetAsync(id);
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _articleTypeService.GetAsync(id);
 
-            return View(articleType.ToModel());
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанный тип артикулов.";
+                    return RedirectToAction("Index", "Article");
+                }
+
+                var viewModel = _mapper.Map<ArticleTypeDetailsViewModel>(result.Result);
+                viewModel.Articles.Mode = ArticleTableMode.ArticleTypeDetails;
+
+                return View(viewModel);
+            }, OnFault);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _articleTypeService.GetAsync(id);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанный тип артикулов.";
+                    return RedirectToAction("Index", "Article");
+                }
+               
+                return View(_mapper.Map<ArticleTypeDeleteViewModel>(result.Result));
+            }, OnFault);
+        }        
 
         #endregion
 
         #region POST Actions
 
-        /// <summary>
-        /// Create new article type
-        /// </summary>
-        /// <param name="model">Article type model</param>
-        /// <param name="mainPictureFile"></param>
-        /// <param name="attachments"></param>
-        /// <returns>Action result</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ArticleTypeModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        [LoadAttachments]
+        [ValidateModel]
+        public async Task<IActionResult> Create(ArticleTypeCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            var attachmentTypes = new List<SelectListItem>();
-            var articleTypes = new List<SelectListItem>();
-
-            // Try to get result
             return await TryGetActionResultAsync(async () =>
             {
-                attachmentTypes = await GetAttachmentTypes();
-                articleTypes = await GetArticleTypes();
+                var articleType = _mapper.Map<ArticleTypeCreateUpdateViewModel, ArticleTypeDto>(model);
 
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ViewBag.ArticleTypes = articleTypes;
+                var result = await _articleTypeService.CreateAsync(articleType, UserId);
 
-                await LoadMainPicture(model, mainPictureFile);
-                await LoadAttachments(model, attachments);
-
-                // Check the model
-                if (!ModelState.IsValid)
+                if (result.Status == ServiceResponseStatus.NotFound ||
+                    result.Status == ServiceResponseStatus.InvalidOperation)
                 {
-                    return View(model);
+                    TempData["Error"] = "Не удалось создать тип артикулов.";
+                    return RedirectToAction("Index", "Article");
                 }
 
-                // Convert model to article type entity
-                var articleType = model.ToEntity();
+                TempData["Success"] = $"Тип артикулов \"{model.Name}\" был успешно создан.";
 
-                // Get current user
-                var currentUser = await GetCurrentUser();
-
-                // Call correspondent service method to create new article type
-                articleType = await _articleTypeService.CreateAsync(articleType, currentUser.ID);
-
-                // If succeeded
-                if (articleType != null)
-                {
-                    if (string.IsNullOrEmpty(model.ReturnPath))
-                    {
-                        return RedirectToAction("Index", "Article");
-                    }
-
-                    if (_memoryCache.TryGetValue(CacheKeys.CreateArticleTypeCacheKey, out ArticleModel cachedArticle))
-                    {
-                        cachedArticle.TypeID = articleType.ID.ToString();
-                        cachedArticle.Type = articleType.ToModel();
-                        _memoryCache.Set(CacheKeys.CreateArticleTypeCacheKey, cachedArticle);
-                        Session.SetBool(CacheKeys.CreateArticleTypeCacheValidKey, true);
-                    }
-                    else
-                    {
-                        return BadRequest();
-                    }
-
-                    return Redirect(model.ReturnPath);
-                }
-
-                // If failed
-                ModelState.AddModelError("", "Не удалось создать новый тип артикулов.");
-                return View(model);
-            }, ex => 
-            {
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ViewBag.ArticleTypes = articleTypes;
-
-                ModelState.AddModelError("", ex);
-                return View(model);
-            });            
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(ArticleTypeModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
-        {
-            var attachmentTypes = new List<SelectListItem>();
-            var articleTypes = new List<SelectListItem>();
-
-            // Try to get result
-            return await TryGetActionResultAsync(async () =>
-            {
-                attachmentTypes = await GetAttachmentTypes();
-                articleTypes = await GetArticleTypes(model.ID);
-
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ViewBag.ArticleTypes = articleTypes;
-
-                await LoadMainPicture(model, mainPictureFile);
-                await LoadAttachments(model, attachments);
-
-                // Check the model
-                if (!ModelState.IsValid)
-                {
-                    ViewData["IsEdit"] = true;
-                    return View("Create", model);
-                }
-
-                // Convert model to article type entity
-                var articleType = model.ToEntity();
-
-                // Get current user
-                var currentUser = await GetCurrentUser();
-
-                // Call correspondent service method to update article type
-                articleType = await _articleTypeService.UpdateAsync(articleType, currentUser.ID);
-
-                // If succeeded
-                if (articleType != null)
+                if (string.IsNullOrEmpty(model.ReturnPath))
                 {
                     return RedirectToAction("Index", "Article");
                 }
 
-                // If failed
-                ModelState.AddModelError("", "Не удалось обновить тип артикулов.");
-                ViewData["IsEdit"] = true;
-                return View("Create", model);
-            }, ex => 
-            {
-                ViewBag.AttachmentTypes = attachmentTypes;
-                ViewBag.ArticleTypes = articleTypes;
+                if (MemoryCache.TryGetValue(CacheKeys.CreateArticleTypeCacheKey, out ArticleCreateUpdateViewModel cachedArticle))
+                {
+                    cachedArticle.TypeID = result.Result;
+                    cachedArticle.TypeName = model.Name;
+                    MemoryCache.Set(CacheKeys.CreateArticleTypeCacheKey, cachedArticle);
+                    Session.SetBool(CacheKeys.CreateArticleTypeCacheValidKey, true);
+                }
+                else
+                {
+                    return BadRequest();
+                }
 
-                ModelState.AddModelError("", ex);
-                ViewData["IsEdit"] = true;
-                return View("Create", model);
-            });            
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Delete(ArticleTypeModel model)
-        {
-            return await TryGetActionResultAsync(async () =>
-            {
-                var currentUser = await GetCurrentUser();
-
-                await _articleTypeService.DeleteAsync(model.ID, currentUser.ID);
-
-                return RedirectToAction("Index", "Article");
-            }, ex => RedirectToAction("Index", "Article"));
+                return Redirect(model.ReturnPath);
+            }, OnFault);            
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Cancel(ArticleTypeModel model)
+        [LoadAttachments]
+        [ValidateModel]
+        public async Task<IActionResult> Update(ArticleTypeCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var articleType = _mapper.Map<ArticleTypeDto>(model);
+
+                var result = await _articleTypeService.UpdateAsync(articleType, UserId);
+
+                if (result.Status == ServiceResponseStatus.NotFound ||
+                    result.Status == ServiceResponseStatus.InvalidOperation)
+                {
+                    TempData["Error"] = "Не удалось обновить тип артикулов.";
+                    return RedirectToAction("Index", "Article");
+                }
+
+                TempData["Success"] = $"Тип артикулов \"{model.Name}\" был успешно обновлён.";
+                return RedirectToAction("Index", "Article");
+            }, OnFault);            
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(ArticleTypeDeleteViewModel model)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _articleTypeService.DeleteAsync(model.ID, UserId);
+
+                if (result.Status == ServiceResponseStatus.Success)
+                {
+                    TempData["Success"] = $"Тип артикулов \"{model.Name}\" был успешно помечен как удалённый.";
+                }
+                else
+                {
+                    TempData["Error"] = "Не удалось обновить тип артикулов.";
+                }
+
+                return RedirectToAction("Index", "Article");
+            }, OnFault);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Cancel(ArticleTypeCreateUpdateViewModel model)
         {
             if (string.IsNullOrEmpty(model.ReturnPath))
             {
                 return RedirectToAction("Index", "Article");
             }
 
-            if (_memoryCache.TryGetValue(CacheKeys.CreateArticleTypeCacheKey, out ArticleModel _))
+            if (MemoryCache.TryGetValue(CacheKeys.CreateArticleTypeCacheKey, out ArticleCreateUpdateViewModel _))
             {
                 Session.SetBool(CacheKeys.CreateArticleTypeCacheValidKey, true);
             }
@@ -284,28 +248,29 @@ namespace SORANO.WEB.Controllers
 
         #endregion
 
-        private async Task<List<SelectListItem>> GetArticleTypes(int currentTypeId = 0)
+        [HttpPost]
+        public async Task<JsonResult> GetArticleTypes(string term, int currentTypeId = 0)
         {
-            var articleTypes = await _articleTypeService.GetAllAsync(false);
+            var articleTypes = await _articleTypeService.GetAllAsync(false, term, currentTypeId);
 
-            var articleTypeItems = new List<SelectListItem>
+            return Json(new
             {
-                new SelectListItem
-                {
-                    Value = "0",
-                    Text = "-- Тип артикула --"
-                }
-            };
+                results = articleTypes.Result?
+                    .Select(t => new
+                    {
+                        id = t.ID,
+                        text = t.Name,
+                        parent = t.Type == null ? t.Name : $"{t.Type.Name}  {'\u21d0'}  {t.Name}",
+                        desc = t.Description ?? string.Empty
+                    })
+                    .OrderBy(t => t.parent)
+            });
+        }
 
-            articleTypeItems.AddRange(articleTypes.Where(t => t.ID != currentTypeId).Select(t => new SelectListItem
-            {
-                Value = t.ID.ToString(),
-                Text = t.Name
-            }));
-
-            _memoryCache.Set(CacheKeys.ArticleTypesCacheKey, articleTypeItems);
-
-            return articleTypeItems;
+        private IActionResult OnFault(string ex)
+        {
+            TempData["Error"] = ex;
+            return RedirectToAction("Index", "Article");
         }
     }
 }

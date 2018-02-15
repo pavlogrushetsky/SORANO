@@ -1,12 +1,12 @@
 ﻿using FluentValidation;
 using MimeTypes;
-using SORANO.WEB.Models;
 using System.Linq;
 using System.Text.RegularExpressions;
+using SORANO.WEB.ViewModels.AttachmentType;
 
 namespace SORANO.WEB.Validators
 {
-    public class AttachmentTypeValidator : AbstractValidator<AttachmentTypeModel>
+    public class AttachmentTypeValidator : AbstractValidator<AttachmentTypeCreateUpdateViewModel>
     {
         public AttachmentTypeValidator()
         {
@@ -35,7 +35,7 @@ namespace SORANO.WEB.Validators
                 .WithMessage("Фильтр расширений должен отсутствовать или содержать список расширений, разделённых запятыми");               
         }
 
-        private bool BeEmptyOrCommaSeparated(string str)
+        private static bool BeEmptyOrCommaSeparated(string str)
         {
             if (string.IsNullOrEmpty(str))
             {
@@ -45,7 +45,7 @@ namespace SORANO.WEB.Validators
             var extensionsString = Regex.Replace(str.ToLower(), @"\s+", "");
             var extensions = extensionsString.Split(',');
 
-            return extensions.Select(MimeTypeMap.GetMimeType).Any(a => string.IsNullOrEmpty(a) || a.Equals("application/octet-stream")) ? false : true;
+            return !extensions.Select(MimeTypeMap.GetMimeType).Any(a => string.IsNullOrEmpty(a) || a.Equals("application/octet-stream"));
         }
     }
 }

@@ -2,14 +2,8 @@
 
 namespace SORANO.DAL.Context.Configurations
 {
-    /// <summary>
-    /// Delivery configuration
-    /// </summary>
     internal class DeliveryConfiguration : StockEntityConfiguration<Delivery>
     {
-        /// <summary>
-        /// Delivery configuration
-        /// </summary>
         public DeliveryConfiguration()
         {
             Property(d => d.BillNumber)

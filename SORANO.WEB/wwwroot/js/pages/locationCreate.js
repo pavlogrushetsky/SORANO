@@ -1,14 +1,16 @@
 ﻿$(document).ready(function () {
     $.fn.select2.defaults.set('theme', 'bootstrap');
-    $('.select-location-type').select2({
-        "language": {
-            "noResults": function () {
-                return "Типы мест не найдены";
-            }
-        }
-    });
-});
 
-function getMimeType(num) {
-    getMimeType(num, "Location/GetMimeType?id=");
-}
+    initGenericSelect({
+        selectElementClass: '.select-location-type',
+        valueElementId: '#TypeID',
+        displayElementId: '#TypeName',
+        noResultsText: 'Типы не найдены',
+        searchingText: 'Поиск типов...',
+        errorLoadingText: 'Невозможно загрузить результаты поиска',
+        placeholderText: 'Тип',
+        url: '/LocationType/GetLocationTypes'
+    });
+
+    initAttachmentTypeSelect();
+});

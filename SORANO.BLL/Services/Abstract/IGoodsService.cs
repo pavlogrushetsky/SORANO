@@ -1,20 +1,25 @@
-﻿using SORANO.CORE.StockEntities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SORANO.BLL.DTOs;
+using SORANO.BLL.Dtos;
 
 namespace SORANO.BLL.Services.Abstract
 {
     public interface IGoodsService
     {
-        Task ChangeLocationAsync(int articleId, int currentLocationId, int targetLocationId, int num, int userId);
+        Task<ServiceResponse<int>> ChangeLocationAsync(IEnumerable<int> ids, int targetLocationId, int num, int userId);
 
-        Task SaleAsync(int articleId, int locationId, int clientId, int num, decimal price, int userId);
+        Task<ServiceResponse<int>> SaleAsync(int articleId, int locationId, int clientId, int num, decimal price, int userId);
 
-        Task<List<Goods>> GetSoldGoodsAsync();       
+        Task<ServiceResponse<IEnumerable<GoodsDto>>> GetSoldGoodsAsync();       
 
-        Task<decimal> GetTotalIncomeAsync();
+        Task<ServiceResponse<decimal>> GetTotalIncomeAsync();
 
-        Task<List<AllGoodsDTO>> GetAllAsync();
+        Task<ServiceResponse<IEnumerable<GoodsDto>>> GetAllAsync(int articleID = 0, int articleTypeID = 0, int locationID = 0, bool byPiece = false, int status = 0);
+
+        Task<ServiceResponse<IEnumerable<GoodsDto>>> GetAvailableForLocationAsync(int locationId, int saleId, bool selectedOnly = false); 
+
+        Task<ServiceResponse<GoodsDto>> GetAsync(int id);
+
+        Task<ServiceResponse<GoodsDto>> AddRecommendationsAsync(IEnumerable<int> ids, IEnumerable<RecommendationDto> recommendations, int userId);
     }
 }

@@ -1,9 +1,8 @@
-﻿@model LocationModel
+﻿@model LocationCreateUpdateViewModel
 
 @{
-    var isEdit = ViewData.ContainsKey("IsEdit") && (bool)ViewData["IsEdit"];
-    var title = isEdit ? "Редактирование" : "Создание";
-    var returnUrl = isEdit ? Url.Action("Update", "Location") : Url.Action("Create", "Location");
+    var title = Model.IsUpdate ? "Редактирование" : "Создание";
+    var returnUrl = Model.IsUpdate ? Url.Action("Update", "Location") : Url.Action("Create", "Location");
 }
 
 @{
@@ -16,12 +15,6 @@
 @section Styles {
     <link rel="stylesheet" href="~/lib/select2/dist/css/select2.min.css" />
     <link rel="stylesheet" href="~/lib/select2-bootstrap-theme/dist/select2-bootstrap.min.css" />
-    <style>
-        span.select2-selection.select2-selection--single {
-            border-top-left-radius: 0 !important;
-            border-bottom-left-radius: 0 !important;
-        }
-    </style>
 }
 
 @section Breadcrumb {
@@ -32,30 +25,41 @@
     </ul>
 }
 
-<form asp-action="@(isEdit ? "Update" : "Create")"
+<form asp-action="@(Model.IsUpdate ? "Update" : "Create")"
       asp-controller="Location"
       method="post"
       enctype="multipart/form-data">
     <input type="hidden" asp-for="ID" />
+    <input type="hidden" asp-for="TypeID" />
+    <input type="hidden" asp-for="TypeName" />
     <input type="hidden" asp-for="ReturnPath" />
+    <input type="hidden" asp-for="IsUpdate" />
     @for (var i = 0; i < Model.Recommendations.Count; i++)
     {
         <input type="hidden" asp-for="@Model.Recommendations[i].ID" />
-        <input type="hidden" asp-for="@Model.Recommendations[i].ParentID" />
     }
     @for (int i = 0; i < Model.Attachments.Count; i++)
     {
         <input type="hidden" asp-for="@Model.Attachments[i].ID" />
         <input type="hidden" asp-for="@Model.Attachments[i].IsNew" />
         <input type="hidden" asp-for="@Model.Attachments[i].FullPath" />
-        <input type="hidden" asp-for="@Model.Attachments[i].Type.MimeTypes" />
-        <input type="hidden" asp-for="@Model.Attachments[i].Type.Name" />
+        <input type="hidden" asp-for="@Model.Attachments[i].MimeTypes" />
+        <input type="hidden" asp-for="@Model.Attachments[i].TypeName" />
+        <input type="hidden" asp-for="@Model.Attachments[i].TypeID" />
     }
     @Html.HiddenFor(m => m.MainPicture.ID)
     @Html.HiddenFor(m => m.MainPicture.Name)
     @Html.HiddenFor(m => m.MainPicture.FullPath)
     @Html.HiddenFor(m => m.MainPicture.TypeID)
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-dismissible alert-info">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Информация:</strong> Поля, отмеченные символом *, являются обязательными для ввода
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-3 col-md-12 col-sm-12">
             @Html.Partial("~/Views/Shared/_MainPictureForm.cshtml", Model)
@@ -65,15 +69,15 @@
                 <label class="control-label" asp-for="Name"></label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
-                    <input class="form-control input-sm" type="text" asp-for="Name" placeholder="Название"/>
+                    <input class="form-control input-sm" type="text" asp-for="Name" placeholder="Название" autofocus/>
                 </div>
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="Comment"></label>
                 <div class="input-group input-group-sm">
-                    <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-commenting"></i></span>
-                    <textarea class="form-control input-sm" rows="3" asp-for="Comment" placeholder="Коментарий"></textarea>
+                    <span class="input-group-addon" style="vertical-align: top"><i class="fa fa-fw fa-align-justify"></i></span>
+                    <textarea class="form-control input-sm" rows="3" asp-for="Comment" placeholder="Описание"></textarea>
                 </div>
                 <span asp-validation-for="Comment" class="text-danger"></span>
             </div>
@@ -81,14 +85,13 @@
                 <label class="control-label" asp-for="TypeID"></label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-map-signs"></i></span>
-                    <select class="form-control input-sm select-location-type" 
-                            asp-for="TypeID" 
-                            asp-items="@ViewBag.LocationTypes"></select>
-                    @if (string.IsNullOrEmpty(Model.ReturnPath))
-                    {
-                        <span class="input-group-btn">
+                    <select class="form-control input-sm select-location-type"
+                            asp-for="TypeID">                       
+                    </select>
+                    <div class="input-group-btn">
+                        @if (string.IsNullOrEmpty(Model.ReturnPath))
+                        {
                             <button class="btn btn-default btn-sm"
-                                    type="submit"
                                     asp-action="CreateType"
                                     asp-route-returnUrl="@returnUrl"
                                     data-toggle="tooltip"
@@ -97,8 +100,8 @@
                                     title="">
                                 <i class="fa fa-fw fa-plus"></i>
                             </button>
-                        </span>
-                    }
+                        }
+                    </div>
                 </div>
                 <span asp-validation-for="TypeID" class="text-danger"></span>
             </div>
@@ -116,7 +119,7 @@
                     Отмена
                 </button>
                 <button type="submit" class="btn btn-primary btn-sm">
-                    <i class="fa fa-fw fa-check"></i>
+                    <i class="fa fa-fw fa-save"></i>
                     Сохранить
                 </button>
             </div>

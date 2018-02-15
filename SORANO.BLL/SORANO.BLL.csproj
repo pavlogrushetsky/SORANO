@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SORANO.BLL</RootNamespace>
     <AssemblyName>SORANO.BLL</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,10 +42,46 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DTOs\AllGoodsDTO.cs" />
-    <Compile Include="DTOs\GoodsGroupDTO.cs" />
+    <Compile Include="Dtos\AllGoodsDto.cs" />
+    <Compile Include="Dtos\ArticleDto.cs" />
+    <Compile Include="Dtos\ArticleTypeDto.cs" />
+    <Compile Include="Dtos\AttachmentDto.cs" />
+    <Compile Include="Dtos\AttachmentTypeDto.cs" />
+    <Compile Include="Dtos\BaseDto.cs" />
+    <Compile Include="Dtos\ClientDto.cs" />
+    <Compile Include="Dtos\DeliveryDto.cs" />
+    <Compile Include="Dtos\DeliveryItemDto.cs" />
+    <Compile Include="Dtos\GoodsDto.cs" />
+    <Compile Include="Dtos\GoodsGroupDto.cs" />
+    <Compile Include="Dtos\LocationDto.cs" />
+    <Compile Include="Dtos\LocationTypeDto.cs" />
+    <Compile Include="Dtos\RecommendationDto.cs" />
+    <Compile Include="Dtos\RoleDto.cs" />
+    <Compile Include="Dtos\SaleDto.cs" />
+    <Compile Include="Dtos\StorageDto.cs" />
+    <Compile Include="Dtos\SupplierDto.cs" />
+    <Compile Include="Dtos\UserActivityDto.cs" />
+    <Compile Include="Dtos\UserActivityType.cs" />
+    <Compile Include="Dtos\UserDto.cs" />
+    <Compile Include="Extensions\ArticleExtensions.cs" />
+    <Compile Include="Extensions\ArticleTypeExtensions.cs" />
+    <Compile Include="Extensions\AttachmentExtensions.cs" />
+    <Compile Include="Extensions\AttachmentTypeExtensions.cs" />
+    <Compile Include="Extensions\ClientExtensions.cs" />
+    <Compile Include="Extensions\DeliveryItemExtensions.cs" />
+    <Compile Include="Extensions\DeliveryExtensions.cs" />
+    <Compile Include="Extensions\LocationExtensions.cs" />
+    <Compile Include="Extensions\RecommendationExtensions.cs" />
+    <Compile Include="Extensions\RoleExtensions.cs" />
+    <Compile Include="Extensions\LocationTypeExtensions.cs" />
+    <Compile Include="Extensions\GoodsExtensions.cs" />
+    <Compile Include="Extensions\SaleExtensions.cs" />
+    <Compile Include="Extensions\StockEntityExtensions.cs" />
+    <Compile Include="Extensions\StorageExtensions.cs" />
+    <Compile Include="Extensions\SupplierExtensions.cs" />
+    <Compile Include="Extensions\UserExtensions.cs" />
     <Compile Include="Helpers\CryptoHelper.cs" />
-    <Compile Include="Helpers\StockEntityHelper.cs" />
+    <Compile Include="Extensions\CommonExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resource.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -55,12 +92,14 @@
     <Compile Include="Services\Abstract\IArticleTypeService.cs" />
     <Compile Include="Services\Abstract\IAttachmentService.cs" />
     <Compile Include="Services\Abstract\IAttachmentTypeService.cs" />
+    <Compile Include="Services\Abstract\IBaseService.cs" />
     <Compile Include="Services\Abstract\IGoodsService.cs" />
     <Compile Include="Services\Abstract\ILocationService.cs" />
     <Compile Include="Services\Abstract\ILocationTypeService.cs" />
     <Compile Include="Services\Abstract\IRoleService.cs" />
     <Compile Include="Services\Abstract\IClientService.cs" />
     <Compile Include="Services\Abstract\IDeliveryService.cs" />
+    <Compile Include="Services\Abstract\ISaleService.cs" />
     <Compile Include="Services\Abstract\ISupplierService.cs" />
     <Compile Include="Services\Abstract\IUserService.cs" />
     <Compile Include="Services\ArticleService.cs" />
@@ -74,6 +113,8 @@
     <Compile Include="Services\LocationTypeService.cs" />
     <Compile Include="Services\RoleService.cs" />
     <Compile Include="Services\ClientService.cs" />
+    <Compile Include="Services\SaleService.cs" />
+    <Compile Include="Services\ServiceResponse.cs" />
     <Compile Include="Services\SupplierService.cs" />
     <Compile Include="Services\UserService.cs" />
   </ItemGroup>
@@ -91,6 +132,7 @@
     <EmbeddedResource Include="Properties\Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

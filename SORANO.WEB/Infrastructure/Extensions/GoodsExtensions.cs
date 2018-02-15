@@ -1,8 +1,7 @@
-﻿using System.Globalization;
-using System.Linq;
-using SORANO.BLL.DTOs;
+﻿using System.Linq;
+using SORANO.BLL.Dtos;
 using SORANO.CORE.StockEntities;
-using SORANO.WEB.Models;
+using SORANO.WEB.ViewModels;
 
 namespace SORANO.WEB.Infrastructure.Extensions
 {
@@ -13,13 +12,13 @@ namespace SORANO.WEB.Infrastructure.Extensions
             return new UserSaleModel
             {
                 ArticleName = goods.DeliveryItem.Article.Name,
-                Location = goods.SaleLocation.Name,
-                Price = goods.SalePrice?.ToString("C", new CultureInfo("uk-UA")),
-                Date = goods.SaleDate?.ToString("dd.MM.yyyy")
+                //Location = goods.SaleLocation.Name,
+                //Price = goods.SalePrice?.ToString("C", new CultureInfo("uk-UA")),
+                //Date = goods.SaleDate?.ToString("dd.MM.yyyy")
             };
         }
 
-        public static GoodsIndexModel ToIndexModel(this AllGoodsDTO goodsDto)
+        public static GoodsIndexModel ToIndexModel(this AllGoodsDto goodsDto)
         {
             return new GoodsIndexModel
             {
@@ -30,7 +29,7 @@ namespace SORANO.WEB.Infrastructure.Extensions
             };
         }
 
-        public static GoodsGroupModel ToGroupModel(this GoodsGroupDTO groupDto)
+        public static GoodsGroupModel ToGroupModel(this GoodsGroupDto groupDto)
         {
             var price = groupDto.DeliveryPrice.ToString("0.00");
 

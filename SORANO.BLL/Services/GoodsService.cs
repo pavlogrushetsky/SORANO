@@ -3,10 +3,10 @@ using System.Linq;
 using SORANO.BLL.Services.Abstract;
 using SORANO.DAL.Repositories;
 using System.Threading.Tasks;
-using SORANO.BLL.Helpers;
 using SORANO.CORE.StockEntities;
 using System.Collections.Generic;
-using SORANO.BLL.DTOs;
+using SORANO.BLL.Dtos;
+using SORANO.BLL.Extensions;
 
 namespace SORANO.BLL.Services
 {
@@ -16,98 +16,128 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task ChangeLocationAsync(int articleId, int currentLocationId, int targetLocationId, int num, int userId)
+        public async Task<ServiceResponse<GoodsDto>> GetAsync(int id)
         {
-            var storages = await _unitOfWork.Get<Storage>().GetAllAsync();
+            var goods = await UnitOfWork.Get<Goods>().GetAsync(id);
 
-            var currentStorages = storages
-                .Where(s => s.LocationID == currentLocationId && s.Goods.DeliveryItem.ArticleID == articleId && !s.ToDate.HasValue)
-                .Take(num)
-                .ToList();
+            return goods == null
+                ? new ServiceResponse<GoodsDto>(ServiceResponseStatus.NotFound)
+                : new SuccessResponse<GoodsDto>(goods.ToDto());
+        }
 
-            currentStorages.ForEach(storage =>
+        public async Task<ServiceResponse<int>> ChangeLocationAsync(IEnumerable<int> ids, int targetLocationId, int num, int userId)
+        {
+            if (ids == null)
+                throw new ArgumentNullException(nameof(ids));
+
+            var existentEntities = await UnitOfWork.Get<Goods>().FindByAsync(g => ids.Contains(g.ID));
+            var existentGoods = existentEntities.ToList().Take(num).ToList();
+
+            if (!existentGoods.Any())
+                return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
+
+            existentGoods.ForEach(e =>
             {
+                var storage = e.Storages.OrderBy(st => st.FromDate).Last();
                 storage.ToDate = DateTime.Now;
                 storage.UpdateModifiedFields(userId);
+                UnitOfWork.Get<Storage>().Update(storage);
 
-                _unitOfWork.Get<Storage>().Update(storage);
-            });
-
-            currentStorages.Select(s => s.Goods).ToList().ForEach(goods =>
-            {
-                var storage = new Storage
+                var newStorage = new Storage
                 {
                     LocationID = targetLocationId,
                     FromDate = DateTime.Now
                 };
 
-                storage.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+                newStorage.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-                goods.Storages.Add(storage);
+                e.Storages.Add(newStorage);
 
-                goods.UpdateModifiedFields(userId);
+                e.UpdateModifiedFields(userId);
 
-                _unitOfWork.Get<Goods>().Update(goods);
-            });
+                UnitOfWork.Get<Goods>().Update(e);
+            });            
             
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<int>(targetLocationId);
         }
 
-        public async Task<List<AllGoodsDTO>> GetAllAsync()
+        public async Task<ServiceResponse<IEnumerable<GoodsDto>>> GetAllAsync(int articleID = 0, int articleTypeID = 0, int locationID = 0, bool bypiece = false, int status = 0)
         {
-            var goods = await _unitOfWork.Get<Goods>().GetAllAsync();
+            var response = new SuccessResponse<IEnumerable<GoodsDto>>();
 
-            return goods
-                .Where(g => !g.SaleDate.HasValue)
-                .GroupBy(g => new
+            var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => !g.IsSold && !g.IsDeleted);
+            var dtos = goods.Select(a =>
+            {
+                var dto = a.ToDto();
+                dto.IDs = new List<int> {dto.ID};
+                return dto;
+            }).ToList();
+
+            IEnumerable<GoodsDto> result;
+            if (bypiece)
+                result = dtos;
+            else
+                result = dtos.GroupBy(g => new
                 {
-                    g.DeliveryItem.Article,
-                    g.Storages.Single(s => !s.ToDate.HasValue).Location,
-                    g.DeliveryItem.Delivery,
+                    g.DeliveryItem.ArticleID,
                     g.DeliveryItem.UnitPrice,
-                    g.DeliveryItem.Delivery.DollarRate,
-                    g.DeliveryItem.Delivery.EuroRate
-                })
-                .GroupBy(g => g.Key.Article)
-                .Select(g => new AllGoodsDTO
+                    HasDollarRate = g.DeliveryItem.Delivery.DollarRate.HasValue,
+                    HasEuroRate = g.DeliveryItem.Delivery.EuroRate.HasValue,
+                    g.SaleID.HasValue,
+                    g.Storages.OrderBy(st => st.FromDate).Last().LocationID
+                }).Select(gg =>
                 {
-                    ArticleId = g.Key.ID,
-                    ArticleName = g.Key.Name,
-                    ArticleImage = g.Key.Attachments.FirstOrDefault(a => a.Type.Name.Equals("Основное изображение"))
-                        ?.FullPath,
-                    Goods = g.Select(gr => new GoodsGroupDTO
-                        {
-                            BillNumber = gr.Key.Delivery.BillNumber,
-                            Count = gr.Count(),
-                            DeliveryId = gr.Key.Delivery.ID,
-                            DeliveryPrice = gr.Key.UnitPrice,
-                            DollarRate = gr.Key.DollarRate,
-                            EuroRate = gr.Key.EuroRate,
-                            LocationId = gr.Key.Location.ID,
-                            LocationName = gr.Key.Location.Name
-                        })
-                        .ToList()
-                })
-                .ToList();
+                    var firstInGroup = gg.First();
+                    firstInGroup.IDs = gg.Select(g => g.ID).ToList();
+                    firstInGroup.Quantity = gg.Count();
+
+                    return firstInGroup;
+                });
+
+            if (status == 0)
+                result = result.Where(g => !g.SaleID.HasValue);
+            else if (status == 1)
+                result = result.Where(g => g.SaleID.HasValue);
+
+            if (articleID > 0)
+                result = result.Where(g => g.DeliveryItem.ArticleID == articleID);
+
+            if (articleTypeID > 0)
+                result = result.Where(g => g.DeliveryItem.Article.TypeID == articleTypeID);
+
+            if (locationID > 0)
+                result = result.Where(g => g.Storages.OrderBy(st => st.FromDate).Last().LocationID == locationID);
+
+            response.Result = result;
+
+            return response;
         }
 
-        public async Task<List<Goods>> GetSoldGoodsAsync()
+        public async Task<ServiceResponse<IEnumerable<GoodsDto>>> GetSoldGoodsAsync()
         {
-            var goods = await _unitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
+            //var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
 
-            return goods.ToList();
+            //return new SuccessResponse<IEnumerable<GoodsDto>>(goods.Select(g => g.ToDto()));
+
+            return new SuccessResponse<IEnumerable<GoodsDto>>(new List<GoodsDto>());
         }
 
-        public async Task<decimal> GetTotalIncomeAsync()
+        public async Task<ServiceResponse<decimal>> GetTotalIncomeAsync()
         {
-            var goods = await _unitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
+            //var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
 
-            return goods.Sum(g => g.SalePrice.Value);
+            //var sum = goods?.Sum(g => g.SalePrice) ?? 0.0M;
+
+            //return new SuccessResponse<decimal>(sum);
+
+            return new SuccessResponse<decimal>();
         }
 
-        public async Task SaleAsync(int articleId, int locationId, int clientId, int num, decimal price, int userId)
+        public async Task<ServiceResponse<int>> SaleAsync(int articleId, int locationId, int clientId, int num, decimal price, int userId)
         {
-            var storages = await _unitOfWork.Get<Storage>().GetAllAsync();
+            var storages = await UnitOfWork.Get<Storage>().GetAllAsync();
 
             var currentStorages = storages
                 .Where(s => s.LocationID == locationId && s.Goods.DeliveryItem.ArticleID == articleId && !s.ToDate.HasValue)
@@ -119,23 +149,86 @@ namespace SORANO.BLL.Services
                 storage.ToDate = DateTime.Now.Date;
                 storage.UpdateModifiedFields(userId);
 
-                _unitOfWork.Get<Storage>().Update(storage);
+                UnitOfWork.Get<Storage>().Update(storage);
             });
 
             currentStorages.Select(s => s.Goods).ToList().ForEach(goods =>
             {
-                goods.SaleDate = DateTime.Now;
-                goods.SaleLocationID = locationId;
-                goods.SoldBy = userId;
-                goods.SalePrice = price;
-                goods.ClientID = clientId;
+                // TODO
+                //goods.SaleDate = DateTime.Now;
+                //goods.SaleLocationID = locationId;
+                //goods.SoldBy = userId;
+                //goods.SalePrice = price;
+                //goods.ClientID = clientId;
 
                 goods.UpdateModifiedFields(userId);
 
-                _unitOfWork.Get<Goods>().Update(goods);
+                UnitOfWork.Get<Goods>().Update(goods);
             });
 
-            await _unitOfWork.SaveAsync();
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<int>(num);
+        }
+
+        public async Task<ServiceResponse<GoodsDto>> AddRecommendationsAsync(IEnumerable<int> ids, IEnumerable<RecommendationDto> recommendations, int userId)
+        {
+            if (ids == null)
+                throw new ArgumentNullException(nameof(ids));
+
+            var existentEntities = await UnitOfWork.Get<Goods>().FindByAsync(g => ids.Contains(g.ID));
+            var existentGoods = existentEntities.ToList();
+
+            if (!existentGoods.Any())
+                return new ServiceResponse<GoodsDto>(ServiceResponseStatus.NotFound);
+
+            var recommendationsEntities = recommendations.Select(r => r.ToEntity());
+
+            existentGoods.ForEach(e =>
+            {
+                e.UpdateModifiedFields(userId);
+
+                // Add newly created recommendations to existent entity
+                recommendationsEntities
+                    .ToList()
+                    .ForEach(r =>
+                    {
+                        r.ParentEntityID = e.ID;
+                        r.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+                        e.Recommendations.Add(r);
+                    });
+
+                UnitOfWork.Get<Goods>().Update(e);
+            });
+
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<GoodsDto>();
+        }
+
+        public async Task<ServiceResponse<IEnumerable<GoodsDto>>> GetAvailableForLocationAsync(int locationId, int saleId, bool selectedOnly = false)
+        {
+            if (locationId == 0)
+                return new ServiceResponse<IEnumerable<GoodsDto>>(ServiceResponseStatus.InvalidOperation);
+
+            var location = await UnitOfWork.Get<Location>().GetAsync(locationId);
+
+            var goods = location.Storages.Where(s => !s.ToDate.HasValue).Select(s => s.Goods).Where(g =>
+                g.Storages.OrderBy(st => st.FromDate).Last().LocationID == locationId
+                && !g.IsDeleted
+                && (!g.SaleID.HasValue || g.SaleID == saleId && !g.IsSold));
+
+            var dtos = goods.Select(a =>
+            {
+                var dto = a.ToDto();
+                dto.IDs = new List<int> { dto.ID };
+                return dto;
+            }).ToList();
+
+            return !dtos.Any() 
+                ? new ServiceResponse<IEnumerable<GoodsDto>>(ServiceResponseStatus.NotFound) 
+                : new SuccessResponse<IEnumerable<GoodsDto>>(dtos);
         }
     }
 }
+

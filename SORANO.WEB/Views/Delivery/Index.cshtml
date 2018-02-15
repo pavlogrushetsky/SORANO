@@ -1,9 +1,9 @@
-﻿@model List<DeliveryModel>
+﻿@model DeliveryIndexViewModel
 
 @{
     ViewBag.Title = "SORANO - Поставки";
-    ViewBag.Header = "Список";
-    ViewBag.Description = "поставок";
+    ViewBag.Header = "Поставки";
+    ViewBag.Description = "";
     ViewBag.Icon = "fa fa-cart-arrow-down";
 }
 
@@ -24,7 +24,7 @@
         <div class="panel panel-primary">
             <div class="panel-heading">
                 Список поставок
-                <span class="badge" style="margin-left: 5px;">@Model.Count</span>
+                <span class="badge" style="margin-left: 5px;">@Model.Items.Count</span>
                 <a class="btn btn-default btn-xs pull-right"
                    asp-controller="Delivery"
                    asp-action="Create"
@@ -47,96 +47,7 @@
                 <div class="clearfix"></div>
             </div>
             <div class="panel-body">
-                <table id="deliveries-datatable" class="table table-striped table-bordered table-hover table-responsive">
-                    <thead>
-                    <tr role="row" class="search-row">
-                        <th style="width: 5%" rowspan="1" colspan="1"></th>
-                        <th style="width: 14%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Номер" /></th>
-                        <th style="width: 14%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Поставка" /></th>
-                        <th style="width: 14%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Оплата" /></th>
-                        <th style="width: 14%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Позиций" /></th>
-                        <th style="width: 13%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Сумма" /></th>
-                        <th style="width: 14%" rowspan="1" colspan="1"><input type="text" class="form-control input-sm" placeholder="Статус" /></th>
-                        <th style="width: 12%" rowspan="1" colspan="1"></th>
-                    </tr>
-                    <tr role="row">
-                        <th style="width: 5%">ID</th>
-                        <th style="width: 14%"><i class="fa fa-fw fa-cart-arrow-down" aria-hidden="true"></i>&nbsp;Номер</th>
-                        <th style="width: 14%"><i class="fa fa-fw fa-calendar" aria-hidden="true"></i>&nbsp;Поставка</th>
-                        <th style="width: 14%"><i class="fa fa-fw fa-calendar" aria-hidden="true"></i>&nbsp;Оплата</th>
-                        <th style="width: 14%"><i class="fa fa-fw fa-hashtag" aria-hidden="true"></i>&nbsp;Позиций</th>
-                        <th style="width: 13%"><i class="fa fa-fw fa-money" aria-hidden="true"></i>&nbsp;Сумма</th>
-                        <th style="width: 14%"><i class="fa fa-fw fa-align-justify" aria-hidden="true"></i>&nbsp;Статус</th>
-                        <th style="width: 12%">Действия</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var delivery in Model)
-                    {
-                        <tr class="@(delivery.IsDeleted ? "danger" : "")">
-                            <td>@delivery.ID</td>
-                            <td>
-                                <a asp-controller="Delivery"
-                                   asp-action="Details"
-                                   asp-route-id="@delivery.ID"
-                                   data-toggle="tooltip"
-                                   data-placement="bottom"
-                                   data-original-title="Просмотреть информацию о поставке"
-                                   title="">
-                                    @delivery.BillNumber
-                                </a>
-                            </td>
-                            <td>@delivery.DeliveryDate</td>
-                            <td>@delivery.PaymentDate</td>
-                            <td>@delivery.DeliveryItemsCount</td>
-                            <td>@delivery.TotalDiscountPrice @(delivery.SelectedCurrency == 2 ? "€" : delivery.SelectedCurrency == 1 ? "$" : "₴")</td>
-                            <td>
-                                <span class="label label@(delivery.Status ? "-success" : "-warning")">
-                                    @(delivery.Status ? "Подтверждено" : "Не подтверждено")
-                                </span>
-                            </td>
-                            <td>
-                                <a asp-controller="Delivery"
-                                   asp-action="Details"
-                                   asp-route-id="@delivery.ID"
-                                   class="btn btn-xs btn-default"
-                                   data-toggle="tooltip"
-                                   data-placement="bottom"
-                                   data-original-title="Просмотреть информацию о поставке"
-                                   title="">
-                                    <i class="fa fa-fw fa-info-circle" aria-hidden="true"></i>
-                                </a>
-                                @if (delivery.CanBeUpdated)
-                                {
-                                    <a asp-controller="Delivery"
-                                       asp-action="Update"
-                                       asp-route-id="@delivery.ID"
-                                       class="btn btn-xs btn-default"
-                                       data-toggle="tooltip"
-                                       data-placement="bottom"
-                                       data-original-title="Редактировать поставку"
-                                       title="">
-                                        <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
-                                    </a>
-                                }                                   
-                                @if (delivery.CanBeDeleted)
-                                {
-                                    <a class="btn btn-xs btn-danger"
-                                        data-toggle="tooltip"
-                                        data-placement="bottom"
-                                        data-original-title="Удалить поставку"
-                                        title=""
-                                        asp-controller="Delivery"
-                                        asp-action="Delete"
-                                        asp-route-id="@delivery.ID">
-                                        <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
-                                    </a>
-                                }                                   
-                            </td>
-                        </tr>
-                    }
-                    </tbody>
-                </table>
+                @Html.Partial("~/Views/Delivery/_Table.cshtml", Model)
             </div>
         </div>
     </div>
