@@ -1,17 +1,17 @@
-﻿$(window).load(function() {
-    var posReader = localStorage["posStorage"];
-    if (posReader) {
-        $(document).scrollTop(posReader);
-        localStorage.removeItem("posStorage");
-    }
-});
+﻿//$(window).load(function() {
+//    var posReader = localStorage["posStorage"];
+//    if (posReader) {
+//        $(document).scrollTop(posReader);
+//        localStorage.removeItem("posStorage");
+//    }
+//});
 
 $(document).ready(function () {
     $.fn.select2.defaults.set('theme', 'bootstrap');
 
-    $('button.add-goods, button.remove-goods').on('click', function() {
-        localStorage["posStorage"] = $(document).scrollTop();
-    });
+    //$('button.add-goods, button.remove-goods').on('click', function() {
+    //    localStorage["posStorage"] = $(document).scrollTop();
+    //});
 
     initAttachmentTypeSelect();
 
@@ -41,18 +41,18 @@ $(document).ready(function () {
 
     initGoodsSelect();
 
-    for (var i = 0, len = localStorage.length; i < len; ++i) {
-        var key = '#' + localStorage.key(i);
-        if (key.startsWith('#sale_group_')) {
-            var children = $(key).parent('li').find(' > ul > li');
-            var value = localStorage.getItem(localStorage.key(i));
-            if (!children.is(':visible') && value === 'true') {
-                children.show('fast');
-                $(key).attr('title', 'Свернуть ветку');
-                $(key).find(' > table').hide('fast');
-            }
-        }
-    }   
+    //for (var i = 0, len = localStorage.length; i < len; ++i) {
+    //    var key = '#' + localStorage.key(i);
+    //    if (key.startsWith('#sale_group_')) {
+    //        var children = $(key).parent('li').find(' > ul > li');
+    //        var value = localStorage.getItem(localStorage.key(i));
+    //        if (!children.is(':visible') && value === 'true') {
+    //            children.show('fast');
+    //            $(key).attr('title', 'Свернуть ветку');
+    //            $(key).find(' > table').hide('fast');
+    //        }
+    //    }
+    //}   
 
     $('.sale-items-groups-tree > ul > li > table').attr('title', 'Свернуть ветку');
     $('.sale-items-groups-tree > ul > li > table').on('click', function (e) {       
@@ -60,12 +60,12 @@ $(document).ready(function () {
         if (!target.is("input") && !target.is('button') && !target.is('i')) {
             var children = $(this).parent('li').find(' > ul > li');
             if (children.is(":visible")) {
-                localStorage.setItem($(this).attr('id'), 'false');
+                //localStorage.setItem($(this).attr('id'), 'false');
                 children.hide('fast');
                 $(this).attr('title', 'Развернуть ветку');
                 $(this).find(' > table').show('fast');
             } else {
-                localStorage.setItem($(this).attr('id'), 'true');
+                //localStorage.setItem($(this).attr('id'), 'true');
                 children.show('fast');
                 $(this).attr('title', 'Свернуть ветку');
                 $(this).find(' > table').hide('fast');
@@ -74,11 +74,120 @@ $(document).ready(function () {
         }
     });
 
-    $('button.add-goods').on('click', function (e) {
-        var input = $(e.target).closest('tr').find('input.sale-item-price');   
+
+
+
+
+
+
+
+
+    $(document).on('click', 'button.add-goods', function (e) {
+        e.preventDefault();
+
+        var button = $(this);
+        button.tooltip('hide');
+
+        var input = button.closest('tr').find('input.sale-item-price');
         var price = input.val();
         input.val(formatDecimal(price));
+
+        var parameters = {
+            saleId: $('#ID').val(),
+            goodsId: button.data('goodsid'),
+            price: price
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/Sale/AddGoods_1',
+            data: parameters,
+            dataType: 'json',
+            success: function (response) {
+                if (response) {
+
+                    button.removeClass('add-goods');
+                    button.addClass('remove-goods');
+                    button.attr('data-original-title', 'Убрать товар');
+
+                    var icon = button.find('i');
+                    icon.removeClass('fa-cart-plus');
+                    icon.addClass('fa-times');
+                    icon.css('color', '#f39c12');
+
+                    button.closest('li').addClass('sale-item-selected');
+
+                    var parentGroup = button.closest('li').closest('ul').closest('li');
+                    var notSelected = parentGroup.find('ul > li:not(.sale-item-selected)');
+                    if (notSelected.length === 0) {
+                        parentGroup.addClass('sale-group-selected');
+                        var parentGroupButton = parentGroup.find('button.remove-all-goods, button.add-all-goods');
+                        parentGroupButton.attr('data-original-title', 'Убрать все товары');
+                        var parentGroupIcon = parentGroupButton.find('i');
+                        parentGroupIcon.removeClass('fa-cart-plus');
+                        parentGroupIcon.addClass('fa-times');
+                        parentGroupIcon.css('color', '#f39c12');
+                    }
+                }
+            }
+        });
     });
+
+    $(document).on('click', 'button.remove-goods', function (e) {
+        e.preventDefault();
+
+        var button = $(this);
+        button.tooltip('hide');
+
+        var input = button.closest('tr').find('input.sale-item-price');
+        input.val('0.00');
+
+        var parameters = {
+            saleId: $('#ID').val(),
+            goodsId: button.data('goodsid')
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/Sale/RemoveGoods_1',
+            data: parameters,
+            dataType: 'json',
+            success: function (response) {
+                if (response) {
+
+                    button.removeClass('remove-goods');
+                    button.addClass('add-goods');
+                    button.attr('data-original-title', 'Добавить товар');
+
+                    var icon = button.find('i');
+                    icon.removeClass('fa-times');
+                    icon.addClass('fa-cart-plus');
+                    icon.css('color', '#18bc9c');
+
+                    button.closest('li').removeClass('sale-item-selected');
+
+                    var parentGroup = button.closest('li').closest('ul').closest('li');
+                    parentGroup.removeClass('sale-group-selected');
+                    var parentGroupButton = parentGroup.find('button.remove-all-goods, button.add-all-goods');
+                    parentGroupButton.attr('data-original-title', 'Добавить все товары');
+                    var parentGroupIcon = parentGroupButton.find('i');
+                    parentGroupIcon.removeClass('fa-times');
+                    parentGroupIcon.addClass('fa-cart-plus');
+                    parentGroupIcon.css('color', '#18bc9c');
+                }
+            }
+        });
+    });
+
+
+
+
+
+
+
+
+
+
 
     //initSaleItemsDataTable();   
 

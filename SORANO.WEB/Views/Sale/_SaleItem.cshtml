@@ -1,0 +1,50 @@
+﻿@model SaleItemViewModel
+
+<li class="@(Model.IsSelected ? "sale-item-selected" : "")" style="display: none;">
+    <table class="table table-hover table-striped">
+        <tr>
+            <td style="padding-left: 15px;" colspan="2">
+                <i class="fa fa-fw fa-commenting" style="color: #3498db; opacity: 0.65;" aria-hidden="true"></i>
+                <a class="toggle-sale-item-recommendations"
+                   style="color: inherit;"
+                   href="javascript:void(0);"
+                   title=""
+                   data-toggle="tooltip"
+                   data-placement="bottom"
+                   data-original-title="Показать/скрыть рекомендации">
+                    Рекомендаций: <b>@Model.Recommendations.Count</b>
+                </a>
+            </td>
+            <td style="width: 20%;">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-money"></i></span>
+                    <input class="form-control input-sm sale-item-price" type="text" asp-for="@Model.Price" placeholder="Цена" />
+                </div>
+            </td>
+            <td style="width: 20px;" nowrap="nowrap">
+                <button state="@Model.IsSelected"
+                        class="btn btn-sm pull-right"
+                        class-true="remove-goods"
+                        class-false="add-goods"
+                        tooltip-true="Убрать товар"
+                        tooltip-false="Добавить товар"
+                        icon-true="fa-times"
+                        icon-color-true="#f39c12"
+                        icon-false="fa-cart-plus"
+                        icon-color-false="#18bc9c"
+                        style="background-color: inherit;"
+                        data-goodsid="@Model.GoodsId">                    
+                </button>
+            </td>
+        </tr>
+        @foreach (var recommendation in Model.Recommendations)
+        {
+        <tr style="background-color: #bee0f7;">
+            <td style="width: 60%;padding-left: 50px;">@recommendation.Comment</td>
+            <td style="width: 20%;">@recommendation.Value</td>
+            <td style="width: 20%;"></td>
+            <td style="width: 20px;"></td>
+        </tr>
+        }
+    </table>
+</li>

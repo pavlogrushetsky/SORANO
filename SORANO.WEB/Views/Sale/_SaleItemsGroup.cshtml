@@ -1,0 +1,45 @@
+﻿@model SaleItemsGroupViewModel
+
+<li class="@(Model.IsSelected ? "sale-group-selected" : "")">
+    <table class="table table-striped table-hover">
+        <tr>
+            <td style="width: 75px;">
+                <img condition="@Model.HasMainPicture" 
+                        class="sale-img" 
+                        src="@Url.Content(Model.MainPicturePath)" />
+            </td>
+            <td>
+                <span>@Model.ArticleName</span><br />
+                <span class="sale-item-group-description">@Model.ArticleTypeName</span>
+            </td>
+            <td>Общее кол-во: <b>@Model.Count</b></td>
+            <td>Выбрано: <b>@Model.SelectedCount</b></td>
+            <td style="width: 20%;">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-money"></i></span>
+                    <input class="form-control input-sm" type="text" asp-for="@Model.Price" placeholder="Цена" autofocus />
+                </div>
+            </td>
+            <td style="width: 20px;">
+                <button state="@Model.IsSelected"
+                        class="btn btn-sm pull-right"
+                        class-true="remove-all-goods"
+                        class-false="add-all-goods"
+                        tooltip-true="Убрать все товары"
+                        tooltip-false="Добавить все товары"
+                        icon-true="fa-times"
+                        icon-color-true="#f39c12"
+                        icon-false="fa-cart-plus"
+                        icon-color-false="#18bc9c"
+                        style="background-color: inherit;">                    
+                </button>
+            </td>
+        </tr>
+    </table>
+    <ul>
+        @foreach (var saleItem in Model.Items)
+        {
+            Html.RenderPartial("_SaleItem", saleItem);
+        }
+    </ul>
+</li>

@@ -65,7 +65,7 @@ namespace SORANO.WEB.Controllers
 
             return result;
         }
-
+ 
         protected IActionResult TryGetActionResult(Func<IActionResult> function, Func<string, IActionResult> onFault)
         {
             IActionResult result;

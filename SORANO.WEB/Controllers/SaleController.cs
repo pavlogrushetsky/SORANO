@@ -300,6 +300,45 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
+        public async Task<JsonResult> AddGoods_1(int saleId, int goodsId, string price)
+        {
+            try
+            {
+                var isPriceValid = !string.IsNullOrEmpty(price) && Regex.IsMatch(price, @"^\d+(\.\d{0,2})?$");
+                decimal? validPrice;
+                if (isPriceValid)
+                {
+                    validPrice = Convert.ToDecimal(price);
+                }
+                else
+                {
+                    return Json(false);
+                }
+
+                await _saleService.AddGoodsAsync(goodsId, validPrice, saleId, UserId);
+                return Json(true);
+            }
+            catch (Exception)
+            {
+                return Json(false);
+            }
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> RemoveGoods_1(int saleId, int goodsId)
+        {
+            try
+            {
+                var result = await _saleService.RemoveGoodsAsync(goodsId, saleId, UserId);
+                return Json(true);
+            }
+            catch (Exception)
+            {
+                return Json(false);
+            }
+        }
+
+        [HttpPost]
         [ValidateAntiForgeryToken]
         [LoadAttachments]
         public async Task<IActionResult> AddAllGoods(SaleCreateUpdateViewModel model, string goodsids, IFormFile mainPictureFile, IFormFileCollection attachments)

@@ -108,20 +108,18 @@
                     <span class="input-group-addon"><i class="fa fa-fw fa-address-book"></i></span>
                     <select class="form-control input-sm select-client"
                             asp-for="ClientID"></select>
-                    @if (Model.AllowCreation)
-                    {
-                        <span class="input-group-btn">
-                            <button class="btn btn-default btn-sm"
-                                    asp-action="CreateClient"
-                                    asp-route-returnUrl="@returnUrl"
-                                    data-toggle="tooltip"
-                                    data-placement="right"
-                                    data-original-title="Создать клиента"
-                                    title="">
-                                <i class="fa fa-fw fa-plus"></i>
-                            </button>
-                        </span>
-                    }
+                    <span condition="@Model.AllowCreation"
+                            class="input-group-btn">
+                        <button class="btn btn-default btn-sm"
+                                asp-action="CreateClient"
+                                asp-route-returnUrl="@returnUrl"
+                                data-toggle="tooltip"
+                                data-placement="right"
+                                data-original-title="Создать клиента"
+                                title="">
+                            <i class="fa fa-fw fa-plus"></i>
+                        </button>
+                    </span>
                 </div>
                 <span asp-validation-for="ClientID" class="text-danger"></span>
             </div>
@@ -204,15 +202,15 @@
                                     title="">
                                 <i class="fa fa-fw fa-refresh" style="color: #2c3e50" aria-hidden="true"></i>
                             </button>
-                            <button class="btn btn-default btn-sm pull-right"
+                            <button state="@Model.ShowSelected"
                                     asp-controller="Sale"
                                     asp-action="ShowSelected"
                                     asp-route-show="@(Model.ShowSelected ? "false" : "true")"
-                                    data-toggle="tooltip"
-                                    data-placement="right"
-                                    data-original-title=@(Model.ShowSelected ? "Отобразить все товары" : "Отобразить выбранные товары")
-                                    title="">
-                                <i class="fa fa-fw @(Model.ShowSelected ? "fa-eye" : "fa-eye-slash")" aria-hidden="true"></i>
+                                    class="btn btn-default btn-sm pull-right"
+                                    tooltip-true="Отобразить все товары"
+                                    tooltip-false="Отобразить выбранные товары"
+                                    icon-true="fa-eye"
+                                    icon-false="fa-eye-slash">                    
                             </button>
                         </div>
                     </div>
@@ -221,141 +219,16 @@
                     <div class="pull-right" style="margin-bottom: 20px;">
                         <span>Выбрано </span><span class="badge">@Model.SelectedCount</span><span> товаров на сумму </span><span class="badge">@Model.TotalPrice @Model.SelectedCurrency</span>
                     </div>
-
-                    @if (Model.Groups.Any())
-                    {
-                        <br />
-                        <div class="sale-items-groups-tree">
-                            <ul>
-                                @for (var i = 0; i < Model.Groups.Count; i++)
-                                {
-
-                                    <li class="@(Model.Groups[i].IsSelected ? "sale-group-selected" : "")">
-                                        <table class="table table-striped table-hover" id="sale_group_@(Model.ID)_@i">
-                                            <tr>
-                                                <td style="width: 75px;">
-                                                    @if (Model.Groups[i].HasMainPicture)
-                                                    {
-                                                        <img class="sale-img" src="@Url.Content(Model.Groups[i].MainPicturePath)" />
-                                                    }
-                                                </td>
-                                                <td>
-                                                    <span>@Model.Groups[i].ArticleName</span><br />
-                                                    <span class="sale-item-group-description">@Model.Groups[i].ArticleTypeName</span>
-                                                </td>
-                                                <td>Общее кол-во: <b>@Model.Groups[i].Count</b></td>
-                                                <td>Выбрано: <b>@Model.Groups[i].SelectedCount</b></td>
-                                                <td style="width: 20%;">
-                                                    <div class="input-group input-group-sm">
-                                                        <span class="input-group-addon"><i class="fa fa-fw fa-money"></i></span>
-                                                        <input class="form-control input-sm" type="text" asp-for="@Model.Groups[i].Price" placeholder="Цена" autofocus />
-                                                    </div>
-                                                </td>
-                                                <td style="width: 20px;">
-                                                    @if (Model.Groups[i].IsSelected)
-                                                    {
-                                                        <button asp-controller="Sale"
-                                                                asp-action="RemoveAllGoods"
-                                                                asp-route-goodsids="@Model.Groups[i].GoodsIds"
-                                                                class="btn btn-sm pull-right"
-                                                                data-toggle="tooltip"
-                                                                data-placement="bottom"
-                                                                data-original-title="Убрать все"
-                                                                title=""
-                                                                style="background-color: inherit;">
-                                                            <i class="fa fa-fw fa-times" style="color: #f39c12;" aria-hidden="true"></i>
-                                                        </button>
-                                                    }
-                                                    else
-                                                    {
-                                                        <button asp-controller="Sale"
-                                                                asp-action="AddAllGoods"
-                                                                asp-route-goodsids="@Model.Groups[i].GoodsIds"
-                                                                class="btn btn-sm pull-right"
-                                                                data-toggle="tooltip"
-                                                                data-placement="bottom"
-                                                                data-original-title="Добавить все"
-                                                                title=""
-                                                                style="background-color: inherit;">
-                                                            <i class="fa fa-fw fa-cart-plus" style="color: #18bc9c;" aria-hidden="true"></i>
-                                                        </button>
-                                                    }
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        <ul>
-                                            @for (int j = 0; j < Model.Groups[i].Items.Count; j++)
-                                            {
-                                                <li class="@(Model.Groups[i].Items[j].IsSelected ? "sale-item-selected" : "")" style="display: none;">
-                                                    <table class="table table-hover table-striped">
-                                                        <tr>
-                                                            <td style="padding-left: 15px;" colspan="2">
-                                                                <i class="fa fa-fw fa-commenting" style="color: #3498db; opacity: 0.65;" aria-hidden="true"></i>
-                                                                <a class="toggle-sale-item-recommendations"
-                                                                   style="color: inherit;"
-                                                                   href="javascript:void(0);"
-                                                                   title=""
-                                                                   data-toggle="tooltip"
-                                                                   data-placement="bottom"
-                                                                   data-original-title="Показать/скрыть рекомендации">
-                                                                    Рекомендаций: <b>@Model.Groups[i].Items[j].Recommendations.Count</b>
-                                                                </a>                                                               
-                                                            </td>
-                                                            <td style="width: 20%;">
-                                                                <div class="input-group input-group-sm">
-                                                                    <span class="input-group-addon"><i class="fa fa-fw fa-money"></i></span>
-                                                                    <input class="form-control input-sm sale-item-price" type="text" asp-for="@Model.Groups[i].Items[j].Price" placeholder="Цена" />
-                                                                </div>
-                                                            </td>
-                                                            <td style="width: 20px;" nowrap="nowrap">
-                                                                @if (Model.Groups[i].Items[j].IsSelected)
-                                                                {
-                                                                    <button asp-controller="Sale"
-                                                                            asp-action="RemoveGoods"
-                                                                            asp-route-goodsid="@Model.Groups[i].Items[j].GoodsId"
-                                                                            class="btn btn-sm pull-right remove-goods"
-                                                                            data-toggle="tooltip"
-                                                                            data-placement="bottom"
-                                                                            data-original-title="Убрать"
-                                                                            title=""
-                                                                            style="background-color: inherit;">
-                                                                        <i class="fa fa-fw fa-times" style="color: #f39c12;" aria-hidden="true"></i>
-                                                                    </button>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <button asp-controller="Sale"
-                                                                            asp-action="AddGoods"
-                                                                            asp-route-goodsid="@Model.Groups[i].Items[j].GoodsId"
-                                                                            class="btn btn-sm pull-right add-goods"
-                                                                            data-toggle="tooltip"
-                                                                            data-placement="bottom"
-                                                                            data-original-title="Добавить"
-                                                                            title=""
-                                                                            style="background-color: inherit;">
-                                                                        <i class="fa fa-fw fa-cart-plus" style="color: #18bc9c;" aria-hidden="true"></i>
-                                                                    </button>
-                                                                }
-                                                            </td>
-                                                        </tr>
-                                                        @for (var k = 0; k < Model.Groups[i].Items[j].Recommendations.Count; k++)
-                                                        {
-                                                            <tr style="background-color: #bee0f7;">
-                                                                <td style="width: 60%;padding-left: 50px;">@Model.Groups[i].Items[j].Recommendations[k].Comment</td>
-                                                                <td style="width: 20%;">@Model.Groups[i].Items[j].Recommendations[k].Value</td>
-                                                                <td style="width: 20%;"></td>
-                                                                <td style="width: 20px;"></td>
-                                                            </tr>
-                                                        }                                                        
-                                                    </table>
-                                                </li>
-                                            }
-                                        </ul>
-                                    </li>
-                                }
-                            </ul>
-                        </div>
-                    }
+                    <br />
+                    <div class="sale-items-groups-tree"
+                            condition="@Model.Groups.Count > 0">
+                        <ul>
+                            @foreach (var group in Model.Groups)
+                            {
+                                Html.RenderPartial("_SaleItemsGroup", group);
+                            }
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -371,16 +244,14 @@
                     <i class="fa fa-fw fa-check"></i>
                     Подтвердить
                 </button>
-                @if (Model.LocationID > 0)
-                {
-                    <a class="btn btn-warning btn-sm"
-                       asp-controller="Sale"
-                       asp-action="Delete"
-                       asp-route-id="@Model.ID">
-                        <i class="fa fa-fw fa-hand-stop-o"></i>
-                        Отменить продажу
-                    </a>
-                }
+                <a class="btn btn-warning btn-sm"
+                    condition="@Model.LocationID > 0"
+                    asp-controller="Sale"
+                    asp-action="Delete"
+                    asp-route-id="@Model.ID">
+                    <i class="fa fa-fw fa-hand-stop-o"></i>
+                    Отменить продажу
+                </a>
             </div>
         </div>
     </div>
