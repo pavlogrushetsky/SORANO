@@ -14,7 +14,7 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<ServiceResponse<int>> RemoveGoodsAsync(int goodsId, int saleId, int userId);
 
-        Task<ServiceResponse<IEnumerable<int>>> AddGoodsAsync(IEnumerable<int> goodsIds, int saleId, int userId);
+        Task<ServiceResponse<IEnumerable<int>>> AddGoodsAsync(IEnumerable<int> goodsIds, decimal? price, int saleId, int userId);
 
         Task<ServiceResponse<IEnumerable<int>>> RemoveGoodsAsync(IEnumerable<int> goodsIds, int saleId, int userId);
     }

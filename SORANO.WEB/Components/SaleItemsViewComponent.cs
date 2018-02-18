@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -20,23 +19,26 @@ namespace SORANO.WEB.Components
             _mapper = mapper;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(int locationId, int saleId, string selectedCurrency, bool selectedOnly = false)
+        public async Task<IViewComponentResult> InvokeAsync(int saleId, int locationId, bool selectedOnly)
         {
             var result = await _goodsService.GetAvailableForLocationAsync(locationId, saleId, selectedOnly);
 
-            var viewModel = new List<SaleItemsGroupViewModel>();         
+            var viewModel = new SaleItemsGroupsViewModel
+            {
+                Summary = new SaleItemsSummaryViewModel()
+            };         
 
             if (result.Status == ServiceResponseStatus.InvalidOperation)
             {
-                TempData["Warning"] = "Необходимо указать магазин для получения списка товаров.";
-                ViewBag.SelectedCount = 0;
-                ViewBag.TotalPrice = "0.00";
+                viewModel.Warning = "Необходимо указать магазин для получения списка товаров.";
+                viewModel.Summary.SelectedCount = 0;
+                viewModel.Summary.TotalPrice = "0.00";
             }
             else if(result.Status == ServiceResponseStatus.NotFound)
             {
-                TempData["Warning"] = "В данном магазине товары отсутствуют.";
-                ViewBag.SelectedCount = 0;
-                ViewBag.TotalPrice = "0.00";
+                viewModel.Warning = "В данном магазине товары отсутствуют.";
+                viewModel.Summary.SelectedCount = 0;
+                viewModel.Summary.TotalPrice = "0.00";
             }
             else
             {
@@ -45,7 +47,7 @@ namespace SORANO.WEB.Components
                 if (selectedOnly)
                     goods = goods.Where(g => g.SaleID.HasValue && g.SaleID == saleId).ToList();
 
-                viewModel = goods.GroupBy(g => new
+                viewModel.Groups = goods.GroupBy(g => new
                 {
                     g.DeliveryItem.ArticleID
                 }).Select(group =>
@@ -89,11 +91,11 @@ namespace SORANO.WEB.Components
                     return model;
                 }).ToList();
 
-                ViewBag.SelectedCount = viewModel.Sum(i => i.SelectedCount);
-                ViewBag.TotalPrice = goods.Sum(g => g.Price)?.ToString("0.00") ?? "0.00";                
+                viewModel.Summary.SelectedCount = viewModel.Groups.Sum(i => i.SelectedCount);
+                viewModel.Summary.TotalPrice = goods.Sum(g => g.Price)?.ToString("0.00") ?? "0.00";                
             }
 
-            ViewBag.SelectedCurrency = selectedCurrency;
+            //viewModel.Summary.SelectedCurrency = selectedCurrency;
 
             return View(viewModel);
         }

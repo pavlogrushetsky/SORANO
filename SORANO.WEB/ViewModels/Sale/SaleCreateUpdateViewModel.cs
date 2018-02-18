@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using SORANO.WEB.ViewModels.Common;
+﻿using SORANO.WEB.ViewModels.Common;
 using System.ComponentModel.DataAnnotations;
 
 namespace SORANO.WEB.ViewModels.Sale
@@ -16,11 +15,7 @@ namespace SORANO.WEB.ViewModels.Sale
 
         public string ClientName { get; set; }
 
-        public string SelectedCurrency { get; set; } = "₴";
-
-        public int SelectedCount { get; set; }
-
-        public string TotalPrice { get; set; }
+        public string SelectedCurrency { get; set; }
 
         [Display(Name = "Дата продажи")]
         public string Date { get; set; }
@@ -37,6 +32,6 @@ namespace SORANO.WEB.ViewModels.Sale
         
         public bool ShowSelected { get; set; }
 
-        public List<SaleItemsGroupViewModel> Groups { get; set; } = new List<SaleItemsGroupViewModel>();
+        public SaleItemsGroupsViewModel Groups { get; set; }
     }
 }

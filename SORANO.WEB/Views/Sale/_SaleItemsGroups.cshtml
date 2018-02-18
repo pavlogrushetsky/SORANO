@@ -9,7 +9,7 @@
     <ul>
         @foreach (var group in Model.Groups)
         {
-            @Html.Partial("Components/SaleItems/_ItemsGroupTreeNode", group)
+            Html.RenderPartial("_SaleItemsGroup", group);
         }
     </ul>
 </div>

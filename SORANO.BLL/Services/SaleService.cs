@@ -141,7 +141,7 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<int>(goodsId);
         }
 
-        public async Task<ServiceResponse<IEnumerable<int>>> AddGoodsAsync(IEnumerable<int> goodsIds, int saleId, int userId)
+        public async Task<ServiceResponse<IEnumerable<int>>> AddGoodsAsync(IEnumerable<int> goodsIds, decimal? price, int saleId, int userId)
         {
             var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => goodsIds.Contains(g.ID) && !g.SaleID.HasValue);
             var goodsList = goods?.ToList();
@@ -151,6 +151,7 @@ namespace SORANO.BLL.Services
             goodsList.ForEach(g =>
             {
                 g.SaleID = saleId;
+                g.Price = price;
                 g.UpdateModifiedFields(userId);
 
                 UnitOfWork.Get<Goods>().Update(g);

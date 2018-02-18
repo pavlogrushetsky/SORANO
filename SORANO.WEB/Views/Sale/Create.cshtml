@@ -59,7 +59,6 @@
     <input type="hidden" asp-for="LocationName" />
     <input type="hidden" asp-for="ClientID" />
     <input type="hidden" asp-for="ClientName" />
-    <input type="hidden" asp-for="SelectedCurrency" />
     <input type="hidden" asp-for="ShowSelected" />
     @for (var i = 0; i < Model.Recommendations.Count; i++)
     {
@@ -73,13 +72,6 @@
         <input type="hidden" asp-for="@Model.Attachments[i].MimeTypes" />
         <input type="hidden" asp-for="@Model.Attachments[i].TypeName" />
         <input type="hidden" asp-for="@Model.Attachments[i].TypeID" />
-    }
-    @for (var i = 0; i < Model.Groups.Count; i++)
-    {
-        for (var j = 0; j < Model.Groups[i].Items.Count; j++)
-        {
-            <input type="hidden" asp-for="@Model.Groups[i].Items[j].GoodsId" />
-        }
     }
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -192,19 +184,16 @@
                             </div>
                         </div>
                         <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
-                            <button class="btn btn-default btn-sm pull-right"
-                                    style="margin-left: 5px;"
-                                    asp-controller="Sale"
-                                    asp-action="Refresh"
+                            <button class="btn btn-sm pull-right"
+                                    id="refresh-sale-items"
+                                    style="margin-left: 5px; background-color: inherit;"                                   
                                     data-toggle="tooltip"
-                                    data-placement="right"
+                                    data-placement="bottom"
                                     data-original-title="Обновить список товаров"
                                     title="">
-                                <i class="fa fa-fw fa-refresh" style="color: #2c3e50" aria-hidden="true"></i>
+                                <i class="fa fa-fw fa-refresh" style="color: #2c3e50"></i>
                             </button>
                             <button state="@Model.ShowSelected"
-                                    asp-controller="Sale"
-                                    asp-action="ShowSelected"
                                     asp-route-show="@(Model.ShowSelected ? "false" : "true")"
                                     class="btn btn-default btn-sm pull-right"
                                     tooltip-true="Отобразить все товары"
@@ -215,20 +204,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="panel-body">
-                    <div class="pull-right" style="margin-bottom: 20px;">
-                        <span>Выбрано </span><span class="badge">@Model.SelectedCount</span><span> товаров на сумму </span><span class="badge">@Model.TotalPrice @Model.SelectedCurrency</span>
-                    </div>
-                    <br />
-                    <div class="sale-items-groups-tree"
-                            condition="@Model.Groups.Count > 0">
-                        <ul>
-                            @foreach (var group in Model.Groups)
-                            {
-                                Html.RenderPartial("_SaleItemsGroup", group);
-                            }
-                        </ul>
-                    </div>
+                <div class="panel-body" id="sale-items-groups">
+                    @await Component.InvokeAsync("SaleItems", new {saleId = Model.ID, locationId = Model.LocationID, selectedOnly = false })
                 </div>
             </div>
         </div>
