@@ -124,11 +124,11 @@ namespace SORANO.BLL.Services
             return response;
         }
 
-        public async Task<ServiceResponse<int>> AddGoodsAsync(int goodsId, decimal? price, int saleId, int userId)
+        public async Task<ServiceResponse<SaleItemsSummaryDto>> AddGoodsAsync(int goodsId, decimal? price, int saleId, int userId)
         {
             var goods = await UnitOfWork.Get<Goods>().GetAsync(goodsId);
             if (goods == null || goods.SaleID.HasValue && goods.SaleID != saleId)
-                return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
+                return new ServiceResponse<SaleItemsSummaryDto>(ServiceResponseStatus.NotFound);
 
             goods.SaleID = saleId;
             goods.Price = price;
@@ -138,15 +138,17 @@ namespace SORANO.BLL.Services
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<int>(goodsId);
+            var summary = await GetSummary(saleId);
+
+            return new SuccessResponse<SaleItemsSummaryDto>(summary.Result);
         }
 
-        public async Task<ServiceResponse<IEnumerable<int>>> AddGoodsAsync(IEnumerable<int> goodsIds, decimal? price, int saleId, int userId)
+        public async Task<ServiceResponse<SaleItemsSummaryDto>> AddGoodsAsync(IEnumerable<int> goodsIds, decimal? price, int saleId, int userId)
         {
             var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => goodsIds.Contains(g.ID) && !g.SaleID.HasValue);
             var goodsList = goods?.ToList();
             if (goodsList == null || !goodsList.Any())
-                return new ServiceResponse<IEnumerable<int>>(ServiceResponseStatus.NotFound);
+                return new ServiceResponse<SaleItemsSummaryDto>(ServiceResponseStatus.NotFound);
 
             goodsList.ForEach(g =>
             {
@@ -159,14 +161,16 @@ namespace SORANO.BLL.Services
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<IEnumerable<int>>(goodsList.Select(g => g.ID));
+            var summary = await GetSummary(saleId);
+
+            return new SuccessResponse<SaleItemsSummaryDto>(summary.Result);
         }
 
-        public async Task<ServiceResponse<int>> RemoveGoodsAsync(int goodsId, int saleId, int userId)
+        public async Task<ServiceResponse<SaleItemsSummaryDto>> RemoveGoodsAsync(int goodsId, int saleId, int userId)
         {
             var goods = await UnitOfWork.Get<Goods>().GetAsync(goodsId);
             if (goods?.SaleID == null || goods.SaleID != saleId)
-                return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
+                return new ServiceResponse<SaleItemsSummaryDto>(ServiceResponseStatus.NotFound);
 
             goods.SaleID = null;
             goods.Price = null;
@@ -176,15 +180,17 @@ namespace SORANO.BLL.Services
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<int>(goodsId);
+            var summary = await GetSummary(saleId);
+
+            return new SuccessResponse<SaleItemsSummaryDto>(summary.Result);
         }
 
-        public async Task<ServiceResponse<IEnumerable<int>>> RemoveGoodsAsync(IEnumerable<int> goodsIds, int saleId, int userId)
+        public async Task<ServiceResponse<SaleItemsSummaryDto>> RemoveGoodsAsync(IEnumerable<int> goodsIds, int saleId, int userId)
         {
             var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => goodsIds.Contains(g.ID) && g.SaleID.HasValue && g.SaleID.Value == saleId);
             var goodsList = goods?.ToList();
             if (goodsList == null || !goodsList.Any())
-                return new ServiceResponse<IEnumerable<int>>(ServiceResponseStatus.NotFound);
+                return new ServiceResponse<SaleItemsSummaryDto>(ServiceResponseStatus.NotFound);
 
             goodsList.ForEach(g =>
             {
@@ -197,7 +203,29 @@ namespace SORANO.BLL.Services
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<IEnumerable<int>>(goodsList.Select(g => g.ID));
+            var summary = await GetSummary(saleId);
+
+            return new SuccessResponse<SaleItemsSummaryDto>(summary.Result);
+        }
+
+        public async Task<ServiceResponse<SaleItemsSummaryDto>> GetSummary(int saleId)
+        {
+            var sale = await UnitOfWork.Get<Sale>().GetAsync(saleId);
+            if (sale == null)
+                return new ServiceResponse<SaleItemsSummaryDto>(ServiceResponseStatus.NotFound);
+
+            var summary = new SaleItemsSummaryDto
+            {
+                Count = sale.Goods.Count,
+                TotalPrice = sale.Goods.Sum(g => g.Price),
+                Currency = sale.DollarRate.HasValue
+                    ? Currency.Dollar
+                    : sale.EuroRate.HasValue
+                        ? Currency.Euro
+                        : Currency.Hryvna
+            };
+
+            return new SuccessResponse<SaleItemsSummaryDto>(summary);
         }
     }
 }

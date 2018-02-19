@@ -150,14 +150,15 @@ namespace SORANO.WEB.Controllers
             }, OnFault);
         }
 
-        public IActionResult Refresh(int saleId, int locationId)
-        {
-            return ViewComponent("SaleItems", new {saleId, locationId, selectedOnly = false});
-        }
-
         #endregion
 
         #region POST Actions
+
+        [HttpPost]
+        public IActionResult Refresh(int saleId, int locationId, bool selectedOnly)
+        {
+            return ViewComponent("SaleItems", new { saleId, locationId, selectedOnly });
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -193,15 +194,16 @@ namespace SORANO.WEB.Controllers
                 }
                 else
                 {
-                    return Json(false);
+                    return Json(null);
                 }
 
-                await _saleService.AddGoodsAsync(goodsId, validPrice, saleId, UserId);
-                return Json(true);
+                var summary = await _saleService.AddGoodsAsync(goodsId, validPrice, saleId, UserId);
+                var model = _mapper.Map<SaleItemsSummaryViewModel>(summary.Result);
+                return Json(model);
             }
             catch (Exception)
             {
-                return Json(false);
+                return Json(null);
             }
         }
 
@@ -210,12 +212,13 @@ namespace SORANO.WEB.Controllers
         {
             try
             {
-                var result = await _saleService.RemoveGoodsAsync(goodsId, saleId, UserId);
-                return Json(true);
+                var summary = await _saleService.RemoveGoodsAsync(goodsId, saleId, UserId);
+                var model = _mapper.Map<SaleItemsSummaryViewModel>(summary.Result);
+                return Json(model);
             }
             catch (Exception)
             {
-                return Json(false);
+                return Json(null);
             }
         }
 
@@ -236,12 +239,13 @@ namespace SORANO.WEB.Controllers
                 }
 
                 var ids = goodsIds.Split(',').Select(id => Convert.ToInt32(id));
-                await _saleService.AddGoodsAsync(ids, validPrice, saleId, UserId);
-                return Json(true);
+                var summary = await _saleService.AddGoodsAsync(ids, validPrice, saleId, UserId);
+                var model = _mapper.Map<SaleItemsSummaryViewModel>(summary.Result);
+                return Json(model);
             }
             catch (Exception)
             {
-                return Json(false);
+                return Json(null);
             }
         }
 
@@ -251,12 +255,13 @@ namespace SORANO.WEB.Controllers
             try
             {
                 var ids = goodsIds.Split(',').Select(id => Convert.ToInt32(id));
-                await _saleService.RemoveGoodsAsync(ids, saleId, UserId);
-                return Json(true);
+                var summary = await _saleService.RemoveGoodsAsync(ids, saleId, UserId);
+                var model = _mapper.Map<SaleItemsSummaryViewModel>(summary.Result);
+                return Json(model);
             }
             catch (Exception)
             {
-                return Json(false);
+                return Json(null);
             }
         }
 

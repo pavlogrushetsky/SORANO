@@ -1,7 +1,10 @@
 ﻿@model SaleItemsGroupsViewModel
 
 <div class="pull-right" style="margin-bottom: 20px;">
-    <span>Выбрано </span><span class="badge">@Model.Summary.SelectedCount</span><span> товаров на сумму </span><span class="badge">@Model.Summary.TotalPrice @Model.Summary.SelectedCurrency</span>
+    <span>Выбрано </span>
+    <span class="badge" id="sale-selected-count">@Model.Summary.SelectedCount</span>
+    <span> товаров на сумму </span>
+    <span class="badge" id="sale-total-price">@Model.Summary.TotalPrice @Model.Summary.SelectedCurrency</span>
 </div>
 <br />
 <div class="sale-items-groups-tree"

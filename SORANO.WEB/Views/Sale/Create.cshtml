@@ -193,13 +193,14 @@
                                     title="">
                                 <i class="fa fa-fw fa-refresh" style="color: #2c3e50"></i>
                             </button>
-                            <button state="@Model.ShowSelected"
-                                    asp-route-show="@(Model.ShowSelected ? "false" : "true")"
-                                    class="btn btn-default btn-sm pull-right"
-                                    tooltip-true="Отобразить все товары"
-                                    tooltip-false="Отобразить выбранные товары"
-                                    icon-true="fa-eye"
-                                    icon-false="fa-eye-slash">                    
+                            <button class="btn btn-sm pull-right"
+                                    id="show-selected-sale-items"
+                                    style="background-color: inherit;"
+                                    data-toggle="tooltip"
+                                    data-placement="bottom"
+                                    data-original-title="Отобразить выбранные товары"
+                                    title="">
+                                <i class="fa fa-fw fa-eye" style="color: #2c3e50;"></i>
                             </button>
                         </div>
                     </div>

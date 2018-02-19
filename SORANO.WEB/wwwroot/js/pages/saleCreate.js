@@ -41,13 +41,63 @@
 
         var parameters = {
             saleId: $('#ID').val(),
-            locationId: $("#LocationID").val()
+            locationId: $("#LocationID").val(),
+            selectedOnly: 'False'
         }
 
         $('#sale-items-groups').load('/Sale/Refresh', parameters, function() {
             initSaleItemsTree();
         });
-     });
+    });
+
+    $(document).on('click', '#show-selected-sale-items', function(e) {
+        e.preventDefault();
+
+        $(this).tooltip('hide');
+
+        var icon = $(this).find('i');
+
+        var showSelected = $('#ShowSelected').val();
+        if (showSelected === 'True') {
+            showSelected = 'False';
+            $('#ShowSelected').val(showSelected);
+            $(this).attr('data-original-title', 'Отобразить выбранные товары');
+            icon.removeClass('fa-eye-slash');
+            icon.addClass('fa-eye');
+        } else {
+            showSelected = 'True';
+            $('#ShowSelected').val(showSelected);
+            $(this).attr('data-original-title', 'Отобразить все товары');
+            icon.removeClass('fa-eye');
+            icon.addClass('fa-eye-slash');
+        }            
+
+        var parameters = {
+            saleId: $('#ID').val(),
+            locationId: $('#LocationID').val(),
+            selectedOnly: showSelected
+        }
+
+        $('#sale-items-groups').load('/Sale/Refresh', parameters, function () {
+            initSaleItemsTree();
+        });
+    });
+
+    $(document).on('click', '.toggle-sale-item-recommendations', function(e) {
+        e.preventDefault();
+
+        var self = $(this);
+        self.tooltip('hide');
+
+        var recommendations = self.parent().parent().parent().find('.sale-item-recommendations');
+        recommendations.toArray().forEach(function (recommendation) {
+            if ($(recommendation).is(':visible')) {
+                $(recommendation).hide('fast');
+            } else {
+                $(recommendation).show('fast');
+            }
+        });
+    });
 
 
     $(document).on('click', 'button.add-goods', function (e) {
@@ -90,6 +140,15 @@
                     if (notSelected.length === 0) {
                         parentGroup.addClass('sale-group-selected');
                     }
+
+                    var groupSelectedCountElement = parentGroup.find('.sale-item-group-selected-count');
+                    var groupSelectedCountText = groupSelectedCountElement.text();
+                    var count = parseInt(groupSelectedCountText) + 1;
+                    groupSelectedCountElement.text(count.toString());
+
+
+                    $('#sale-selected-count').text(response.selectedCount);
+                    $('#sale-total-price').text(response.totalPrice + ' ' + response.selectedCurrency);
                 }
             }
         });
@@ -138,6 +197,12 @@
 
                         $(item).addClass('sale-item-selected');
                     });
+
+                    var totalCount = button.closest('li').find('.sale-item-group-count').text();
+                    button.closest('li').find('.sale-item-group-selected-count').text(totalCount);
+
+                    $('#sale-selected-count').text(response.selectedCount);
+                    $('#sale-total-price').text(response.totalPrice + ' ' + response.selectedCurrency);
                 }
             }
         });
@@ -178,6 +243,14 @@
 
                     var parentGroup = button.closest('li').closest('ul').closest('li');
                     parentGroup.removeClass('sale-group-selected');
+
+                    var groupSelectedCountElement = parentGroup.find('.sale-item-group-selected-count');
+                    var groupSelectedCountText = groupSelectedCountElement.text();
+                    var count = parseInt(groupSelectedCountText) - 1;
+                    groupSelectedCountElement.text(count.toString());
+
+                    $('#sale-selected-count').text(response.selectedCount);
+                    $('#sale-total-price').text(response.totalPrice + ' ' + response.selectedCurrency);
                 }
             }
         });       
@@ -225,6 +298,11 @@
 
                         $(item).removeClass('sale-item-selected');
                     });
+
+                    button.closest('li').find('.sale-item-group-selected-count').text('0');
+
+                    $('#sale-selected-count').text(response.selectedCount);
+                    $('#sale-total-price').text(response.totalPrice + ' ' + response.selectedCurrency);
                 }
             }
         });

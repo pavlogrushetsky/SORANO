@@ -83,7 +83,17 @@ namespace SORANO.WEB.Components
                             {
                                 Comment = r.Comment,
                                 Value = r.Value.HasValue ? r.Value.Value.ToString("0.00") : "0.00"
-                            }).ToList()
+                            })
+                            .Concat(i.DeliveryItem.Recommendations.Select(r => new SaleItemRecommendationViewModel
+                            {
+                                    Comment = r.Comment,
+                                    Value = r.Value.HasValue ? r.Value.Value.ToString("0.00") : "0.00"
+                            }))
+                            .Concat(i.DeliveryItem.Delivery.Recommendations.Select(r => new SaleItemRecommendationViewModel
+                            {
+                                Comment = r.Comment,
+                                Value = r.Value.HasValue ? r.Value.Value.ToString("0.00") : "0.00"
+                            })).ToList()
                         }).ToList()
                     };
 
