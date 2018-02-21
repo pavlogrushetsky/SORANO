@@ -30,6 +30,13 @@ namespace SORANO.BLL.Extensions
                 .ToDto() ?? new AttachmentDto();
         }
 
+        public static string GetMainPicturePath(this StockEntity entity)
+        {
+            return entity.Attachments?
+                .Where(a => !a.IsDeleted && a.Type.Name.Equals("Основное изображение"))
+                .SingleOrDefault()?.FullPath;
+        }
+
         public static StockEntity UpdateCreatedFields(this StockEntity entity, int userId)
         {
             entity.CreatedBy = userId;

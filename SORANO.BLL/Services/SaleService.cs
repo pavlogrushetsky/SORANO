@@ -138,7 +138,7 @@ namespace SORANO.BLL.Services
 
             await UnitOfWork.SaveAsync();
 
-            var summary = await GetSummary(saleId);
+            var summary = await GetSummaryAsync(saleId);
 
             return new SuccessResponse<SaleItemsSummaryDto>(summary.Result);
         }
@@ -161,7 +161,7 @@ namespace SORANO.BLL.Services
 
             await UnitOfWork.SaveAsync();
 
-            var summary = await GetSummary(saleId);
+            var summary = await GetSummaryAsync(saleId);
 
             return new SuccessResponse<SaleItemsSummaryDto>(summary.Result);
         }
@@ -180,7 +180,7 @@ namespace SORANO.BLL.Services
 
             await UnitOfWork.SaveAsync();
 
-            var summary = await GetSummary(saleId);
+            var summary = await GetSummaryAsync(saleId);
 
             return new SuccessResponse<SaleItemsSummaryDto>(summary.Result);
         }
@@ -203,12 +203,12 @@ namespace SORANO.BLL.Services
 
             await UnitOfWork.SaveAsync();
 
-            var summary = await GetSummary(saleId);
+            var summary = await GetSummaryAsync(saleId);
 
             return new SuccessResponse<SaleItemsSummaryDto>(summary.Result);
         }
 
-        public async Task<ServiceResponse<SaleItemsSummaryDto>> GetSummary(int saleId)
+        public async Task<ServiceResponse<SaleItemsSummaryDto>> GetSummaryAsync(int saleId)
         {
             var sale = await UnitOfWork.Get<Sale>().GetAsync(saleId);
             if (sale == null)
@@ -226,6 +226,76 @@ namespace SORANO.BLL.Services
             };
 
             return new SuccessResponse<SaleItemsSummaryDto>(summary);
+        }
+
+        public async Task<ServiceResponse<SaleItemsGroupsDto>> GetItemsAsync(int saleId, int locationId, bool selectedOnly)
+        {
+            if (locationId == 0)
+                return new ServiceResponse<SaleItemsGroupsDto>(ServiceResponseStatus.InvalidOperation);
+
+            var location = await UnitOfWork.Get<Location>().GetAsync(locationId);
+
+            var goods = location.Storages
+                .Where(s => !s.ToDate.HasValue)
+                .Select(s => s.Goods)
+                .Where(g => g.Storages.OrderBy(st => st.FromDate).Last().LocationID == locationId && !g.IsDeleted && (!g.SaleID.HasValue || g.SaleID == saleId && !g.IsSold))
+                .ToList();                                  
+
+            if (!goods.Any())
+                return new ServiceResponse<SaleItemsGroupsDto>(ServiceResponseStatus.NotFound);
+
+            var summaryDto = await GetSummaryAsync(saleId);
+
+            var saleItemsGroupsDto = new SaleItemsGroupsDto
+            {
+                Summary = summaryDto.Result,
+                Groups = goods.GroupBy(g => new
+                {
+                    g.DeliveryItem.ArticleID
+                }).Select(group =>
+                {
+                    var items = group.AsEnumerable().ToList();
+                    var first = items.First();
+
+                    var groupDto = new SaleItemsGroupDto
+                    {
+                        ArticleName = first.DeliveryItem.Article.Name,
+                        ArticleTypeName = first.DeliveryItem.Article.Type.Name,
+                        Count = items.Count,                       
+                        MainPicturePath = first.DeliveryItem.Article.GetMainPicturePath()
+                                          ?? first.DeliveryItem.Article.Type.GetMainPicturePath(),
+                        Items = items.Select(i => new SaleItemDto
+                        {
+                            GoodsId = i.ID,
+                            IsSelected = i.SaleID == saleId && !i.IsSold,
+                            Price = i.Price,
+                            Recommendations = i.Recommendations
+                                .Concat(i.DeliveryItem.Recommendations)
+                                .Concat(i.DeliveryItem.Delivery.Recommendations)
+                                .Concat(i.DeliveryItem.Article.Recommendations)
+                                .Concat(i.DeliveryItem.Article.Type.Recommendations)
+                                .Select(r => r.ToDto())
+                                .ToList()
+                        })
+                        .Where(i => !selectedOnly || i.IsSelected)
+                        .ToList()
+                    };
+
+                    groupDto.SelectedCount = groupDto.Items.Count(i => i.IsSelected);
+                    groupDto.Price = groupDto.Items.All(i => i.Price == groupDto.Items.First().Price) 
+                        ? groupDto.Items.First().Price 
+                        : null;
+
+                    groupDto.GoodsIds = groupDto.Items.Select(id => id.GoodsId.ToString())
+                        .Aggregate((i, j) => i + ',' + j);
+
+                    return groupDto;
+                })
+                .OrderBy(g => g.ArticleName)
+                .ToList()
+            };
+
+            return new SuccessResponse<SaleItemsGroupsDto>(saleItemsGroupsDto);
         }
     }
 }

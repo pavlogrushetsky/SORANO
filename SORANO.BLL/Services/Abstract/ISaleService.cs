@@ -18,6 +18,8 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<ServiceResponse<SaleItemsSummaryDto>> RemoveGoodsAsync(IEnumerable<int> goodsIds, int saleId, int userId);
 
-        Task<ServiceResponse<SaleItemsSummaryDto>> GetSummary(int saleId);
+        Task<ServiceResponse<SaleItemsSummaryDto>> GetSummaryAsync(int saleId);
+
+        Task<ServiceResponse<SaleItemsGroupsDto>> GetItemsAsync(int saleId, int locationId, bool selectedOnly);
     }
 }

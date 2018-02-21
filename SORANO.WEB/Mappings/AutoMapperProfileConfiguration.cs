@@ -374,6 +374,19 @@ namespace SORANO.WEB.Mappings
                     source => source.MapFrom(s => s.Currency == Currency.Hryvna ? "₴" : s.Currency == Currency.Euro ? "€" : "$")
                 );
 
+            CreateMap<SaleItemsGroupsDto, SaleItemsGroupsViewModel>();
+            CreateMap<SaleItemsGroupDto, SaleItemsGroupViewModel>()
+                .ForMember(
+                    dest => dest.HasMainPicture,
+                    source => source.MapFrom(s => !string.IsNullOrWhiteSpace(s.MainPicturePath))
+                )
+                .ForMember(
+                    dest => dest.IsSelected,
+                    source => source.MapFrom(s => s.Items.All(i => i.IsSelected))
+                );
+            CreateMap<SaleItemDto, SaleItemViewModel>();
+            CreateMap<RecommendationDto, SaleItemRecommendationViewModel>();
+
             #endregion
 
             #region Goods

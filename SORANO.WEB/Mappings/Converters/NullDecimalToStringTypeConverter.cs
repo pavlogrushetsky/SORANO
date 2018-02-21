@@ -6,7 +6,7 @@ namespace SORANO.WEB.Mappings.Converters
     {
         public string Convert(decimal? source, string destination, ResolutionContext context)
         {
-            return !source.HasValue ? string.Empty : source.Value.ToString("0.00");
+            return !source.HasValue ? "0.00" : source.Value.ToString("0.00");
         }
     }
 }
