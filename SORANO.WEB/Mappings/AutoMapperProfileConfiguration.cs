@@ -391,6 +391,8 @@ namespace SORANO.WEB.Mappings
 
             #region Goods
 
+            CreateMap<GoodsIndexViewModel, GoodsFilterCriteriaDto>();
+
             CreateMap<GoodsDto, GoodsItemViewModel>()
                 .ForMember(
                     dest => dest.GoodsIds,
@@ -415,14 +417,6 @@ namespace SORANO.WEB.Mappings
                 .ForMember(
                     dest => dest.ArticleTypeName,
                     source => source.MapFrom(s => s.DeliveryItem.Article.Type.Name)
-                )
-                .ForMember(
-                    dest => dest.DeliveryPrice,
-                    source => source.MapFrom(s => s.DeliveryItem.UnitPrice)
-                )
-                .ForMember(
-                    dest => dest.Currency,
-                    source => source.MapFrom(s => s.DeliveryItem.Delivery.DollarRate.HasValue ? "$" : s.DeliveryItem.Delivery.EuroRate.HasValue ? "€" : "₴")
                 )
                 .ForMember(
                     dest => dest.LocationID,

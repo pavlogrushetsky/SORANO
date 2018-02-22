@@ -14,6 +14,24 @@
         placeholderText: 'Склад',
         url: '/Location/GetLocations'
     });
+
+    $(document).on('submit', '#goods-filter-form', function (e) {
+        e.preventDefault();
+
+        var parameters = {
+            ArticleID: $('#ArticleID').val(),
+            ArticleTypeID: $('#ArticleTypeID').val(),
+            LocationID: $('#LocationID').val(),
+            SearchTerm: $('#SearchTerm').val(),
+            Status: $('#Status').val(),
+            ShowByPiece: $('#ShowByPiece').val(),
+            ShowNumber: $('#ShowNumber').val()
+        };
+
+        $('.goods-cards-row').load('/Goods/Filter', parameters, function () {
+            alert("hi");
+        });
+    });
 });
 
 function initArticleSelect() {

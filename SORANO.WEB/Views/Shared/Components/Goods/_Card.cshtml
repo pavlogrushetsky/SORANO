@@ -1,6 +1,6 @@
 ﻿@model GoodsItemViewModel
 
-<div class="card">   
+<div class="card">
     <h4 class="card-header">@Model.ArticleName</h4>
     <div class="card-body">
         <h5>@Model.ArticleTypeName</h5>
@@ -8,7 +8,7 @@
     </div>
     @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
     {
-        <img style="height: 200px; width: 100%; display: block; border: none;" src="@Url.Content(Model.ImagePath)"/>
+        <img style="height: 200px; width: 100%; display: block; border: none;" src="@Url.Content(Model.ImagePath)" />
     }
     <div class="card-body">
         <dl class="dl-horizontal">
@@ -73,10 +73,10 @@
                title="">
                 <i class="fa fa-fw fa-expand"></i>
             </a>
-        }                
+        }
         @if (!Model.IsSold)
         {
-            <a asp-action="ChangeLocation" 
+            <a asp-action="ChangeLocation"
                asp-controller="Goods"
                asp-route-ids="@Model.GoodsIds"
                class="btn btn-default btn-sm"
@@ -93,6 +93,6 @@
                     title="">
                 <i class="fa fa-fw fa-handshake-o"></i>
             </button>
-        }        
+        }
     </div>
 </div>

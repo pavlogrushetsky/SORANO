@@ -63,7 +63,7 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<int>(targetLocationId);
         }
 
-        public async Task<ServiceResponse<IEnumerable<GoodsDto>>> GetAllAsync(int articleID = 0, int articleTypeID = 0, int locationID = 0, bool bypiece = false, int status = 0)
+        public async Task<ServiceResponse<IEnumerable<GoodsDto>>> GetAllAsync(GoodsFilterCriteriaDto criteria)
         {
             var response = new SuccessResponse<IEnumerable<GoodsDto>>();
 
@@ -76,15 +76,12 @@ namespace SORANO.BLL.Services
             }).ToList();
 
             IEnumerable<GoodsDto> result;
-            if (bypiece)
+            if (criteria.ShowByPiece)
                 result = dtos;
             else
                 result = dtos.GroupBy(g => new
                 {
-                    g.DeliveryItem.ArticleID,
-                    g.DeliveryItem.UnitPrice,
-                    HasDollarRate = g.DeliveryItem.Delivery.DollarRate.HasValue,
-                    HasEuroRate = g.DeliveryItem.Delivery.EuroRate.HasValue,
+                    g.DeliveryItem.ArticleID,                    
                     g.SaleID.HasValue,
                     g.Storages.OrderBy(st => st.FromDate).Last().LocationID
                 }).Select(gg =>
@@ -96,19 +93,19 @@ namespace SORANO.BLL.Services
                     return firstInGroup;
                 });
 
-            if (status == 0)
+            if (criteria.Status == 0)
                 result = result.Where(g => !g.SaleID.HasValue);
-            else if (status == 1)
+            else if (criteria.Status == 1)
                 result = result.Where(g => g.SaleID.HasValue);
 
-            if (articleID > 0)
-                result = result.Where(g => g.DeliveryItem.ArticleID == articleID);
+            if (criteria.ArticleID > 0)
+                result = result.Where(g => g.DeliveryItem.ArticleID == criteria.ArticleID);
 
-            if (articleTypeID > 0)
-                result = result.Where(g => g.DeliveryItem.Article.TypeID == articleTypeID);
+            if (criteria.ArticleTypeID > 0)
+                result = result.Where(g => g.DeliveryItem.Article.TypeID == criteria.ArticleTypeID);
 
-            if (locationID > 0)
-                result = result.Where(g => g.Storages.OrderBy(st => st.FromDate).Last().LocationID == locationID);
+            if (criteria.LocationID > 0)
+                result = result.Where(g => g.Storages.OrderBy(st => st.FromDate).Last().LocationID == criteria.LocationID);
 
             response.Result = result;
 

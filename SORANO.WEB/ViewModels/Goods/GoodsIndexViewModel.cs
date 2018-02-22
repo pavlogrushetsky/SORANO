@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SORANO.WEB.ViewModels.Goods
 {
     public class GoodsIndexViewModel
     {
-        #region Filtering Parameters
-
         public int ArticleID { get; set; }
 
         [Display(Name = "Артикул:")]
@@ -32,12 +29,6 @@ namespace SORANO.WEB.ViewModels.Goods
         public bool ShowByPiece { get; set; }
 
         [Display(Name = "Кол-во на странице:")]
-        public int ShowNumber { get; set; }
-
-        public bool IsFiltered { get; set; }
-
-        #endregion
-
-        public IList<GoodsItemViewModel> Goods { get; set; }       
+        public int ShowNumber { get; set; }      
     }
 }

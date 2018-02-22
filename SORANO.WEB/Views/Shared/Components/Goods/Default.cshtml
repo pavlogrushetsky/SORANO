@@ -1,0 +1,8 @@
+﻿@model List<GoodsItemViewModel>
+    
+@foreach (var item in Model)
+{
+    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+        @Html.Partial("Components/Goods/_Card", item)
+    </div>
+}

@@ -12,7 +12,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using SORANO.BLL.Dtos;
 using SORANO.BLL.Services;
-using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.ViewModels.Recommendation;
 
 namespace SORANO.WEB.Controllers
@@ -41,30 +40,9 @@ namespace SORANO.WEB.Controllers
         #region GET Actions
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return await TryGetActionResultAsync(async () =>
-            {
-                var goodsResult = await _goodsService.GetAllAsync();
-
-                if (goodsResult.Status != ServiceResponseStatus.Success)
-                {
-                    TempData["Error"] = "Не удалось получить список товаров.";
-                    return RedirectToAction("Index", "Home");
-                }
-
-                var goods = _mapper.Map<IEnumerable<GoodsItemViewModel>>(goodsResult.Result);
-                var viewModel = new GoodsIndexViewModel
-                {
-                    Goods = goods.ToList()
-                };
-
-                return View(viewModel);
-            }, ex =>
-            {
-                TempData["Error"] = ex;
-                return RedirectToAction("Index", "Home");
-            });
+            return View(new GoodsIndexViewModel());
         }
 
         [HttpGet]
@@ -117,44 +95,44 @@ namespace SORANO.WEB.Controllers
             });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Expand(int articleId, int articleTypeId, int locationId, int status)
-        {
-            return await TryGetActionResultAsync(async () =>
-            {
-                ModelState.RemoveFor("IsFiltered");
+        //[HttpGet]
+        //public async Task<IActionResult> Expand(int articleId, int articleTypeId, int locationId, int status)
+        //{
+        //    return await TryGetActionResultAsync(async () =>
+        //    {
+        //        ModelState.RemoveFor("IsFiltered");
 
-                var goodsResult = await _goodsService.GetAllAsync(articleId, articleTypeId, locationId, true, status);
+        //        var goodsResult = await _goodsService.GetAllAsync(articleId, articleTypeId, locationId, true, status);
 
-                if (goodsResult.Status != ServiceResponseStatus.Success)
-                {
-                    TempData["Error"] = "Не удалось получить список товаров.";
-                    return RedirectToAction("Index", "Home");
-                }
+        //        if (goodsResult.Status != ServiceResponseStatus.Success)
+        //        {
+        //            TempData["Error"] = "Не удалось получить список товаров.";
+        //            return RedirectToAction("Index", "Home");
+        //        }
 
-                var goods = _mapper.Map<IEnumerable<GoodsItemViewModel>>(goodsResult.Result).ToList();
-                var first = goods.First();
-                var viewModel = new GoodsIndexViewModel
-                {
-                    Goods = goods.ToList(),
-                    ArticleID = articleId,
-                    ArticleName = first.ArticleName,
-                    ArticleTypeID = articleTypeId,
-                    ArticleTypeName = first.ArticleTypeName,
-                    LocationID = locationId,
-                    LocationName = first.LocationName,
-                    ShowByPiece = true,
-                    IsFiltered = true,
-                    Status = status
-                };
+        //        var goods = _mapper.Map<IEnumerable<GoodsItemViewModel>>(goodsResult.Result).ToList();
+        //        var first = goods.First();
+        //        var viewModel = new GoodsIndexViewModel
+        //        {
+        //            Goods = goods.ToList(),
+        //            ArticleID = articleId,
+        //            ArticleName = first.ArticleName,
+        //            ArticleTypeID = articleTypeId,
+        //            ArticleTypeName = first.ArticleTypeName,
+        //            LocationID = locationId,
+        //            LocationName = first.LocationName,
+        //            ShowByPiece = true,
+        //            IsFiltered = true,
+        //            Status = status
+        //        };
 
-                return View("Index", viewModel);
-            }, ex =>
-            {
-                TempData["Error"] = ex;
-                return RedirectToAction("Index", "Goods");
-            });
-        }
+        //        return View("Index", viewModel);
+        //    }, ex =>
+        //    {
+        //        TempData["Error"] = ex;
+        //        return RedirectToAction("Index", "Goods");
+        //    });
+        //}
 
         [HttpGet]
         public async Task<IActionResult> Sales()
@@ -241,72 +219,78 @@ namespace SORANO.WEB.Controllers
         #region POST Actions
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(GoodsIndexViewModel model)
+        public IActionResult Filter(GoodsIndexViewModel model)
         {
-            return await TryGetActionResultAsync(async () =>
-            {
-                ModelState.RemoveFor("IsFiltered");
-
-                var goodsResult = await _goodsService.GetAllAsync(model.ArticleID, model.ArticleTypeID, model.LocationID, model.ShowByPiece, model.Status);
-
-                if (goodsResult.Status != ServiceResponseStatus.Success)
-                {
-                    TempData["Error"] = "Не удалось получить список товаров.";
-                    return RedirectToAction("Index", "Home");
-                }
-
-                var goods = _mapper.Map<IEnumerable<GoodsItemViewModel>>(goodsResult.Result);
-                var viewModel = new GoodsIndexViewModel
-                {
-                    Goods = goods.ToList(),
-                    IsFiltered = true,
-                    Status = model.Status
-                };
-
-                return View(viewModel);
-            }, ex =>
-            {
-                TempData["Error"] = ex;
-                return View(model);
-            });
-        }        
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetFilters(GoodsIndexViewModel model)
-        {
-            return await TryGetActionResultAsync(async () =>
-            {
-                model.ShowByPiece = false;
-                model.ShowNumber = 10;
-                model.Status = 0;
-                model.ArticleID = 0;
-                model.ArticleTypeID = 0;
-                model.IsFiltered = false;
-                ModelState.Clear();
-
-                var goodsResult = await _goodsService.GetAllAsync();
-
-                if (goodsResult.Status != ServiceResponseStatus.Success)
-                {
-                    TempData["Error"] = "Не удалось получить список товаров.";
-                    return RedirectToAction("Index", "Home");
-                }
-
-                var goods = _mapper.Map<IEnumerable<GoodsItemViewModel>>(goodsResult.Result);
-                var viewModel = new GoodsIndexViewModel
-                {
-                    Goods = goods.ToList()
-                };
-
-                return View("Index", viewModel);
-            }, ex =>
-            {
-                TempData["Error"] = ex;
-                return View("Index", model);
-            });
+            return ViewComponent("Goods", new {model});
         }
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Index(GoodsIndexViewModel model)
+        //{
+        //    return await TryGetActionResultAsync(async () =>
+        //    {
+        //        ModelState.RemoveFor("IsFiltered");
+
+        //        var goodsResult = await _goodsService.GetAllAsync(model.ArticleID, model.ArticleTypeID, model.LocationID, model.ShowByPiece, model.Status);
+
+        //        if (goodsResult.Status != ServiceResponseStatus.Success)
+        //        {
+        //            TempData["Error"] = "Не удалось получить список товаров.";
+        //            return RedirectToAction("Index", "Home");
+        //        }
+
+        //        var goods = _mapper.Map<IEnumerable<GoodsItemViewModel>>(goodsResult.Result);
+        //        var viewModel = new GoodsIndexViewModel
+        //        {
+        //            Goods = goods.ToList(),
+        //            IsFiltered = true,
+        //            Status = model.Status
+        //        };
+
+        //        return View(viewModel);
+        //    }, ex =>
+        //    {
+        //        TempData["Error"] = ex;
+        //        return View(model);
+        //    });
+        //}        
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> ResetFilters(GoodsIndexViewModel model)
+        //{
+        //    return await TryGetActionResultAsync(async () =>
+        //    {
+        //        model.ShowByPiece = false;
+        //        model.ShowNumber = 10;
+        //        model.Status = 0;
+        //        model.ArticleID = 0;
+        //        model.ArticleTypeID = 0;
+        //        model.IsFiltered = false;
+        //        ModelState.Clear();
+
+        //        var goodsResult = await _goodsService.GetAllAsync();
+
+        //        if (goodsResult.Status != ServiceResponseStatus.Success)
+        //        {
+        //            TempData["Error"] = "Не удалось получить список товаров.";
+        //            return RedirectToAction("Index", "Home");
+        //        }
+
+        //        var goods = _mapper.Map<IEnumerable<GoodsItemViewModel>>(goodsResult.Result);
+        //        var viewModel = new GoodsIndexViewModel
+        //        {
+        //            Goods = goods.ToList()
+        //        };
+
+        //        return View("Index", viewModel);
+        //    }, ex =>
+        //    {
+        //        TempData["Error"] = ex;
+        //        return View("Index", model);
+        //    });
+        //}
 
         [HttpPost]
         [ValidateAntiForgeryToken]

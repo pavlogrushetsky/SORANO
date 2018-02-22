@@ -53,6 +53,7 @@
     <Compile Include="Dtos\DeliveryDto.cs" />
     <Compile Include="Dtos\DeliveryItemDto.cs" />
     <Compile Include="Dtos\GoodsDto.cs" />
+    <Compile Include="Dtos\GoodsFilterCriteriaDto.cs" />
     <Compile Include="Dtos\GoodsGroupDto.cs" />
     <Compile Include="Dtos\LocationDto.cs" />
     <Compile Include="Dtos\LocationTypeDto.cs" />
