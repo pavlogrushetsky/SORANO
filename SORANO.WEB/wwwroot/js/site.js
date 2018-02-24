@@ -1,8 +1,6 @@
 ﻿$(document).ready(function () {
-    $("[data-toggle=tooltip]").tooltip({
-        animated: 'fade',
-        container: 'body'
-    });
+    initTooltip();
+    
 
     $("input.input-validation-error").closest(".input-group").addClass("has-error");
     $("select.input-validation-error").closest(".input-group").addClass("has-error");
@@ -52,6 +50,13 @@
 
     $('form').keypress(keypressHandler);
 });
+
+function initTooltip() {
+    $("[data-toggle=tooltip]").tooltip({
+        animated: 'fade',
+        container: 'body'
+    });
+}
 
 function keypressHandler(e) {
     if (e.which === 13) {

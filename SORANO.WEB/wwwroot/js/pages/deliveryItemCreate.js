@@ -61,7 +61,7 @@ function initArticleSelect() {
                     results: $.map(data, function (item) {
                         return {
                             id: item.id,
-                            name: item.name,
+                            name: item.text,
                             type: item.type,
                             code: item.code,
                             barcode: item.barcode
@@ -88,7 +88,7 @@ function initArticleSelect() {
         var data = selectArticle.select2('data');
         if (data[0]) {
             articleId.val(data[0].id);
-            articleName.val(data[0].name);
+            articleName.val(data[0].text);
         }
         else {
             articleId.val(0);
@@ -98,14 +98,14 @@ function initArticleSelect() {
 }
 
 function formatData(data) {
-    if (data.loading) return data.name;
+    if (data.loading) return data.text;
 
-    return '<div>' + data.name + '</div>' +
+    return '<div>' + data.text + '</div>' +
         '<div><small style="color: #95a5a6;">' + data.type + '</small></div>' +
         '<div><small style="color: #95a5a6;">' + data.code + '</small></div>' +
         '<div><small style="color: #95a5a6;">' + data.barcode + '</small></div>';
 }
 
 function formatDataSelection(data) {
-    return data.name || data.text;
+    return data.text;
 }

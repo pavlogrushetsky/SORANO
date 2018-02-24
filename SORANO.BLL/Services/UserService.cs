@@ -105,23 +105,33 @@ namespace SORANO.BLL.Services
                 }
             });
 
-            var locations = await _unitOfWork.Get<Location>().GetAllAsync();
-
-            user.Locations.ToList().ForEach(l =>
+            if (user.Locations != null)
             {
-                if (!existentUser.Locations.Select(er => er.ID).Contains(l.ID))
+                var locations = await _unitOfWork.Get<Location>().GetAllAsync();
+
+                user.Locations.ToList().ForEach(l =>
                 {
-                    existentUser.Locations.Add(locations.Single(x => x.ID == l.ID));
-                }
-            });
+                    if (!existentUser.Locations.Select(er => er.ID).Contains(l.ID))
+                    {
+                        existentUser.Locations.Add(locations.Single(x => x.ID == l.ID));
+                    }
+                });
 
-            existentUser.Locations.ToList().ForEach(er =>
+                existentUser.Locations.ToList().ForEach(er =>
+                {
+                    if (!user.Locations.Select(r => r.ID).Contains(er.ID))
+                    {
+                        existentUser.Locations.Remove(er);
+                    }
+                });
+            }
+            else
             {
-                if (!user.Locations.Select(r => r.ID).Contains(er.ID))
+                existentUser.Locations.ToList().ForEach(er =>
                 {
                     existentUser.Locations.Remove(er);
-                }
-            });
+                });
+            }
 
             _unitOfWork.Get<User>().Update(existentUser);
 

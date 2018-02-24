@@ -68,7 +68,7 @@
                        title="">
                         <i class="fa fa-fw fa-info-circle" aria-hidden="true"></i>
                     </a>
-                    <manager condition="@Model.Mode == ArticleTableMode.ArticleIndex && !article.IsDeleted">
+                    <manager hide-if="@Model.Mode != ArticleTableMode.ArticleIndex || article.IsDeleted">
                         <a asp-controller="Article"
                            asp-action="Update"
                            asp-route-id="@article.ID"
@@ -82,7 +82,7 @@
                         <a asp-controller="Article"
                            asp-action="Delete"
                            asp-route-id="@article.ID"
-                           condition="@article.CanBeDeleted"
+                           hide-if="@(!article.CanBeDeleted)"
                            class="btn btn-xs btn-danger"
                            data-toggle="tooltip"
                            data-placement="bottom"

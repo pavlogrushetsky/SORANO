@@ -92,7 +92,7 @@
                                        title="">
                                         <i class="fa fa-fw fa-info-circle" aria-hidden="true"></i>
                                     </a>
-                                    <manager condition="@(!supplier.IsDeleted)">
+                                    <manager hide-if="@supplier.IsDeleted">
                                         <a asp-controller="Supplier"
                                            asp-action="Update"
                                            asp-route-id="@supplier.ID"
@@ -111,7 +111,7 @@
                                            asp-controller="Supplier"
                                            asp-action="Delete"
                                            asp-route-id="@supplier.ID"
-                                           condition="@supplier.CanBeDeleted">
+                                           hide-if="@(!supplier.CanBeDeleted)">
                                             <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
                                         </a>
                                     </manager>                                  

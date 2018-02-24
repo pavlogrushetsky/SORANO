@@ -107,6 +107,10 @@ namespace SORANO.BLL.Services
             if (criteria.LocationID > 0)
                 result = result.Where(g => g.Storages.OrderBy(st => st.FromDate).Last().LocationID == criteria.LocationID);
 
+            if (!string.IsNullOrWhiteSpace(criteria.SearchTerm))
+                result = result.Where(g => g.DeliveryItem.Article.Name.Contains(criteria.SearchTerm)
+                                           || g.DeliveryItem.Article.Type.Name.Contains(criteria.SearchTerm));
+
             response.Result = result;
 
             return response;

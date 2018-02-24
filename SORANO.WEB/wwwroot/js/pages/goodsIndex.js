@@ -1,9 +1,16 @@
 ﻿$(document).ready(function () {
     $.fn.select2.defaults.set('theme', 'bootstrap');
 
+    initFilter();
+
+    $(document).on('submit', '#goods-filter-form', clickFilter);
+    $(document).on('reset', '#goods-filter-form', clickResetFilter);
+    $(document).on('click', '.goods-expand', clickExpand);
+});
+
+function initFilter() {
     initArticleSelect();
     initArticleTypeSelect();
-
     initGenericSelect({
         selectElementClass: '.select-location',
         valueElementId: '#LocationID',
@@ -14,25 +21,93 @@
         placeholderText: 'Склад',
         url: '/Location/GetLocations'
     });
+}
 
-    $(document).on('submit', '#goods-filter-form', function (e) {
-        e.preventDefault();
+function clickFilter(e) {
+    e.preventDefault();
 
-        var parameters = {
-            ArticleID: $('#ArticleID').val(),
-            ArticleTypeID: $('#ArticleTypeID').val(),
-            LocationID: $('#LocationID').val(),
-            SearchTerm: $('#SearchTerm').val(),
-            Status: $('#Status').val(),
-            ShowByPiece: $('#ShowByPiece').val(),
-            ShowNumber: $('#ShowNumber').val()
-        };
+    var parameters = {
+        ArticleID: $('#ArticleID').val(),
+        ArticleTypeID: $('#ArticleTypeID').val(),
+        LocationID: $('#LocationID').val(),
+        SearchTerm: $('#SearchTerm').val(),
+        Status: $('#Status').val(),
+        ShowByPiece: $('#ShowByPiece').val(),
+        ShowNumber: $('#ShowNumber').val()
+    };
 
-        $('.goods-cards-row').load('/Goods/Filter', parameters, function () {
-            alert("hi");
-        });
+    $('.goods-cards-row').load('/Goods/Filter', parameters, function () {
+        $('.panel').removeClass('panel-default');
+        $('.panel').addClass('panel-info');
+        initFilter();
+        initTooltip();
     });
-});
+}
+
+function clickResetFilter(e) {
+    e.preventDefault();
+
+    $('.goods-cards-row').load('/Goods/ClearFilter', function () {
+        $('.panel').removeClass('panel-info');
+        $('.panel').addClass('panel-default');
+        initFilter();
+        resetFilter();
+        initTooltip();
+    });
+}
+
+function resetFilter() {    
+    $('#SearchTerm').val("");
+    $('#Status').val(0);
+    $('#ShowByPiece').val("false");
+    $('#ShowNumber').val(10);    
+    $('.select-article').val(null).trigger('change');
+    $('.select-article-type').val(null).trigger('change');   
+
+    var allowChangeLocation = $('#AllowChangeLocation');
+    if (allowChangeLocation.val() === 'True') {
+        $('.select-location').val(null).trigger('change');
+    }
+}
+
+function clickExpand(e) {
+    e.preventDefault(e);
+
+    var button = $(this);
+
+    button.tooltip('hide');
+
+    var articleId = button.data('articleid');
+    var articleTypeId = button.data('articletypeid');
+    var locationId = button.data('locationid');
+    var status = button.data('status');
+
+    $('#ArticleID').val(articleId);
+    $('#ArticleName').val(button.data('articlename'));
+    $('#ArticleTypeID').val(articleTypeId);
+    $('#ArticleTypeName').val(button.data('articletypename'));
+    $('#LocationID').val(locationId);
+    $('#LocationName').val(button.data('locationname'));
+    $('#Status').val(status);
+    $('#ShowByPiece').val('true');
+
+    var parameters = {
+        ArticleID: articleId,
+        ArticleTypeID: articleTypeId,
+        LocationID: locationId,
+        Status: status,
+        ShowByPiece: true,
+        SearchTerm: $('#SearchTerm').val(),
+        ShowNumber: $('#ShowNumber').val()
+    }
+
+    $('.goods-cards-row').load('/Goods/Expand', parameters, function () {
+        $('.panel').removeClass('panel-default');
+        $('.panel').addClass('panel-info');
+        initFilter();
+        initTooltip();
+    });
+}
 
 function initArticleSelect() {
     var selectArticle = $('.select-article');
@@ -68,7 +143,7 @@ function initArticleSelect() {
                     results: $.map(data, function (item) {
                         return {
                             id: item.id,
-                            name: item.name,
+                            text: item.text,
                             type: item.type,
                             code: item.code,
                             barcode: item.barcode
@@ -95,7 +170,7 @@ function initArticleSelect() {
         var data = selectArticle.select2('data');
         if (data[0]) {
             articleId.val(data[0].id);
-            articleName.val(data[0].name);
+            articleName.val(data[0].text);
         }
         else {
             articleId.val(0);
@@ -175,16 +250,16 @@ function initArticleTypeSelect() {
 }
 
 function formatArticleData(data) {
-    if (data.loading) return data.name;
+    if (data.loading) return data.text;
 
-    return '<div>' + data.name + '</div>' +
+    return '<div>' + data.text + '</div>' +
         '<div><small style="color: #95a5a6;">' + data.type + '</small></div>' +
         '<div><small style="color: #95a5a6;">' + data.code + '</small></div>' +
         '<div><small style="color: #95a5a6;">' + data.barcode + '</small></div>';
 }
 
 function formatArticleDataSelection(data) {
-    return data.name || data.text;
+    return data.text;
 }
 
 function formatArticleTypeData(data) {

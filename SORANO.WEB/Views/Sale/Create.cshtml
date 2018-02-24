@@ -100,7 +100,7 @@
                     <span class="input-group-addon"><i class="fa fa-fw fa-address-book"></i></span>
                     <select class="form-control input-sm select-client"
                             asp-for="ClientID"></select>
-                    <span condition="@Model.AllowCreation"
+                    <span hide-if="@(!Model.AllowCreation)"
                             class="input-group-btn">
                         <button class="btn btn-default btn-sm"
                                 asp-action="CreateClient"
@@ -223,7 +223,7 @@
                     Подтвердить
                 </button>
                 <a class="btn btn-warning btn-sm"
-                    condition="@Model.LocationID > 0"
+                    hide-if="@Model.LocationID == 0"
                     asp-controller="Sale"
                     asp-action="Delete"
                     asp-route-id="@Model.ID">

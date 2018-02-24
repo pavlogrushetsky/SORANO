@@ -8,7 +8,7 @@
 </div>
 <br />
 <div class="sale-items-groups-tree"
-     condition="@Model.Groups.Count > 0">
+     hide-if="@Model.Groups.Count == 0">
     <ul>
         @foreach (var group in Model.Groups)
         {

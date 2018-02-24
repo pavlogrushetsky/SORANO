@@ -89,6 +89,10 @@
                 {
                     @Html.HiddenFor(m => m.RoleIDs.ToList()[i])
                 }
+                for (int j = 0; j < Model.LocationIds.Count(); j++)
+                {
+                    @Html.HiddenFor(m => m.LocationIds.ToList()[j])
+                }
             }
             <div class="form-group">
                 <label class="control-label" asp-for="Description"></label>

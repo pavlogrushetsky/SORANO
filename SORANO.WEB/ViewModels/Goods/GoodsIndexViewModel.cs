@@ -29,6 +29,8 @@ namespace SORANO.WEB.ViewModels.Goods
         public bool ShowByPiece { get; set; }
 
         [Display(Name = "Кол-во на странице:")]
-        public int ShowNumber { get; set; }      
+        public int ShowNumber { get; set; }
+
+        public bool AllowChangeLocation { get; set; }
     }
 }

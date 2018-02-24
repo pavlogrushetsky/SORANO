@@ -27,125 +27,132 @@
     </ul>
 }
 
-<form id="goods-filter-form" method="post">
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" href="#collapseFilters">
-                            <span>
-                                <i class="fa fa-fw fa-filter" aria-hidden="true"></i>
-                                Панель фильтров
-                            </span>
-                        </a>
-                    </h4>
-                </div>
-                <div id="collapseFilters" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        <div class="row">
-                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                                <div class="form-group">
-                                    <label class="control-label" asp-for="SearchTerm"></label>
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-addon"><i class="fa fa-fw fa-search"></i></span>
-                                        <input class="form-control input-sm" type="text" asp-for="SearchTerm" placeholder="Поиск" autofocus />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                                <div class="form-group">
-                                    <label class="control-label" asp-for="ShowNumber"></label>
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-addon"><i class="fa fa-fw fa-hashtag"></i></span>
-                                        <select class="form-control input-sm"
-                                                asp-for="ShowNumber">
-                                            <option value="10">10</option>
-                                            <option value="25">25</option>
-                                            <option value="50">50</option>
-                                            <option value="100">100</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                                <div class="form-group">
-                                    <label class="control-label" asp-for="ShowByPiece"></label>
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-addon"><i class="fa fa-fw fa-object-group"></i></span>
-                                        <select class="form-control input-sm"
-                                                asp-for="ShowByPiece">
-                                            <option value="false">Группировать</option>
-                                            <option value="true">Поштучно</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                                <div class="form-group">
-                                    <label class="control-label" asp-for="ArticleName"></label>
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-addon"><i class="fa fa-fw fa-tag"></i></span>
-                                        <select class="form-control input-sm select-article"
-                                                asp-for="ArticleID"></select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                                <div class="form-group">
-                                    <label class="control-label" asp-for="ArticleTypeName"></label>
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-addon"><i class="fa fa-fw fa-tags"></i></span>
-                                        <select class="form-control input-sm select-article-type"
-                                                asp-for="ArticleTypeID"></select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                                <div class="form-group">
-                                    <label class="control-label" asp-for="LocationName"></label>
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-addon"><i class="fa fa-fw fa-map-signs"></i></span>
-                                        <select class="form-control input-sm select-location"
-                                                asp-for="LocationID"></select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                                <div class="form-group">
-                                    <label class="control-label" asp-for="Status"></label>
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-addon"><i class="fa fa-fw fa-align-justify"></i></span>
-                                        <select class="form-control input-sm"
-                                                asp-for="Status">
-                                            <option value="0">В наличии</option>
-                                            <option value="1">Отложено</option>
-                                            <option value="2">Все</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    <form id="goods-filter-form" method="post">
+        <input type="hidden" asp-for="AllowChangeLocation" />
+        <input type="hidden" asp-for="LocationID" />
+        <input type="hidden" asp-for="LocationName" />
+        <input type="hidden" asp-for="ArticleID" />
+        <input type="hidden" asp-for="ArticleName" />
+        <input type="hidden" asp-for="ArticleTypeID"/>
+        <input type="hidden" asp-for="ArticleTypeName"/>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" href="#collapseFilters">
+                                <span>
+                                    <i class="fa fa-fw fa-filter" aria-hidden="true"></i>
+                                    Панель фильтров
+                                </span>
+                            </a>
+                        </h4>
                     </div>
-                    <div class="panel-footer">
-                        <div class="form-group">
-                            <button type="reset" class="btn btn-default btn-sm">
-                                <i class="fa fa-fw fa-close"></i>
-                                Сбросить
-                            </button>
-                            <button type="submit" class="btn btn-primary btn-sm">
-                                <i class="fa fa-fw fa-filter"></i>
-                                Применить
-                            </button>
+                    <div id="collapseFilters" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label" asp-for="SearchTerm"></label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"><i class="fa fa-fw fa-search"></i></span>
+                                            <input class="form-control input-sm" type="text" asp-for="SearchTerm" placeholder="Поиск" autofocus />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label" asp-for="ShowNumber"></label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"><i class="fa fa-fw fa-hashtag"></i></span>
+                                            <select class="form-control input-sm"
+                                                    asp-for="ShowNumber">
+                                                <option value="10">10</option>
+                                                <option value="25">25</option>
+                                                <option value="50">50</option>
+                                                <option value="100">100</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label" asp-for="ShowByPiece"></label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"><i class="fa fa-fw fa-object-group"></i></span>
+                                            <select class="form-control input-sm"
+                                                    asp-for="ShowByPiece">
+                                                <option value="false">Группировать</option>
+                                                <option value="true">Поштучно</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label" asp-for="ArticleName"></label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"><i class="fa fa-fw fa-tag"></i></span>
+                                            <select class="form-control input-sm select-article"
+                                                    asp-for="ArticleID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label" asp-for="ArticleTypeName"></label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"><i class="fa fa-fw fa-tags"></i></span>
+                                            <select class="form-control input-sm select-article-type"
+                                                    asp-for="ArticleTypeID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label" asp-for="LocationName"></label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"><i class="fa fa-fw fa-map-signs"></i></span>
+                                            <select disable-if="@(!Model.AllowChangeLocation)" class="form-control input-sm select-location"
+                                                    asp-for="LocationID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label" asp-for="Status"></label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"><i class="fa fa-fw fa-align-justify"></i></span>
+                                            <select class="form-control input-sm"
+                                                    asp-for="Status">
+                                                <option value="0">В наличии</option>
+                                                <option value="1">Отложено</option>
+                                                <option value="2">Все</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <div class="form-group">
+                                <button type="reset" class="btn btn-default btn-sm">
+                                    <i class="fa fa-fw fa-close"></i>
+                                    Сбросить
+                                </button>
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="fa fa-fw fa-filter"></i>
+                                    Применить
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
 <div class="row goods-cards-row">
     @await Component.InvokeAsync("Goods", new { model = Model })
 </div>

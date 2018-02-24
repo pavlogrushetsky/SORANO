@@ -42,7 +42,18 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            return View(new GoodsIndexViewModel());
+            var viewModel = new GoodsIndexViewModel();
+
+            if (!LocationId.HasValue)
+            {
+                viewModel.AllowChangeLocation = true;
+                return View(viewModel);
+            }                
+
+            viewModel.LocationID = LocationId.Value;
+            viewModel.LocationName = LocationName;
+
+            return View(viewModel);
         }
 
         [HttpGet]
@@ -222,6 +233,19 @@ namespace SORANO.WEB.Controllers
         public IActionResult Filter(GoodsIndexViewModel model)
         {
             return ViewComponent("Goods", new {model});
+        }
+
+        [HttpGet]
+        public IActionResult ClearFilter()
+        {
+            var model = new GoodsIndexViewModel();
+            return ViewComponent("Goods", new { model });
+        }
+
+        [HttpPost]
+        public IActionResult Expand(GoodsIndexViewModel model)
+        {
+            return ViewComponent("Goods", new { model });
         }
 
         //[HttpPost]

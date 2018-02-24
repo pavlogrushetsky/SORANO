@@ -7,7 +7,7 @@ namespace SORANO.WEB.ViewModels.Article
         [JsonProperty(PropertyName = "id")]
         public int ID { get; set; }
 
-        [JsonProperty(PropertyName = "name")]
+        [JsonProperty(PropertyName = "text")]
         public string Name { get; set; }
 
         [JsonProperty(PropertyName = "type")]

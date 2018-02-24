@@ -2,14 +2,14 @@
 
 namespace SORANO.WEB.Infrastructure.TagHelpers
 {
-    [HtmlTargetElement(Attributes = nameof(Condition))]
-    public class ConditionTagHelper : TagHelper
+    [HtmlTargetElement(Attributes = "hide-if")]
+    public class HideIfTagHelper : TagHelper
     {
-        public bool Condition { get; set; }
+        public bool HideIf { get; set; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            if (!Condition)
+            if (HideIf)
                 output.SuppressOutput();
         }
     }
