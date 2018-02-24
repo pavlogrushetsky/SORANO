@@ -21,5 +21,7 @@ namespace SORANO.BLL.Services.Abstract
         Task<ServiceResponse<GoodsDto>> GetAsync(int id);
 
         Task<ServiceResponse<GoodsDto>> AddRecommendationsAsync(IEnumerable<int> ids, IEnumerable<RecommendationDto> recommendations, int userId);
+
+        Task<ServiceResponse<bool>> AddToCartAsync(IEnumerable<int> ids, int saleId, int userId);
     }
 }

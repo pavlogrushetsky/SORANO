@@ -6,7 +6,113 @@
     $(document).on('submit', '#goods-filter-form', clickFilter);
     $(document).on('reset', '#goods-filter-form', clickResetFilter);
     $(document).on('click', '.goods-expand', clickExpand);
+    $(document).on('click', '.add-to-cart', clickAddToCart);
+    $(document).on('click', '.add-to-cart.btn-success', clickSubmitAddToCart);
 });
+
+function clickSubmitAddToCart(e) {
+    e.preventDefault();
+
+    var button = $(this);
+
+    button.tooltip('hide');
+
+    var parameters = {
+        model: {
+            ArticleID: $('#ArticleID').val(),
+            ArticleTypeID: $('#ArticleTypeID').val(),
+            LocationID: $('#LocationID').val(),
+            SearchTerm: $('#SearchTerm').val(),
+            Status: $('#Status').val(),
+            ShowByPiece: $('#ShowByPiece').val(),
+            ShowNumber: $('#ShowNumber').val()
+        },
+        goods: button.data('goods'),
+        saleId: button.data('saleid')
+    }
+
+    $('.goods-cards-row').load('/Goods/AddToCart', parameters, function () {
+        initFilter();
+        initTooltip();
+    });
+}
+
+function clickAddToCart(e) {
+    e.preventDefault();
+
+    var button = $(this);
+
+    button.tooltip('hide');
+    button.removeClass('btn-default');
+    button.addClass('btn-success');
+    button.attr('disabled', 'disabled');
+    button.attr('data-original-title', 'Подтвердить добавление в корзину');
+
+    var icon = button.find('i');
+
+    icon.removeClass('fa-cart-arrow-down');
+    icon.addClass('fa-check');  
+
+    var row = button.closest('table').find('.row-add-to-cart');
+    row.show('fast');
+
+    var input = row.find('.select-sale');
+    input.select2({
+        "language": {
+            "noResults": function () {
+                return "Корзины не найдены";
+            },
+            "searching": function () {
+                return "Поиск корзин...";
+            },
+            "errorLoading": function () {
+                return "Невозможно загрузить результаты поиска";
+            }
+        },
+        placeholder: "Корзина",
+        minimumInputLength: 0,
+        ajax: {
+            url: '/Sale/GetSales',
+            dataType: 'json',
+            type: 'POST',
+            delay: 100,
+            data: function (params) {
+                var queryParameters = {
+                    term: params.term,
+                    locationId: button.data('locationid')
+                }
+                return queryParameters;
+            },
+            results: function (data) {
+                return {
+                    results: $.map(data, function (item) {
+                        return {
+                            id: item.id,
+                            text: item.text
+                        }
+                    })
+                };
+            },
+            cache: true
+        }
+    });     
+
+    input.on("select2:opening", function () {
+        input.val(null).trigger('change');
+    });
+
+    input.on("change", function () {
+        var data = input.select2('data');
+        if (data[0]) {
+            button.removeAttr('disabled');
+            button.attr('data-saleid', data[0].id);
+        }
+        else {
+            button.attr('disabled', 'disabled');
+            button.attr('data-saleid', '');
+        }
+    });
+}
 
 function initFilter() {
     initArticleSelect();

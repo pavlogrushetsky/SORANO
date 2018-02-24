@@ -267,6 +267,26 @@ namespace SORANO.WEB.Controllers
 
         #endregion
 
+        [HttpPost]
+        public async Task<JsonResult> GetSales(int locationId)
+        {
+            var sales = await _saleService.GetAllAsync(false, UserId, locationId);
+
+            return Json(new
+            {
+                results = sales.Result?
+                    .Where(s => !s.IsSubmitted && s.Date.HasValue)
+                    .OrderByDescending(s => s.Date)
+                    .Select(s => new
+                    {
+                        id = s.ID,
+                        text = s.Client == null 
+                            ? s.Date.Value.ToString("dd.MM.yyyy") 
+                            : $"{s.Date.Value:dd.MM.yyyy}: {s.Client.Name}"
+                    })
+            });
+        }
+
         private IActionResult OnFault(string ex)
         {
             TempData["Error"] = ex;

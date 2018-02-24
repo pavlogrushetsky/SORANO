@@ -248,6 +248,17 @@ namespace SORANO.WEB.Controllers
             return ViewComponent("Goods", new { model });
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddToCart(GoodsIndexViewModel model, string goods, int saleId)
+        {
+            var splitted = goods.Split(',');
+            var ids = splitted.Select(s => Convert.ToInt32(s));
+
+            await _goodsService.AddToCartAsync(ids, saleId, UserId);
+
+            return ViewComponent("Goods", new { model });
+        }
+
         //[HttpPost]
         //[ValidateAntiForgeryToken]
         //public async Task<IActionResult> Index(GoodsIndexViewModel model)

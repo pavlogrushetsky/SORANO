@@ -274,6 +274,8 @@ namespace SORANO.BLL.Services
                                 .Concat(i.DeliveryItem.Delivery.Recommendations)
                                 .Concat(i.DeliveryItem.Article.Recommendations)
                                 .Concat(i.DeliveryItem.Article.Type.Recommendations)
+                                .Concat(i.DeliveryItem.Delivery.Supplier.Recommendations)
+                                .Concat(i.Storages.OrderBy(st => st.FromDate).Last().Recommendations)
                                 .Select(r => r.ToDto())
                                 .ToList()
                         })

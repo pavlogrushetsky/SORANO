@@ -207,6 +207,25 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<GoodsDto>();
         }
 
+        public async Task<ServiceResponse<bool>> AddToCartAsync(IEnumerable<int> ids, int saleId, int userId)
+        {
+            var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => ids.Contains(g.ID));
+            var list = goods?.ToList();
+            if (list == null || !list.Any())
+                return new ServiceResponse<bool>(ServiceResponseStatus.NotFound);
+
+            list.ForEach(g =>
+            {
+                g.SaleID = saleId;
+                g.UpdateModifiedFields(userId);
+                UnitOfWork.Get<Goods>().Update(g);
+            });                        
+
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<bool>(true);
+        }
+
         public async Task<ServiceResponse<IEnumerable<GoodsDto>>> GetAvailableForLocationAsync(int locationId, int saleId, bool selectedOnly = false)
         {
             if (locationId == 0)
