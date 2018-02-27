@@ -29,10 +29,11 @@
 
     initSaleItemsTree();
 
+    $(document).on('click', '.submit-sale', function(e) {
+        e.preventDefault();
 
-
-
-
+        $('#IsSubmitted').val(true);
+    });
 
     $(document).on('click', '#refresh-sale-items', function(e) {
         e.preventDefault();
@@ -42,7 +43,7 @@
         var parameters = {
             saleId: $('#ID').val(),
             locationId: $("#LocationID").val(),
-            selectedOnly: 'False'
+            selectedOnly: $('#ShowSelected').val()
         }
 
         $('#sale-items-groups').load('/Sale/Refresh', parameters, function() {
@@ -306,19 +307,7 @@
                 }
             }
         });
-    });
-
-
-
-
-
-
-
-
-
-
-
-    //initSaleItemsDataTable();   
+    });  
 
     var allowChangeLocation = $("#AllowChangeLocation");
     if (allowChangeLocation.val() !== 'True')
@@ -357,12 +346,10 @@ function initSaleItemsTree() {
         if (!target.is("input") && !target.is('button') && !target.is('i')) {
             var children = $(this).parent('li').find(' > ul > li');
             if (children.is(":visible")) {
-                //localStorage.setItem($(this).attr('id'), 'false');
                 children.hide('fast');
                 $(this).attr('title', 'Развернуть ветку');
                 $(this).find(' > table').show('fast');
             } else {
-                //localStorage.setItem($(this).attr('id'), 'true');
                 children.show('fast');
                 $(this).attr('title', 'Свернуть ветку');
                 $(this).find(' > table').hide('fast');

@@ -284,15 +284,25 @@ namespace SORANO.BLL.Services
                     };
 
                     groupDto.SelectedCount = groupDto.Items.Count(i => i.IsSelected);
-                    groupDto.Price = groupDto.Items.All(i => i.Price == groupDto.Items.First().Price) 
-                        ? groupDto.Items.First().Price 
-                        : null;
+                    var firstItemPrice = groupDto.Items.FirstOrDefault()?.Price;
+                    if (firstItemPrice.HasValue)
+                    {
+                        groupDto.Price = groupDto.Items.All(i => i.Price.HasValue && i.Price.Value == firstItemPrice.Value)
+                            ? firstItemPrice.Value
+                            : (decimal?)null;
+                    }
+                    else
+                    {
+                        groupDto.Price = null;
+                    }
 
-                    groupDto.GoodsIds = groupDto.Items.Select(id => id.GoodsId.ToString())
-                        .Aggregate((i, j) => i + ',' + j);
+                    if (groupDto.Items.Any())
+                        groupDto.GoodsIds = groupDto.Items.Select(id => id.GoodsId.ToString())
+                            .Aggregate((i, j) => i + ',' + j);
 
                     return groupDto;
                 })
+                .Where(g => g.Items.Any())
                 .OrderBy(g => g.ArticleName)
                 .ToList()
             };

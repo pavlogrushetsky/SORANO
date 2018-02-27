@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using SORANO.BLL.Dtos;
@@ -88,7 +89,10 @@ namespace SORANO.WEB.Controllers
                 var model = new SaleCreateUpdateViewModel { AllowCreation = AllowCreation };
 
                 if (!LocationId.HasValue)
+                {
+                    model.AllowChangeLocation = true;
                     return View(model);
+                }                    
 
                 var result = await _saleService.CreateAsync(new SaleDto
                 {
@@ -153,6 +157,48 @@ namespace SORANO.WEB.Controllers
         #endregion
 
         #region POST Actions
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [LoadAttachments]
+        public async Task<IActionResult> Create(SaleCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                ModelState.RemoveFor(nameof(model.IsSubmitted));
+
+                if (!ModelState.IsValid)
+                {
+                    model.IsSubmitted = false;
+                    return View(model);
+                }
+
+                TempData["Success"] = "Продажа была успешно оформлена.";
+                return RedirectToAction("Index");
+
+            }, OnFault);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [LoadAttachments]
+        public async Task<IActionResult> Update(SaleCreateUpdateViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                ModelState.RemoveFor(nameof(model.IsSubmitted));
+
+                if (!ModelState.IsValid)
+                {
+                    model.IsSubmitted = false;
+                    return View("Create", model);
+                }
+
+                TempData["Success"] = "Продажа была успешно оформлена.";
+                return RedirectToAction("Index");
+
+            }, OnFault);
+        }
 
         [HttpPost]
         public IActionResult Refresh(int saleId, int locationId, bool selectedOnly)

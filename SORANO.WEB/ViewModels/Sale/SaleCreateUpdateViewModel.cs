@@ -31,7 +31,5 @@ namespace SORANO.WEB.ViewModels.Sale
         public bool AllowCreation { get; set; }     
         
         public bool ShowSelected { get; set; }
-
-        public SaleItemsGroupsViewModel Groups { get; set; }
     }
 }
