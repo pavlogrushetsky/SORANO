@@ -69,9 +69,42 @@ namespace SORANO.BLL.Services
 
         }
 
-        public Task<ServiceResponse<SaleDto>> UpdateAsync(SaleDto sale, int userId)
+        public async Task<ServiceResponse<SaleDto>> UpdateAsync(SaleDto sale, int userId)
         {
-            throw new NotImplementedException();
+            if (sale == null)
+                throw new ArgumentNullException(nameof(sale));
+
+            var existentSale = await UnitOfWork.Get<Sale>().GetAsync(sale.ID);
+
+            if (existentSale == null)
+                return new ServiceResponse<SaleDto>(ServiceResponseStatus.NotFound);
+
+            var entity = sale.ToEntity();
+
+            existentSale.UpdateFields(entity);
+            existentSale.UpdateModifiedFields(userId);
+
+            if (sale.IsSubmitted)
+            {
+                foreach (var goods in existentSale.Goods)
+                {
+                    goods.IsSold = true;
+                    goods.Storages.OrderBy(st => st.FromDate).Last().ToDate = DateTime.Now;
+                    goods.UpdateModifiedFields(userId);
+                    UnitOfWork.Get<Goods>().Update(goods);
+                }
+
+                existentSale.TotalPrice = existentSale.Goods.Sum(g => g.Price);
+            }
+
+            UpdateAttachments(entity, existentSale, userId);
+            UpdateRecommendations(entity, existentSale, userId);
+
+            var updated = UnitOfWork.Get<Sale>().Update(existentSale);
+
+            await UnitOfWork.SaveAsync();
+
+            return new SuccessResponse<SaleDto>(updated.ToDto());
         }
 
         public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
@@ -308,6 +341,21 @@ namespace SORANO.BLL.Services
             };
 
             return new SuccessResponse<SaleItemsGroupsDto>(saleItemsGroupsDto);
+        }
+
+        public async Task<ServiceResponse<bool>> ValidateItemsForAsync(int saleId)
+        {
+            if (saleId == 0)
+                return new ServiceResponse<bool>(ServiceResponseStatus.InvalidOperation);
+
+            var sale = await UnitOfWork.Get<Sale>().GetAsync(saleId);
+
+            if (!sale.Goods.Any())
+                return new SuccessResponse<bool>();
+
+            return sale.Goods.All(g => g.Price.HasValue && g.Price.Value > 0M) 
+                ? new SuccessResponse<bool>(true) 
+                : new SuccessResponse<bool>();
         }
     }
 }

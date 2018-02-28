@@ -15,7 +15,7 @@ namespace SORANO.WEB.ViewModels.Sale
 
         public string ClientName { get; set; }
 
-        public string SelectedCurrency { get; set; }
+        public string SelectedCurrency { get; set; } = "₴";
 
         [Display(Name = "Дата продажи")]
         public string Date { get; set; }

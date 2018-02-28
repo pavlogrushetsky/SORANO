@@ -16,7 +16,7 @@ namespace SORANO.BLL.Extensions
                 LocationID = model.LocationID,
                 Location = model.Location.ToDto(),
                 UserID = model.UserID,
-                User = model.User.ToDto(),
+                User = model.User?.ToDto(),
                 IsSubmitted = model.IsSubmitted,
                 Date = model.Date,
                 TotalPrice = model.TotalPrice,
@@ -43,6 +43,7 @@ namespace SORANO.BLL.Extensions
                 TotalPrice = dto.TotalPrice,
                 DollarRate = dto.DollarRate,
                 EuroRate = dto.EuroRate,
+                IsSubmitted = dto.IsSubmitted,
                 Recommendations = dto.Recommendations?.Select(r => r.ToEntity()).ToList(),
                 Attachments = dto.Attachments?.Select(a => a.ToEntity()).ToList()
             };
@@ -52,7 +53,12 @@ namespace SORANO.BLL.Extensions
 
         public static void UpdateFields(this Sale existentSale, Sale newSale)
         {
-
+            existentSale.ClientID = newSale.ClientID;
+            existentSale.Date = newSale.Date;
+            existentSale.EuroRate = newSale.EuroRate;
+            existentSale.DollarRate = newSale.DollarRate;
+            existentSale.IsSubmitted = newSale.IsSubmitted;
+            existentSale.LocationID = newSale.LocationID;
         }
     }
 }

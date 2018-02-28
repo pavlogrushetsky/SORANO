@@ -239,6 +239,9 @@ namespace SORANO.WEB.Controllers
         public IActionResult ClearFilter()
         {
             var model = new GoodsIndexViewModel();
+            if (LocationId.HasValue)
+                model.LocationID = LocationId.Value;
+
             return ViewComponent("Goods", new { model });
         }
 

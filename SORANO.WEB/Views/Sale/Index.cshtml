@@ -67,6 +67,7 @@
                 Список продаж
                 <span class="badge" style="margin-left: 5px;">@Model.Items.Count</span>
                 <a class="btn btn-default btn-xs pull-right"
+                   hide-if="@Model.ShowLocation"
                    asp-controller="Sale"
                    asp-action="Create"
                    data-toggle="tooltip"

@@ -29,9 +29,7 @@
 
     initSaleItemsTree();
 
-    $(document).on('click', '.submit-sale', function(e) {
-        e.preventDefault();
-
+    $(document).on('click', '.submit-sale', function() {
         $('#IsSubmitted').val(true);
     });
 
@@ -40,8 +38,12 @@
 
         $(this).tooltip('hide');
 
+        var saleId = $('#ID').val();
+        if (saleId === '0')
+            return;
+
         var parameters = {
-            saleId: $('#ID').val(),
+            saleId: saleId,
             locationId: $("#LocationID").val(),
             selectedOnly: $('#ShowSelected').val()
         }
@@ -55,6 +57,10 @@
         e.preventDefault();
 
         $(this).tooltip('hide');
+
+        var saleId = $('#ID').val();
+        if (saleId === '0')
+            return;
 
         var icon = $(this).find('i');
 
@@ -74,7 +80,7 @@
         }            
 
         var parameters = {
-            saleId: $('#ID').val(),
+            saleId: saleId,
             locationId: $('#LocationID').val(),
             selectedOnly: showSelected
         }

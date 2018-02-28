@@ -65,6 +65,11 @@ namespace SORANO.WEB.Controllers
                 viewModel.Mode = SaleTableMode.SaleIndex;
                 viewModel.ShowLocation = !LocationId.HasValue;
 
+                if (!LocationId.HasValue)
+                {
+                    TempData["Warning"] = "Для создания продажи необходимо войти в систему, указав место.";
+                }
+
                 return View(viewModel);
             }, ex =>
             {
@@ -112,7 +117,7 @@ namespace SORANO.WEB.Controllers
                 model.ID = result.Result;
                 model.LocationID = LocationId.Value;
                 model.LocationName = LocationName;
-                model.AllowChangeLocation = false;
+                model.AllowChangeLocation = false;                
 
                 return View(model);
             }, OnFault);
@@ -167,13 +172,32 @@ namespace SORANO.WEB.Controllers
             {
                 ModelState.RemoveFor(nameof(model.IsSubmitted));
 
+                if (model.IsSubmitted)
+                {
+                    var itemsValid = await _saleService.ValidateItemsForAsync(model.ID);
+                    if (itemsValid.Status != ServiceResponseStatus.Success || !itemsValid.Result)
+                    {
+                        ModelState.AddModelError("", "Продажа должна содержать товары.");
+                        ModelState.AddModelError("", "Для всех товаров должна быть установлена цена.");
+                    }
+                }
+
                 if (!ModelState.IsValid)
                 {
                     model.IsSubmitted = false;
                     return View(model);
                 }
 
-                TempData["Success"] = "Продажа была успешно оформлена.";
+                var sale = _mapper.Map<SaleDto>(model);
+
+                var result = await _saleService.UpdateAsync(sale, UserId);
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось обновить продажу.";
+                    return RedirectToAction("Index");
+                }
+
+                TempData["Success"] = "Продажа была успешно обновлена.";
                 return RedirectToAction("Index");
 
             }, OnFault);
@@ -188,13 +212,32 @@ namespace SORANO.WEB.Controllers
             {
                 ModelState.RemoveFor(nameof(model.IsSubmitted));
 
+                if (model.IsSubmitted)
+                {
+                    var itemsValid = await _saleService.ValidateItemsForAsync(model.ID);
+                    if (itemsValid.Status != ServiceResponseStatus.Success || !itemsValid.Result)
+                    {
+                        ModelState.AddModelError("", "Продажа должна содержать товары.");
+                        ModelState.AddModelError("", "Для всех товаров должна быть установлена цена.");
+                    }
+                }
+
                 if (!ModelState.IsValid)
                 {
                     model.IsSubmitted = false;
                     return View("Create", model);
                 }
 
-                TempData["Success"] = "Продажа была успешно оформлена.";
+                var sale = _mapper.Map<SaleDto>(model);
+
+                var result = await _saleService.UpdateAsync(sale, UserId);
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось обновить продажу.";
+                    return RedirectToAction("Index");
+                }
+
+                TempData["Success"] = "Продажа была успешно обновлена.";
                 return RedirectToAction("Index");
 
             }, OnFault);
