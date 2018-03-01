@@ -137,18 +137,18 @@ namespace SORANO.BLL.Services
 
         #endregion
 
-        public async Task<ServiceResponse<int>> GetUnsubmittedCountAsync(int userId, int? locationId)
+        public async Task<ServiceResponse<int>> GetUnsubmittedCountAsync(int? locationId)
         {
-            var deliveries = await UnitOfWork.Get<Sale>().FindByAsync(s => !s.IsSubmitted && !s.IsDeleted && s.UserID == userId && (!locationId.HasValue || s.LocationID == locationId.Value));
+            var sales = await UnitOfWork.Get<Sale>().FindByAsync(s => !s.IsSubmitted && !s.IsDeleted && (!locationId.HasValue || s.LocationID == locationId.Value));
 
-            return new SuccessResponse<int>(deliveries?.Count() ?? 0);
+            return new SuccessResponse<int>(sales?.Count() ?? 0);
         }
 
-        public async Task<ServiceResponse<IEnumerable<SaleDto>>> GetAllAsync(bool withDeleted, int userId, int? locationId)
+        public async Task<ServiceResponse<IEnumerable<SaleDto>>> GetAllAsync(bool withDeleted, int? locationId)
         {
             var response = new SuccessResponse<IEnumerable<SaleDto>>();
 
-            var sales = await UnitOfWork.Get<Sale>().FindByAsync(s => s.UserID == userId && (!locationId.HasValue || s.LocationID == locationId.Value));
+            var sales = await UnitOfWork.Get<Sale>().FindByAsync(s => !locationId.HasValue || s.LocationID == locationId.Value);
 
             response.Result = !withDeleted
                 ? sales.Where(s => !s.IsDeleted).Select(s => s.ToDto())

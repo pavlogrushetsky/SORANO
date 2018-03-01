@@ -48,7 +48,7 @@ namespace SORANO.WEB.Controllers
             {
                 var showDeleted = Session.GetBool("ShowDeletedDeliveries");
 
-                var deliveriesResult = await _deliveryService.GetAllAsync(showDeleted);
+                var deliveriesResult = await _deliveryService.GetAllAsync(showDeleted, LocationId);
 
                 if (deliveriesResult.Status != ServiceResponseStatus.Success)
                 {
@@ -62,6 +62,7 @@ namespace SORANO.WEB.Controllers
 
                 var viewModel = _mapper.Map<DeliveryIndexViewModel>(deliveriesResult.Result);
                 viewModel.Mode = DeliveryTableMode.DeliveryIndex;
+                viewModel.ShowLocation = !LocationId.HasValue;
 
                 return View(viewModel);
             }, ex => 

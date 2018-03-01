@@ -6,9 +6,9 @@ namespace SORANO.BLL.Services.Abstract
 {
     public interface ISaleService : IBaseService<SaleDto>
     {
-        Task<ServiceResponse<int>> GetUnsubmittedCountAsync(int userId, int? locationId);
+        Task<ServiceResponse<int>> GetUnsubmittedCountAsync(int? locationId);
 
-        Task<ServiceResponse<IEnumerable<SaleDto>>> GetAllAsync(bool withDeleted, int userId, int? locationId);
+        Task<ServiceResponse<IEnumerable<SaleDto>>> GetAllAsync(bool withDeleted, int? locationId);
 
         Task<ServiceResponse<SaleItemsSummaryDto>> AddGoodsAsync(int goodsId, decimal? price, int saleId, int userId);
 

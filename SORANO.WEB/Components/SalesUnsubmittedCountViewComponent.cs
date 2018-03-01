@@ -27,7 +27,7 @@ namespace SORANO.WEB.Components
                 ? (int?)null
                 : int.Parse(locationIdStr);
 
-            var count = await _saleService.GetUnsubmittedCountAsync(userId, locationId);
+            var count = await _saleService.GetUnsubmittedCountAsync(locationId);
 
             return View(count.Result);
         }

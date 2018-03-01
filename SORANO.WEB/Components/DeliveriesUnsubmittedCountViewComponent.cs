@@ -15,7 +15,12 @@ namespace SORANO.WEB.Components
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var count = await _deliveryService.GetUnsubmittedCountAsync();
+            var locationIdStr = HttpContext.User.FindFirst("LocationId")?.Value;
+            var locationId = string.IsNullOrWhiteSpace(locationIdStr)
+                ? (int?)null
+                : int.Parse(locationIdStr);
+
+            var count = await _deliveryService.GetUnsubmittedCountAsync(locationId);
 
             return View(count.Result);
         }

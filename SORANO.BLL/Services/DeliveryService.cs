@@ -31,6 +31,19 @@ namespace SORANO.BLL.Services
             return response;
         }
 
+        public async Task<ServiceResponse<IEnumerable<DeliveryDto>>> GetAllAsync(bool withDeleted, int? locationId)
+        {
+            var response = new SuccessResponse<IEnumerable<DeliveryDto>>();
+
+            var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(s => !locationId.HasValue || s.LocationID == locationId.Value);
+
+            response.Result = !withDeleted
+                ? deliveries.Where(d => !d.IsDeleted).Select(d => d.ToDto())
+                : deliveries.Select(d => d.ToDto());
+
+            return response;
+        }
+
         public async Task<ServiceResponse<DeliveryDto>> GetAsync(int id)
         {
             var delivery = await UnitOfWork.Get<Delivery>().GetAsync(d => d.ID == id);
@@ -215,16 +228,16 @@ namespace SORANO.BLL.Services
                 });
         }
 
-        public async Task<ServiceResponse<int>> GetSubmittedCountAsync()
+        public async Task<ServiceResponse<int>> GetSubmittedCountAsync(int? locationId)
         {
-            var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(d => d.IsSubmitted && !d.IsDeleted);
+            var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(d => d.IsSubmitted && !d.IsDeleted && (!locationId.HasValue || d.LocationID == locationId.Value));
 
             return new SuccessResponse<int>(deliveries?.Count() ?? 0);
         }
 
-        public async Task<ServiceResponse<int>> GetUnsubmittedCountAsync()
+        public async Task<ServiceResponse<int>> GetUnsubmittedCountAsync(int? locationId)
         {
-            var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(d => !d.IsSubmitted && !d.IsDeleted);
+            var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(d => !d.IsSubmitted && !d.IsDeleted && (!locationId.HasValue || d.LocationID == locationId.Value));
 
             return new SuccessResponse<int>(deliveries?.Count() ?? 0);
         }        

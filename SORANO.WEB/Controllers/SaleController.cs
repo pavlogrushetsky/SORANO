@@ -49,7 +49,7 @@ namespace SORANO.WEB.Controllers
             {
                 var showDeleted = Session.GetBool("ShowDeletedSales");
 
-                var salesResult = await _saleService.GetAllAsync(showDeleted, UserId, LocationId);
+                var salesResult = await _saleService.GetAllAsync(showDeleted, LocationId);
 
                 if (salesResult.Status != ServiceResponseStatus.Success)
                 {
@@ -84,6 +84,25 @@ namespace SORANO.WEB.Controllers
             Session.SetBool("ShowDeletedSales", show);
 
             return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _saleService.GetAsync(id);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанную продажу.";
+                    return RedirectToAction("Index");
+                }
+
+                var viewModel = _mapper.Map<SaleDetailsViewModel>(result.Result);
+
+                return View(viewModel);
+
+            }, OnFault);
         }
 
         [HttpGet]
@@ -359,7 +378,7 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         public async Task<JsonResult> GetSales(int locationId)
         {
-            var sales = await _saleService.GetAllAsync(false, UserId, locationId);
+            var sales = await _saleService.GetAllAsync(false, locationId);
 
             return Json(new
             {

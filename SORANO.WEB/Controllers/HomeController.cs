@@ -23,7 +23,12 @@ namespace SORANO.WEB.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var deliveriesCount = await _deliveryService.GetSubmittedCountAsync();
+            var locationIdStr = HttpContext.User.FindFirst("LocationId")?.Value;
+            var locationId = string.IsNullOrWhiteSpace(locationIdStr)
+                ? (int?)null
+                : int.Parse(locationIdStr);
+
+            var deliveriesCount = await _deliveryService.GetSubmittedCountAsync(locationId);
             var totalIncome = await _goodsService.GetTotalIncomeAsync();
 
             return View(new DashboardModel
