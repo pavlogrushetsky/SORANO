@@ -25,6 +25,7 @@ namespace SORANO.WEB.Controllers
         private readonly IMapper _mapper;
 
         public DeliveryController(IUserService userService,
+            IExceptionService exceptionService,
             IHostingEnvironment hostingEnvironment,
             IAttachmentTypeService attachmentTypeService,
             IAttachmentService attachmentService,
@@ -33,7 +34,7 @@ namespace SORANO.WEB.Controllers
             ISupplierService supplierService,
             IArticleService articleService,
             ILocationService locationService,
-            IMapper mapper) : base(userService, hostingEnvironment, attachmentTypeService, attachmentService, memoryCache)
+            IMapper mapper) : base(userService, exceptionService, hostingEnvironment, attachmentTypeService, attachmentService, memoryCache)
         {
             _deliveryService = deliveryService;
             _mapper = mapper;

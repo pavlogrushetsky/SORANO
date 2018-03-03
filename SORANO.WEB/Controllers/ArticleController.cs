@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -27,11 +28,12 @@ namespace SORANO.WEB.Controllers
 
         public ArticleController(IArticleService articleService,
             IUserService userService, 
+            IExceptionService exceptionService,
             IHostingEnvironment environment,
             IAttachmentTypeService attachmentTypeService,
             IAttachmentService attachmentService,
             IMemoryCache memoryCache, 
-            IMapper mapper) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
+            IMapper mapper) : base(userService, exceptionService, environment, attachmentTypeService, attachmentService, memoryCache)
         {
             _articleService = articleService;
             _mapper = mapper;

@@ -21,10 +21,11 @@ namespace SORANO.WEB.Controllers
         private readonly ILocationService _locationService;
         private readonly IMapper _mapper;
 
-        public UserController(IUserService userService, 
+        public UserController(IUserService userService,
+            IExceptionService exceptionService,
             IRoleService roleService,
             ILocationService locationService,
-            IMapper mapper) : base(userService)
+            IMapper mapper) : base(userService, exceptionService)
         {
             _roleService = roleService;
             _locationService = locationService;

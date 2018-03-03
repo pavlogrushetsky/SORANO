@@ -12,11 +12,11 @@ namespace SORANO.DAL.Context.Configurations
                 .HasMaxLength(5000);
 
             Property(e => e.InnerException)
-                .IsRequired()
+                .IsOptional()
                 .HasMaxLength(5000);
 
             Property(e => e.StackTrace)
-                .IsOptional();
+                .IsRequired();
 
             ToTable("Exceptions");
         }

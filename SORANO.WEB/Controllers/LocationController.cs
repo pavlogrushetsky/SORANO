@@ -29,12 +29,13 @@ namespace SORANO.WEB.Controllers
 
         public LocationController(ILocationService locationService, 
             IUserService userService,
+            IExceptionService exceptionService,
             IHostingEnvironment environment,
             ILocationTypeService locationTypeService, 
             IAttachmentTypeService attachmentTypeService,
             IAttachmentService attachmentService,
             IMemoryCache memoryCache, 
-            IMapper mapper) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
+            IMapper mapper) : base(userService, exceptionService, environment, attachmentTypeService, attachmentService, memoryCache)
         {
             _locationService = locationService;
             _mapper = mapper;

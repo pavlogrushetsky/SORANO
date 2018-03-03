@@ -22,10 +22,11 @@ namespace SORANO.WEB.Controllers
         private readonly IMapper _mapper;
 
         public GoodsController(IGoodsService goodsService, 
+            IExceptionService exceptionService,
             ILocationService locationService, 
             IUserService userService, 
             IArticleService articleService,
-            IMapper mapper) : base(userService)
+            IMapper mapper) : base(userService, exceptionService)
         {
             _goodsService = goodsService;
             _mapper = mapper;
