@@ -65,6 +65,12 @@
             </dd>
             <dt>@Html.DisplayNameFor(model => model.TotalPrice)</dt>
             <dd>@Html.DisplayFor(model => model.TotalPrice) @Model.Currency</dd>
+            <dt>@Html.DisplayNameFor(model => model.IsCachless)</dt>
+            <dd>
+                <span class="label label-default">
+                    @(Model.IsCachless ? "Безналичный" : "Наличный")
+                </span>
+            </dd>
             <dt hide-if="@(string.IsNullOrEmpty(Model.DollarRate))">
                 @Html.DisplayNameFor(model => model.DollarRate)
             </dt>
@@ -138,15 +144,15 @@
                                     <tr>
                                         <td>
                                             <a asp-controller="Article"
-                                                asp-action="Details"
-                                                asp-route-id="@saleItem.ArticleId"
-                                                tooltip="Просмотреть информацию об артикуле"
-                                                tooltip-placement="bottom">
+                                               asp-action="Details"
+                                               asp-route-id="@saleItem.ArticleId"
+                                               tooltip="Просмотреть информацию об артикуле"
+                                               tooltip-placement="bottom">
                                                 @saleItem.ArticleName
                                             </a>
                                         </td>
                                         <td>@saleItem.Price</td>
-                                        <td>@saleItem.Quantity</td>                                                                               
+                                        <td>@saleItem.Quantity</td>
                                     </tr>
                                 }
                             </tbody>
@@ -191,6 +197,12 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="row">
+        <a class="btn btn-default btn-sm" asp-action="Index" asp-controller="Sale">
+            <i class="fa fa-fw fa-arrow-left"></i>
+            Назад
+        </a>
     </div>
 </div>
 

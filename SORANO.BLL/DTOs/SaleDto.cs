@@ -19,6 +19,8 @@ namespace SORANO.BLL.Dtos
 
         public decimal? EuroRate { get; set; }
 
+        public bool IsCachless { get; set; }
+
         public DateTime? Date { get; set; }
 
         public ClientDto Client { get; set; }

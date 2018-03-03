@@ -22,6 +22,8 @@ namespace SORANO.CORE.StockEntities
 
         public decimal? EuroRate { get; set; }
 
+        public bool IsCachless { get; set; }
+
         public virtual Client Client { get; set; }
 
         public virtual Location Location { get; set; }

@@ -24,6 +24,9 @@ namespace SORANO.WEB.ViewModels.Sale
 
         public string EuroRate { get; set; }
 
+        [Display(Name = "Безналичный расчёт")]
+        public bool IsCachless { get; set; }
+
         public bool IsSubmitted { get; set; }
 
         public bool AllowChangeLocation { get; set; } = true;

@@ -24,6 +24,8 @@
 
         public string LocationName { get; set; }
 
+        public bool IsCachless { get; set; }
+
         public int? ClientID { get; set; }
 
         public string ClientName { get; set; }

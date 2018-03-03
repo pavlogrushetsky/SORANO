@@ -20,46 +20,46 @@
 }
 
 @*<div class="row">
-    <div class="col-lg-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <i class="fa fa-fw fa-bar-chart"></i>
-                График продаж
-            </div>
-            <div class="panel-body">
-                <div id="sales-barchart" style="height: 150px;">
+        <div class="col-lg-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-fw fa-bar-chart"></i>
+                    График продаж
+                </div>
+                <div class="panel-body">
+                    <div id="sales-barchart" style="height: 150px;">
 
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-lg-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <i class="fa fa-fw fa-pie-chart"></i>
-                График продаж по местам
-            </div>
-            <div class="panel-body">
-                <div id="sales-piechart" style="height: 150px;">
+        <div class="col-lg-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-fw fa-pie-chart"></i>
+                    График продаж по местам
+                </div>
+                <div class="panel-body">
+                    <div id="sales-piechart" style="height: 150px;">
 
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-lg-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <i class="fa fa-fw fa-bar-chart"></i>
-                График прибыли
-            </div>
-            <div class="panel-body">
-                <div id="sales-linechart" style="height: 150px;">
+        <div class="col-lg-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-fw fa-bar-chart"></i>
+                    График прибыли
+                </div>
+                <div class="panel-body">
+                    <div id="sales-linechart" style="height: 150px;">
 
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>*@
+    </div>*@
 <div class="row">
     <div class="col-lg-12">
         <div class="panel panel-primary">
@@ -93,27 +93,27 @@
                     <thead>
                         <tr role="row" class="search-row">
                             <th><input type="text" class="form-control input-sm" placeholder="Продажа" /></th>
-                            @if (Model.ShowLocation)
-                            {
-                            <th><input type="text" class="form-control input-sm" placeholder="Место" /></th>
-                            }                            
+                            <th hide-if="@(!Model.ShowLocation)">
+                                <input type="text" class="form-control input-sm" placeholder="Место" />
+                            </th>
                             <th><input type="text" class="form-control input-sm" placeholder="Продавец" /></th>
                             <th><input type="text" class="form-control input-sm" placeholder="Клиент" /></th>
                             <th><input type="text" class="form-control input-sm" placeholder="Позиций" /></th>
                             <th><input type="text" class="form-control input-sm" placeholder="Сумма" /></th>
+                            <th><input type="text" class="form-control input-sm" placeholder="Расчёт" /></th>
                             <th><input type="text" class="form-control input-sm" placeholder="Статус" /></th>
                             <th></th>
                         </tr>
                         <tr role="row">
                             <th><i class="fa fa-fw fa-calendar"></i>Продажа</th>
-                            @if (Model.ShowLocation)
-                            {
-                            <th><i class="fa fa-fw fa-map-marker"></i>Место</th>
-                            }                            
+                            <th hide-if="@(!Model.ShowLocation)">
+                                <i class="fa fa-fw fa-map-marker"></i>Место
+                            </th>
                             <th><i class="fa fa-fw fa-user"></i>Продавец</th>
                             <th><i class="fa fa-fw fa-address-book"></i>Клиент</th>
                             <th><i class="fa fa-fw fa-hashtag"></i>Позиций</th>
                             <th><i class="fa fa-fw fa-money"></i>Сумма</th>
+                            <th><i class="fa fa-fw fa-money"></i>Расчёт</th>
                             <th><i class="fa fa-fw fa-align-justify"></i>Статус</th>
                             <th>Действия</th>
                         </tr>
@@ -121,11 +121,9 @@
                     <tbody>
                         @foreach (var sale in Model.Items)
                         {
-                        <tr class="@(sale.IsDeleted ? "danger" : "")">
-                            <td>@sale.Date</td>
-                            @if (Model.ShowLocation)
-                            {
-                                <td>
+                            <tr class="@(sale.IsDeleted ? "danger" : "")">
+                                <td>@sale.Date</td>
+                                <td hide-if="@(!Model.ShowLocation)">
                                     <a asp-controller="Location"
                                        asp-action="Details"
                                        asp-route-id="@sale.LocationID"
@@ -136,86 +134,79 @@
                                         @sale.LocationName
                                     </a>
                                 </td>
-                            }                            
-                            <td>
-                                <a asp-controller="User"
-                                   asp-action="Details"
-                                   asp-route-id="@sale.UserID"
-                                   data-toggle="tooltip"
-                                   data-placement="bottom"
-                                   data-original-title="Просмотреть информацию о продавце"
-                                   title="">
-                                    @sale.UserName
-                                </a>
-                            </td>
-                            <td>
-                                @if (sale.ClientID.HasValue)
-                                {
-                                    <a asp-controller="Client"
-                                        asp-action="Details"
-                                        asp-route-id="@sale.ClientID"
-                                        data-toggle="tooltip"
-                                        data-placement="bottom"
-                                        data-original-title="Просмотреть информацию о клиенте"
-                                        title="">
+                                <td>
+                                    <a asp-controller="User"
+                                       asp-action="Details"
+                                       asp-route-id="@sale.UserID"
+                                       data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       data-original-title="Просмотреть информацию о продавце"
+                                       title="">
+                                        @sale.UserName
+                                    </a>
+                                </td>
+                                <td>
+                                    <a hide-if="@(!sale.ClientID.HasValue)"
+                                       asp-controller="Client"
+                                       asp-action="Details"
+                                       asp-route-id="@sale.ClientID"
+                                       data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       data-original-title="Просмотреть информацию о клиенте"
+                                       title="">
                                         @sale.ClientName
                                     </a>
-                                }
-                            </td>
-                            <td>@sale.SaleItemsCount</td>
-                            <td>
-                                @if (!string.IsNullOrWhiteSpace(sale.TotalPrice))
-                                {
-                                    @sale.TotalPrice @sale.Currency
-                                }                            
-                            </td>
-                            <td>
-                                <span class="label label@(sale.IsSubmitted ? "-success" : "-warning")">
-                                    @(sale.IsSubmitted ? "Подтверждено" : "Не подтверждено")
-                                </span>
-                            </td>
-                            <td nowrap="nowrap">
-                            <a asp-controller="Sale"
-                                asp-action="Details"
-                                asp-route-id="@sale.ID"
-                                class="btn btn-xs btn-default"
-                                data-toggle="tooltip"
-                                data-placement="bottom"
-                                data-original-title="Просмотреть информацию о продаже"
-                                title="">
-                                <i class="fa fa-fw fa-info-circle" aria-hidden="true"></i>
-                            </a>                        
-                            @if (Model.Mode == SaleTableMode.SaleIndex)
-                            {
-                                if (sale.CanBeUpdated)
-                                {
+                                </td>
+                                <td>@sale.SaleItemsCount</td>
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(sale.TotalPrice))
+                                    {
+                                        @sale.TotalPrice @sale.Currency
+                                    }
+                                </td>
+                                <td>
+                                    <span class="label label-default">
+                                        @(sale.IsCachless ? "Безналичный" : "Наличный")
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="label label@(sale.IsSubmitted ? "-success" : "-warning")">
+                                        @(sale.IsSubmitted ? "Подтверждено" : "Не подтверждено")
+                                    </span>
+                                </td>
+                                <td nowrap="nowrap">
                                     <a asp-controller="Sale"
-                                    asp-action="Update"
-                                    asp-route-id="@sale.ID"
-                                    class="btn btn-xs btn-default"
-                                    data-toggle="tooltip"
-                                    data-placement="bottom"
-                                    data-original-title="Редактировать продажу"
-                                    title="">
+                                       asp-action="Details"
+                                       asp-route-id="@sale.ID"
+                                       class="btn btn-xs btn-default"
+                                       data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       data-original-title="Просмотреть информацию о продаже"
+                                       title="">
+                                        <i class="fa fa-fw fa-info-circle" aria-hidden="true"></i>
+                                    </a>
+                                    <a hide-if="@(!sale.CanBeUpdated || Model.Mode != SaleTableMode.SaleIndex)"
+                                       asp-controller="Sale"
+                                       asp-action="Update"
+                                       asp-route-id="@sale.ID"
+                                       class="btn btn-xs btn-default"
+                                       data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       data-original-title="Редактировать продажу"
+                                       title="">
                                         <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
                                     </a>
-                                }
-                                if (sale.CanBeDeleted)
-                                {
-                                    <a class="btn btn-xs btn-warning"
-                                    data-toggle="tooltip"
-                                    data-placement="bottom"
-                                    data-original-title="Отменить продажу"
-                                    title=""
-                                    asp-controller="Sale"
-                                    asp-action="Delete"
-                                    asp-route-id="@sale.ID">
+                                    <a hide-if="@(!sale.CanBeDeleted || Model.Mode != SaleTableMode.SaleIndex)"
+                                       class="btn btn-xs btn-warning"
+                                       tooltip="Отменить продажу"
+                                       tooltip-placement="bottom"
+                                       asp-controller="Sale"
+                                       asp-action="Delete"
+                                       asp-route-id="@sale.ID">
                                         <i class="fa fa-fw fa-hand-stop-o" aria-hidden="true"></i>
                                     </a>
-                                }
-                            }                        
-                        </td>  
-                        </tr>
+                                </td>
+                            </tr>
                         }
                     </tbody>
                 </table>

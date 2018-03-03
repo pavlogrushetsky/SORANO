@@ -31,6 +31,9 @@ namespace SORANO.WEB.ViewModels.Sale
         [Display(Name = "Общая сумма")]
         public string TotalPrice { get; set; }
 
+        [Display(Name = "Расчёт")]
+        public bool IsCachless { get; set; }
+
         public int UserId { get; set; }
 
         [Display(Name = "Продавец")]
