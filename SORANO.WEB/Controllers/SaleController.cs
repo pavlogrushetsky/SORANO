@@ -125,13 +125,13 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(string ids, int? locationId, string locationName)
         {
             return await TryGetActionResultAsync(async () =>
             {
                 var model = new SaleCreateUpdateViewModel { AllowCreation = AllowCreation };
 
-                if (!LocationId.HasValue)
+                if (!LocationId.HasValue && !locationId.HasValue)
                 {
                     model.AllowChangeLocation = true;
                     return View(model);
@@ -139,7 +139,7 @@ namespace SORANO.WEB.Controllers
 
                 var result = await _saleService.CreateAsync(new SaleDto
                 {
-                    LocationID = LocationId.Value,
+                    LocationID = locationId ?? LocationId.Value,
                     UserID = UserId,
                     Date = DateTime.Now
                 }, UserId);
@@ -150,11 +150,24 @@ namespace SORANO.WEB.Controllers
                     return RedirectToAction("Index");
                 }
 
+                if (!string.IsNullOrWhiteSpace(ids))
+                {
+                    var goodsIds = ids.Split(',').Select(id => Convert.ToInt32(id));
+                    var goodsResult = await _saleService.AddGoodsAsync(goodsIds, null, result.Result, UserId);
+                    if (goodsResult.Status != ServiceResponseStatus.Success)
+                    {
+                        await _saleService.DeleteAsync(result.Result, UserId);
+
+                        TempData["Error"] = "Не удалось оформить продажу.";
+                        return RedirectToAction("Index");
+                    }
+                }                
+
                 TempData["Success"] = "Продажа оформлена. Для отмены нажмите \"Отменить продажу\". Для подтверждения оформления нажмите \"Подтвердить\".";
 
                 model.ID = result.Result;
-                model.LocationID = LocationId.Value;
-                model.LocationName = LocationName;
+                model.LocationID = locationId ?? LocationId.Value;
+                model.LocationName = locationName ?? LocationName;
                 model.AllowChangeLocation = false;                
 
                 return View(model);

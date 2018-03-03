@@ -74,12 +74,17 @@
                        tooltip-placement="bottom">
                         <i class="fa fa-fw fa-location-arrow"></i>
                     </a>
-                    <button class="btn btn-primary btn-sm"
-                            hide-if="@Model.IsSold"
-                            tooltip="Оформить продажу"
-                            tooltip-placement="bottom">
+                    <a class="btn btn-primary btn-sm"
+                       hide-if="@Model.IsSold"
+                       tooltip="Оформить продажу"
+                       tooltip-placement="bottom"
+                       asp-action="Create"
+                       asp-controller="Sale"
+                       asp-route-ids="@Model.GoodsIds"
+                       asp-route-locationId="@Model.LocationID"
+                       asp-route-locationName="@Model.LocationName">
                         <i class="fa fa-fw fa-handshake-o"></i>
-                    </button>
+                    </a>
                     <button class="btn btn-primary btn-sm add-to-cart"
                             hide-if="@Model.IsSold"
                             tooltip="Добавить в корзину"

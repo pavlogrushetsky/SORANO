@@ -19,10 +19,8 @@
                 <a asp-controller="Location"
                    asp-action="Details"
                    asp-route-id="@Model.LocationID"
-                   data-toggle="tooltip"
-                   data-placement="right"
-                   data-original-title="Просмотреть информацию о складе"
-                   title="">
+                   tooltip="Просмотреть информацию о складе"
+                   tooltip-placement="right">
                     @Html.DisplayFor(model => model.LocationName)
                 </a>
             </dd>
@@ -35,64 +33,54 @@
         </dl>
     </div>
     <div class="card-footer">
-        @if (Model.Quantity == 1)
-        {
-            <a asp-action="Details"
-               asp-controller="Goods"
-               asp-route-id="@Model.GoodsIds"
-               class="btn btn-default btn-sm"
-               data-toggle="tooltip"
-               data-placement="bottom"
-               data-original-title="Просмотреть информацию о товаре"
-               title="">
-                <i class="fa fa-fw fa-info-circle"></i>
-            </a>
-        }
+        <a hide-if="@(Model.Quantity > 1)"
+           asp-action="Details"
+           asp-controller="Goods"
+           asp-route-id="@Model.GoodsIds"
+           class="btn btn-default btn-sm"
+           tooltip="Просмотреть информацию о товаре"
+           tooltip-placement="bottom">
+            <i class="fa fa-fw fa-info-circle"></i>
+        </a>
         <a asp-action="AddRecommendations"
            asp-controller="Goods"
            asp-route-ids="@Model.GoodsIds"
            class="btn btn-default btn-sm"
-           data-toggle="tooltip"
-           data-placement="bottom"
-           data-original-title="Добавить рекомендации"
-           title="">
+           tooltip="Добавить рекомендации"
+           tooltip-placement="bottom">
             <i class="fa fa-fw fa-comment"></i>
         </a>
-        @if (Model.Quantity > 1)
-        {
-            <a asp-action="Expand"
-               asp-controller="Goods"
-               asp-route-articleId="@Model.ArticleID"
-               asp-route-articleTypeId="@Model.ArticleTypeID"
-               asp-route-locationId="@Model.LocationID"
-               asp-route-status="@(Model.IsSold ? 1 : 0)"
-               class="btn btn-default btn-sm"
-               data-toggle="tooltip"
-               data-placement="bottom"
-               data-original-title="Показать поштучно"
-               title="">
-                <i class="fa fa-fw fa-expand"></i>
-            </a>
-        }                
-        @if (!Model.IsSold)
-        {
-            <a asp-action="ChangeLocation" 
-               asp-controller="Goods"
-               asp-route-ids="@Model.GoodsIds"
-               class="btn btn-default btn-sm"
-               data-toggle="tooltip"
-               data-placement="bottom"
-               data-original-title="Переместить на другой склад"
-               title="">
-                <i class="fa fa-fw fa-location-arrow"></i>
-            </a>
-            <button class="btn btn-primary btn-sm"
-                    data-toggle="tooltip"
-                    data-placement="bottom"
-                    data-original-title="Оформить продажу"
-                    title="">
-                <i class="fa fa-fw fa-handshake-o"></i>
-            </button>
-        }        
+        <a hide-if="@(Model.Quantity <= 1)"
+           asp-action="Expand"
+           asp-controller="Goods"
+           asp-route-articleId="@Model.ArticleID"
+           asp-route-articleTypeId="@Model.ArticleTypeID"
+           asp-route-locationId="@Model.LocationID"
+           asp-route-status="@(Model.IsSold ? 1 : 0)"
+           class="btn btn-default btn-sm"
+           tooltip="Показать поштучно"
+           tooltip-placement="bottom">
+            <i class="fa fa-fw fa-expand"></i>
+        </a>                
+        <a hide-if="@Model.IsSold"
+           asp-action="ChangeLocation" 
+           asp-controller="Goods"
+           asp-route-ids="@Model.GoodsIds"
+           class="btn btn-default btn-sm"
+           tooltip="Переместить на другой склад"
+           tooltip-placement="bottom">
+            <i class="fa fa-fw fa-location-arrow"></i>
+        </a>
+        <a hide-if="@Model.IsSold"      
+           class="btn btn-primary btn-sm"
+           tooltip="Оформить продажу"
+           tooltip-placement="bottom"
+           asp-controller="Sale"
+           asp-action="Create"
+           asp-route-ids="@Model.GoodsIds"
+           asp-route-locationId="@Model.LocationID"
+           asp-route-locationName="@Model.LocationName">
+            <i class="fa fa-fw fa-handshake-o"></i>
+        </a>       
     </div>
 </div>
