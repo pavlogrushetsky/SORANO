@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SORANO.BLL.Dtos;
 using SORANO.BLL.Services.Abstract;
 using SORANO.BLL.Services;
 
@@ -11,6 +12,9 @@ namespace SORANO.WEB.Controllers
     public class BaseController : Controller
     {
         protected readonly IUserService UserService;
+        protected readonly IExceptionService ExceptionService;
+
+        private const string ExceptionMessage = "Не удалось выполнить операцию из-за непредвиденного исключения. Обратитесь к системному администратору.";
 
         protected int UserId
         {
@@ -42,9 +46,10 @@ namespace SORANO.WEB.Controllers
 
         protected string LocationName => HttpContext.User.FindFirst("LocationName")?.Value;
 
-        public BaseController(IUserService userService)
+        public BaseController(IUserService userService, IExceptionService exceptionService)
         {
-            UserService = userService;           
+            UserService = userService;
+            ExceptionService = exceptionService;
         }
 
         protected ISession Session => HttpContext.Session;
@@ -59,8 +64,14 @@ namespace SORANO.WEB.Controllers
             }
             catch (Exception ex)
             {
-                // TODO Log in database
-                result = onFault.Invoke("Не удалось выполнить операцию из-за непредвиденного исключения. Обратитесь к системному администратору.");
+                await ExceptionService.SaveAsync(new ExceptionDto
+                {
+                    Message = ex.Message,
+                    InnerException = ex.InnerException?.Message,
+                    StackTrace = ex.StackTrace
+                });
+
+                result = onFault.Invoke(ExceptionMessage);
             }
 
             return result;
@@ -76,7 +87,14 @@ namespace SORANO.WEB.Controllers
             }
             catch (Exception ex)
             {
-                result = onFault.Invoke(ex.Message);
+                ExceptionService.Save(new ExceptionDto
+                {
+                    Message = ex.Message,
+                    InnerException = ex.InnerException?.Message,
+                    StackTrace = ex.StackTrace
+                });
+
+                result = onFault.Invoke(ExceptionMessage);
             }
 
             return result;
