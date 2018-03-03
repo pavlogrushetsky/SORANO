@@ -22,7 +22,7 @@ namespace SORANO.WEB.Controllers
         }
 
         public async Task<IActionResult> Index()
-        {
+        {           
             var locationIdStr = HttpContext.User.FindFirst("LocationId")?.Value;
             var locationId = string.IsNullOrWhiteSpace(locationIdStr)
                 ? (int?)null
