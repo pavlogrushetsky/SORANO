@@ -360,7 +360,23 @@ namespace SORANO.WEB.Mappings
                     source => source.MapFrom(s => s.DollarRate.HasValue ? "$" : s.EuroRate.HasValue ? "€" : "₴")
                 );
             CreateMap<SaleDto, SaleDeleteViewModel>();
-
+            CreateMap<SaleDto, SaleDetailsViewModel>()
+                .ForMember(
+                    dest => dest.Currency,
+                    source => source.MapFrom(s => s.DollarRate.HasValue ? "$" : s.EuroRate.HasValue ? "€" : "₴")
+                )
+                .ForMember(
+                    dest => dest.ClientName,
+                    source => source.MapFrom(s => s.Client == null ? string.Empty : s.Client.Name)
+                )
+                .ForMember(
+                    dest => dest.LocationName,
+                    source => source.MapFrom(s => s.Location.Name)
+                )
+                .ForMember(
+                    dest => dest.UserName,
+                    source => source.MapFrom(s => s.User.Login)
+                );
             CreateMap<SaleItemsSummaryDto, SaleItemsSummaryViewModel>()
                 .ForMember(
                     dest => dest.SelectedCount,

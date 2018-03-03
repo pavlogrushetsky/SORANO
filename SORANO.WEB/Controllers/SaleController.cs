@@ -99,6 +99,25 @@ namespace SORANO.WEB.Controllers
                 }
 
                 var viewModel = _mapper.Map<SaleDetailsViewModel>(result.Result);
+                viewModel.Items = result.Result.Goods.GroupBy(g => new
+                    {
+                        g.DeliveryItem.Article.ID,
+                        g.Price
+                    }).Select(group =>
+                    {
+                        var first = group.First();
+
+                        var model = new SaleItemDetailsViewModel
+                        {
+                            ArticleId = first.DeliveryItem.Article.ID,
+                            ArticleName = first.DeliveryItem.Article.Name,
+                            Price = group.Key.Price.HasValue ? group.Key.Price.Value.ToString("0.00") : "0.00",
+                            Quantity = group.Count()
+                        };
+
+                        return model;
+                    })
+                    .ToList();
 
                 return View(viewModel);
 
