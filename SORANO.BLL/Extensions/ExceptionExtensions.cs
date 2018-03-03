@@ -12,7 +12,8 @@ namespace SORANO.BLL.Extensions
                 ID = ex.ID,
                 Message = ex.Message,
                 InnerException = ex.InnerException,
-                StackTrace = ex.StackTrace
+                StackTrace = ex.StackTrace,
+                Timestamp = ex.Timestamp
             };
         }
 
@@ -23,7 +24,8 @@ namespace SORANO.BLL.Extensions
                 ID = dto.ID,
                 Message = dto.Message,
                 InnerException = dto.InnerException,
-                StackTrace = dto.StackTrace
+                StackTrace = dto.StackTrace,
+                Timestamp = dto.Timestamp
             };
         }
     }

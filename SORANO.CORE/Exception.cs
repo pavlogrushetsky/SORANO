@@ -1,4 +1,6 @@
-﻿namespace SORANO.CORE
+﻿using System;
+
+namespace SORANO.CORE
 {
     public class Exception : Entity
     {
@@ -7,5 +9,7 @@
         public string InnerException { get; set; }
 
         public string StackTrace { get; set; }
+
+        public DateTime Timestamp { get; set; }
     }
 }

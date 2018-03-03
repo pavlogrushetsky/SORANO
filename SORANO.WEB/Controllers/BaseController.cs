@@ -68,7 +68,8 @@ namespace SORANO.WEB.Controllers
                 {
                     Message = ex.Message,
                     InnerException = ex.InnerException?.Message,
-                    StackTrace = ex.StackTrace
+                    StackTrace = ex.StackTrace,
+                    Timestamp = DateTime.Now
                 });
 
                 result = onFault.Invoke(ExceptionMessage);
@@ -91,7 +92,8 @@ namespace SORANO.WEB.Controllers
                 {
                     Message = ex.Message,
                     InnerException = ex.InnerException?.Message,
-                    StackTrace = ex.StackTrace
+                    StackTrace = ex.StackTrace,
+                    Timestamp = DateTime.Now
                 });
 
                 result = onFault.Invoke(ExceptionMessage);

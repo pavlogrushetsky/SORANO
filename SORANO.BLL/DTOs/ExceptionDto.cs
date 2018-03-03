@@ -1,4 +1,6 @@
-﻿namespace SORANO.BLL.Dtos
+﻿using System;
+
+namespace SORANO.BLL.Dtos
 {
     public class ExceptionDto
     {
@@ -9,5 +11,7 @@
         public string InnerException { get; set; }
 
         public string StackTrace { get; set; }
+
+        public DateTime Timestamp { get; set; }
     }
 }

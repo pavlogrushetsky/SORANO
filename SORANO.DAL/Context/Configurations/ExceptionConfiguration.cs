@@ -18,6 +18,10 @@ namespace SORANO.DAL.Context.Configurations
             Property(e => e.StackTrace)
                 .IsRequired();
 
+            Property(e => e.Timestamp)
+                .IsRequired()
+                .HasColumnType("datetime2");
+
             ToTable("Exceptions");
         }
     }
