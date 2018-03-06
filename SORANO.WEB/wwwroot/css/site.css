@@ -25,6 +25,20 @@
     background-color: transparent;
 }
 
+#progress-bar {
+    display: none;
+    margin-top: 10px;
+    -ms-border-radius: 0;
+    border-radius: 0;
+    margin-bottom: 0;
+}
+
+    #progress-bar > .progress-bar {
+        width: 100%;
+        background-color: #f4eb42;
+        background-image: linear-gradient(45deg, #2c3e50 25%, transparent 25%, transparent 50%, #2c3e50 50%, #2c3e50 75%, transparent 75%, transparent)
+    }
+
 textarea {
     resize: vertical;
 }
