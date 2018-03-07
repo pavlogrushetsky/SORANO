@@ -66,11 +66,11 @@
 
 function loadArticleTable() {
     $('#articles-table').hide(250);
-    $('#progress-bar').show(500, function() {
+    $('#progress-bar').animate({ opacity: 1.0 }, 500, function() {
         $('#articles-table').load('/Article/Table', function () {
-            $('#progress-bar').hide(250, function() {
-                initArticlesDataTable();
-                $('#articles-table').show(100, function() {
+            $('#progress-bar').animate({ opacity: 0.0 }, 250, function () {               
+                $('#articles-table').show(100, function () {
+                    initArticlesDataTable();
                     var button = $('#toggle-deleted-articles');
                     var icon = button.find('i');
                     var showDeleted = $('#article-datatable').data('showdeleted');
@@ -92,11 +92,11 @@ function loadArticleTable() {
 
 function toggleDeletedArticles() {
     $('#articles-table').hide(250);
-    $('#progress-bar').show(500, function () {
+    $('#progress-bar').animate({ opacity: 1.0 }, 500, function () {
         $('#articles-table').load('/Article/ToggleDeleted', function () {
-            $('#progress-bar').hide(250, function () {
-                initArticlesDataTable();
+            $('#progress-bar').animate({ opacity: 0.0 }, 250, function () {             
                 $('#articles-table').show(100, function () {
+                    initArticlesDataTable();
                     var button = $('#toggle-deleted-articles');
                     var icon = button.find('i');
                     var showDeleted = $('#article-datatable').data('showdeleted');
