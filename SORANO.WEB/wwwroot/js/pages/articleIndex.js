@@ -7,48 +7,14 @@
     if (lastTab) {
         $('[href="' + lastTab + '"]').tab('show');
     }
-
-    $('.article-types-tree li:has(ul)').addClass('parent-article-type').find(' > table').attr('title', 'Свернуть ветку');
-    $('.article-types-tree li.parent-article-type > table').on('click', function (e) {
-        var target = $(e.target);
-        if (!target.is("a")) {
-            var children = $(this).parent('li.parent-article-type').find(' > ul > li');
-            if (children.is(":visible")) {
-                children.hide('fast');
-                $(this).attr('title', 'Развернуть ветку').find('i').addClass('fa-tags').removeClass('fa-tag');
-                $(this).find(' > table').show('fast');
-            } else {
-                children.show('fast');
-                $(this).attr('title', 'Свернуть ветку').find('i').addClass('fa-tag').removeClass('fa-tags');
-                $(this).find(' > table').hide('fast');
-            }
-            e.stopPropagation();
-        }              
-    });
-    
+       
     var activeInfoId = localStorage.getItem('article-types-active-info');
     if (activeInfoId) {
         $(activeInfoId).show('fast');
-    }
-
-    $('.toggle-article-type-info').click(function(e) {
-        e.preventDefault();
-
-        var self = $(this);
-        var thisInfo = self.parent().parent().parent().find('.article-type-info');
-        var tree = $('.article-types-tree');
-        var id = thisInfo.attr('id');
-
-        if (thisInfo.is(':visible')) {
-            thisInfo.hide('fast');
-        } else {
-            tree.find('.article-type-info').hide('fast');
-            thisInfo.show('fast');
-            localStorage.setItem('article-types-active-info', '#' + id);
-        }
-    });
+    }   
 
     loadArticleTable();
+    loadArticleTypesTree();
 
     $(document).on('click', '#refresh-articles', function(e) {
         e.preventDefault();
@@ -60,6 +26,18 @@
         e.preventDefault();
         $(this).tooltip('hide');
         toggleDeletedArticles();
+    });
+
+    $(document).on('click', '#refresh-article-types', function (e) {
+        e.preventDefault();
+        $(this).tooltip('hide');
+        loadArticleTypesTree();
+    });
+
+    $(document).on('click', '#toggle-deleted-article-types', function (e) {
+        e.preventDefault();
+        $(this).tooltip('hide');
+        toggleDeletedArticleTypes();
     });
     
 });
@@ -90,6 +68,32 @@ function loadArticleTable() {
     });   
 }
 
+function loadArticleTypesTree() {
+    $('#article-types').hide(250);
+    $('#progress-bar').animate({ opacity: 1.0 }, 500, function () {
+        $('#article-types').load('/ArticleType/Tree', function () {
+            $('#progress-bar').animate({ opacity: 0.0 }, 250, function () {
+                $('#article-types').show(100, function () {
+                    initArticleTypesTree();
+                    var button = $('#toggle-deleted-article-types');
+                    var icon = button.find('i');
+                    var showDeleted = $('#article-types-tree').data('showdeleted');
+                    if (showDeleted === 'True') {
+                        button.attr('data-original-title', 'Скрыть удалённые типы артикулов');
+                        icon.removeClass('fa-eye');
+                        icon.addClass('fa-eye-slash');
+                    } else {
+                        button.attr('data-original-title', 'Отобразить удалённые типы артикулов');
+                        icon.removeClass('fa-eye-slash');
+                        icon.addClass('fa-eye');
+                    }
+                    initTooltip();
+                });
+            });
+        });
+    });
+}
+
 function toggleDeletedArticles() {
     $('#articles-table').hide(250);
     $('#progress-bar').animate({ opacity: 1.0 }, 500, function () {
@@ -113,5 +117,68 @@ function toggleDeletedArticles() {
                 });
             });
         });
+    });
+}
+
+function toggleDeletedArticleTypes() {
+    $('#article-types').hide(250);
+    $('#progress-bar').animate({ opacity: 1.0 }, 500, function () {
+        $('#article-types').load('/ArticleType/ToggleDeleted', function () {
+            $('#progress-bar').animate({ opacity: 0.0 }, 250, function () {
+                $('#article-types').show(100, function () {
+                    initArticleTypesTree();
+                    var button = $('#toggle-deleted-article-types');
+                    var icon = button.find('i');
+                    var showDeleted = $('#article-types-tree').data('showdeleted');
+                    if (showDeleted === 'True') {
+                        button.attr('data-original-title', 'Скрыть удалённые типы артикулов');
+                        icon.removeClass('fa-eye');
+                        icon.addClass('fa-eye-slash');
+                    } else {
+                        button.attr('data-original-title', 'Отобразить удалённые типы артикулов');
+                        icon.removeClass('fa-eye-slash');
+                        icon.addClass('fa-eye');
+                    }
+                    initTooltip();
+                });
+            });
+        });
+    });
+}
+
+function initArticleTypesTree() {
+    $('.article-types-tree li:has(ul)').addClass('parent-article-type').find(' > table').attr('title', 'Свернуть ветку');
+    $('.article-types-tree li.parent-article-type > table').on('click', function (e) {
+        var target = $(e.target);
+        if (!target.is("a")) {
+            var children = $(this).parent('li.parent-article-type').find(' > ul > li');
+            if (children.is(":visible")) {
+                children.hide('fast');
+                $(this).attr('title', 'Развернуть ветку').find('i').addClass('fa-tags').removeClass('fa-tag');
+                $(this).find(' > table').show('fast');
+            } else {
+                children.show('fast');
+                $(this).attr('title', 'Свернуть ветку').find('i').addClass('fa-tag').removeClass('fa-tags');
+                $(this).find(' > table').hide('fast');
+            }
+            e.stopPropagation();
+        }
+    });
+
+    $('.toggle-article-type-info').click(function (e) {
+        e.preventDefault();
+
+        var self = $(this);
+        var thisInfo = self.parent().parent().parent().find('.article-type-info');
+        var tree = $('.article-types-tree');
+        var id = thisInfo.attr('id');
+
+        if (thisInfo.is(':visible')) {
+            thisInfo.hide('fast');
+        } else {
+            tree.find('.article-type-info').hide('fast');
+            thisInfo.show('fast');
+            localStorage.setItem('article-types-active-info', '#' + id);
+        }
     });
 }

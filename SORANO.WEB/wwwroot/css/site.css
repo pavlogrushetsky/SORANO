@@ -260,20 +260,26 @@ span.select2.select2-container.select2-container--bootstrap {
 
         .article-types-tree li table {
             width: 100%;
-            border: 2px solid #dce4ec;
-            -ms-border-radius: 4px;
-            border-radius: 4px;
+            border: none;
             text-decoration: none;
-            border-collapse: unset;
-            margin-bottom: 5px;
-            padding-bottom: 5px;
+            margin-bottom: 11px;
         }
 
-            .article-types-tree li > table tr.article-type-description {
-                font-size: 12px;
-            }
+        .article-types-tree li > table td {
+            padding: 0px;
+            vertical-align: middle;
+        }
 
-        .article-types-tree li:not(.deleted) > table tr.article-type-description {
+.article-types-tree .btn-lg {
+    padding: 5px;
+}
+
+        .article-types-tree li > table tr span.article-type-description {
+            font-size: 12px;
+            color: #95a5a6;
+        }
+
+        .article-types-tree li:not(.deleted) > table tr span.article-type-description {
             color: #95a5a6;
         }
 
@@ -285,13 +291,11 @@ span.select2.select2-container.select2-container--bootstrap {
 
     .article-types-tree li.parent-article-type:not(.deleted) > table:hover, .article-types-tree li.parent-article-type > table:hover ~ ul li:not(.deleted) table {
         background: #dce4ec;
-        border: 2px solid #dce4ec;
         color: #000
     }
 
         .article-types-tree li.parent-article-type.deleted > table:hover, .article-types-tree li.parent-article-type > table:hover ~ ul li.deleted table {
             background: #dce4ec;
-            border: 2px solid #dce4ec;
             color: #e74c3c;
         }
 

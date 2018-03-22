@@ -1,15 +1,15 @@
 ﻿@model ArticleViewModel
 
 <li class="@(Model.IsDeleted ? "deleted" : "")">
-    <table>
+    <table class="table table-hover table-striped">
         <tr>
-            <td rowspan="2"><i class="fa fa-fw fa-barcode"></i></td>
+            <td style="width: 75px;">
+                
+            </td>
             <td>
-                @Model.Name
+                <span>@Model.Name</span><br />
+                <span class="article-type-description">@Model.Description</span>
             </td>
         </tr>
-        <tr class="article-type-description">
-            <td>@Model.Description</td>
-        </tr>       
     </table>
 </li>

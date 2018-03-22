@@ -1,33 +1,76 @@
 ﻿@model ArticleTypeIndexViewModel
 
 <li id="@Model.ID" class="@(Model.IsDeleted ? "deleted" : "")">
-    <table>
+    <table class="table table-hover table-striped">
         <tr>
+            <td style="width: 75px;">
+                <img hide-if="@(!Model.HasMainPicture)"
+                     class="sale-img"
+                     src="@Url.Content(Model.MainPicturePath)" />
+            </td>
+            <td>
+                <span>@Model.Name</span><br />
+                <span class="article-type-description">@Model.Description</span>
+            </td>
+            <td style="width: 200px;">
+                <a class="btn btn-lg pull-right"
+                   style="background-color: inherit;"                        
+                   tooltip="Просмотреть информацию о типе артикулов"
+                   tooltip-placement="right"
+                   asp-controller="ArticleType"
+                   asp-action="Details"
+                   asp-route-id="@Model.ID">
+                    <i class="fa fa-fw fa-info-circle" style="color: #95a5a6"></i>
+                </a>
+                <manager>
+                    <a class="btn btn-lg pull-right"
+                       style="background-color: inherit;"   
+                       asp-controller="ArticleType"
+                       asp-action="Update"
+                       asp-route-id="@Model.ID"
+                       hide-if="@(Model.IsDeleted)"
+                       tooltip="Редактировать тип артикулов"
+                       tooltip-placement="bottom">
+                        <i class="fa fa-fw fa-pencil-square" style="color: #95a5a6"></i>
+                    </a>
+                    <a class="btn btn-lg pull-right"
+                       asp-controller="ArticleType"
+                       asp-action="Delete"
+                       asp-route-id="@Model.ID"
+                       hide-if="@(!Model.CanBeDeleted)"
+                       tooltip-placement="bottom"
+                       tooltip="Удалить тип артикулов">
+                        <i class="fa fa-fw fa-trash" style="color: #e74c3c"></i>
+                    </a>
+                </manager>               
+            </td>
+        </tr>
+        @*<tr>
             <td rowspan="2"><i class="fa fa-fw fa-tag"></i></td>
             <td>
                 <a class="toggle-article-type-info"
                    href="javascript:void(0);">
                     @Model.Name
-                </a>               
+                </a>
             </td>
         </tr>
         <tr class="article-type-description">
             <td>@Model.Description</td>
         </tr>
-        <tr>            
+        <tr>
             <td></td>
             <td>
                 <div class="article-type-info" id="article-type-info-@(Model.ID)">
                     <div class="col-lg-12">
                         <div class="row">
-                            <div style="float:left;">
+                            <div style="float: left;">
                                 @if (Model.HasMainPicture)
                                 {
-                                    <img src="@Url.Content(Model.MainPicturePath)" />
+                                    <img src="@Url.Content(Model.MainPicturePath)"/>
                                 }
                             </div>
-                            <div style="float:left;">
-                                
+                            <div style="float: left;">
+
                             </div>
                         </div>
                         <div class="row">
@@ -67,9 +110,9 @@
                             </manager>
                         </div>
                     </div>
-                </div>               
+                </div>
             </td>
-        </tr>
+        </tr>*@
     </table>
     @if (Model.HasChildTypes || Model.HasArticles)
     {

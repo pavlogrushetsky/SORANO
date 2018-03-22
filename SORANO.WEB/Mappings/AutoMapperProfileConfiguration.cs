@@ -218,6 +218,11 @@ namespace SORANO.WEB.Mappings
                     dest => dest.MainPicturePath,
                     source => source.MapFrom(s => s.MainPicture.FullPath)
                 );
+            CreateMap<IEnumerable<ArticleTypeDto>, ArticleTypeTreeViewModel>()
+                .ForMember(
+                    dest => dest.ArticleTypes,
+                    source => source.MapFrom(s => s)
+                );
             CreateMap<ArticleTypeCreateUpdateViewModel, ArticleTypeDto>();
             CreateMap<ArticleTypeDto, ArticleTypeCreateUpdateViewModel>();
             CreateMap<ArticleTypeDto, ArticleTypeDetailsViewModel>()

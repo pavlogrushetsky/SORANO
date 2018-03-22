@@ -58,7 +58,7 @@
                            id="refresh-articles"
                            style="margin-right: 5px;"
                            tooltip="Обновить данные"
-                           tooltip-placement="right">
+                           tooltip-placement="bottom">
                             <i class="fa fa-fw fa-refresh" aria-hidden="true"></i>
                         </a>
                         <div class="clearfix"></div>
@@ -73,7 +73,7 @@
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <manager>
-                            <a class="btn btn-default btn-xs pull-right"
+                            <a class="btn btn-success btn-xs pull-right"
                                asp-controller="ArticleType"
                                asp-action="Create"
                                tooltip="Добавить тип артикулов"
@@ -82,23 +82,29 @@
                             </a>
                         </manager>
                         <a class="btn btn-default btn-xs pull-right"
-                           asp-controller="ArticleType"
-                           asp-action="ShowDeleted"
-                           asp-route-show=@(ViewBag.ShowDeletedArticleTypes ? "false" : "true")
-                           data-toggle="tooltip"
-                           data-placement="right"
-                           data-original-title=@(ViewBag.ShowDeletedArticleTypes ? "Скрыть удалённые типы артикулов" : "Отобразить удалённые типы артикулов")
-                           title="">
-                            <i class="fa fa-fw @(ViewBag.ShowDeletedArticleTypes ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
+                           id="toggle-deleted-article-types"
+                           state="false"
+                           tooltip-true="Скрыть удалённые типы артикулов"
+                           tooltip-false="Отобразить удалённые типы артикулов" ,
+                           icon-true="fa-eye-slash"
+                           icon-false="fa-eye">
+                        </a>
+                        <a class="btn btn-default btn-xs pull-right"
+                           id="refresh-article-types"
+                           style="margin-right: 5px;"
+                           tooltip="Обновить данные"
+                           tooltip-placement="bottom">
+                            <i class="fa fa-fw fa-refresh" aria-hidden="true"></i>
                         </a>
                         <div class="clearfix"></div>
                     </div>
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-xs-12 col-sm-8 col-sm-offset-2">
-                                @await Component.InvokeAsync("ArticleTypes", new { withDeleted = ViewBag.ShowDeletedArticleTypes })
+                                <div id="article-types" style="display: none;">
+                                </div>
                             </div>
-                        </div>
+                        </div>                        
                     </div>
                 </div>
             </div>

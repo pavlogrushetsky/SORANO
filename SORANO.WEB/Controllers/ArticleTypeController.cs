@@ -40,6 +40,26 @@ namespace SORANO.WEB.Controllers
         #region GET Actions
 
         [HttpGet]
+        public IActionResult Tree()
+        {
+            var showDeleted = Session.GetBool("ShowDeletedArticleTypes");
+            ViewBag.ShowDeletedArticleTypes = showDeleted;
+
+            return ViewComponent("ArticleTypes", new { showDeleted });
+        }
+
+        [HttpGet]
+        public IActionResult ToggleDeleted()
+        {
+            var showDeleted = Session.GetBool("ShowDeletedArticleTypes");
+            var toggleDeleted = !showDeleted;
+            Session.SetBool("ShowDeletedArticleTypes", toggleDeleted);
+            ViewBag.ShowDeletedArticleTypes = toggleDeleted;
+
+            return ViewComponent("ArticleTypes", new { showDeleted = toggleDeleted });
+        }
+
+        [HttpGet]
         [Authorize(Roles = "developer,administrator,manager,user")]
         public IActionResult ShowDeleted(bool show)
         {
