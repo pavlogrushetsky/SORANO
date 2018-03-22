@@ -1,6 +1,4 @@
-﻿@model ArticleIndexViewModel
-
-@{
+﻿@{
     ViewBag.Title = "SORANO - Артикулы";
     ViewBag.Header = "Артикулы";
     ViewBag.Description = "и типы артикулов";
@@ -32,55 +30,57 @@
                 <a href="#article-tab-tree" data-toggle="tab" aria-expanded="False">
                     <i class="fa fa-fw fa-sitemap" aria-hidden="true"></i>
                     Дерево типов артикулов
-                </a>                
-            </li>            
+                </a>
+            </li>
         </ul>
         <div id="article-tab-content" class="tab-content">
             <div class="tab-pane fade active in" id="article-tab-table">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <manager>
-                            <a class="btn btn-default btn-xs pull-right"
+                            <a class="btn btn-success btn-xs pull-right"
                                asp-controller="Article"
                                asp-action="Create"
-                               data-toggle="tooltip"
-                               data-placement="right"
-                               data-original-title="Добавить артикул"
-                               title="">
+                               tooltip="Добавить артикул"
+                               tooltip-placement="right">
                                 <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
                             </a>
-                        </manager>                        
+                        </manager>
                         <a class="btn btn-default btn-xs pull-right"
-                           asp-controller="Article"
-                           asp-action="ShowDeleted"
-                           asp-route-show=@(ViewBag.ShowDeletedArticles ? "false" : "true")
-                           data-toggle="tooltip"
-                           data-placement="right"
-                           data-original-title=@(ViewBag.ShowDeletedArticles ? "Скрыть удалённые артикулы" : "Отобразить удалённые артикулы")
-                           title="">
-                            <i class="fa fa-fw @(ViewBag.ShowDeletedArticles ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
+                           id="toggle-deleted-articles"
+                           state="false"
+                           tooltip-true="Скрыть удалённые артикулы"
+                           tooltip-false="Отобразить удалённые артикулы",
+                           icon-true="fa-eye-slash"
+                           icon-false="fa-eye">
+                        </a>
+                        <a class="btn btn-default btn-xs pull-right"
+                           id="refresh-articles"
+                           style="margin-right: 5px;"
+                           tooltip="Обновить данные"
+                           tooltip-placement="right">
+                            <i class="fa fa-fw fa-refresh" aria-hidden="true"></i>
                         </a>
                         <div class="clearfix"></div>
                     </div>
                     <div class="panel-body">
-                        @Html.Partial("~/Views/Article/_Table.cshtml", Model)
+                        <div id="articles-table" style="display: none;">                       
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="tab-pane fade" id="article-tab-tree">
                 <div class="panel panel-primary">
-                    <div class="panel-heading">     
+                    <div class="panel-heading">
                         <manager>
                             <a class="btn btn-default btn-xs pull-right"
                                asp-controller="ArticleType"
                                asp-action="Create"
-                               data-toggle="tooltip"
-                               data-placement="right"
-                               data-original-title="Добавить тип артикулов"
-                               title="">
+                               tooltip="Добавить тип артикулов"
+                               tooltip-placement="right">
                                 <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
                             </a>
-                        </manager>                       
+                        </manager>
                         <a class="btn btn-default btn-xs pull-right"
                            asp-controller="ArticleType"
                            asp-action="ShowDeleted"
@@ -96,12 +96,12 @@
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-xs-12 col-sm-8 col-sm-offset-2">
-                                @await Component.InvokeAsync("ArticleTypes", new { withDeleted = ViewBag.ShowDeletedArticleTypes })                               
+                                @await Component.InvokeAsync("ArticleTypes", new { withDeleted = ViewBag.ShowDeletedArticleTypes })
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>       
+            </div>
         </div>
     </div>
 </div>

@@ -155,7 +155,7 @@ namespace SORANO.BLL.Services
             var searched = articleTypes
                 .Where(t => (string.IsNullOrEmpty(term)
                     || t.Name.ToLower().Contains(term)
-                    || t.Description.ToLower().Contains(term)
+                    || !string.IsNullOrWhiteSpace(t.Description) && t.Description.ToLower().Contains(term)
                     || t.ParentType != null && t.ParentType.Name.ToLower().Contains(term))
                 && t.ID != currentTypeId);
 

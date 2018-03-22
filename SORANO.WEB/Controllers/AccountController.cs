@@ -15,7 +15,8 @@ namespace SORANO.WEB.Controllers
     [Authorize]
     public class AccountController : BaseController
     {
-        public AccountController(IUserService userService) : base(userService)
+        public AccountController(IUserService userService, IExceptionService exceptionService) 
+            : base(userService, exceptionService)
         {
         }
 

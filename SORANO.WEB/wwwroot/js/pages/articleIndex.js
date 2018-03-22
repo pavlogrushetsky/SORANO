@@ -48,5 +48,70 @@
         }
     });
 
-    initArticlesDataTable();
+    loadArticleTable();
+
+    $(document).on('click', '#refresh-articles', function(e) {
+        e.preventDefault();
+        $(this).tooltip('hide');
+        loadArticleTable();        
+    });
+
+    $(document).on('click', '#toggle-deleted-articles', function(e) {
+        e.preventDefault();
+        $(this).tooltip('hide');
+        toggleDeletedArticles();
+    });
+    
 });
+
+function loadArticleTable() {
+    $('#articles-table').hide(250);
+    $('#progress-bar').animate({ opacity: 1.0 }, 500, function() {
+        $('#articles-table').load('/Article/Table', function () {
+            $('#progress-bar').animate({ opacity: 0.0 }, 250, function () {               
+                $('#articles-table').show(100, function () {
+                    initArticlesDataTable();
+                    var button = $('#toggle-deleted-articles');
+                    var icon = button.find('i');
+                    var showDeleted = $('#article-datatable').data('showdeleted');
+                    if (showDeleted === 'True') {
+                        button.attr('data-original-title', 'Скрыть удалённые артикулы');
+                        icon.removeClass('fa-eye');
+                        icon.addClass('fa-eye-slash');
+                    } else {
+                        button.attr('data-original-title', 'Отобразить удалённые артикулы');
+                        icon.removeClass('fa-eye-slash');
+                        icon.addClass('fa-eye');
+                    }
+                    initTooltip();
+                });
+            });
+        });
+    });   
+}
+
+function toggleDeletedArticles() {
+    $('#articles-table').hide(250);
+    $('#progress-bar').animate({ opacity: 1.0 }, 500, function () {
+        $('#articles-table').load('/Article/ToggleDeleted', function () {
+            $('#progress-bar').animate({ opacity: 0.0 }, 250, function () {             
+                $('#articles-table').show(100, function () {
+                    initArticlesDataTable();
+                    var button = $('#toggle-deleted-articles');
+                    var icon = button.find('i');
+                    var showDeleted = $('#article-datatable').data('showdeleted');
+                    if (showDeleted === 'True') {
+                        button.attr('data-original-title', 'Скрыть удалённые артикулы');
+                        icon.removeClass('fa-eye');
+                        icon.addClass('fa-eye-slash');
+                    } else {
+                        button.attr('data-original-title', 'Отобразить удалённые артикулы');
+                        icon.removeClass('fa-eye-slash');
+                        icon.addClass('fa-eye');
+                    }
+                    initTooltip();
+                });
+            });
+        });
+    });
+}

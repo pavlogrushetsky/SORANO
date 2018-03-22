@@ -26,11 +26,12 @@ namespace SORANO.WEB.Controllers
         protected readonly IHostingEnvironment Environment;
         private readonly string _entityTypeName;
 
-        public EntityBaseController(IUserService userService, 
+        public EntityBaseController(IUserService userService,
+            IExceptionService exceptionService,
             IHostingEnvironment environment, 
             IAttachmentTypeService attachmentTypeService, 
             IAttachmentService attachmentService, 
-            IMemoryCache memorycache) : base(userService)
+            IMemoryCache memorycache) : base(userService, exceptionService)
         {
             AttachmentTypeService = attachmentTypeService;
             AttachmentService = attachmentService;

@@ -10,7 +10,6 @@ using SORANO.BLL.Services;
 using SORANO.WEB.Infrastructure;
 using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Infrastructure.Filters;
-using SORANO.WEB.ViewModels;
 using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.Common;
 
@@ -25,9 +24,10 @@ namespace SORANO.WEB.Controllers
         private readonly IMapper _mapper;
 
         public AttachmentController(IAttachmentService attachmentService, 
-            IUserService userService, 
+            IUserService userService,
+            IExceptionService exceptionService,
             IMemoryCache memoryCache, 
-            IMapper mapper) : base(userService)
+            IMapper mapper) : base(userService, exceptionService)
         {
             _attachmentService = attachmentService;
             _memoryCache = memoryCache;

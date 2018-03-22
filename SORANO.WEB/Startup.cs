@@ -65,6 +65,7 @@ namespace SORANO.WEB
             services.AddTransient<IDeliveryService, DeliveryService>();
             services.AddTransient<IGoodsService, GoodsService>();
             services.AddTransient<ISaleService, SaleService>();
+            services.AddTransient<IExceptionService, ExceptionService>();
 
             services.AddMemoryCache();
         }
@@ -96,6 +97,7 @@ namespace SORANO.WEB
                     "{controller=Home}/{action=Index}/{id?}");
             });
 
+            StockContextFactory.ConnectionString = Configuration.GetConnectionString("SORANO");
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<StockContext, Migrations.Configuration>());
         }
     }

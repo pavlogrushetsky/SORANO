@@ -15,14 +15,18 @@ namespace SORANO.WEB.Controllers
         private readonly IDeliveryService _deliveryService;
         private readonly IGoodsService _goodsService;
 
-        public HomeController(IDeliveryService deliveryService, IGoodsService goodsService, IUserService userService) : base(userService)
+        public HomeController(IDeliveryService deliveryService, 
+            IGoodsService goodsService, 
+            IUserService userService,
+            IExceptionService exceptionService) 
+            : base(userService, exceptionService)
         {
             _deliveryService = deliveryService;
             _goodsService = goodsService;
         }
 
         public async Task<IActionResult> Index()
-        {
+        {           
             var locationIdStr = HttpContext.User.FindFirst("LocationId")?.Value;
             var locationId = string.IsNullOrWhiteSpace(locationIdStr)
                 ? (int?)null

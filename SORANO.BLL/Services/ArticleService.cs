@@ -75,7 +75,7 @@ namespace SORANO.BLL.Services
                 return new ServiceResponse<ArticleDto>(ServiceResponseStatus.NotFound);
 
             var articlesWithSameBarcode = await UnitOfWork.Get<Article>()
-                .FindByAsync(a => a.Barcode.Equals(article.Barcode) && a.ID != article.ID);
+                .FindByAsync(a => a.Barcode != null && a.Barcode.Equals(article.Barcode) && a.ID != article.ID);
 
             if (articlesWithSameBarcode.Any())
                 return new ServiceResponse<ArticleDto>(ServiceResponseStatus.AlreadyExists);

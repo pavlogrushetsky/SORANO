@@ -3,6 +3,7 @@ using SORANO.CORE.AccountEntities;
 using SORANO.CORE.StockEntities;
 using SORANO.DAL.Context.Configurations;
 using System.Threading.Tasks;
+using SORANO.CORE;
 
 namespace SORANO.DAL.Context
 {
@@ -46,6 +47,8 @@ namespace SORANO.DAL.Context
 
         public IDbSet<Sale> Sales { get; set; }
 
+        public IDbSet<Exception> Exceptions { get; set; }
+
         public virtual async Task CommitAsync()
         {
             await SaveChangesAsync();
@@ -76,6 +79,7 @@ namespace SORANO.DAL.Context
             builder.Configurations.Add(new StorageConfiguration());
             builder.Configurations.Add(new SupplierConfiguration());
             builder.Configurations.Add(new SaleConfiguration());
+            builder.Configurations.Add(new ExceptionConfiguration());
         }
     }
 }

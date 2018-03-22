@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -27,11 +28,12 @@ namespace SORANO.WEB.Controllers
 
         public ArticleController(IArticleService articleService,
             IUserService userService, 
+            IExceptionService exceptionService,
             IHostingEnvironment environment,
             IAttachmentTypeService attachmentTypeService,
             IAttachmentService attachmentService,
             IMemoryCache memoryCache, 
-            IMapper mapper) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
+            IMapper mapper) : base(userService, exceptionService, environment, attachmentTypeService, attachmentService, memoryCache)
         {
             _articleService = articleService;
             _mapper = mapper;
@@ -48,28 +50,39 @@ namespace SORANO.WEB.Controllers
                 var showDeletedArticles = Session.GetBool("ShowDeletedArticles");
                 var showDeletedArticleTypes = Session.GetBool("ShowDeletedArticleTypes");
 
-                var articlesResult = await _articleService.GetAllAsync(showDeletedArticles);
-
-                if (articlesResult.Status != ServiceResponseStatus.Success)
-                {
-                    TempData["Error"] = "Не удалось получить список артикулов.";
-                    return RedirectToAction("Index", "Home");
-                }
-
                 ViewBag.ShowDeletedArticles = showDeletedArticles;
                 ViewBag.ShowDeletedArticleTypes = showDeletedArticleTypes;
 
                 await ClearAttachments();
 
-                var viewModel = _mapper.Map<ArticleIndexViewModel>(articlesResult.Result);
-                viewModel.Mode = ArticleTableMode.ArticleIndex;
-
-                return View(viewModel);
+                return View();
             }, ex =>
             {
                 TempData["Error"] = ex;
                 return RedirectToAction("Index", "Home");
             });
+        }
+
+        [HttpGet]
+        public IActionResult Table()
+        {
+            var showDeleted = Session.GetBool("ShowDeletedArticles");
+            const ArticleTableMode mode = ArticleTableMode.ArticleIndex;
+            ViewBag.ShowDeletedArticles = showDeleted;
+
+            return ViewComponent("ArticleTable", new { showDeleted, mode });
+        }
+
+        [HttpGet]
+        public IActionResult ToggleDeleted()
+        {
+            var showDeleted = Session.GetBool("ShowDeletedArticles");
+            var toggleDeleted = !showDeleted;
+            Session.SetBool("ShowDeletedArticles", toggleDeleted);
+            const ArticleTableMode mode = ArticleTableMode.ArticleIndex;
+            ViewBag.ShowDeletedArticles = toggleDeleted;
+
+            return ViewComponent("ArticleTable", new { showDeleted = toggleDeleted, mode });
         }
 
         [HttpGet]

@@ -20,10 +20,11 @@ namespace SORANO.WEB.Controllers
     public class DeliveryItemController : EntityBaseController<DeliveryItemViewModel>
     {
         public DeliveryItemController(IUserService userService,
+            IExceptionService exceptionService,
             IHostingEnvironment environment,
             IAttachmentTypeService attachmentTypeService,
             IAttachmentService attachmentService,
-            IMemoryCache memoryCache) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
+            IMemoryCache memoryCache) : base(userService, exceptionService, environment, attachmentTypeService, attachmentService, memoryCache)
         {
         }
 

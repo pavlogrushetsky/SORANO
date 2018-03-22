@@ -22,10 +22,11 @@ namespace SORANO.WEB.Controllers
 
         public AttachmentTypeController(IAttachmentTypeService attachmentTypeService, 
             IUserService userService,
+            IExceptionService exceptionService,
             IHostingEnvironment environment,
             IAttachmentService attachmentService,
             IMemoryCache memoryCache, 
-            IMapper mapper) : base(userService, environment, attachmentTypeService, attachmentService, memoryCache)
+            IMapper mapper) : base(userService, exceptionService, environment, attachmentTypeService, attachmentService, memoryCache)
         {
             _mapper = mapper;
         }

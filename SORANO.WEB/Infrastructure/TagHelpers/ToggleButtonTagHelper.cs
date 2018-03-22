@@ -3,6 +3,7 @@
 namespace SORANO.WEB.Infrastructure.TagHelpers
 {
     [HtmlTargetElement("button", Attributes = "State")]
+    [HtmlTargetElement("a", Attributes = "State")]
     public class ToggleButtonTagHelper : TagHelper
     {
         public bool State { get; set; }
@@ -30,12 +31,15 @@ namespace SORANO.WEB.Infrastructure.TagHelpers
             output.Attributes.SetAttribute("title", string.Empty);
             output.Attributes.SetAttribute("data-original-title", State ? TooltipTrue : TooltipFalse);
 
-            var classes = output.Attributes.ContainsName("class")
-                ? output.Attributes["class"].Value
-                : string.Empty;
+            if (!string.IsNullOrWhiteSpace(ClassTrue) && !string.IsNullOrWhiteSpace(ClassFalse))
+            {
+                var classes = output.Attributes.ContainsName("class")
+                    ? output.Attributes["class"].Value
+                    : string.Empty;
 
-            var condClass = State ? ClassTrue : ClassFalse;
-            output.Attributes.SetAttribute("class", $"{classes} {condClass}");
+                var condClass = State ? ClassTrue : ClassFalse;
+                output.Attributes.SetAttribute("class", $"{classes} {condClass}");
+            }           
 
             var iconHtml = string.Empty;
             var iconStyle = string.Empty;

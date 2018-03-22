@@ -25,6 +25,23 @@
     background-color: transparent;
 }
 
+.page-header {
+    margin: 15px 0 21px;
+}
+
+.progress {
+    -ms-opacity: 0;
+    opacity: 0;
+    margin-top: 10px;
+    -ms-border-radius: 0;
+    border-radius: 0;
+    margin-bottom: 0;
+}
+
+.progress > .progress-bar {
+        width: 100%;
+    }
+
 textarea {
     resize: vertical;
 }
