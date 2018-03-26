@@ -272,53 +272,28 @@ span.select2.select2-container.select2-container--bootstrap {
 
 .article-types-tree .btn-lg {
     padding: 5px;
-}
-
-        .article-types-tree li > table tr span.article-type-description {
-            font-size: 12px;
-            color: #95a5a6;
-        }
-
-        .article-types-tree li:not(.deleted) > table tr span.article-type-description {
-            color: #95a5a6;
-        }
-
-    .article-types-tree td[rowspan="2"] {
-        width: 1px;
-        padding-left: 8px;
-        padding-right: 8px;
-    }
-
-    .article-types-tree li.parent-article-type:not(.deleted) > table:hover, .article-types-tree li.parent-article-type > table:hover ~ ul li:not(.deleted) table {
-        background: #dce4ec;
-        color: #000
-    }
-
-        .article-types-tree li.parent-article-type.deleted > table:hover, .article-types-tree li.parent-article-type > table:hover ~ ul li.deleted table {
-            background: #dce4ec;
-            color: #e74c3c;
-        }
+}        
 
 .article-types-tree li.parent-article-type > table {
     cursor: pointer;
 }
 
-    .article-types-tree li::before, .article-types-tree li::after {
+    .article-types-tree table::before, .article-types-tree table::after {
         content: '';
         left: -25px;
         position: absolute;
         right: auto
     }
 
-    .article-types-tree li::before {
+    .article-types-tree table::before {
         border-left: 2px solid #dce4ec;
         bottom: 50px;
-        height: 115%;
-        top: -5px;
+        height: 100%;
+        top: 0px;
         width: 1px
     }
 
-    .article-types-tree li::after {
+    .article-types-tree table::after {
         border-top: 2px solid #dce4ec;
         height: 20px;
         top: 25px;
@@ -333,23 +308,30 @@ span.select2.select2-container.select2-container--bootstrap {
         height: 30px
     }
 
-    .article-types-tree li.deleted > table {
+    .article-types-tree li.deleted > table, .article-types-tree li.deleted > table > tbody > tr {
         color: #ffffff;
         background-color: #e74c3c;
         border-color: #e74c3c;
     }
 
-.article-types-tree li.deleted a {
-    color: #ffffff;
+    .article-types-tree li:not(.deleted) > table {
+        color: #2c3e50;
+        background-color: #ffffff;
+        border-color: #ffffff;
+    }
+
+.article-types-tree li:not(.deleted) > table tr span.article-type-description {
+    font-size: 12px;
+    color: #95a5a6;
 }
 
-    .article-type-info:not(.show) {
-        display: none;
+    .article-types-tree li.deleted > table tr span.article-type-description {
+        font-size: 12px;
+        color: #2c3e50;
     }
 
-    .article-type-info.show {
-        display: block;
-    }
+
+/* Goods Cards */
 
 .card {
     position: relative;
