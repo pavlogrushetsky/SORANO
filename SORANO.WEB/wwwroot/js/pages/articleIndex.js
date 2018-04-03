@@ -150,16 +150,32 @@ function toggleDeletedArticleTypes() {
 
 function initArticleTypesTree() {
     $('.article-types-tree li:has(ul)').addClass('parent-article-type').find(' > table').attr('title', 'Свернуть ветку');
+    var types = $('.article-types-tree li.parent-article-type'); 
+    $.each(types, function( key, value ) {
+        var visible = localStorage.getItem('article-type-visible-' + $(value).attr('id'));
+        var children = $(value).find(' > ul');
+        if (visible === "true") {
+            children.show('fast');
+            $(value).find(' > table').attr('title', 'Свернуть ветку').find('i').addClass('fa-tag').removeClass('fa-tags');
+            $(value).find(' > table').find(' > table').hide('fast');
+        } else {
+            children.hide('fast');
+            $(value).find(' > table').attr('title', 'Развернуть ветку').find('i').addClass('fa-tag').removeClass('fa-tags');
+            $(value).find(' > table').find(' > table').show('fast');
+        }   
+    });
     $('.article-types-tree li.parent-article-type > table').on('click', function (e) {
         var target = $(e.target);
         if (!target.is("a") && !target.is('i')) {
-            var children = $(this).parent('li.parent-article-type').find(' > ul > li');
+            var children = $(this).parent('li.parent-article-type').find(' > ul');
             if (children.is(":visible")) {
                 children.hide('fast');
+                localStorage.setItem('article-type-visible-' + $(this).parent('li.parent-article-type').attr('id'), false);
                 $(this).attr('title', 'Развернуть ветку').find('i').addClass('fa-tags').removeClass('fa-tag');
                 $(this).find(' > table').show('fast');
             } else {
                 children.show('fast');
+                localStorage.setItem('article-type-visible-' + $(this).parent('li.parent-article-type').attr('id'), true);
                 $(this).attr('title', 'Свернуть ветку').find('i').addClass('fa-tag').removeClass('fa-tags');
                 $(this).find(' > table').hide('fast');
             }

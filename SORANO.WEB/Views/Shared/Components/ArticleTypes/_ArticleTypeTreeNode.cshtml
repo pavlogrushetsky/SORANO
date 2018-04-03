@@ -48,7 +48,7 @@
     </table>
     @if (Model.HasChildTypes || Model.HasArticles)
     {
-        <ul>
+        <ul style="display: none;">
             @foreach (var child in Model.ChildTypes)
             {
                 @Html.Partial("Components/ArticleTypes/_ArticleTypeTreeNode", child)
