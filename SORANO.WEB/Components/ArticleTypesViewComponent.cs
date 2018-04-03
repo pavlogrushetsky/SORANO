@@ -17,12 +17,13 @@ namespace SORANO.WEB.Components
             _mapper = mapper;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(bool showDeleted)
+        public async Task<IViewComponentResult> InvokeAsync(bool showDeleted, string searchTerm)
         {
-            var result = await _articleTypeService.GetTreeAsync(showDeleted);
+            var result = await _articleTypeService.GetTreeAsync(showDeleted, searchTerm);
 
             var viewModel = _mapper.Map<ArticleTypeTreeViewModel>(result.Result);
             viewModel.ShowDeleted = showDeleted;
+            viewModel.SearchTerm = searchTerm;
 
             return View(viewModel);
         }

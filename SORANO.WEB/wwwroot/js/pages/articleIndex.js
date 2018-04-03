@@ -35,6 +35,11 @@
         toggleDeletedArticleTypes();
     });
     
+    $(document).on('click', '#article-types-search-btn', function(e) {
+        e.preventDefault();
+        $(this).tooltip('hide');
+        loadArticleTypesTree();
+    });
 });
 
 function loadArticleTable() {
@@ -66,7 +71,8 @@ function loadArticleTable() {
 function loadArticleTypesTree() {
     $('#article-types').hide(250);
     $('#progress-bar').animate({ opacity: 1.0 }, 500, function () {
-        $('#article-types').load('/ArticleType/Tree', function () {
+        var searchTerm = $('#article-types-search-term').val();
+        $('#article-types').load('/ArticleType/Tree', { searchTerm: searchTerm }, function () {
             $('#progress-bar').animate({ opacity: 0.0 }, 250, function () {
                 $('#article-types').show(100, function () {
                     initArticleTypesTree();
@@ -118,7 +124,8 @@ function toggleDeletedArticles() {
 function toggleDeletedArticleTypes() {
     $('#article-types').hide(250);
     $('#progress-bar').animate({ opacity: 1.0 }, 500, function () {
-        $('#article-types').load('/ArticleType/ToggleDeleted', function () {
+        var searchTerm = $('#article-types-search-term').val();
+        $('#article-types').load('/ArticleType/ToggleDeleted', { searchTerm: searchTerm }, function () {
             $('#progress-bar').animate({ opacity: 0.0 }, 250, function () {
                 $('#article-types').show(100, function () {
                     initArticleTypesTree();

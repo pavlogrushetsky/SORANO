@@ -100,11 +100,36 @@
                     </div>
                     <div class="panel-body">
                         <div class="row">
+                            <form id="article-types-filter-form" method="post">
+                                <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+                                    <div class="form-group">
+                                        <label class="control-label"></label>
+                                        <div class="input-group input-group-sm">
+                                            <input class="form-control input-sm" 
+                                                   id="article-types-search-term"
+                                                   type="text" 
+                                                   placeholder="Поиск" 
+                                                   autofocus />
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default btn-sm"
+                                                        id="article-types-search-btn"
+                                                        tooltip-placement="right"
+                                                        tooltip="Фильтровать типы артикулов">
+                                                    <i class="fa fa-fw fa-search"></i>
+                                                </button>                     
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <br/>
+                        <div class="row">
                             <div class="col-xs-12 col-sm-8 col-sm-offset-2">
                                 <div id="article-types" style="display: none;">
                                 </div>
                             </div>
-                        </div>                        
+                        </div>
                     </div>
                 </div>
             </div>

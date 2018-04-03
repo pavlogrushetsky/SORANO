@@ -6,6 +6,8 @@ namespace SORANO.WEB.ViewModels.ArticleType
     {
         public bool ShowDeleted { get; set; }
 
+        public string SearchTerm { get; set; }
+
         public IList<ArticleTypeIndexViewModel> ArticleTypes { get; set; }
     }
 }

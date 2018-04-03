@@ -37,27 +37,7 @@ namespace SORANO.WEB.Controllers
             _mapper = mapper;
         }
 
-        #region GET Actions
-
-        [HttpGet]
-        public IActionResult Tree()
-        {
-            var showDeleted = Session.GetBool("ShowDeletedArticleTypes");
-            ViewBag.ShowDeletedArticleTypes = showDeleted;
-
-            return ViewComponent("ArticleTypes", new { showDeleted });
-        }
-
-        [HttpGet]
-        public IActionResult ToggleDeleted()
-        {
-            var showDeleted = Session.GetBool("ShowDeletedArticleTypes");
-            var toggleDeleted = !showDeleted;
-            Session.SetBool("ShowDeletedArticleTypes", toggleDeleted);
-            ViewBag.ShowDeletedArticleTypes = toggleDeleted;
-
-            return ViewComponent("ArticleTypes", new { showDeleted = toggleDeleted });
-        }
+        #region GET Actions       
 
         [HttpGet]
         [Authorize(Roles = "developer,administrator,manager,user")]
@@ -162,11 +142,31 @@ namespace SORANO.WEB.Controllers
                
                 return View(_mapper.Map<ArticleTypeDeleteViewModel>(result.Result));
             }, OnFault);
-        }        
+        }
 
         #endregion
 
         #region POST Actions
+
+        [HttpPost]
+        public IActionResult Tree(string searchTerm)
+        {
+            var showDeleted = Session.GetBool("ShowDeletedArticleTypes");
+            ViewBag.ShowDeletedArticleTypes = showDeleted;
+
+            return ViewComponent("ArticleTypes", new { showDeleted, searchTerm });
+        }
+
+        [HttpPost]
+        public IActionResult ToggleDeleted(string searchTerm)
+        {
+            var showDeleted = Session.GetBool("ShowDeletedArticleTypes");
+            var toggleDeleted = !showDeleted;
+            Session.SetBool("ShowDeletedArticleTypes", toggleDeleted);
+            ViewBag.ShowDeletedArticleTypes = toggleDeleted;
+
+            return ViewComponent("ArticleTypes", new { showDeleted = toggleDeleted, searchTerm });
+        }
 
         [HttpPost]
         [Authorize(Roles = "developer,administrator,manager")]

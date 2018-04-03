@@ -1,9 +1,10 @@
 ﻿@model ArticleTypeTreeViewModel
 
 <div class="article-types-tree" 
-        id="article-types-tree" 
-        data-showdeleted="@Model.ShowDeleted"
-        hide-if="@Model.ArticleTypes.Count == 0">
+     id="article-types-tree" 
+     data-showdeleted="@Model.ShowDeleted"
+     data-filtered="@Model.SearchTerm"
+     hide-if="@Model.ArticleTypes.Count == 0">
     <ul>
         @foreach (var type in Model.ArticleTypes)
         {
