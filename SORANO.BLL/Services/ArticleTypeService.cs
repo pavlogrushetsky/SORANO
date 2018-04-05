@@ -121,15 +121,17 @@ namespace SORANO.BLL.Services
 
         #endregion
 
-        public async Task<ServiceResponse<IEnumerable<ArticleTypeDto>>> GetTreeAsync(bool withDeleted)
+        public async Task<ServiceResponse<IEnumerable<ArticleTypeDto>>> GetTreeAsync(bool withDeleted, string searchTerm)
         {
             var response = new SuccessResponse<IEnumerable<ArticleTypeDto>>();
 
             var articleTypes = await UnitOfWork.Get<ArticleType>().GetAllAsync();
 
+            var term = searchTerm?.ToLower();
+
             if (withDeleted)
             {
-                response.Result = articleTypes.Where(t => t.ParentType == null).Select(t => t.ToDto());
+                response.Result = articleTypes.Where(t => t.ParentType == null).Filter(term).Select(t => t.ToDto(term));
                 return response;
             }
 
@@ -140,9 +142,9 @@ namespace SORANO.BLL.Services
                 t.Articles = t.Articles.Where(a => !a.IsDeleted).ToList();
             });
 
-            response.Result = filtered.Where(t => t.ParentType == null).Select(t => t.ToDto());
+            response.Result = filtered.Where(t => t.ParentType == null).Filter(term).Select(t => t.ToDto(term));
             return response;
-        }
+        }      
 
         public async Task<ServiceResponse<IEnumerable<ArticleTypeDto>>> GetAllAsync(bool withDeleted, string searchTerm, int currentTypeId = 0)
         {

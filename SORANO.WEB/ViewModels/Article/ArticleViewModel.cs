@@ -23,5 +23,9 @@
         public bool CanBeDeleted { get; set; }
 
         public string Modified { get; set; }
+
+        public string MainPicturePath { get; set; }
+
+        public bool HasMainPicture => !string.IsNullOrEmpty(MainPicturePath);
     }
 }

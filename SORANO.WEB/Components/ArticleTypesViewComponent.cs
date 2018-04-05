@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -18,13 +17,15 @@ namespace SORANO.WEB.Components
             _mapper = mapper;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(bool withDeleted = false)
+        public async Task<IViewComponentResult> InvokeAsync(bool showDeleted, string searchTerm)
         {
-            var result = await _articleTypeService.GetTreeAsync(withDeleted);
+            var result = await _articleTypeService.GetTreeAsync(showDeleted, searchTerm);
 
-            var viewModels = _mapper.Map<IEnumerable<ArticleTypeIndexViewModel>>(result.Result);
+            var viewModel = _mapper.Map<ArticleTypeTreeViewModel>(result.Result);
+            viewModel.ShowDeleted = showDeleted;
+            viewModel.SearchTerm = searchTerm;
 
-            return View(viewModels);
+            return View(viewModel);
         }
     }
 }

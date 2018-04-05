@@ -6,7 +6,7 @@ namespace SORANO.BLL.Services.Abstract
 {
     public interface IArticleTypeService : IBaseService<ArticleTypeDto>
     {
-        Task<ServiceResponse<IEnumerable<ArticleTypeDto>>> GetTreeAsync(bool withDeleted);
+        Task<ServiceResponse<IEnumerable<ArticleTypeDto>>> GetTreeAsync(bool withDeleted, string searchTerm);
 
         Task<ServiceResponse<IEnumerable<ArticleTypeDto>>> GetAllAsync(bool withDeleted, string searchTerm, int currentTypeId = 0);
     }

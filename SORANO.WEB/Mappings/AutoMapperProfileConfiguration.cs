@@ -208,6 +208,15 @@ namespace SORANO.WEB.Mappings
                 );
             CreateMap<ArticleDto, ArticleDeleteViewModel>();
             CreateMap<ArticleCreateUpdateViewModel, ArticleDto>();
+            CreateMap<ArticleDto, ArticleViewModel>()
+                .ForMember(
+                    dest => dest.MainPicturePath,
+                    source => source.MapFrom(s => s.MainPicture.FullPath)
+                )
+                .ForMember(
+                    dest => dest.TypeName,
+                    source => source.MapFrom(s => s.Type.Type == null ? s.Type.Name : $"{s.Type.Type.Name}  {'\u21d0'}  {s.Type.Name}")
+                );
 
             #endregion
 
@@ -217,6 +226,11 @@ namespace SORANO.WEB.Mappings
                 .ForMember(
                     dest => dest.MainPicturePath,
                     source => source.MapFrom(s => s.MainPicture.FullPath)
+                );
+            CreateMap<IEnumerable<ArticleTypeDto>, ArticleTypeTreeViewModel>()
+                .ForMember(
+                    dest => dest.ArticleTypes,
+                    source => source.MapFrom(s => s)
                 );
             CreateMap<ArticleTypeCreateUpdateViewModel, ArticleTypeDto>();
             CreateMap<ArticleTypeDto, ArticleTypeCreateUpdateViewModel>();

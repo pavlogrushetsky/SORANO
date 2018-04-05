@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using SORANO.BLL.Dtos;
 using SORANO.CORE.StockEntities;
 
@@ -6,7 +7,7 @@ namespace SORANO.BLL.Extensions
 {
     internal static class ArticleTypeExtensions
     {
-        public static ArticleTypeDto ToDto(this ArticleType model)
+        public static ArticleTypeDto ToDto(this ArticleType model, string term = null)
         {
             var dto = new ArticleTypeDto
             {
@@ -15,7 +16,7 @@ namespace SORANO.BLL.Extensions
                 Description = model.Description,
                 TypeID = model.ParentType?.ID,
                 Type = model.ParentType?.ToDto(),
-                ChildTypes = model.ChildTypes.Select(t => t.ToDto()),
+                ChildTypes = model.ChildTypes.Filter(term).Select(t => t.ToDto()),
                 Articles = model.Articles.Select(a => a.ToDto())
             };
 
@@ -48,6 +49,22 @@ namespace SORANO.BLL.Extensions
             existentArticleType.Name = newArticleType.Name;
             existentArticleType.Description = newArticleType.Description;
             existentArticleType.ParentTypeId = newArticleType.ParentTypeId;
+        }
+
+        public static IEnumerable<ArticleType> Filter(this IEnumerable<ArticleType> types, string term)
+        {
+            return string.IsNullOrWhiteSpace(term) 
+                ? types 
+                : types.Where(t => t.Filter(term) || t.ChildTypes.Filter(term).Any());
+        }
+
+        private static bool Filter(this ArticleType type, string term)
+        {
+            if (string.IsNullOrWhiteSpace(term))
+                return true;
+
+            return type.Name.ToLower().Contains(term)
+                   || !string.IsNullOrWhiteSpace(type.Description) && type.Description.ToLower().Contains(term);
         }
     }
 }

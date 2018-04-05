@@ -1,15 +1,61 @@
 ﻿@model ArticleViewModel
 
 <li class="@(Model.IsDeleted ? "deleted" : "")">
-    <table>
+    <table class="table table-hover table-striped">
         <tr>
-            <td rowspan="2"><i class="fa fa-fw fa-barcode"></i></td>
+            <td style="width: 75px;">
+                <img hide-if="@(!Model.HasMainPicture)"
+                     class="sale-img"
+                     src="@Url.Content(Model.MainPicturePath)" />
+            </td>
             <td>
-                @Model.Name
+                <span>@Model.Name</span><br />
+                <span class="article-type-description">@Model.Description</span><br />
+                <span hide-if="@(string.IsNullOrWhiteSpace(Model.Producer))">
+                    <i class="fa fa-fw fa-suitcase article-parameter"></i>
+                    <span class="article-parameter"><b>Производитель:</b> @Model.Producer</span><br />
+                </span>
+                <span hide-if="@(string.IsNullOrWhiteSpace(Model.Code))">
+                    <i class="fa fa-fw fa-hashtag article-parameter"></i>
+                    <span class="article-parameter"><b>Код:</b> @Model.Code</span><br />
+                </span>
+                <span hide-if="@(string.IsNullOrWhiteSpace(Model.Barcode))">
+                    <i class="fa fa-fw fa-barcode article-parameter"></i>
+                    <span class="article-parameter"><b>Штрихкод:</b> @Model.Barcode</span><br />
+                </span>
+            </td>
+            <td style="width: 200px;">
+                <a class="btn btn-lg pull-right"
+                   style="background-color: inherit;"
+                   tooltip="Просмотреть информацию об артикуле"
+                   tooltip-placement="right"
+                   asp-controller="Article"
+                   asp-action="Details"
+                   asp-route-id="@Model.ID">
+                    <i class="fa fa-fw fa-info-circle" style="color: #95a5a6"></i>
+                </a>
+                <manager>
+                    <a class="btn btn-lg pull-right"
+                       style="background-color: inherit;"
+                       asp-controller="Article"
+                       asp-action="Update"
+                       asp-route-id="@Model.ID"
+                       hide-if="@(Model.IsDeleted)"
+                       tooltip="Редактировать артикул"
+                       tooltip-placement="bottom">
+                        <i class="fa fa-fw fa-pencil-square" style="color: #95a5a6"></i>
+                    </a>
+                    <a class="btn btn-lg pull-right"
+                       asp-controller="Article"
+                       asp-action="Delete"
+                       asp-route-id="@Model.ID"
+                       hide-if="@(!Model.CanBeDeleted)"
+                       tooltip-placement="bottom"
+                       tooltip="Удалить артикул">
+                        <i class="fa fa-fw fa-trash" style="color: #e74c3c"></i>
+                    </a>
+                </manager>
             </td>
         </tr>
-        <tr class="article-type-description">
-            <td>@Model.Description</td>
-        </tr>       
     </table>
 </li>
