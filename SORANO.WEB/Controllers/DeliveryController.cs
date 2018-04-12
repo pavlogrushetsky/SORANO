@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -22,6 +23,8 @@ namespace SORANO.WEB.Controllers
     public class DeliveryController : EntityBaseController<DeliveryCreateUpdateViewModel>
     {
         private readonly IDeliveryService _deliveryService;
+        private readonly ILocationService _locationService;
+        private readonly ISupplierService _supplierService;
         private readonly IMapper _mapper;
 
         public DeliveryController(IUserService userService,
@@ -37,6 +40,8 @@ namespace SORANO.WEB.Controllers
             IMapper mapper) : base(userService, exceptionService, hostingEnvironment, attachmentTypeService, attachmentService, memoryCache)
         {
             _deliveryService = deliveryService;
+            _locationService = locationService;
+            _supplierService = supplierService;
             _mapper = mapper;
         }
 
@@ -101,16 +106,59 @@ namespace SORANO.WEB.Controllers
                 {
                     model = cachedForCreateLocation;
                 }
-                else if (TryGetCached(out var cachedForCreateDeliveryItem, CacheKeys.CreateDeliveryItemCacheKey, CacheKeys.CreateDeliveryItemCacheValidKey))
-                {
-                    model = cachedForCreateDeliveryItem;
-                }
                 else
                 {
-                    model = new DeliveryCreateUpdateViewModel
+                    int locationId;
+                    if (LocationId.HasValue)
+                        locationId = LocationId.Value;
+                    else
                     {
-                        MainPicture = new MainPictureViewModel()
+                        var defaultLocation = await _locationService.GetDefaultLocationAsync();
+                        if (defaultLocation.Status != ServiceResponseStatus.Success)
+                        {
+                            TempData["Error"] = "Не удалось назначить место по умолчанию.";
+                            return RedirectToAction("Index");
+                        }
+
+                        locationId = defaultLocation.Result.ID;
+                    }
+
+                    var defaultSupplier = await _supplierService.GetDefaultSupplierAsync();
+                    if (defaultSupplier.Status != ServiceResponseStatus.Success)
+                    {
+                        TempData["Error"] = "Не удалось назначить поставщика по умолчанию.";
+                        return RedirectToAction("Index");
+                    }
+
+                    var dto = new DeliveryDto
+                    {
+                        LocationID = LocationId ?? locationId,
+                        SupplierID = defaultSupplier.Result.ID,
+                        BillNumber = "<Номер накладной по умолчанию>",
+                        DeliveryDate = DateTime.Now
                     };
+
+                    var creationResult = await _deliveryService.CreateAsync(dto, UserId);
+
+                    if (creationResult.Status != ServiceResponseStatus.Success)
+                    {
+                        TempData["Error"] = "Не удалось создать поставку.";
+                        return RedirectToAction("Index");
+                    }
+
+                    var delivery = await _deliveryService.GetAsync(creationResult.Result);
+                    if (delivery.Status != ServiceResponseStatus.Success)
+                    {
+                        TempData["Error"] = "Не удалось найти указанную поставку.";
+                        return RedirectToAction("Index");
+                    }
+
+                    model = _mapper.Map<DeliveryCreateUpdateViewModel>(delivery.Result);
+                    model.AllowCreation = AllowCreation;
+                    model.AllowChangeLocation = true;
+                    model.MainPicture = new MainPictureViewModel();                  
+
+                    TempData["Success"] = "Поставка была успешно оформлена и инициализирована значениями по умолчанию. Для отмены нажмите \"Отменить поставку\". Для подтверждения оформления нажмите \"Подтвердить\".";
                 }
 
                 return View(model);
@@ -141,10 +189,6 @@ namespace SORANO.WEB.Controllers
                 {
                     model = cachedForCreateArticle;
                 }
-                else if (TryGetCached(out var cachedForCreateItem, CacheKeys.CreateDeliveryItemCacheKey, CacheKeys.CreateDeliveryItemCacheValidKey))
-                {
-                    model = cachedForCreateItem;
-                }
                 else
                 {
                     var result = await _deliveryService.GetAsync(id);
@@ -157,6 +201,7 @@ namespace SORANO.WEB.Controllers
 
                     model = _mapper.Map<DeliveryCreateUpdateViewModel>(result.Result);
                     model.IsUpdate = true;
+                    model.AllowChangeLocation = true;
                 }
 
                 return View("Create", model);
@@ -311,15 +356,15 @@ namespace SORANO.WEB.Controllers
 
                 var delivery = _mapper.Map<DeliveryDto>(model);
 
-                var result = await _deliveryService.CreateAsync(delivery, UserId);
+                var result = await _deliveryService.UpdateAsync(delivery, UserId);
 
                 if (result.Status != ServiceResponseStatus.Success)
                 {
-                    TempData["Error"] = "Не удалось создать поставку.";
+                    TempData["Error"] = "Не удалось обновить поставку.";
                     return RedirectToAction("Index");
                 }
 
-                TempData["Success"] = "Поставка была успешно создана.";
+                TempData["Success"] = "Поставка была успешно обновлена.";
                 return RedirectToAction("Index");
             }, OnFault);
         }
@@ -368,11 +413,11 @@ namespace SORANO.WEB.Controllers
 
                 if (result.Status == ServiceResponseStatus.Success)
                 {
-                    TempData["Success"] = $"Поставка № {model.BillNumber} была успешно помечена как удалённая.";
+                    TempData["Success"] = $"Оформление поставки № {model.BillNumber} было успешно отменено.";
                 }
                 else
                 {
-                    TempData["Error"] = "Не удалось удалить поставку.";
+                    TempData["Error"] = "Не удалось отменить оформление поставки.";
                 }
 
                 return RedirectToAction("Index");

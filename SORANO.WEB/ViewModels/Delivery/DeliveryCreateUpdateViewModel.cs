@@ -40,6 +40,10 @@ namespace SORANO.WEB.ViewModels.Delivery
 
         public bool IsSubmitted { get; set; }
 
+        public bool AllowChangeLocation { get; set; }
+
+        public bool AllowCreation { get; set; }
+
         public IList<DeliveryItemViewModel> Items { get; set; } = new List<DeliveryItemViewModel>();
     }
 }

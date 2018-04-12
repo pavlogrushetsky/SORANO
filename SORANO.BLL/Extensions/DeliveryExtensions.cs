@@ -24,7 +24,7 @@ namespace SORANO.BLL.Extensions
                 TotalDiscount = model.TotalDiscount,
                 TotalDiscountedPrice = model.TotalDiscountedPrice,
                 IsSubmitted = model.IsSubmitted,
-                Items = model.Items.Where(di => !di.IsDeleted).Select(i => i.ToDto())
+                Items = model.Items?.Where(di => !di.IsDeleted).Select(i => i.ToDto())
             };
 
             dto.MapDetails(model);
@@ -49,9 +49,9 @@ namespace SORANO.BLL.Extensions
                 TotalDiscount = dto.TotalDiscount,
                 TotalDiscountedPrice = dto.TotalDiscountedPrice,
                 IsSubmitted = dto.IsSubmitted,
-                Items = dto.Items.Select(i => i.ToEntity()).ToList(),
-                Recommendations = dto.Recommendations.Select(r => r.ToEntity()).ToList(),
-                Attachments = dto.Attachments.Select(a => a.ToEntity()).ToList()
+                Items = dto.Items?.Select(i => i.ToEntity()).ToList(),
+                Recommendations = dto.Recommendations?.Select(r => r.ToEntity()).ToList(),
+                Attachments = dto.Attachments?.Select(a => a.ToEntity()).ToList()
             };
 
             if (!string.IsNullOrEmpty(dto.MainPicture?.FullPath))

@@ -168,5 +168,15 @@ namespace SORANO.BLL.Services
             response.Result = searched.Where(t => !t.IsDeleted).Select(t => t.ToDto());
             return response;
         }
+
+        public async Task<ServiceResponse<LocationDto>> GetDefaultLocationAsync()
+        {
+            var locations = await UnitOfWork.Get<Location>().GetAllAsync();
+
+            var defaultLocation = locations.FirstOrDefault(l => !l.IsDeleted)?.ToDto();
+            return defaultLocation != null 
+                ? new SuccessResponse<LocationDto>(defaultLocation) 
+                : new ServiceResponse<LocationDto>(ServiceResponseStatus.NotFound);
+        }
     }
 }

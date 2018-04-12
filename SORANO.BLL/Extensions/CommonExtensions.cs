@@ -18,7 +18,7 @@ namespace SORANO.BLL.Extensions
             dto.CreatedBy = model.CreatedByUser?.Login;
             dto.ModifiedBy = model.ModifiedByUser?.Login;
             dto.DeletedBy = model.DeletedByUser?.Login;
-            dto.Recommendations = model.Recommendations
+            dto.Recommendations = model.Recommendations?
                 .Where(r => !r.IsDeleted)
                 .Select(r => r.ToDto());
             dto.Attachments = model.Attachments?
