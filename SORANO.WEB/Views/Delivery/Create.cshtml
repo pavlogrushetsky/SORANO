@@ -58,36 +58,6 @@
         <input type="hidden" asp-for="@Model.Attachments[i].TypeName" />
         <input type="hidden" asp-for="@Model.Attachments[i].TypeID" />
     }
-    @for (var i = 0; i < Model.Items.Count; i++)
-    {
-        <input type="hidden" asp-for="@Model.Items[i].ID" />
-        <input type="hidden" asp-for="@Model.Items[i].ArticleID" />
-        <input type="hidden" asp-for="@Model.Items[i].ArticleName" />
-        <input type="hidden" asp-for="@Model.Items[i].Quantity" />
-        <input type="hidden" asp-for="@Model.Items[i].UnitPrice" />
-        <input type="hidden" class="delivery-item-grossprice" asp-for="@Model.Items[i].GrossPrice" />
-        <input type="hidden" class="delivery-item-discount" asp-for="@Model.Items[i].Discount" />
-        <input type="hidden" class="delivery-item-discountprice" asp-for="@Model.Items[i].DiscountedPrice" />
-        <input type="hidden" asp-for="@Model.Items[i].MainPicture.ID" />
-        <input type="hidden" asp-for="@Model.Items[i].MainPicture.Name" />
-        <input type="hidden" asp-for="@Model.Items[i].MainPicture.FullPath" />
-        <input type="hidden" asp-for="@Model.Items[i].MainPicture.TypeID" />
-        for (var j = 0; j < Model.Items[i].Attachments.Count; j++)
-        {
-            <input type="hidden" asp-for="@Model.Items[i].Attachments[j].ID" />
-            <input type="hidden" asp-for="@Model.Items[i].Attachments[j].IsNew" />
-            <input type="hidden" asp-for="@Model.Items[i].Attachments[j].FullPath" />
-            <input type="hidden" asp-for="@Model.Items[i].Attachments[j].MimeTypes" />
-            <input type="hidden" asp-for="@Model.Items[i].Attachments[j].TypeName" />
-            <input type="hidden" asp-for="@Model.Items[i].Attachments[j].TypeID" />
-        }
-        for (var j = 0; j < Model.Items[i].Recommendations.Count; j++)
-        {
-            <input type="hidden" asp-for="@Model.Items[i].Recommendations[j].ID" />
-            <input type="hidden" asp-for="@Model.Items[i].Recommendations[j].Value" />
-            <input type="hidden" asp-for="@Model.Items[i].Recommendations[j].Comment" />
-        }
-    }
     @Html.HiddenFor(m => m.MainPicture.ID)
     @Html.HiddenFor(m => m.MainPicture.Name)
     @Html.HiddenFor(m => m.MainPicture.FullPath)
@@ -262,9 +232,9 @@
                             <td></td>
                             <td></td>
                             <td><b>Всего:</b></td>
-                            <td id="delivery_totalgrossprice">@Model.TotalGrossPrice</td>
-                            <td id="delivery_totaldiscount">@Model.TotalDiscount</td>
-                            <td id="delivery_totaldiscountprice">@Model.TotalDiscountedPrice</td>
+                            <td>@Model.TotalGrossPrice</td>
+                            <td>@Model.TotalDiscount</td>
+                            <td>@Model.TotalDiscountedPrice</td>
                             <td></td>
                         </tr>
                         <tr>
@@ -303,7 +273,7 @@
                                 <td nowrap="nowrap">
                                     <button asp-controller="Delivery"
                                             asp-action="UpdateItem"
-                                            asp-route-number="@i"
+                                            asp-route-deliveryItemId="@Model.Items[i].ID"
                                             asp-route-returnUrl="@returnUrl"
                                             class="btn btn-sm btn-default"
                                             data-toggle="tooltip"
@@ -319,7 +289,8 @@
                                             title=""
                                             asp-controller="Delivery"
                                             asp-action="DeleteItem"
-                                            asp-route-number="@i">
+                                            asp-route-deliveryItemId="@Model.Items[i].ID"
+                                            asp-route-returnUrl="@returnUrl">
                                         <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
                                     </button>
                                 </td>
@@ -335,8 +306,8 @@
         <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="form-group">
                 <a class="btn btn-default btn-sm" asp-controller="Delivery" asp-action="Index">
-                    <i class="fa fa-fw fa-close"></i>
-                    Отмена
+                    <i class="fa fa-fw fa-arrow-left"></i>
+                    Назад
                 </a>
                 <button type="submit" class="btn btn-primary btn-sm">
                     <i class="fa fa-fw fa-save"></i>

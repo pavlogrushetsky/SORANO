@@ -286,11 +286,7 @@ namespace SORANO.WEB.Controllers
         [LoadAttachments]
         public IActionResult AddItem(DeliveryCreateUpdateViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            return TryGetActionResult(() =>
-            {
-                MemoryCache.Set(CacheKeys.CreateDeliveryItemCacheKey, model);
-                return RedirectToAction("Create", "DeliveryItem", new { returnUrl });
-            }, ex =>
+            return TryGetActionResult(() => RedirectToAction("Create", "DeliveryItem", new { returnUrl, deliveryId = model.ID }), ex =>
             {
                 TempData["Error"] = ex;
                 return View("Create", model);
@@ -300,15 +296,9 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [LoadAttachments]
-        public IActionResult UpdateItem(DeliveryCreateUpdateViewModel model, int number, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public IActionResult UpdateItem(DeliveryCreateUpdateViewModel model, string returnUrl, int deliveryItemId, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            return TryGetActionResult(() =>
-            {
-                MemoryCache.Set(CacheKeys.CreateDeliveryItemCacheKey, model);
-                MemoryCache.Set(CacheKeys.DeliveryItemCacheKey, model.Items[number]);
-                Session.SetBool(CacheKeys.DeliveryItemCacheValidKey, true);
-                return RedirectToAction("Update", "DeliveryItem", new { number, returnUrl });
-            }, ex =>
+            return TryGetActionResult(() => RedirectToAction("Update", "DeliveryItem", new { returnUrl, deliveryItemId }), ex =>
             {
                 TempData["Error"] = ex;
                 return View("Create", model);
@@ -318,16 +308,9 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [LoadAttachments]
-        public IActionResult DeleteItem(DeliveryCreateUpdateViewModel model, int number, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public IActionResult DeleteItem(DeliveryCreateUpdateViewModel model, string returnUrl, int deliveryItemId, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            return TryGetActionResult(() =>
-            {
-                ModelState.Clear();
-
-                model.Items.RemoveAt(number);
-
-                return View("Create", model);
-            }, ex =>
+            return TryGetActionResult(() => RedirectToAction("Delete", "DeliveryItem", new {returnUrl, deliveryItemId}), ex =>
             {
                 TempData["Error"] = ex;
                 return View("Create", model);

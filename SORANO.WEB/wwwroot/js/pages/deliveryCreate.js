@@ -108,10 +108,6 @@
     });
 
     updateCurrencyRates();
-
-    updateTotalGrossPrice();
-    updateTotalDiscount();
-    updateTotalDiscountPrice();
 });
 
 function initDeliveryItemsDataTable() {
@@ -172,40 +168,4 @@ function updateCurrencyRates() {
         $('#select_currency_usd').prop('checked', false);
         $('#select_currency_eur').prop('checked', true);
     }
-}
-
-function updateTotalGrossPrice() {
-    var totalGrossPrice = 0;
-    $('.delivery-item-grossprice').each(function() {
-        var value = $(this).val();
-        if (isNumeric(value)) {
-            totalGrossPrice += parseFloat(value);
-        }
-    });
-    $('#TotalGrossPrice').val(formatDecimal(totalGrossPrice));
-    $('#delivery_totalgrossprice').text(formatDecimal(totalGrossPrice));
-}
-
-function updateTotalDiscount() {
-    var totalDiscount = 0;
-    $('.delivery-item-discount').each(function() {
-        var value = $(this).val();
-        if (isNumeric(value)) {
-            totalDiscount += parseFloat(value);
-        }
-    });
-    $('#TotalDiscount').val(formatDecimal(totalDiscount));
-    $('#delivery_totaldiscount').text(formatDecimal(totalDiscount));
-}
-
-function updateTotalDiscountPrice() {
-    var totalDiscountPrice = 0;
-    $('.delivery-item-discountprice').each(function () {
-        var value = $(this).val();
-        if (isNumeric(value)) {
-            totalDiscountPrice += parseFloat(value);
-        }
-    });
-    $('#TotalDiscountedPrice').val(formatDecimal(totalDiscountPrice));
-    $('#delivery_totaldiscountprice').text(formatDecimal(totalDiscountPrice));
 }

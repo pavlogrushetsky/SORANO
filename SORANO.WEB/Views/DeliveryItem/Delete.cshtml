@@ -1,0 +1,60 @@
+﻿@model DeliveryItemViewModel
+
+@{
+    ViewBag.Title = "SORANO - Удаление позиции поставки";
+    ViewBag.Header = "Удаление";
+    ViewBag.Description = "позиции поставки";
+    ViewBag.Icon = "fa fa-fw fa-trash";
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li><a asp-controller="Delivery" asp-action="Index">Поставки</a></li>
+        <li class="active">Удаление позиции поставки</li>
+    </ul>
+}
+
+<div class="row">
+    @await Component.InvokeAsync("CanBeDeleted", new
+    {
+        canBeDeleted = Model.CanBeDeleted,
+        error = "Позиция подтверждённой поставки не может быть удалена.",
+        warning = "Вы уверены, что хотите удалить следующую позицию поставки?"
+    })
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.DeliveryBillNumber)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.DeliveryBillNumber)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.DeliveryDate)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.DeliveryDate)
+            </dd>
+        </dl>
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="ID" />
+            <input type="hidden" asp-for="ReturnPath" />
+            <div class="form-group">
+                <a class="btn btn-default btn-sm" asp-action="Index" asp-controller="Delivery">
+                    <i class="fa fa-fw fa-close"></i>
+                    Отмена
+                </a>
+                @if (Model.CanBeDeleted)
+                {
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fa fa-fw fa-trash"></i>
+                        Удалить
+                    </button>
+                }
+            </div>
+        </form>
+    </div>
+</div>

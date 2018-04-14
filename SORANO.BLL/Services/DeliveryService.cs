@@ -126,8 +126,6 @@ namespace SORANO.BLL.Services
             existentEntity.UpdateFields(entity);
             existentEntity.UpdateModifiedFields(userId);
 
-            UpdateDeliveryItems(entity, existentEntity, userId);
-
             if (entity.IsSubmitted)
             {
                 foreach (var item in existentEntity.Items)

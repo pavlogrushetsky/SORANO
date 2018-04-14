@@ -101,6 +101,7 @@
     <Compile Include="Services\Abstract\IAttachmentService.cs" />
     <Compile Include="Services\Abstract\IAttachmentTypeService.cs" />
     <Compile Include="Services\Abstract\IBaseService.cs" />
+    <Compile Include="Services\Abstract\IDeliveryItemService.cs" />
     <Compile Include="Services\Abstract\IExceptionService.cs" />
     <Compile Include="Services\Abstract\IGoodsService.cs" />
     <Compile Include="Services\Abstract\ILocationService.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="Services\AttachmentService.cs" />
     <Compile Include="Services\AttachmentTypeService.cs" />
     <Compile Include="Services\BaseService.cs" />
+    <Compile Include="Services\DeliveryItemService.cs" />
     <Compile Include="Services\DeliveryService.cs" />
     <Compile Include="Services\ExceptionService.cs" />
     <Compile Include="Services\GoodsService.cs" />
