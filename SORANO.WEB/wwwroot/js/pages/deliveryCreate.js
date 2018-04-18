@@ -22,9 +22,7 @@
         errorLoadingText: 'Невозможно загрузить результаты поиска',
         placeholderText: 'Поставщик',
         url: '/Supplier/GetSuppliers'
-    });
-
-    initDeliveryItemsDataTable();
+    });   
 
     $('.submit-delivery').on('click', function () {
         $('#IsSubmitted').val(true);
@@ -108,7 +106,22 @@
     });
 
     updateCurrencyRates();
+
+    loadDeliveryItemsTable();
 });
+
+function loadDeliveryItemsTable() {
+    $('#delivery-items-table').hide(100);
+    $('#progress-bar').animate({ opacity: 1.0 }, 100, function () {
+        $('#delivery-items-table').load('/DeliveryItem/Table', function () {
+            $('#delivery-items-table').show(100, function () {
+                initDeliveryItemsDataTable();
+                initTooltip();
+                $('#progress-bar').animate({ opacity: 0.0 }, 100);
+            });
+        });
+    });
+}
 
 function initDeliveryItemsDataTable() {
     var table = $("#delivery-items-datatable").DataTable({

@@ -170,9 +170,14 @@ namespace SORANO.BLL.Services
             if (existentDelivery.IsSubmitted)
                 return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
-            existentDelivery.UpdateDeletedFields(userId);
+            foreach (var deliveryItem in existentDelivery.Items.ToList())
+            {
+                UnitOfWork.Get<DeliveryItem>().Delete(deliveryItem);
+            }
 
-            UnitOfWork.Get<Delivery>().Update(existentDelivery);
+            //existentDelivery.UpdateDeletedFields(userId);
+
+            UnitOfWork.Get<Delivery>().Delete(existentDelivery);
 
             await UnitOfWork.SaveAsync();
 

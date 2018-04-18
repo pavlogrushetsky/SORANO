@@ -278,6 +278,10 @@ namespace SORANO.WEB.Mappings
 
             CreateMap<DeliveryDto, DeliveryCreateUpdateViewModel>()
                 .ForMember(
+                    dest => dest.ItemsCount,
+                    source => source.MapFrom(s => s.Items.Count())
+                )
+                .ForMember(
                     dest => dest.SelectedCurrency,
                     source => source.MapFrom(s => s.DollarRate.HasValue ? "$" : s.EuroRate.HasValue ? "€" : "₴")
                 );

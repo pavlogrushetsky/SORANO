@@ -45,6 +45,7 @@
     <input type="hidden" asp-for="LocationID" />
     <input type="hidden" asp-for="LocationName" />
     <input type="hidden" asp-for="SelectedCurrency" />
+    <input type="hidden" asp-for="ItemsCount" />
     @for (var i = 0; i < Model.Recommendations.Count; i++)
     {
         <input type="hidden" asp-for="@Model.Recommendations[i].ID" />
@@ -65,8 +66,8 @@
 
     @Html.HiddenFor(m => m.TotalGrossPrice)
     @Html.HiddenFor(m => m.TotalDiscount)
-    @Html.HiddenFor(m => m.TotalDiscountedPrice) 
-    
+    @Html.HiddenFor(m => m.TotalDiscountedPrice)
+
     @Html.HiddenFor(m => m.SelectedCurrency)
     @Html.HiddenFor(m => m.IsSubmitted)
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -87,7 +88,7 @@
                 <label class="control-label" asp-for="BillNumber"></label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-cart-arrow-down"></i></span>
-                    <input class="form-control input-sm" type="text" asp-for="BillNumber" placeholder="Номер накладной" autofocus/>
+                    <input class="form-control input-sm" type="text" asp-for="BillNumber" placeholder="Номер накладной" autofocus />
                 </div>
                 <span asp-validation-for="BillNumber" class="text-danger"></span>
             </div>
@@ -96,8 +97,7 @@
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-truck"></i></span>
                     <select class="form-control input-sm select-supplier"
-                            asp-for="SupplierID">                        
-                    </select>
+                            asp-for="SupplierID"></select>
                     <div class="input-group-btn">
                         <button class="btn btn-default btn-sm"
                                 asp-action="CreateSupplier"
@@ -117,8 +117,7 @@
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
                     <select class="form-control input-sm select-location"
-                            asp-for="LocationID">                       
-                    </select>
+                            asp-for="LocationID"></select>
                     <span class="input-group-btn">
                         <button class="btn btn-default btn-sm"
                                 asp-action="CreateLocation"
@@ -157,37 +156,37 @@
                 <label class="control-label">Валюта</label>
                 <table class="table table-responsive" style="width: 100%; margin-bottom: 0;">
                     <tbody>
-                    <tr>
-                        <td style="width: 33%; padding: 0; padding-right: 5px;">
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-addon">
-                                    <input type="radio" name="select_currency" id="select_currency_uah" value="0" style="margin-right: 1px;"/>
-                                    <span style="font-weight: bold;">&#8372;</span>
-                                </span>
-                                <input type="text" readonly="readonly" class="form-control input-sm" value="1.00"/>
-                            </div>                          
-                        </td>
-                        <td style="width: 33%; padding: 0; padding-right: 5px;">
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-addon">
-                                    <input type="radio" name="select_currency" id="select_currency_usd" value="1"/>
-                                    <i class="fa fa-usd"></i>
-                                </span>
-                                <input type="text" readonly="readonly" asp-for="DollarRate" class="form-control input-sm" />
-                            </div>
-                            <span asp-validation-for="DollarRate" class="text-danger"></span>
-                        </td>
-                        <td style="width: 33%; padding: 0; padding-right: 5px;">
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-addon">
-                                    <input type="radio" name="select_currency" id="select_currency_eur" value="2" />
-                                    <i class="fa fa-eur"></i>
-                                </span>
-                                <input type="text" readonly="readonly" asp-for="EuroRate" class="form-control input-sm" />
-                            </div>
-                            <span asp-validation-for="EuroRate" class="text-danger"></span>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td style="width: 33%; padding: 0; padding-right: 5px;">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon">
+                                        <input type="radio" name="select_currency" id="select_currency_uah" value="0" style="margin-right: 1px;" />
+                                        <span style="font-weight: bold;">&#8372;</span>
+                                    </span>
+                                    <input type="text" readonly="readonly" class="form-control input-sm" value="1.00" />
+                                </div>
+                            </td>
+                            <td style="width: 33%; padding: 0; padding-right: 5px;">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon">
+                                        <input type="radio" name="select_currency" id="select_currency_usd" value="1" />
+                                        <i class="fa fa-usd"></i>
+                                    </span>
+                                    <input type="text" readonly="readonly" asp-for="DollarRate" class="form-control input-sm" />
+                                </div>
+                                <span asp-validation-for="DollarRate" class="text-danger"></span>
+                            </td>
+                            <td style="width: 33%; padding: 0; padding-right: 5px;">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon">
+                                        <input type="radio" name="select_currency" id="select_currency_eur" value="2" />
+                                        <i class="fa fa-eur"></i>
+                                    </span>
+                                    <input type="text" readonly="readonly" asp-for="EuroRate" class="form-control input-sm" />
+                                </div>
+                                <span asp-validation-for="EuroRate" class="text-danger"></span>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -199,106 +198,100 @@
     </div>
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12">
-            <label class="control-label">Позиции поставки:</label>
-            <span asp-validation-for="Items" class="text-danger"></span>
-            <div class="form-group well well-sm">
-                <div id="deliveryItems">
-                    <table id="delivery-items-datatable" class="table table-striped table-hover" style="margin-bottom: 0;">
-                        <thead>
-                        <tr role="row" class="search-row">
-                            <th><input type="text" class="form-control input-sm" placeholder="№"/></th>
-                            <th><input type="text" class="form-control input-sm" placeholder="Товар"/></th>
-                            <th><input type="text" class="form-control input-sm" placeholder="Кол-во, шт."/></th>
-                            <th><input type="text" class="form-control input-sm" placeholder="Цена"/></th>
-                            <th><input type="text" class="form-control input-sm" placeholder="Без скидки"/></th>
-                            <th><input type="text" class="form-control input-sm" placeholder="Скидка"/></th>
-                            <th><input type="text" class="form-control input-sm" placeholder="Сумма"/></th>
-                            <th></th>
-                        </tr>
-                        <tr role="row">
-                            <th><i class="fa fa-fw fa-hashtag"></i>№</th>
-                            <th><i class="fa fa-fw fa-shopping-cart"></i>Товар</th>
-                            <th><i class="fa fa-fw fa-hashtag"></i>Кол-во, шт.</th>
-                            <th><i class="fa fa-fw fa-money"></i>Цена</th>
-                            <th><i class="fa fa-fw fa-money"></i>Без скидки</th>
-                            <th><i class="fa fa-fw fa-money"></i>Скидка</th>
-                            <th><i class="fa fa-fw fa-money"></i>Сумма</th>
-                            <th>Действия</th>
-                        </tr>
-                        </thead>
-                        <tfoot>
-                        <tr style="font-weight: bold;">
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td><b>Всего:</b></td>
-                            <td>@Model.TotalGrossPrice</td>
-                            <td>@Model.TotalDiscount</td>
-                            <td>@Model.TotalDiscountedPrice</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 0;">
-                                <button class="btn btn-default btn-sm"
-                                        asp-controller="Delivery"
-                                        asp-action="AddItem"
-                                        asp-route-returnUrl="@returnUrl"
-                                        data-toggle="tooltip"
-                                        data-placement="right"
-                                        data-original-title="Добавить позицию"
-                                        title="">
-                                    <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
-                                </button>
-                            </td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        </tfoot>
-                        <tbody>
-                        @for (var i = 0; i < Model.Items.Count; i++)
-                        {
-                            <tr>
-                                <td>@(i + 1)</td>
-                                <td>@Model.Items[i].ArticleName</td>
-                                <td>@Model.Items[i].Quantity</td>
-                                <td>@Model.Items[i].UnitPrice</td>
-                                <td>@Model.Items[i].GrossPrice</td>
-                                <td>@Model.Items[i].Discount</td>
-                                <td>@Model.Items[i].DiscountedPrice</td>
-                                <td nowrap="nowrap">
-                                    <button asp-controller="Delivery"
-                                            asp-action="UpdateItem"
-                                            asp-route-deliveryItemId="@Model.Items[i].ID"
-                                            asp-route-returnUrl="@returnUrl"
-                                            class="btn btn-sm btn-default"
-                                            data-toggle="tooltip"
-                                            data-placement="bottom"
-                                            data-original-title="Редактировать позицию"
-                                            title="">
-                                        <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger"
-                                            data-toggle="tooltip"
-                                            data-placement="bottom"
-                                            data-original-title="Удалить позицию"
-                                            title=""
-                                            asp-controller="Delivery"
-                                            asp-action="DeleteItem"
-                                            asp-route-deliveryItemId="@Model.Items[i].ID"
-                                            asp-route-returnUrl="@returnUrl">
-                                        <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
-                </div>                
+            <label class="control-label">Позиции поставки *</label>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <span asp-validation-for="ItemsCount" class="text-danger"></span>
+                    <button class="btn btn-success btn-xs pull-right"
+                            asp-controller="Delivery"
+                            asp-action="AddItem"
+                            asp-route-returnUrl="@returnUrl"
+                            data-toggle="tooltip"
+                            data-placement="right"
+                            data-original-title="Добавить позицию"
+                            title="">
+                        <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
+                    </button>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="panel-body">
+                    <div id="delivery-items-table" style="display: none;">
+                        <table id="delivery-items-datatable" class="table table-striped table-hover" style="margin-bottom: 0;">
+                            <thead>
+                                <tr role="row" class="search-row">
+                                    <th><input type="text" class="form-control input-sm" placeholder="№" /></th>
+                                    <th><input type="text" class="form-control input-sm" placeholder="Товар" /></th>
+                                    <th><input type="text" class="form-control input-sm" placeholder="Кол-во, шт." /></th>
+                                    <th><input type="text" class="form-control input-sm" placeholder="Цена" /></th>
+                                    <th><input type="text" class="form-control input-sm" placeholder="Без скидки" /></th>
+                                    <th><input type="text" class="form-control input-sm" placeholder="Скидка" /></th>
+                                    <th><input type="text" class="form-control input-sm" placeholder="Сумма" /></th>
+                                    <th></th>
+                                </tr>
+                                <tr role="row">
+                                    <th><i class="fa fa-fw fa-hashtag"></i>№</th>
+                                    <th><i class="fa fa-fw fa-shopping-cart"></i>Товар</th>
+                                    <th><i class="fa fa-fw fa-hashtag"></i>Кол-во, шт.</th>
+                                    <th><i class="fa fa-fw fa-money"></i>Цена</th>
+                                    <th><i class="fa fa-fw fa-money"></i>Без скидки</th>
+                                    <th><i class="fa fa-fw fa-money"></i>Скидка</th>
+                                    <th><i class="fa fa-fw fa-money"></i>Сумма</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr style="font-weight: bold;">
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><b>Всего:</b></td>
+                                    <td>@Model.TotalGrossPrice</td>
+                                    <td>@Model.TotalDiscount</td>
+                                    <td>@Model.TotalDiscountedPrice</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                            <tbody>
+                                @for (var i = 0; i < Model.Items.Count; i++)
+                                {
+                                    <tr>
+                                        <td>@(i + 1)</td>
+                                        <td>@Model.Items[i].ArticleName</td>
+                                        <td>@Model.Items[i].Quantity</td>
+                                        <td>@Model.Items[i].UnitPrice</td>
+                                        <td>@Model.Items[i].GrossPrice</td>
+                                        <td>@Model.Items[i].Discount</td>
+                                        <td>@Model.Items[i].DiscountedPrice</td>
+                                        <td nowrap="nowrap">
+                                            <button asp-controller="Delivery"
+                                                    asp-action="UpdateItem"
+                                                    asp-route-deliveryItemId="@Model.Items[i].ID"
+                                                    asp-route-returnUrl="@returnUrl"
+                                                    class="btn btn-xs btn-default"
+                                                    data-toggle="tooltip"
+                                                    data-placement="bottom"
+                                                    data-original-title="Редактировать позицию"
+                                                    title="">
+                                                <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
+                                            </button>
+                                            <button class="btn btn-xs btn-danger"
+                                                    data-toggle="tooltip"
+                                                    data-placement="bottom"
+                                                    data-original-title="Удалить позицию"
+                                                    title=""
+                                                    asp-controller="Delivery"
+                                                    asp-action="DeleteItem"
+                                                    asp-route-deliveryItemId="@Model.Items[i].ID"
+                                                    asp-route-returnUrl="@returnUrl">
+                                                <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -315,8 +308,15 @@
                 </button>
                 <button class="btn btn-success btn-sm submit-delivery">
                     <i class="fa fa-fw fa-check"></i>
-                    Подтвердить 
+                    Подтвердить
                 </button>
+                <a class="btn btn-warning btn-sm"
+                   asp-controller="Delivery"
+                   asp-action="Delete"
+                   asp-route-id="@Model.ID">
+                    <i class="fa fa-fw fa-hand-stop-o"></i>
+                    Отменить оформление
+                </a>
             </div>
         </div>
     </div>

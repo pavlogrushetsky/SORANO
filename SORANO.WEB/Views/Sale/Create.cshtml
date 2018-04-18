@@ -102,7 +102,7 @@
                     <span class="input-group-addon"><i class="fa fa-fw fa-address-book"></i></span>
                     <select class="form-control input-sm select-client"
                             asp-for="ClientID"></select>
-                    <span hide-if="@(!Model.AllowCreation)"
+                    <span hide-if="@(!Model.AllowCreation)" 
                           class="input-group-btn">
                         <button class="btn btn-default btn-sm"
                                 asp-action="CreateClient"

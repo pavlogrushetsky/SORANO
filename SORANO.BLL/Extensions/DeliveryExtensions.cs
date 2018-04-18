@@ -70,9 +70,6 @@ namespace SORANO.BLL.Extensions
             existentDelivery.IsSubmitted = newDelivery.IsSubmitted;
             existentDelivery.PaymentDate = newDelivery.PaymentDate;
             existentDelivery.SupplierID = newDelivery.SupplierID;
-            //existentDelivery.TotalDiscount = newDelivery.TotalDiscount;
-            //existentDelivery.TotalDiscountedPrice = newDelivery.TotalDiscountedPrice;
-            //existentDelivery.TotalGrossPrice = newDelivery.TotalGrossPrice;
         }
     }
 }

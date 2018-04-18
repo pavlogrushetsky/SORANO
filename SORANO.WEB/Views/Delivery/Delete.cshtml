@@ -1,17 +1,17 @@
 ﻿@model DeliveryDeleteViewModel
 
 @{
-    ViewBag.Title = "SORANO - Удаление поставки";
-    ViewBag.Header = "Удаление";
+    ViewBag.Title = "SORANO - Отмена поставки";
+    ViewBag.Header = "Отмена"; 
     ViewBag.Description = "поставки";
-    ViewBag.Icon = "fa fa-fw fa-trash";
+    ViewBag.Icon = "fa fa-fw fa-hand-stop-o";
 }
 
 @section Breadcrumb {
     <ul class="breadcrumb">
         <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
         <li><a asp-controller="Delivery" asp-action="Index">Поставки</a></li>
-        <li class="active">Удаление поставки</li>
+        <li class="active">Отмена поставки</li>
     </ul>
 }
 
@@ -19,8 +19,8 @@
     @await Component.InvokeAsync("CanBeDeleted", new
 {
     canBeDeleted = Model.CanBeDeleted,
-    error = "Подтверждённая поставка не может быть удалена.",
-    warning = "Вы уверены, что хотите удалить следующую поставку?"
+    error = "Подтверждённая поставка не может быть отменена.",
+    warning = "Вы уверены, что хотите отменить оформление следующей поставки? Все добавленные в поставку позиции будут удалены."
 })
 </div>
 <div class="row">
@@ -55,9 +55,9 @@
                 </a>
                 @if (Model.CanBeDeleted)
                 {
-                    <button type="submit" class="btn btn-danger btn-sm">
-                        <i class="fa fa-fw fa-trash"></i>
-                        Удалить
+                    <button type="submit" class="btn btn-warning btn-sm">
+                        <i class="fa fa-fw fa-hand-stop-o"></i>
+                        Отменить поставку
                     </button>
                 }
             </div>

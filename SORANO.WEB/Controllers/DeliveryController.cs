@@ -326,9 +326,9 @@ namespace SORANO.WEB.Controllers
             {
                 ModelState.RemoveFor(nameof(model.IsSubmitted));
 
-                if (model.IsSubmitted && model.Items.Count == 0)
+                if (model.IsSubmitted && model.ItemsCount == 0)
                 {
-                    ModelState.AddModelError("DeliveryItems", "Необходимо добавить хотя бы одну позицию");
+                    ModelState.AddModelError("ItemsCount", "Необходимо добавить хотя бы одну позицию");
                 }
 
                 if (!ModelState.IsValid)
@@ -361,9 +361,9 @@ namespace SORANO.WEB.Controllers
             {
                 ModelState.RemoveFor(nameof(model.IsSubmitted));
 
-                if (model.IsSubmitted && model.Items.Count == 0)
+                if (model.IsSubmitted && model.ItemsCount == 0)
                 {
-                    ModelState.AddModelError("DeliveryItems", "Необходимо добавить хотя бы одну позицию");
+                    ModelState.AddModelError("ItemsCount", "Необходимо добавить хотя бы одну позицию");
                 }
 
                 if (!ModelState.IsValid)

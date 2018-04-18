@@ -43,106 +43,102 @@
 });
 
 function loadArticleTable() {
-    $('#articles-table').hide(250);
-    $('#progress-bar').animate({ opacity: 1.0 }, 500, function() {
-        $('#articles-table').load('/Article/Table', function () {
-            $('#progress-bar').animate({ opacity: 0.0 }, 250, function () {               
-                $('#articles-table').show(100, function () {
-                    initArticlesDataTable();
-                    var button = $('#toggle-deleted-articles');
-                    var icon = button.find('i');
-                    var showDeleted = $('#article-datatable').data('showdeleted');
-                    if (showDeleted === 'True') {
-                        button.attr('data-original-title', 'Скрыть удалённые артикулы');
-                        icon.removeClass('fa-eye');
-                        icon.addClass('fa-eye-slash');
-                    } else {
-                        button.attr('data-original-title', 'Отобразить удалённые артикулы');
-                        icon.removeClass('fa-eye-slash');
-                        icon.addClass('fa-eye');
-                    }
-                    initTooltip();
-                });
+    $('#articles-table').hide(100);
+    $('#progress-bar').animate({ opacity: 1.0 }, 100, function() {
+        $('#articles-table').load('/Article/Table', function () {              
+            $('#articles-table').show(100, function () {
+                initArticlesDataTable();
+                var button = $('#toggle-deleted-articles');
+                var icon = button.find('i');
+                var showDeleted = $('#article-datatable').data('showdeleted');
+                if (showDeleted === 'True') {
+                    button.attr('data-original-title', 'Скрыть удалённые артикулы');
+                    icon.removeClass('fa-eye');
+                    icon.addClass('fa-eye-slash');
+                } else {
+                    button.attr('data-original-title', 'Отобразить удалённые артикулы');
+                    icon.removeClass('fa-eye-slash');
+                    icon.addClass('fa-eye');
+                }
+                initTooltip();
+                $('#progress-bar').animate({ opacity: 0.0 }, 100);
             });
         });
     });   
 }
 
 function loadArticleTypesTree() {
-    $('#article-types').hide(250);
-    $('#progress-bar').animate({ opacity: 1.0 }, 500, function () {
+    $('#article-types').hide(100);
+    $('#progress-bar').animate({ opacity: 1.0 }, 100, function () {
         var searchTerm = $('#article-types-search-term').val();
         $('#article-types').load('/ArticleType/Tree', { searchTerm: searchTerm }, function () {
-            $('#progress-bar').animate({ opacity: 0.0 }, 250, function () {
-                $('#article-types').show(100, function () {
-                    initArticleTypesTree();
-                    var button = $('#toggle-deleted-article-types');
-                    var icon = button.find('i');
-                    var showDeleted = $('#article-types-tree').data('showdeleted');
-                    if (showDeleted === 'True') {
-                        button.attr('data-original-title', 'Скрыть удалённые типы артикулов');
-                        icon.removeClass('fa-eye');
-                        icon.addClass('fa-eye-slash');
-                    } else {
-                        button.attr('data-original-title', 'Отобразить удалённые типы артикулов');
-                        icon.removeClass('fa-eye-slash');
-                        icon.addClass('fa-eye');
-                    }
-                    initTooltip();
-                });
+            $('#article-types').show(100, function () {
+                initArticleTypesTree();
+                var button = $('#toggle-deleted-article-types');
+                var icon = button.find('i');
+                var showDeleted = $('#article-types-tree').data('showdeleted');
+                if (showDeleted === 'True') {
+                    button.attr('data-original-title', 'Скрыть удалённые типы артикулов');
+                    icon.removeClass('fa-eye');
+                    icon.addClass('fa-eye-slash');
+                } else {
+                    button.attr('data-original-title', 'Отобразить удалённые типы артикулов');
+                    icon.removeClass('fa-eye-slash');
+                    icon.addClass('fa-eye');
+                }
+                initTooltip();
+                $('#progress-bar').animate({ opacity: 0.0 }, 100);
             });
         });
     });
 }
 
 function toggleDeletedArticles() {
-    $('#articles-table').hide(250);
-    $('#progress-bar').animate({ opacity: 1.0 }, 500, function () {
-        $('#articles-table').load('/Article/ToggleDeleted', function () {
-            $('#progress-bar').animate({ opacity: 0.0 }, 250, function () {             
-                $('#articles-table').show(100, function () {
-                    initArticlesDataTable();
-                    var button = $('#toggle-deleted-articles');
-                    var icon = button.find('i');
-                    var showDeleted = $('#article-datatable').data('showdeleted');
-                    if (showDeleted === 'True') {
-                        button.attr('data-original-title', 'Скрыть удалённые артикулы');
-                        icon.removeClass('fa-eye');
-                        icon.addClass('fa-eye-slash');
-                    } else {
-                        button.attr('data-original-title', 'Отобразить удалённые артикулы');
-                        icon.removeClass('fa-eye-slash');
-                        icon.addClass('fa-eye');
-                    }
-                    initTooltip();
-                });
+    $('#articles-table').hide(100);
+    $('#progress-bar').animate({ opacity: 1.0 }, 100, function () {
+        $('#articles-table').load('/Article/ToggleDeleted', function () {             
+            $('#articles-table').show(100, function () {
+                initArticlesDataTable();
+                var button = $('#toggle-deleted-articles');
+                var icon = button.find('i');
+                var showDeleted = $('#article-datatable').data('showdeleted');
+                if (showDeleted === 'True') {
+                    button.attr('data-original-title', 'Скрыть удалённые артикулы');
+                    icon.removeClass('fa-eye');
+                    icon.addClass('fa-eye-slash');
+                } else {
+                    button.attr('data-original-title', 'Отобразить удалённые артикулы');
+                    icon.removeClass('fa-eye-slash');
+                    icon.addClass('fa-eye');
+                }
+                initTooltip();
+                $('#progress-bar').animate({ opacity: 0.0 }, 100);
             });
         });
     });
 }
 
 function toggleDeletedArticleTypes() {
-    $('#article-types').hide(250);
-    $('#progress-bar').animate({ opacity: 1.0 }, 500, function () {
+    $('#article-types').hide(100);
+    $('#progress-bar').animate({ opacity: 1.0 }, 100, function () {
         var searchTerm = $('#article-types-search-term').val();
         $('#article-types').load('/ArticleType/ToggleDeleted', { searchTerm: searchTerm }, function () {
-            $('#progress-bar').animate({ opacity: 0.0 }, 250, function () {
-                $('#article-types').show(100, function () {
-                    initArticleTypesTree();
-                    var button = $('#toggle-deleted-article-types');
-                    var icon = button.find('i');
-                    var showDeleted = $('#article-types-tree').data('showdeleted');
-                    if (showDeleted === 'True') {
-                        button.attr('data-original-title', 'Скрыть удалённые типы артикулов');
-                        icon.removeClass('fa-eye');
-                        icon.addClass('fa-eye-slash');
-                    } else {
-                        button.attr('data-original-title', 'Отобразить удалённые типы артикулов');
-                        icon.removeClass('fa-eye-slash');
-                        icon.addClass('fa-eye');
-                    }
-                    initTooltip();
-                });
+            $('#article-types').show(100, function () {
+                initArticleTypesTree();
+                var button = $('#toggle-deleted-article-types');
+                var icon = button.find('i');
+                var showDeleted = $('#article-types-tree').data('showdeleted');
+                if (showDeleted === 'True') {
+                    button.attr('data-original-title', 'Скрыть удалённые типы артикулов');
+                    icon.removeClass('fa-eye');
+                    icon.addClass('fa-eye-slash');
+                } else {
+                    button.attr('data-original-title', 'Отобразить удалённые типы артикулов');
+                    icon.removeClass('fa-eye-slash');
+                    icon.addClass('fa-eye');
+                }
+                initTooltip();
+                $('#progress-bar').animate({ opacity: 0.0 }, 100);
             });
         });
     });

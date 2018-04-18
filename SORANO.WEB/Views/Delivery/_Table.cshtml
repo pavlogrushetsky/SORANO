@@ -102,15 +102,15 @@
                         <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
                     </a>
                     <a hide-if="@(!delivery.CanBeDeleted || Model.Mode != DeliveryTableMode.DeliveryIndex)"
-                        class="btn btn-xs btn-danger"
+                        class="btn btn-xs btn-warning"
                         data-toggle="tooltip"
                         data-placement="bottom"
-                        data-original-title="Удалить поставку"
+                        data-original-title="Отменить поставку"
                         title=""
                         asp-controller="Delivery"
                         asp-action="Delete"
                         asp-route-id="@delivery.ID">
-                        <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
+                        <i class="fa fa-fw fa-hand-stop-o" aria-hidden="true"></i>
                     </a>                        
                 </td>               
             </tr>

@@ -44,6 +44,8 @@ namespace SORANO.WEB.ViewModels.Delivery
 
         public bool AllowCreation { get; set; }
 
+        public int ItemsCount { get; set; }
+
         public IList<DeliveryItemViewModel> Items { get; set; } = new List<DeliveryItemViewModel>();
     }
 }
