@@ -24,7 +24,7 @@ namespace SORANO.BLL.Extensions
                 TotalDiscount = model.TotalDiscount,
                 TotalDiscountedPrice = model.TotalDiscountedPrice,
                 IsSubmitted = model.IsSubmitted,
-                Items = model.Items.Where(di => !di.IsDeleted).Select(i => i.ToDto())
+                Items = model.Items?.Where(di => !di.IsDeleted).Select(i => i.ToDto())
             };
 
             dto.MapDetails(model);
@@ -49,15 +49,25 @@ namespace SORANO.BLL.Extensions
                 TotalDiscount = dto.TotalDiscount,
                 TotalDiscountedPrice = dto.TotalDiscountedPrice,
                 IsSubmitted = dto.IsSubmitted,
-                Items = dto.Items.Select(i => i.ToEntity()).ToList(),
-                Recommendations = dto.Recommendations.Select(r => r.ToEntity()).ToList(),
-                Attachments = dto.Attachments.Select(a => a.ToEntity()).ToList()
+                Items = dto.Items?.Select(i => i.ToEntity()).ToList(),
+                Recommendations = dto.Recommendations?.Select(r => r.ToEntity()).ToList(),
+                Attachments = dto.Attachments?.Select(a => a.ToEntity()).ToList()
             };
 
             if (!string.IsNullOrEmpty(dto.MainPicture?.FullPath))
                 entity.Attachments.Add(dto.MainPicture.ToEntity());
 
             return entity;
+        }
+
+        public static DeliveryItemsSummaryDto GetSummary(this Delivery delivery)
+        {
+            return new DeliveryItemsSummaryDto
+            {
+                TotalDiscount = delivery.TotalDiscount,
+                TotalGrossPrice = delivery.TotalGrossPrice,
+                TotalDiscountedPrice = delivery.TotalDiscountedPrice
+            };
         }
 
         public static void UpdateFields(this Delivery existentDelivery, Delivery newDelivery)
@@ -70,9 +80,6 @@ namespace SORANO.BLL.Extensions
             existentDelivery.IsSubmitted = newDelivery.IsSubmitted;
             existentDelivery.PaymentDate = newDelivery.PaymentDate;
             existentDelivery.SupplierID = newDelivery.SupplierID;
-            existentDelivery.TotalDiscount = newDelivery.TotalDiscount;
-            existentDelivery.TotalDiscountedPrice = newDelivery.TotalDiscountedPrice;
-            existentDelivery.TotalGrossPrice = newDelivery.TotalGrossPrice;
         }
     }
 }

@@ -63,6 +63,7 @@ namespace SORANO.WEB
             services.AddTransient<IAttachmentService, AttachmentService>();
             services.AddTransient<IClientService, ClientService>();
             services.AddTransient<IDeliveryService, DeliveryService>();
+            services.AddTransient<IDeliveryItemService, DeliveryItemService>();
             services.AddTransient<IGoodsService, GoodsService>();
             services.AddTransient<ISaleService, SaleService>();
             services.AddTransient<IExceptionService, ExceptionService>();

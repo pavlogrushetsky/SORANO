@@ -70,39 +70,39 @@ namespace SORANO.BLL.Services
 
             location.UpdateModifiedFields(userId);
 
-            foreach (var item in entity.Items)
-            {
-                item.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-                item.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-                item.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            }
+            //foreach (var item in entity.Items)
+            //{
+            //    item.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            //    item.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            //    item.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            //}
 
-            entity.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            entity.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            entity.Recommendations?.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            entity.Attachments?.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-            if (entity.IsSubmitted)
-            {
-                foreach (var item in entity.Items)
-                {
-                    for (var i = 0; i < item.Quantity; i++)
-                    {
-                        var goods = new Goods();
+            //if (entity.IsSubmitted)
+            //{
+            //    foreach (var item in entity.Items)
+            //    {
+            //        for (var i = 0; i < item.Quantity; i++)
+            //        {
+            //            var goods = new Goods();
 
-                        goods.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            //            goods.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-                        var storage = new Storage
-                        {
-                            LocationID = delivery.LocationID,
-                            FromDate = DateTime.Now
-                        };
+            //            var storage = new Storage
+            //            {
+            //                LocationID = delivery.LocationID,
+            //                FromDate = DateTime.Now
+            //            };
 
-                        storage.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            //            storage.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
 
-                        goods.Storages.Add(storage);
-                        item.Goods.Add(goods);
-                    }
-                }
-            }
+            //            goods.Storages.Add(storage);
+            //            item.Goods.Add(goods);
+            //        }
+            //    }
+            //}
 
             var saved = UnitOfWork.Get<Delivery>().Add(entity);
 
@@ -125,8 +125,6 @@ namespace SORANO.BLL.Services
 
             existentEntity.UpdateFields(entity);
             existentEntity.UpdateModifiedFields(userId);
-
-            UpdateDeliveryItems(entity, existentEntity, userId);
 
             if (entity.IsSubmitted)
             {
@@ -172,9 +170,15 @@ namespace SORANO.BLL.Services
             if (existentDelivery.IsSubmitted)
                 return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
-            existentDelivery.UpdateDeletedFields(userId);
+            foreach (var deliveryItem in existentDelivery.Items.ToList())
+            {
+                UnitOfWork.Get<DeliveryItem>().Delete(deliveryItem);
+            }
 
-            UnitOfWork.Get<Delivery>().Update(existentDelivery);
+            existentDelivery.Attachments?.ToList().ForEach(a => UnitOfWork.Get<Attachment>().Delete(a));
+            existentDelivery.Recommendations?.ToList().ForEach(a => UnitOfWork.Get<Recommendation>().Delete(a));
+
+            UnitOfWork.Get<Delivery>().Delete(existentDelivery);
 
             await UnitOfWork.SaveAsync();
 

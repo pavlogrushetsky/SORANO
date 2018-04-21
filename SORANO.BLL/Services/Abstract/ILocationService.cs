@@ -9,5 +9,7 @@ namespace SORANO.BLL.Services.Abstract
         Task<ServiceResponse<Dictionary<LocationDto, int>>> GetLocationsForArticleAsync(int? articleId, int? except);
 
         Task<ServiceResponse<IEnumerable<LocationDto>>> GetAllAsync(bool withDeleted, string searchTerm, int currentLocationId);
+
+        Task<ServiceResponse<LocationDto>> GetDefaultLocationAsync();
     }
 }

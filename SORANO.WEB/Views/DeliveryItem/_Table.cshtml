@@ -1,78 +1,106 @@
 ﻿@model DeliveryItemTableViewModel
 
+@{
+    var forDelivery = Model.Mode == DeliveryItemTableMode.CreateDelivery
+                      || Model.Mode == DeliveryItemTableMode.DeliveryDetails;
+
+    var forArticle = Model.Mode == DeliveryItemTableMode.ArticleDetails;
+    var forCreateDelivery = Model.Mode == DeliveryItemTableMode.CreateDelivery;
+    var notForCreateDelivery = !forCreateDelivery;
+    var noSummary = Model.Summary == null;
+    var returnUrl = Url.Action("Update", "Delivery", new {id = Model.DeliveryId});
+}
+
 <table id="items-datatable" class="table table-striped table-hover">
     <thead>
-    <tr role="row" class="search-row">         
-        @if (Model.Mode != DeliveryItemTableMode.DeliveryDetails)
-        {
-            <th><input type="text" class="form-control input-sm" placeholder="Дата" /></th>
-            <th><input type="text" class="form-control input-sm" placeholder="Поставка" /></th>
-        }
-        @if (Model.Mode != DeliveryItemTableMode.ArticleDetails)
-        {
-            <th><input type="text" class="form-control input-sm" placeholder="Артикул" /></th>
-        } 
-        <th><input type="text" class="form-control input-sm" placeholder="Кол-во, шт."/></th>
-        <th><input type="text" class="form-control input-sm" placeholder="Цена"/></th>
-        <th><input type="text" class="form-control input-sm" placeholder="Без скидки"/></th>
-        <th><input type="text" class="form-control input-sm" placeholder="Скидка"/></th>
-        <th><input type="text" class="form-control input-sm" placeholder="Сумма"/></th>
-    </tr>
-    <tr role="row">          
-        @if (Model.Mode != DeliveryItemTableMode.DeliveryDetails)
-        {
-            <th><i class="fa fa-fw fa-calendar"></i>Дата</th>
-            <th><i class="fa fa-fw fa-cart-arrow-down"></i>Поставка</th>
-        } 
-        @if (Model.Mode != DeliveryItemTableMode.ArticleDetails)
-        {
-            <th><i class="fa fa-fw fa-barcode"></i>Артикул</th>
-        } 
-        <th><i class="fa fa-fw fa-hashtag"></i>Кол-во, шт.</th>
-        <th><i class="fa fa-fw fa-money"></i>Цена</th>
-        <th><i class="fa fa-fw fa-money"></i>Без скидки</th>
-        <th><i class="fa fa-fw fa-money"></i>Скидка</th>
-        <th><i class="fa fa-fw fa-money"></i>Сумма</th>
-    </tr>
+        <tr role="row" class="search-row">
+            <th hide-if="@notForCreateDelivery"><input type="text" class="form-control input-sm" placeholder="№" /></th>
+            <th hide-if="@forDelivery"><input type="text" class="form-control input-sm" placeholder="Дата" /></th>
+            <th hide-if="@forDelivery"><input type="text" class="form-control input-sm" placeholder="Поставка" /></th>
+            <th hide-if="@forArticle"><input type="text" class="form-control input-sm" placeholder="Товар" /></th>
+            <th><input type="text" class="form-control input-sm" placeholder="Кол-во, шт." /></th>
+            <th><input type="text" class="form-control input-sm" placeholder="Цена" /></th>
+            <th><input type="text" class="form-control input-sm" placeholder="Без скидки" /></th>
+            <th><input type="text" class="form-control input-sm" placeholder="Скидка" /></th>
+            <th><input type="text" class="form-control input-sm" placeholder="Сумма" /></th>
+            <th hide-if="@notForCreateDelivery"></th>
+        </tr>
+        <tr role="row">
+            <th hide-if="@notForCreateDelivery"><i class="fa fa-fw fa-hashtag"></i>№</th>
+            <th hide-if="@forDelivery"><i class="fa fa-fw fa-calendar"></i>Дата</th>
+            <th hide-if="@forDelivery"><i class="fa fa-fw fa-cart-arrow-down"></i>Поставка</th>
+            <th hide-if="@forArticle"><i class="fa fa-fw fa-barcode"></i>Товар</th>
+            <th><i class="fa fa-fw fa-hashtag"></i>Кол-во, шт.</th>
+            <th><i class="fa fa-fw fa-money"></i>Цена</th>
+            <th><i class="fa fa-fw fa-money"></i>Без скидки</th>
+            <th><i class="fa fa-fw fa-money"></i>Скидка</th>
+            <th><i class="fa fa-fw fa-money"></i>Сумма</th>
+            <th hide-if="@notForCreateDelivery">Действия</th>
+        </tr>
     </thead>
+    <tfoot hide-if="@noSummary">
+        <tr style="font-weight: bold;">
+            <td hide-if="@notForCreateDelivery"></td>
+            <td hide-if="@forDelivery"></td>
+            <td hide-if="@forDelivery"></td>
+            <td hide-if="@forArticle"></td>
+            <td></td>
+            <td><b>Всего:</b></td>
+            <td>@Model.Summary?.TotalGrossPrice</td>
+            <td>@Model.Summary?.TotalDiscount</td>
+            <td>@Model.Summary?.TotalDiscountedPrice</td>
+            <td hide-if="@notForCreateDelivery"></td>
+        </tr>
+    </tfoot>
     <tbody>
         @foreach (var item in Model.Items)
         {
-            <tr>                  
-                @if (Model.Mode != DeliveryItemTableMode.DeliveryDetails)
-                {
-                    <td>@item.DeliveryDate</td>
-                    <td>
-                        <a asp-controller="Delivery"
-                           asp-action="Details"
-                           asp-route-id="@item.DeliveryID"
-                           data-toggle="tooltip"
-                           data-placement="bottom"
-                           data-original-title="Просмотреть информацию о поставке"
-                           title="">
-                            @item.DeliveryBillNumber
-                        </a>
-                    </td>
-                }
-                @if (Model.Mode != DeliveryItemTableMode.ArticleDetails)
-                {
-                    <td>
-                        <a asp-controller="Article"
-                           asp-action="Details"
-                           asp-route-id="@item.ArticleID"
-                           data-toggle="tooltip"
-                           data-placement="bottom"
-                           data-original-title="Просмотреть информацию об артикуле"
-                           title="">
-                            @item.ArticleName
-                        </a>
-                    </td>
-                } 
+            <tr>
+                <td hide-if="@notForCreateDelivery">@item.Number</td>
+                <td hide-if="@forDelivery">@item.DeliveryDate</td>
+                <td hide-if="@forDelivery">
+                    <a asp-controller="Delivery"
+                       asp-action="Details"
+                       asp-route-id="@item.DeliveryID"
+                       tooltip="Просмотреть информацию о поставке"
+                       tooltip-placement="bottom">
+                        @item.DeliveryBillNumber
+                    </a>
+                </td>
+                <td hide-if="@forArticle">
+                    <a asp-controller="Article"
+                       asp-action="Details"
+                       asp-route-id="@item.ArticleID"
+                       tooltip="Просмотреть информацию об артикуле"
+                       tooltip-placement="bottom">
+                        @item.ArticleName
+                    </a>
+                </td>
                 <td>@item.Quantity</td>
-                <td>@item.UnitPrice @item.Currency</td>
-                <td>@item.GrossPrice @item.Currency</td>
-                <td>@item.Discount @item.Currency</td>
-                <td>@item.DiscountedPrice @item.Currency</td>
+                <td>@item.UnitPrice <span hide-if="@forCreateDelivery">@item.Currency</span></td>
+                <td>@item.GrossPrice <span hide-if="@forCreateDelivery">@item.Currency</span></td>
+                <td>@item.Discount <span hide-if="@forCreateDelivery">@item.Currency</span></td>
+                <td>@item.DiscountedPrice <span hide-if="@forCreateDelivery">@item.Currency</span></td>
+                <td hide-if="@notForCreateDelivery" nowrap="nowrap">
+                    <button asp-controller="Delivery"
+                            asp-action="UpdateItem"
+                            asp-route-deliveryItemId="@item.ID"
+                            asp-route-returnUrl="@returnUrl"
+                            tooltip="Редактировать позицию"
+                            tooltip-placement="bottom"
+                            class="btn btn-xs btn-default">
+                        <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
+                    </button>
+                    <button asp-controller="Delivery"
+                            asp-action="DeleteItem"
+                            asp-route-deliveryItemId="@item.ID"
+                            asp-route-returnUrl="@returnUrl"
+                            tooltip="Удалить позицию"
+                            tooltip-placement="bottom"
+                            class="btn btn-xs btn-danger">
+                        <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
+                    </button>
+                </td>
             </tr>
         }
     </tbody>

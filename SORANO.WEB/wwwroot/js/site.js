@@ -415,10 +415,14 @@ function initDeliveriesDataTable() {
     });
 }
 
-function isNumeric(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
+function isNumeric(value) {
+    return !isNaN(parseFloat(value)) && isFinite(value);
+}
+
+function toDecimal(value) {
+    return parseFloat(value.replace(',', '.'));
 }
 
 function formatDecimal(value) {
-    return parseFloat(value).toFixed(2).toString().replace(/,/g, '');
+    return parseFloat(value).toFixed(2).toString().replace(',', '').replace('.', ',');
 }

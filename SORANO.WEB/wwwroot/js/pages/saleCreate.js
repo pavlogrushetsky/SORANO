@@ -114,13 +114,14 @@
         button.tooltip('hide');
 
         var input = button.closest('tr').find('input.sale-item-price');
-        var price = input.val();
-        input.val(formatDecimal(price));
+        var price = toDecimal(input.val());
+        var formattedPrice = formatDecimal(price);
+        input.val(formattedPrice);
 
         var parameters = {
             saleId: $('#ID').val(),
             goodsId: button.data('goodsid'),
-            price: price
+            price: formattedPrice
         }
 
         $.ajax({
@@ -168,14 +169,14 @@
         button.tooltip('hide');
 
         var priceInput = button.closest('tr').find('input.sale-items-group-price');
-        var price = priceInput.val();
+        var price = toDecimal(priceInput.val());
         var formattedPrice = formatDecimal(price);
         priceInput.val(formattedPrice);
 
         var parameters = {
             saleId: $('#ID').val(),
             goodsIds: button.data('goodsids'),
-            price: price
+            price: formattedPrice
         }
 
         $.ajax({
@@ -222,7 +223,7 @@
         button.tooltip('hide');
 
         var input = button.closest('tr').find('input.sale-item-price');
-        input.val('0.00');
+        input.val('0,00');
 
         var parameters = {
             saleId: $('#ID').val(),
@@ -270,7 +271,7 @@
         button.tooltip('hide');
 
         var priceInput = button.closest('tr').find('input.sale-items-group-price');
-        var price = '0.00';
+        var price = '0,00';
         priceInput.val(price);
 
         var parameters = {
@@ -329,13 +330,13 @@
             $('#SelectedCurrency').val('₴');
         } else if (value === '1') {
             $('#DollarRate').prop('readonly', false);
-            $('#DollarRate').val('0.00');
+            $('#DollarRate').val('0,00');
             $('#EuroRate').val('');
             $('#EuroRate').prop('readonly', true);
             $('#SelectedCurrency').val('$');
         } else if (value === '2') {
             $('#EuroRate').prop('readonly', false);
-            $('#EuroRate').val('0.00');
+            $('#EuroRate').val('0,00');
             $('#DollarRate').val('');
             $('#DollarRate').prop('readonly', true);
             $('#SelectedCurrency').val('€');

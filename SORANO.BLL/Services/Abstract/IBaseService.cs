@@ -10,9 +10,9 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<ServiceResponse<T>> GetAsync(int id);
 
-        Task<ServiceResponse<int>> CreateAsync(T article, int userId);      
+        Task<ServiceResponse<int>> CreateAsync(T model, int userId);      
 
-        Task<ServiceResponse<T>> UpdateAsync(T article, int userId);
+        Task<ServiceResponse<T>> UpdateAsync(T model, int userId);
 
         Task<ServiceResponse<int>> DeleteAsync(int id, int userId);
     }

@@ -5,8 +5,6 @@ namespace SORANO.WEB.ViewModels.DeliveryItem
 {
     public class DeliveryItemViewModel : BaseCreateUpdateViewModel
     {
-        public int Number { get; set; }
-
         [Display(Name = "Артикул *")]
         public int ArticleID { get; set; }
 
@@ -38,5 +36,9 @@ namespace SORANO.WEB.ViewModels.DeliveryItem
         public string ReturnPath { get; set; }
 
         public string Currency { get; set; }
+
+        public bool CanBeDeleted { get; set; }
+
+        public int Number { get; set; }
     }
 }

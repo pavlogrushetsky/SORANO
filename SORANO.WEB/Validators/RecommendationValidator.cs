@@ -8,8 +8,8 @@ namespace SORANO.WEB.Validators
         public RecommendationValidator()
         {
             RuleFor(r => r.Value)
-                .Matches(@"^[0-9]+(\.[0-9]{1,2})?$")
-                .WithMessage("Значение должно быть в формате x.xx");
+                .Matches(@"^[0-9]+(\,[0-9]{1,2})?$")
+                .WithMessage("Значение должно быть в формате #,##");
 
             RuleFor(r => r.Comment)
                 .NotEmpty()

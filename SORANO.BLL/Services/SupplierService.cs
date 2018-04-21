@@ -126,5 +126,15 @@ namespace SORANO.BLL.Services
             response.Result = searched.Where(t => !t.IsDeleted).Select(t => t.ToDto());
             return response;
         }
+
+        public async Task<ServiceResponse<SupplierDto>> GetDefaultSupplierAsync()
+        {
+            var suppliers = await UnitOfWork.Get<Supplier>().GetAllAsync();
+
+            var defaultSupplier = suppliers.FirstOrDefault(l => !l.IsDeleted)?.ToDto();
+            return defaultSupplier != null
+                ? new SuccessResponse<SupplierDto>(defaultSupplier)
+                : new ServiceResponse<SupplierDto>(ServiceResponseStatus.NotFound);
+        }
     }
 }

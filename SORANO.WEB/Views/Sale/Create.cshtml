@@ -102,7 +102,7 @@
                     <span class="input-group-addon"><i class="fa fa-fw fa-address-book"></i></span>
                     <select class="form-control input-sm select-client"
                             asp-for="ClientID"></select>
-                    <span hide-if="@(!Model.AllowCreation)"
+                    <span hide-if="@(!Model.AllowCreation)" 
                           class="input-group-btn">
                         <button class="btn btn-default btn-sm"
                                 asp-action="CreateClient"
@@ -145,7 +145,7 @@
                                         <input type="radio" name="select_currency" id="select_currency_uah" value="0" style="margin-right: 1px;" />
                                         <span style="font-weight: bold;">&#8372;</span>
                                     </span>
-                                    <input type="text" readonly="readonly" class="form-control input-sm" value="1.00" />
+                                    <input type="text" readonly="readonly" class="form-control input-sm" value="1,00" />
                                 </div>
                             </td>
                             <td style="width: 33%; padding: 0; padding-right: 5px;">
@@ -212,7 +212,7 @@
                                 <i class="fa fa-fw fa-eye" style="color: #2c3e50;"></i>
                             </button>
                         </div>
-                    </div>
+                    </div> 
                 </div>
                 <div class="panel-body" id="sale-items-groups">
                     @await Component.InvokeAsync("SaleItems", new { saleId = Model.ID, locationId = Model.LocationID, selectedOnly = false })

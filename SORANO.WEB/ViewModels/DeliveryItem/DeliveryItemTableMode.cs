@@ -3,6 +3,7 @@
     public enum DeliveryItemTableMode
     {
         DeliveryDetails,
-        ArticleDetails
+        ArticleDetails,
+        CreateDelivery
     }
 }

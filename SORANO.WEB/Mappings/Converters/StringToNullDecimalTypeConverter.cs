@@ -12,7 +12,7 @@ namespace SORANO.WEB.Mappings.Converters
                 return null;
             }
 
-            decimal.TryParse(source, NumberStyles.Any, new CultureInfo("en-US"), out var result);
+            decimal.TryParse(source, NumberStyles.Any, new CultureInfo("ru-RU"), out var result);
 
             return result;
         }

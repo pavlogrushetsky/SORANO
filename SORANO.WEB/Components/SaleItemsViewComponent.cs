@@ -27,7 +27,7 @@ namespace SORANO.WEB.Components
                 Summary = new SaleItemsSummaryViewModel
                 {
                     SelectedCount = 0,
-                    TotalPrice = "0.00"
+                    TotalPrice = "0,00"
                 }
             };         
 

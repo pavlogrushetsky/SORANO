@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using AutoMapper;
 using SORANO.BLL.Dtos;
@@ -278,6 +279,10 @@ namespace SORANO.WEB.Mappings
 
             CreateMap<DeliveryDto, DeliveryCreateUpdateViewModel>()
                 .ForMember(
+                    dest => dest.ItemsCount,
+                    source => source.MapFrom(s => s.Items.Count())
+                )
+                .ForMember(
                     dest => dest.SelectedCurrency,
                     source => source.MapFrom(s => s.DollarRate.HasValue ? "$" : s.EuroRate.HasValue ? "€" : "₴")
                 );
@@ -331,6 +336,7 @@ namespace SORANO.WEB.Mappings
                     dest => dest.Items,
                     source => source.MapFrom(s => s)
                 );
+            CreateMap<DeliveryItemsSummaryDto, DeliveryItemsSummaryViewModel>();
             CreateMap<DeliveryItemViewModel, DeliveryItemDto>();
 
             #endregion
@@ -398,7 +404,7 @@ namespace SORANO.WEB.Mappings
                 )
                 .ForMember(
                     dest => dest.TotalPrice,
-                    source => source.MapFrom(s => s.TotalPrice.HasValue ? s.TotalPrice.Value.ToString("0.00") : "0.00")
+                    source => source.MapFrom(s => s.TotalPrice.HasValue ? s.TotalPrice.Value.ToString("0.00", new CultureInfo("ru-RU")) : "0,00")
                 )
                 .ForMember(
                     dest => dest.SelectedCurrency,

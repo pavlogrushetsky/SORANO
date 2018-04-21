@@ -22,9 +22,7 @@
         errorLoadingText: 'Невозможно загрузить результаты поиска',
         placeholderText: 'Поставщик',
         url: '/Supplier/GetSuppliers'
-    });
-
-    initDeliveryItemsDataTable();
+    });   
 
     $('.submit-delivery').on('click', function () {
         $('#IsSubmitted').val(true);
@@ -94,13 +92,13 @@
             $('#SelectedCurrency').val('₴');
         } else if (value === '1') {
             $('#DollarRate').prop('readonly', false);
-            $('#DollarRate').val('0.00');
+            $('#DollarRate').val('0,00');
             $('#EuroRate').val('');
             $('#EuroRate').prop('readonly', true);
             $('#SelectedCurrency').val('$');
         } else if (value === '2') {
             $('#EuroRate').prop('readonly', false);
-            $('#EuroRate').val('0.00');
+            $('#EuroRate').val('0,00');
             $('#DollarRate').val('');
             $('#DollarRate').prop('readonly', true);
             $('#SelectedCurrency').val('€');
@@ -109,13 +107,24 @@
 
     updateCurrencyRates();
 
-    updateTotalGrossPrice();
-    updateTotalDiscount();
-    updateTotalDiscountPrice();
+    loadDeliveryItemsTable();
 });
 
+function loadDeliveryItemsTable() {
+    $('#delivery-items-table').hide(100);
+    $('#progress-bar').animate({ opacity: 1.0 }, 100, function () {
+        $('#delivery-items-table').load('/DeliveryItem/Table', { deliveryId: $("#ID").val() }, function () {
+            $('#delivery-items-table').show(100, function () {
+                initDeliveryItemsDataTable();
+                initTooltip();
+                $('#progress-bar').animate({ opacity: 0.0 }, 100);
+            });
+        });
+    });
+}
+
 function initDeliveryItemsDataTable() {
-    var table = $("#delivery-items-datatable").DataTable({
+    var table = $("#items-datatable").DataTable({
         responsive: true,
         "autoWidth": false,
         "scrollX": false,
@@ -138,7 +147,7 @@ function initDeliveryItemsDataTable() {
     });
 
     table.columns().eq(0).each(function (colIdx) {
-        $('input', $('#delivery-items-datatable th')[colIdx]).on('keyup change', function () {
+        $('input', $('#items-datatable th')[colIdx]).on('keyup change', function () {
             table
                 .column(colIdx)
                 .search(this.value)
@@ -172,40 +181,4 @@ function updateCurrencyRates() {
         $('#select_currency_usd').prop('checked', false);
         $('#select_currency_eur').prop('checked', true);
     }
-}
-
-function updateTotalGrossPrice() {
-    var totalGrossPrice = 0;
-    $('.delivery-item-grossprice').each(function() {
-        var value = $(this).val();
-        if (isNumeric(value)) {
-            totalGrossPrice += parseFloat(value);
-        }
-    });
-    $('#TotalGrossPrice').val(formatDecimal(totalGrossPrice));
-    $('#delivery_totalgrossprice').text(formatDecimal(totalGrossPrice));
-}
-
-function updateTotalDiscount() {
-    var totalDiscount = 0;
-    $('.delivery-item-discount').each(function() {
-        var value = $(this).val();
-        if (isNumeric(value)) {
-            totalDiscount += parseFloat(value);
-        }
-    });
-    $('#TotalDiscount').val(formatDecimal(totalDiscount));
-    $('#delivery_totaldiscount').text(formatDecimal(totalDiscount));
-}
-
-function updateTotalDiscountPrice() {
-    var totalDiscountPrice = 0;
-    $('.delivery-item-discountprice').each(function () {
-        var value = $(this).val();
-        if (isNumeric(value)) {
-            totalDiscountPrice += parseFloat(value);
-        }
-    });
-    $('#TotalDiscountedPrice').val(formatDecimal(totalDiscountPrice));
-    $('#delivery_totaldiscountprice').text(formatDecimal(totalDiscountPrice));
 }

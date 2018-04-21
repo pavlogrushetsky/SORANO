@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -113,7 +114,7 @@ namespace SORANO.WEB.Controllers
                         {
                             ArticleId = first.DeliveryItem.Article.ID,
                             ArticleName = first.DeliveryItem.Article.Name,
-                            Price = group.Key.Price.HasValue ? group.Key.Price.Value.ToString("0.00") : "0.00",
+                            Price = group.Key.Price?.ToString("0.00", new CultureInfo("ru-RU")) ?? "0,00",
                             Quantity = group.Count()
                         };
 
@@ -328,11 +329,11 @@ namespace SORANO.WEB.Controllers
         {
             try
             {
-                var isPriceValid = !string.IsNullOrEmpty(price) && Regex.IsMatch(price, @"^\d+(\.\d{0,2})?$");
-                decimal? validPrice;
+                var isPriceValid = !string.IsNullOrEmpty(price) && Regex.IsMatch(price, @"^\d+(\,\d{0,2})?$");
+                decimal validPrice;
                 if (isPriceValid)
                 {
-                    validPrice = Convert.ToDecimal(price);
+                    decimal.TryParse(price, NumberStyles.Any, new CultureInfo("ru-RU"), out validPrice);
                 }
                 else
                 {
@@ -369,11 +370,11 @@ namespace SORANO.WEB.Controllers
         {
             try
             {
-                var isPriceValid = !string.IsNullOrEmpty(price) && Regex.IsMatch(price, @"^\d+(\.\d{0,2})?$");
-                decimal? validPrice;
+                var isPriceValid = !string.IsNullOrEmpty(price) && Regex.IsMatch(price, @"^\d+(\,\d{0,2})?$");
+                decimal validPrice;
                 if (isPriceValid)
                 {
-                    validPrice = Convert.ToDecimal(price);
+                    decimal.TryParse(price, NumberStyles.Any, new CultureInfo("ru-RU"), out validPrice);
                 }
                 else
                 {

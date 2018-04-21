@@ -1,16 +1,16 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using SORANO.BLL.Dtos;
+using SORANO.BLL.Services;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure;
-using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels.Attachment;
-using SORANO.WEB.ViewModels.Delivery;
 using SORANO.WEB.ViewModels.DeliveryItem;
 
 namespace SORANO.WEB.Controllers
@@ -19,19 +19,32 @@ namespace SORANO.WEB.Controllers
     [CheckUser]
     public class DeliveryItemController : EntityBaseController<DeliveryItemViewModel>
     {
+        private readonly IDeliveryItemService _deliveryItemService;
+        private readonly IMapper _mapper;
+
         public DeliveryItemController(IUserService userService,
             IExceptionService exceptionService,
             IHostingEnvironment environment,
             IAttachmentTypeService attachmentTypeService,
+            IDeliveryItemService deliveryItemService,
             IAttachmentService attachmentService,
-            IMemoryCache memoryCache) : base(userService, exceptionService, environment, attachmentTypeService, attachmentService, memoryCache)
+            IMemoryCache memoryCache,
+            IMapper mapper) : base(userService, exceptionService, environment, attachmentTypeService, attachmentService, memoryCache)
         {
+            _deliveryItemService = deliveryItemService;
+            _mapper = mapper;
         }
 
         #region GET Actions
 
+        [HttpPost]
+        public IActionResult Table(int deliveryId)
+        {
+            return ViewComponent("DeliveryItemsTable", new { deliveryId });
+        }
+
         [HttpGet]
-        public async Task<IActionResult> Create(string returnUrl)
+        public async Task<IActionResult> Create(string returnUrl, int deliveryId)
         {
             return await TryGetActionResultAsync(async () =>
             {
@@ -53,10 +66,11 @@ namespace SORANO.WEB.Controllers
                         MainPicture = new MainPictureViewModel(),
                         ReturnPath = returnUrl,
                         Quantity = 1,
-                        UnitPrice = "0.00",
-                        GrossPrice = "0.00",
-                        Discount = "0.00",
-                        DiscountedPrice = "0.00"
+                        UnitPrice = "0,00",
+                        GrossPrice = "0,00",
+                        Discount = "0,00",
+                        DiscountedPrice = "0,00",
+                        DeliveryID = deliveryId
                     };
                 }
 
@@ -69,7 +83,31 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Update(int number, string returnUrl)
+        public async Task<IActionResult> Delete(string returnUrl, int deliveryItemId)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _deliveryItemService.GetAsync(deliveryItemId);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанную позицию поставки.";
+                    return Redirect(returnUrl);
+                }
+
+                var model = _mapper.Map<DeliveryItemViewModel>(result.Result);
+                model.ReturnPath = returnUrl;
+
+                return View(model);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return Redirect(returnUrl);
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Update(string returnUrl, int deliveryItemId)
         {
             return await TryGetActionResultAsync(async () =>
             {
@@ -84,18 +122,20 @@ namespace SORANO.WEB.Controllers
                 {
                     model = cachedForCreateArticle;
                 }
-                else if (TryGetCached(out var cachedItem, CacheKeys.DeliveryItemCacheKey, CacheKeys.DeliveryItemCacheValidKey))
-                {
-                    cachedItem.Number = number;
-                    cachedItem.ReturnPath = returnUrl;
-                    cachedItem.IsUpdate = true;
-
-                    model = cachedItem;
-                }
                 else
                 {
-                    TempData["Error"] = "Не удалось получить позицию поставки.";
-                    return Redirect(returnUrl);
+                    var result = await _deliveryItemService.GetAsync(deliveryItemId);
+
+                    if (result.Status != ServiceResponseStatus.Success)
+                    {
+                        TempData["Error"] = "Не удалось получить позицию поставки.";
+                        return Redirect(returnUrl);
+                    }
+
+                    model = _mapper.Map<DeliveryItemViewModel>(result.Result);
+
+                    model.ReturnPath = returnUrl;
+                    model.IsUpdate = true;
                 }
                
                 return View("Create", model);
@@ -130,27 +170,26 @@ namespace SORANO.WEB.Controllers
         [ValidateAntiForgeryToken]
         [LoadAttachments]
         [ValidateModel]
-        public IActionResult Create(DeliveryItemViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public async Task<IActionResult> Create(DeliveryItemViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             if (string.IsNullOrWhiteSpace(model.ReturnPath))
                 return BadRequest();
 
-            return TryGetActionResult(() =>
+            return await TryGetActionResultAsync(async () =>
             {
-                TempData["Success"] = "Позиция поставки была успешно добавлена.";
+                if (!ModelState.IsValid)
+                    return View(model);
 
-                if (MemoryCache.TryGetValue(CacheKeys.CreateDeliveryItemCacheKey, out DeliveryCreateUpdateViewModel cachedDelivery))
-                {
-                    cachedDelivery.Items.Add(model);
-                    MemoryCache.Set(CacheKeys.CreateDeliveryItemCacheKey, cachedDelivery);
-                    Session.SetBool(CacheKeys.CreateDeliveryItemCacheValidKey, true);
-                }
-                else
+                var deliveryItem = _mapper.Map<DeliveryItemDto>(model);
+
+                var result = await _deliveryItemService.CreateAsync(deliveryItem, UserId);
+                if (result.Status != ServiceResponseStatus.Success)
                 {
                     TempData["Error"] = "Не удалось создать позицию поставки.";
                     return Redirect(model.ReturnPath);
                 }
 
+                TempData["Success"] = "Позиция поставки была успешно добавлена.";
                 return Redirect(model.ReturnPath);
             }, ex =>
             {
@@ -163,31 +202,21 @@ namespace SORANO.WEB.Controllers
         [ValidateAntiForgeryToken]
         [LoadAttachments]
         [ValidateModel]
-        public IActionResult Update(DeliveryItemViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
+        public async Task<IActionResult> Update(DeliveryItemViewModel model, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
             if (string.IsNullOrWhiteSpace(model.ReturnPath))
                 return BadRequest();
 
-            return TryGetActionResult(() =>
-            {               
-                if (MemoryCache.TryGetValue(CacheKeys.CreateDeliveryItemCacheKey, out DeliveryCreateUpdateViewModel cachedDelivery))
-                {
-                    var item = model.ID > 0
-                        ? cachedDelivery.Items.SingleOrDefault(di => di.ID == model.ID)
-                        : cachedDelivery.Items[model.Number];
+            return await TryGetActionResultAsync(async () =>
+            {
+                if (!ModelState.IsValid)
+                    return View("Create", model);
 
-                    if (item == null)
-                    {
-                        TempData["Error"] = "Не удалось обновить позицию поставки.";
-                        return Redirect(model.ReturnPath);
-                    }
+                var deliveryItem = _mapper.Map<DeliveryItemDto>(model);
 
-                    var index = cachedDelivery.Items.IndexOf(item);
-                    cachedDelivery.Items[index] = model;
-                    MemoryCache.Set(CacheKeys.CreateDeliveryItemCacheKey, cachedDelivery);
-                    Session.SetBool(CacheKeys.CreateDeliveryItemCacheValidKey, true);
-                }
-                else
+                var result = await _deliveryItemService.UpdateAsync(deliveryItem, UserId);
+
+                if (result.Status != ServiceResponseStatus.Success)
                 {
                     TempData["Error"] = "Не удалось обновить позицию поставки.";
                     return Redirect(model.ReturnPath);
@@ -203,17 +232,36 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> Delete(DeliveryItemViewModel model)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _deliveryItemService.DeleteAsync(model.ID, UserId);
+
+                if (result.Status == ServiceResponseStatus.Success)
+                {
+                    TempData["Success"] = "Позиция была успешно удалена из поставки.";
+                }
+                else
+                {
+                    TempData["Error"] = "Не удалось удалить позицию из поставки.";
+                }
+
+                return Redirect(model.ReturnPath);
+            }, ex =>
+            {
+                TempData["Error"] = ex;
+                return Redirect(model.ReturnPath);
+            });
+        }
+
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Cancel(DeliveryItemViewModel model)
         {
             if (string.IsNullOrEmpty(model.ReturnPath))
             {
                 return BadRequest();
-            }
-
-            if (MemoryCache.TryGetValue(CacheKeys.CreateDeliveryItemCacheKey, out DeliveryCreateUpdateViewModel _))
-            {
-                Session.SetBool(CacheKeys.CreateDeliveryItemCacheValidKey, true);
             }
 
             return Redirect(model.ReturnPath);
