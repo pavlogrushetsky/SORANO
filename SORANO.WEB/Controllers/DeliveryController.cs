@@ -76,7 +76,7 @@ namespace SORANO.WEB.Controllers
                 TempData["Error"] = ex;
                 return RedirectToAction("Index", "Home");
             });
-        }
+        }        
 
         [HttpGet]
         public IActionResult ShowDeleted(bool show)

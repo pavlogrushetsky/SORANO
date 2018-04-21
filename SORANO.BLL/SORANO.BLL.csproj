@@ -52,6 +52,8 @@
     <Compile Include="Dtos\Currency.cs" />
     <Compile Include="Dtos\DeliveryDto.cs" />
     <Compile Include="Dtos\DeliveryItemDto.cs" />
+    <Compile Include="Dtos\DeliveryItemsDto.cs" />
+    <Compile Include="Dtos\DeliveryItemsSummaryDto.cs" />
     <Compile Include="Dtos\ExceptionDto.cs" />
     <Compile Include="Dtos\GoodsDto.cs" />
     <Compile Include="Dtos\GoodsFilterCriteriaDto.cs" />

@@ -128,6 +128,9 @@ namespace SORANO.BLL.Services
                 UnitOfWork.Get<Goods>().Update(g);
             });
 
+            existentSale.Attachments?.ToList().ForEach(a => UnitOfWork.Get<Attachment>().Delete(a));
+            existentSale.Recommendations?.ToList().ForEach(a => UnitOfWork.Get<Recommendation>().Delete(a));
+
             UnitOfWork.Get<Sale>().Delete(existentSale);
 
             await UnitOfWork.SaveAsync();

@@ -61,6 +61,21 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<int>(id);
         }
 
+        public async Task<ServiceResponse<DeliveryItemsDto>> GetForDeliveryAsync(int deliveryId)
+        {
+            var items = await UnitOfWork.Get<DeliveryItem>().FindByAsync(i => i.DeliveryID == deliveryId);
+            var delivery = await UnitOfWork.Get<Delivery>().GetAsync(deliveryId);
+
+            return new SuccessResponse<DeliveryItemsDto>(new DeliveryItemsDto
+            {
+                Items = items.OrderByDescending(i => i.CreatedDate)
+                    .Select(i => i.ToDto())
+                    .ToList()
+                    .Enumerate(),
+                Summary = delivery.GetSummary()
+            });
+        }
+
         public async Task<ServiceResponse<IEnumerable<DeliveryItemDto>>> GetAllAsync(bool withDeleted)
         {
             var response = new SuccessResponse<IEnumerable<DeliveryItemDto>>();

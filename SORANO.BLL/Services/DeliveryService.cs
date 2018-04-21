@@ -175,7 +175,8 @@ namespace SORANO.BLL.Services
                 UnitOfWork.Get<DeliveryItem>().Delete(deliveryItem);
             }
 
-            //existentDelivery.UpdateDeletedFields(userId);
+            existentDelivery.Attachments?.ToList().ForEach(a => UnitOfWork.Get<Attachment>().Delete(a));
+            existentDelivery.Recommendations?.ToList().ForEach(a => UnitOfWork.Get<Recommendation>().Delete(a));
 
             UnitOfWork.Get<Delivery>().Delete(existentDelivery);
 

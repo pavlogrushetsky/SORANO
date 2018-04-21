@@ -60,6 +60,16 @@ namespace SORANO.BLL.Extensions
             return entity;
         }
 
+        public static DeliveryItemsSummaryDto GetSummary(this Delivery delivery)
+        {
+            return new DeliveryItemsSummaryDto
+            {
+                TotalDiscount = delivery.TotalDiscount,
+                TotalGrossPrice = delivery.TotalGrossPrice,
+                TotalDiscountedPrice = delivery.TotalDiscountedPrice
+            };
+        }
+
         public static void UpdateFields(this Delivery existentDelivery, Delivery newDelivery)
         {
             existentDelivery.BillNumber = newDelivery.BillNumber;

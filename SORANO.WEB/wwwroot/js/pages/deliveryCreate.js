@@ -113,7 +113,7 @@
 function loadDeliveryItemsTable() {
     $('#delivery-items-table').hide(100);
     $('#progress-bar').animate({ opacity: 1.0 }, 100, function () {
-        $('#delivery-items-table').load('/DeliveryItem/Table', function () {
+        $('#delivery-items-table').load('/DeliveryItem/Table', { deliveryId: $("#ID").val() }, function () {
             $('#delivery-items-table').show(100, function () {
                 initDeliveryItemsDataTable();
                 initTooltip();
@@ -124,7 +124,7 @@ function loadDeliveryItemsTable() {
 }
 
 function initDeliveryItemsDataTable() {
-    var table = $("#delivery-items-datatable").DataTable({
+    var table = $("#items-datatable").DataTable({
         responsive: true,
         "autoWidth": false,
         "scrollX": false,
@@ -147,7 +147,7 @@ function initDeliveryItemsDataTable() {
     });
 
     table.columns().eq(0).each(function (colIdx) {
-        $('input', $('#delivery-items-datatable th')[colIdx]).on('keyup change', function () {
+        $('input', $('#items-datatable th')[colIdx]).on('keyup change', function () {
             table
                 .column(colIdx)
                 .search(this.value)

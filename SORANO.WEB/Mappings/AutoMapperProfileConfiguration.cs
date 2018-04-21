@@ -335,6 +335,7 @@ namespace SORANO.WEB.Mappings
                     dest => dest.Items,
                     source => source.MapFrom(s => s)
                 );
+            CreateMap<DeliveryItemsSummaryDto, DeliveryItemsSummaryViewModel>();
             CreateMap<DeliveryItemViewModel, DeliveryItemDto>();
 
             #endregion

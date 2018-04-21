@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using SORANO.BLL.Dtos;
 using SORANO.CORE.StockEntities;
 
@@ -48,6 +49,16 @@ namespace SORANO.BLL.Extensions
                 entity.Attachments.Add(dto.MainPicture.ToEntity());
 
             return entity;
+        }
+
+        public static IEnumerable<DeliveryItemDto> Enumerate(this IReadOnlyList<DeliveryItemDto> items)
+        {
+            for (var i = 0; i < items.Count; i++)
+            {
+                var item = items[i];
+                item.Number = i + 1;
+                yield return item;
+            }
         }
 
         public static void UpdateFields(this DeliveryItem existentDelivery, DeliveryItem newDelivery)

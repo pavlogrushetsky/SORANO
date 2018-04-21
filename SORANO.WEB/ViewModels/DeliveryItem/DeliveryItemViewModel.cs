@@ -38,5 +38,7 @@ namespace SORANO.WEB.ViewModels.DeliveryItem
         public string Currency { get; set; }
 
         public bool CanBeDeleted { get; set; }
+
+        public int Number { get; set; }
     }
 }

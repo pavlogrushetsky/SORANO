@@ -37,6 +37,12 @@ namespace SORANO.WEB.Controllers
 
         #region GET Actions
 
+        [HttpPost]
+        public IActionResult Table(int deliveryId)
+        {
+            return ViewComponent("DeliveryItemsTable", new { deliveryId });
+        }
+
         [HttpGet]
         public async Task<IActionResult> Create(string returnUrl, int deliveryId)
         {

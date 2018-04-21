@@ -23,5 +23,7 @@ namespace SORANO.BLL.Dtos
         public ArticleDto Article { get; set; }
 
         public IEnumerable<GoodsDto> Goods { get; set; }
+
+        public int Number { get; set; }
     }
 }
