@@ -92,13 +92,13 @@
             $('#SelectedCurrency').val('₴');
         } else if (value === '1') {
             $('#DollarRate').prop('readonly', false);
-            $('#DollarRate').val('0.00');
+            $('#DollarRate').val('0,00');
             $('#EuroRate').val('');
             $('#EuroRate').prop('readonly', true);
             $('#SelectedCurrency').val('$');
         } else if (value === '2') {
             $('#EuroRate').prop('readonly', false);
-            $('#EuroRate').val('0.00');
+            $('#EuroRate').val('0,00');
             $('#DollarRate').val('');
             $('#DollarRate').prop('readonly', true);
             $('#SelectedCurrency').val('€');

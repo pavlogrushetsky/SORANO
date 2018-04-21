@@ -21,11 +21,11 @@ namespace SORANO.WEB.Validators
                 .WithMessage("Необходимо указать место продажи");
 
             RuleFor(d => d.DollarRate)
-                .Must((d, r) => d.SelectedCurrency != "$" || !string.IsNullOrEmpty(r) && decimal.TryParse(r, NumberStyles.Any, new CultureInfo("en-US"), out decimal p) && p > 0.0M)
+                .Must((d, r) => d.SelectedCurrency != "$" || !string.IsNullOrEmpty(r) && decimal.TryParse(r, NumberStyles.Any, new CultureInfo("ru-RU"), out decimal p) && p > 0.0M)
                 .WithMessage("Необходимо указать курс доллара");
 
             RuleFor(d => d.EuroRate)
-                .Must((d, r) => d.SelectedCurrency != "€" || !string.IsNullOrEmpty(r) && decimal.TryParse(r, NumberStyles.Any, new CultureInfo("en-US"), out decimal p) && p > 0.0M)
+                .Must((d, r) => d.SelectedCurrency != "€" || !string.IsNullOrEmpty(r) && decimal.TryParse(r, NumberStyles.Any, new CultureInfo("ru-RU"), out decimal p) && p > 0.0M)
                 .WithMessage("Необходимо указать курс евро");           
 
             RuleForEach(d => d.Attachments)

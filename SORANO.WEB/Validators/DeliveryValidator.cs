@@ -35,11 +35,11 @@ namespace SORANO.WEB.Validators
                 .WithMessage("Необходимо указать поставщика");
 
             RuleFor(d => d.DollarRate)
-                .Must((d, r) => d.SelectedCurrency != "$" || !string.IsNullOrEmpty(r) && decimal.TryParse(r, NumberStyles.Any, new CultureInfo("en-US"), out decimal p) && p > 0.0M)
+                .Must((d, r) => d.SelectedCurrency != "$" || !string.IsNullOrEmpty(r) && decimal.TryParse(r, NumberStyles.Any, new CultureInfo("ru-RU"), out decimal p) && p > 0.0M)
                 .WithMessage("Необходимо указать курс доллара");
 
             RuleFor(d => d.EuroRate)
-                .Must((d, r) => d.SelectedCurrency != "€" || !string.IsNullOrEmpty(r) && decimal.TryParse(r, NumberStyles.Any, new CultureInfo("en-US"), out decimal p) && p > 0.0M)
+                .Must((d, r) => d.SelectedCurrency != "€" || !string.IsNullOrEmpty(r) && decimal.TryParse(r, NumberStyles.Any, new CultureInfo("ru-RU"), out decimal p) && p > 0.0M)
                 .WithMessage("Необходимо указать курс евро");
 
             RuleFor(d => d.TotalGrossPrice)
@@ -66,7 +66,7 @@ namespace SORANO.WEB.Validators
 
             RuleFor(d => d.TotalDiscount)
                 .Must(BeValidPrice)
-                .WithMessage("Значение должно быть указано в формате #.##");
+                .WithMessage("Значение должно быть указано в формате #,##");
 
             //RuleFor(d => d.TotalDiscount)
             //    .Must((d, p) =>
@@ -88,7 +88,7 @@ namespace SORANO.WEB.Validators
 
             RuleFor(d => d.TotalDiscountedPrice)
                 .Must(BeValidPrice)
-                .WithMessage("Значение должно быть указано в формате #.##");
+                .WithMessage("Значение должно быть указано в формате #,##");
 
             //RuleFor(d => d.TotalDiscountedPrice)
             //    .Must((d, p) =>
@@ -118,7 +118,7 @@ namespace SORANO.WEB.Validators
 
         private static bool BeValidPrice(string price)
         {
-            return !string.IsNullOrEmpty(price) && Regex.IsMatch(price, @"^\d+(\.\d{0,2})?$");
+            return !string.IsNullOrEmpty(price) && Regex.IsMatch(price, @"^\d+(\,\d{0,2})?$");
         }
     }
 }

@@ -161,6 +161,7 @@ namespace SORANO.WEB.Controllers
                     TempData["Success"] = "Поставка была успешно оформлена и инициализирована значениями по умолчанию. Для отмены нажмите \"Отменить поставку\". Для подтверждения оформления нажмите \"Подтвердить\".";
                 }
 
+                model.IsUpdate = true;
                 return View(model);
             }, OnFault);           
         }
@@ -199,11 +200,11 @@ namespace SORANO.WEB.Controllers
                         return RedirectToAction("Index");
                     }
 
-                    model = _mapper.Map<DeliveryCreateUpdateViewModel>(result.Result);
-                    model.IsUpdate = true;
+                    model = _mapper.Map<DeliveryCreateUpdateViewModel>(result.Result);                    
                     model.AllowChangeLocation = true;
                 }
 
+                model.IsUpdate = true;
                 return View("Create", model);
             }, OnFault);            
         }

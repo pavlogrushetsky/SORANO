@@ -2,7 +2,7 @@
 
 @{
     var title = "Оформление";
-    var returnUrl = Model.IsUpdate ? Url.Action("Update", "Delivery") : Url.Action("Create", "Delivery");
+    var returnUrl = Url.Action("Update", "Delivery", new { id = Model.ID });
 }
 
 @{
@@ -34,7 +34,7 @@
     </ul>
 }
 
-<form asp-action="@(Model.IsUpdate ? "Update" : "Create")"
+<form asp-action="Update"
       asp-controller="Delivery"
       method="post"
       enctype="multipart/form-data">
@@ -159,7 +159,7 @@
                                         <input type="radio" name="select_currency" id="select_currency_uah" value="0" style="margin-right: 1px;" />
                                         <span style="font-weight: bold;">&#8372;</span>
                                     </span>
-                                    <input type="text" readonly="readonly" class="form-control input-sm" value="1.00" />
+                                    <input type="text" readonly="readonly" class="form-control input-sm" value="1,00" />
                                 </div>
                             </td>
                             <td style="width: 33%; padding: 0; padding-right: 5px;">

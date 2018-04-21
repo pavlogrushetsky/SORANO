@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Globalization;
+using AutoMapper;
 
 namespace SORANO.WEB.Mappings.Converters
 {
@@ -6,7 +7,7 @@ namespace SORANO.WEB.Mappings.Converters
     {
         public string Convert(decimal? source, string destination, ResolutionContext context)
         {
-            return !source.HasValue ? "0.00" : source.Value.ToString("0.00");
+            return source?.ToString("0.00", new CultureInfo("ru-RU")) ?? "0,00";
         }
     }
 }

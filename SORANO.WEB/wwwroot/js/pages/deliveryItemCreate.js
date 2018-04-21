@@ -6,9 +6,9 @@
 
     $('.calculate').bind('keyup mouseup',
         function () {
-            var quantity = $('#Quantity').val();
-            var unitPrice = $('#UnitPrice').val();
-            var discount = $('#Discount').val();
+            var quantity = toDecimal($('#Quantity').val());
+            var unitPrice = toDecimal($('#UnitPrice').val());
+            var discount = toDecimal($('#Discount').val());
             if (isNumeric(unitPrice)) {
                 var grossPrice = quantity * unitPrice;
                 $('#GrossPrice').val(formatDecimal(grossPrice));
@@ -20,9 +20,9 @@
         });
 
     $('button[type=submit]').on('click', function () {
-        var unitPrice = $('#UnitPrice').val();
+        var unitPrice = toDecimal($('#UnitPrice').val());
         $('#UnitPrice').val(formatDecimal(unitPrice));
-        var discount = $('#Discount').val();
+        var discount = toDecimal($('#Discount').val());
         $('#Discount').val(formatDecimal(discount));
     });
 });

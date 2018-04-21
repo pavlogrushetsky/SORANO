@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using AutoMapper;
 using SORANO.BLL.Dtos;
@@ -403,7 +404,7 @@ namespace SORANO.WEB.Mappings
                 )
                 .ForMember(
                     dest => dest.TotalPrice,
-                    source => source.MapFrom(s => s.TotalPrice.HasValue ? s.TotalPrice.Value.ToString("0.00") : "0.00")
+                    source => source.MapFrom(s => s.TotalPrice.HasValue ? s.TotalPrice.Value.ToString("0.00", new CultureInfo("ru-RU")) : "0,00")
                 )
                 .ForMember(
                     dest => dest.SelectedCurrency,

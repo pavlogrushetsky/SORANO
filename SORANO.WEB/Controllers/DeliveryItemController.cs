@@ -66,10 +66,10 @@ namespace SORANO.WEB.Controllers
                         MainPicture = new MainPictureViewModel(),
                         ReturnPath = returnUrl,
                         Quantity = 1,
-                        UnitPrice = "0.00",
-                        GrossPrice = "0.00",
-                        Discount = "0.00",
-                        DiscountedPrice = "0.00",
+                        UnitPrice = "0,00",
+                        GrossPrice = "0,00",
+                        Discount = "0,00",
+                        DiscountedPrice = "0,00",
                         DeliveryID = deliveryId
                     };
                 }

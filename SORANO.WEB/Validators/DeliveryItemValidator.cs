@@ -19,7 +19,7 @@ namespace SORANO.WEB.Validators
 
             RuleFor(d => d.UnitPrice)
                 .Must(BeValidPrice)
-                .WithMessage("Значение должно быть указано в формате #.##");
+                .WithMessage("Значение должно быть указано в формате #,##");
 
             RuleFor(d => d.UnitPrice)
                 .Must(BeGreaterThanZero)
@@ -27,7 +27,7 @@ namespace SORANO.WEB.Validators
 
             RuleFor(d => d.Discount)
                 .Must(BeValidPrice)
-                .WithMessage("Значение должно быть указано в формате #.##");
+                .WithMessage("Значение должно быть указано в формате #,##");
 
             RuleFor(d => d.Discount)
                 .Must(BeGreaterThanOrEqualToZero)
@@ -40,18 +40,18 @@ namespace SORANO.WEB.Validators
 
         private static bool BeValidPrice(string price)
         {
-            return !string.IsNullOrEmpty(price) && Regex.IsMatch(price, @"^\d+(\.\d{0,2})?$");
+            return !string.IsNullOrEmpty(price) && Regex.IsMatch(price, @"^\d+(\,\d{0,2})?$");
         }
 
         private static bool BeGreaterThanZero(string price)
         {
-            var parsed = decimal.TryParse(price, NumberStyles.Any, new CultureInfo("en-US"), out var p);
+            var parsed = decimal.TryParse(price, NumberStyles.Any, new CultureInfo("ru-RU"), out var p);
             return parsed && p > 0.0M;
         }
 
         private static bool BeGreaterThanOrEqualToZero(string price)
         {
-            var parsed = decimal.TryParse(price, NumberStyles.Any, new CultureInfo("en-US"), out var p);
+            var parsed = decimal.TryParse(price, NumberStyles.Any, new CultureInfo("ru-RU"), out var p);
             return parsed && p >= 0.0M;
         }
     }
