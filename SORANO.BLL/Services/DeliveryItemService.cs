@@ -54,6 +54,8 @@ namespace SORANO.BLL.Services
             deliveryEntity.TotalDiscountedPrice = deliveryEntity.TotalDiscountedPrice - existentDeliveryItem.DiscountedPrice;
 
             UnitOfWork.Get<Delivery>().Update(deliveryEntity);
+            existentDeliveryItem.Attachments?.ToList().ForEach(a => UnitOfWork.Get<Attachment>().Delete(a));
+            existentDeliveryItem.Recommendations?.ToList().ForEach(a => UnitOfWork.Get<Recommendation>().Delete(a));
             UnitOfWork.Get<DeliveryItem>().Delete(existentDeliveryItem);
 
             await UnitOfWork.SaveAsync();
