@@ -172,6 +172,8 @@ namespace SORANO.BLL.Services
 
             foreach (var deliveryItem in existentDelivery.Items.ToList())
             {
+                deliveryItem.Attachments?.ToList().ForEach(a => UnitOfWork.Get<Attachment>().Delete(a));
+                deliveryItem.Recommendations?.ToList().ForEach(a => UnitOfWork.Get<Recommendation>().Delete(a));
                 UnitOfWork.Get<DeliveryItem>().Delete(deliveryItem);
             }
 
