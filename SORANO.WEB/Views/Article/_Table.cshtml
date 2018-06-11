@@ -9,9 +9,10 @@
             @if (Model.Mode != ArticleTableMode.ArticleTypeDetails)
             {
                 <th><input type="text" class="form-control input-sm" placeholder="Тип" /></th>
-            }            
+            }
             <th><input type="text" class="form-control input-sm" placeholder="Производитель" /></th>
-            <th></th>          
+            <th><input type="text" class="form-control input-sm" placeholder="Цена" /></th>
+            <th></th>
         </tr>
         <tr role="row">
             <th><i class="fa fa-fw fa-calendar"></i>Изменён</th>
@@ -20,9 +21,10 @@
             @if (Model.Mode != ArticleTableMode.ArticleTypeDetails)
             {
                 <th><i class="fa fa-fw fa-tag"></i>Тип</th>
-            }            
+            }
             <th><i class="fa fa-fw fa-suitcase"></i>Производитель</th>
-            <th>Действия</th>           
+            <th><i class="fa fa-fw fa-money"></i>Цена</th>
+            <th>Действия</th>
         </tr>
     </thead>
     <tbody>
@@ -55,8 +57,9 @@
                             @article.TypeName
                         </a>
                     </td>
-                }                
+                }
                 <td>@article.Producer</td>
+                <td>@article.RecommendedPrice</td>
                 <td>
                     <a asp-controller="Article"
                        asp-action="Details"

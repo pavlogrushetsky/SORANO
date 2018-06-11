@@ -2,6 +2,11 @@
     $.fn.select2.defaults.set('theme', 'bootstrap');
     initArticleTypeSelect();
     initAttachmentTypeSelect();
+
+    $('button[type=submit]').on('click', function () {
+        var recommendedPrice = toDecimal($('#RecommendedPrice').val());
+        $('#RecommendedPrice').val(formatDecimal(recommendedPrice));
+    });
 });
 
 function initArticleTypeSelect() {

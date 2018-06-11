@@ -30,6 +30,10 @@ namespace SORANO.DAL.Context.Configurations
                 .IsOptional()
                 .HasMaxLength(50);
 
+            Property(d => d.RecommendedPrice)
+                .IsOptional()
+                .HasPrecision(38, 2);
+
             ToTable("Articles");
         }
     }

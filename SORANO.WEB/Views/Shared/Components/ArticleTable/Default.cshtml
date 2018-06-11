@@ -12,9 +12,10 @@
             <th><input type="text" class="form-control input-sm" placeholder="Код" /></th>
             <th><input type="text" class="form-control input-sm" placeholder="Название" /></th>
             <th hide-if="@hideType">
-                <input type="text" class="form-control input-sm" placeholder="Тип"/>
+                <input type="text" class="form-control input-sm" placeholder="Тип" />
             </th>
             <th><input type="text" class="form-control input-sm" placeholder="Производитель" /></th>
+            <th><input type="text" class="form-control input-sm" placeholder="Рек. цена" /></th>
             <th></th>
         </tr>
         <tr role="row">
@@ -25,6 +26,7 @@
                 <i class="fa fa-fw fa-tag"></i>Тип
             </th>
             <th><i class="fa fa-fw fa-suitcase"></i>Производитель</th>
+            <th><i class="fa fa-fw fa-money"></i>Рек. цена</th>
             <th>Действия</th>
         </tr>
     </thead>
@@ -47,16 +49,17 @@
                 </td>
                 <td hide-if="@hideType">
                     <a asp-controller="ArticleType"
-                        asp-action="Details"
-                        asp-route-id="@article.TypeID"
-                        data-toggle="tooltip"
-                        data-placement="bottom"
-                        data-original-title="Просмотреть информацию о типе артикулов"
-                        title="">
+                       asp-action="Details"
+                       asp-route-id="@article.TypeID"
+                       data-toggle="tooltip"
+                       data-placement="bottom"
+                       data-original-title="Просмотреть информацию о типе артикулов"
+                       title="">
                         @article.TypeName
                     </a>
                 </td>
                 <td>@article.Producer</td>
+                <td>@article.RecommendedPrice</td>
                 <td nowrap="nowrap">
                     <a asp-controller="Article"
                        asp-action="Details"

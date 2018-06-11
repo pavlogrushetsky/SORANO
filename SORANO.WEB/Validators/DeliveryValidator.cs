@@ -44,7 +44,7 @@ namespace SORANO.WEB.Validators
 
             RuleFor(d => d.TotalGrossPrice)
                 .Must(BeValidPrice)
-                .WithMessage("Значение должно быть указано в формате #.##");
+                .WithMessage("Значение должно быть указано в формате #,##");
 
             //RuleFor(d => d.TotalGrossPrice)
             //    .Must((d, p) =>

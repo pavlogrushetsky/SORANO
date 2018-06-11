@@ -14,6 +14,8 @@ namespace SORANO.BLL.Dtos
 
         public string Barcode { get; set; }
 
+        public decimal? RecommendedPrice { get; set; }
+
         public int TypeID { get; set; }
 
         public ArticleTypeDto Type { get; set; }
