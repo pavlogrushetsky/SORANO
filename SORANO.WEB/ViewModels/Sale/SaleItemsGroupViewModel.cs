@@ -10,6 +10,8 @@ namespace SORANO.WEB.ViewModels.Sale
 
         public string Price { get; set; }
 
+        public string RecommendedPrice { get; set; }
+
         public int Count { get; set; }
 
         public int SelectedCount { get; set; }
