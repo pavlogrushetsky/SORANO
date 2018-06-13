@@ -16,6 +16,8 @@ namespace SORANO.BLL.Dtos
 
         public decimal? Price { get; set; }
 
+        public decimal? RecommendedPrice { get; set; }
+
         public DateTime? SaleDate { get; set; }
 
         public int? SoldBy { get; set; }

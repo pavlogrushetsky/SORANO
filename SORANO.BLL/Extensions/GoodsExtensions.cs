@@ -16,6 +16,7 @@ namespace SORANO.BLL.Extensions
                 Sale = model.Sale?.ToDto(),
                 IsSold = model.IsSold,
                 Price = model.Price,
+                RecommendedPrice = model.DeliveryItem.Article.RecommendedPrice,
                 //ClientID = model.ClientID,TODO
                 //SalePrice = model.SalePrice,
                 //SaleDate = model.SaleDate,

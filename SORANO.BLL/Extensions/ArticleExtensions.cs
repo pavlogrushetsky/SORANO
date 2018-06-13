@@ -16,6 +16,7 @@ namespace SORANO.BLL.Extensions
                 Producer = model.Producer,
                 Code = model.Code,
                 Barcode = model.Barcode,
+                RecommendedPrice = model.RecommendedPrice,
                 TypeID = model.TypeID,
                 Type = model.Type?.ToDto(),
                 DeliveryItems = model.DeliveryItems.Where(di => !di.IsDeleted && !di.Delivery.IsDeleted).Select(i => i.ToDto())
@@ -37,6 +38,7 @@ namespace SORANO.BLL.Extensions
                 Producer = dto.Producer,
                 Code = dto.Code,
                 Barcode = dto.Barcode,
+                RecommendedPrice = dto.RecommendedPrice,
                 TypeID = dto.TypeID,
                 Recommendations = dto.Recommendations.Select(r => r.ToEntity()).ToList(),
                 Attachments = dto.Attachments.Select(a => a.ToEntity()).ToList()
@@ -55,6 +57,7 @@ namespace SORANO.BLL.Extensions
             existentArticle.Producer = newArticle.Producer;
             existentArticle.Code = newArticle.Code;
             existentArticle.Barcode = newArticle.Barcode;
+            existentArticle.RecommendedPrice = newArticle.RecommendedPrice;
             existentArticle.TypeID = newArticle.TypeID;
         }
     }

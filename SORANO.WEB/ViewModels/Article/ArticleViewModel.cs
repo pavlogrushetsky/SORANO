@@ -14,6 +14,8 @@
 
         public string Barcode { get; set; }
 
+        public string RecommendedPrice { get; set; }
+
         public int TypeID { get; set; }
 
         public string TypeName { get; set; }

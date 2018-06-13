@@ -10,6 +10,8 @@ namespace SORANO.BLL.Dtos
 
         public decimal? Price { get; set; }
 
+        public decimal? RecommendedPrice { get; set; }
+
         public int Count { get; set; }
 
         public int SelectedCount { get; set; }

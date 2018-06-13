@@ -296,6 +296,7 @@ namespace SORANO.BLL.Services
                     var groupDto = new SaleItemsGroupDto
                     {
                         ArticleName = first.DeliveryItem.Article.Name,
+                        RecommendedPrice = first.DeliveryItem.Article.RecommendedPrice,
                         ArticleTypeName = first.DeliveryItem.Article.Type.Name,
                         Count = items.Count,                       
                         MainPicturePath = first.DeliveryItem.Article.GetMainPicturePath()
@@ -311,7 +312,7 @@ namespace SORANO.BLL.Services
                                 .Concat(i.DeliveryItem.Article.Recommendations)
                                 .Concat(i.DeliveryItem.Article.Type.Recommendations)
                                 .Concat(i.DeliveryItem.Delivery.Supplier.Recommendations)
-                                .Concat(i.Storages.OrderBy(st => st.FromDate).Last().Recommendations)
+                                .Concat(i.Storages.OrderBy(st => st.FromDate).Last().Location.Recommendations)
                                 .Select(r => r.ToDto())
                                 .ToList()
                         })

@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using System.Text.RegularExpressions;
+using FluentValidation;
 using SORANO.WEB.ViewModels.Article;
 
 namespace SORANO.WEB.Validators
@@ -39,11 +40,20 @@ namespace SORANO.WEB.Validators
                 .GreaterThan(0)
                 .WithMessage("Необходимо указать тип");
 
+            RuleFor(d => d.RecommendedPrice)
+                .Must(BeValidPrice)
+                .WithMessage("Значение должно быть указано в формате #,##");
+
             RuleForEach(a => a.Attachments)
                 .SetValidator(new AttachmentValidator());
 
             RuleForEach(a => a.Recommendations)
                 .SetValidator(new RecommendationValidator());
+        }
+
+        private static bool BeValidPrice(string price)
+        {
+            return string.IsNullOrEmpty(price) || Regex.IsMatch(price, @"^\d+(\,\d{0,2})?$");
         }
     }
 }

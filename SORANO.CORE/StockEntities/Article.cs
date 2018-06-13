@@ -16,6 +16,8 @@ namespace SORANO.CORE.StockEntities
 
         public string Barcode { get; set; }
 
+        public decimal? RecommendedPrice { get; set; }
+
         public virtual ArticleType Type { get; set; }
 
         public virtual ICollection<DeliveryItem> DeliveryItems { get; set; } = new HashSet<DeliveryItem>();

@@ -21,6 +21,9 @@ namespace SORANO.WEB.ViewModels.Article
         [Display(Name = "Штрих-код")]
         public string Barcode { get; set; }
 
+        [Display(Name = "Рекомендованая цена")]
+        public string RecommendedPrice { get; set; }
+
         public int TypeID { get; set; }
 
         [Display(Name = "Тип артикулов")]

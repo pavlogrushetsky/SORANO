@@ -18,6 +18,8 @@
 
         public string LocationName { get; set; }
 
+        public string RecommendedPrice { get; set; }
+
         public bool IsSold { get; set; }
 
         public int Quantity { get; set; }
