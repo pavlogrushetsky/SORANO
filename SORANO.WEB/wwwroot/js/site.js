@@ -49,6 +49,13 @@
     });   
 
     $('form').keypress(keypressHandler);
+
+    $('button[type=submit]').on('click',
+        function() {
+            $(this).text('Сохранение...');
+            $(this).prop('disabled', true);
+            $('form').submit();
+        });
 });
 
 function initTooltip() {

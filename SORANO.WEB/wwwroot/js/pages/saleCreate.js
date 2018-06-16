@@ -29,8 +29,11 @@
 
     initSaleItemsTree();
 
-    $(document).on('click', '.submit-sale', function() {
+    $(document).on('click', '.submit-sale', function () {
+        $(this).text('Подтверждение...');
+        $(this).prop('disabled', true);
         $('#IsSubmitted').val(true);
+        $('form').submit();
     });
 
     $(document).on('click', '#refresh-sale-items', function(e) {

@@ -24,8 +24,11 @@
         url: '/Supplier/GetSuppliers'
     });   
 
-    $('.submit-delivery').on('click', function () {
+    $(document).on('click', '.submit-delivery', function () {
+        $(this).text('Подтверждение...');
+        $(this).prop('disabled', true);
         $('#IsSubmitted').val(true);
+        $('form').submit();
     });
 
     $('#pick-delivery-date').datetimepicker({

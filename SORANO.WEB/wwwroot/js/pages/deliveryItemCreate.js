@@ -19,7 +19,7 @@
             }
         });
 
-    $('button[type=submit]').on('click', function () {
+    $('button[type=submit]').on('click', function () {        
         var unitPrice = toDecimal($('#UnitPrice').val());
         $('#UnitPrice').val(formatDecimal(unitPrice));
         var discount = toDecimal($('#Discount').val());

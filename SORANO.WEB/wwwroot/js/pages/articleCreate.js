@@ -4,8 +4,11 @@
     initAttachmentTypeSelect();
 
     $('button[type=submit]').on('click', function () {
-        var recommendedPrice = toDecimal($('#RecommendedPrice').val());
-        $('#RecommendedPrice').val(formatDecimal(recommendedPrice));
+        var val = $('#RecommendedPrice').val();
+        if (val) {
+            var recommendedPrice = toDecimal($('#RecommendedPrice').val());
+            $('#RecommendedPrice').val(formatDecimal(recommendedPrice));
+        }        
     });
 });
 
