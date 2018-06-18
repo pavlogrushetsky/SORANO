@@ -264,7 +264,7 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<SaleItemsSummaryDto>(summary);
         }
 
-        public async Task<ServiceResponse<SaleItemsGroupsDto>> GetItemsAsync(int saleId, int locationId, bool selectedOnly)
+        public async Task<ServiceResponse<SaleItemsGroupsDto>> GetItemsAsync(int saleId, int locationId, bool selectedOnly, string searchCriteria)
         {
             if (locationId == 0)
                 return new ServiceResponse<SaleItemsGroupsDto>(ServiceResponseStatus.InvalidOperation);
@@ -275,10 +275,13 @@ namespace SORANO.BLL.Services
                 .Where(s => !s.ToDate.HasValue)
                 .Select(s => s.Goods)
                 .Where(g => g.Storages.OrderBy(st => st.FromDate).Last().LocationID == locationId && !g.IsDeleted && (!g.SaleID.HasValue || g.SaleID == saleId && !g.IsSold))
+                .Where(g => searchCriteria == null 
+                    || g.DeliveryItem.Article.Name.ContainsIgnoreCase(searchCriteria) 
+                    || g.DeliveryItem.Article.Type.Name.ContainsIgnoreCase(searchCriteria)
+                    || !string.IsNullOrEmpty(g.DeliveryItem.Article.Code) && g.DeliveryItem.Article.Code.ContainsIgnoreCase(searchCriteria)
+                    || !string.IsNullOrEmpty(g.DeliveryItem.Article.Barcode) && g.DeliveryItem.Article.Barcode.ContainsIgnoreCase(searchCriteria)
+                    || g.DeliveryItem.Article.Type.ParentType != null && g.DeliveryItem.Article.Type.ParentType.Name.ContainsIgnoreCase(searchCriteria))               
                 .ToList();                                  
-
-            if (!goods.Any())
-                return new ServiceResponse<SaleItemsGroupsDto>(ServiceResponseStatus.NotFound);
 
             var summaryDto = await GetSummaryAsync(saleId);
 

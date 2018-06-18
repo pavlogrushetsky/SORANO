@@ -36,34 +36,71 @@
         $('form').submit();
     });
 
+    var wto;
+
+    $(document).on('input', '#SearchCriteria', function(e) {
+        e.preventDefault();
+        clearTimeout(wto);
+        wto = setTimeout(function () {
+            $('#sale-items-groups').hide(100);
+            $('#progress-bar').animate({ opacity: 1.0 }, 100, function () {
+                var saleId = $('#ID').val();
+                if (saleId === '0')
+                    return;
+
+                var parameters = {
+                    saleId: saleId,
+                    locationId: $("#LocationID").val(),
+                    selectedOnly: $('#ShowSelected').val(),
+                    searchCriteria: $('#SearchCriteria').val()
+                }
+
+                $('#sale-items-groups').load('/Sale/Refresh', parameters, function () {
+                    $('#sale-items-groups').show(100, function () {
+                        initSaleItemsTree();
+                        initTooltip();
+                        $('#progress-bar').animate({ opacity: 0.0 }, 100);
+                    });                    
+                });
+            });
+        }, 1000);        
+    });
+
     $(document).on('click', '#refresh-sale-items', function(e) {
         e.preventDefault();
 
         $(this).tooltip('hide');
 
-        var saleId = $('#ID').val();
-        if (saleId === '0')
-            return;
+        clearTimeout(wto);
+        wto = setTimeout(function () {
+            $('#sale-items-groups').hide(100);
+            $('#progress-bar').animate({ opacity: 1.0 }, 100, function () {
+                var saleId = $('#ID').val();
+                if (saleId === '0')
+                    return;
 
-        var parameters = {
-            saleId: saleId,
-            locationId: $("#LocationID").val(),
-            selectedOnly: $('#ShowSelected').val()
-        }
+                var parameters = {
+                    saleId: saleId,
+                    locationId: $("#LocationID").val(),
+                    selectedOnly: $('#ShowSelected').val(),
+                    searchCriteria: $('#SearchCriteria').val()
+                }
 
-        $('#sale-items-groups').load('/Sale/Refresh', parameters, function() {
-            initSaleItemsTree();
-        });
+                $('#sale-items-groups').load('/Sale/Refresh', parameters, function () {
+                    $('#sale-items-groups').show(100, function () {
+                        initSaleItemsTree();
+                        initTooltip();
+                        $('#progress-bar').animate({ opacity: 0.0 }, 100);
+                    });
+                });
+            });
+        }, 1000);      
     });
 
     $(document).on('click', '#show-selected-sale-items', function(e) {
         e.preventDefault();
 
         $(this).tooltip('hide');
-
-        var saleId = $('#ID').val();
-        if (saleId === '0')
-            return;
 
         var icon = $(this).find('i');
 
@@ -80,17 +117,32 @@
             $(this).attr('data-original-title', 'Отобразить все товары');
             icon.removeClass('fa-eye');
             icon.addClass('fa-eye-slash');
-        }            
-
-        var parameters = {
-            saleId: saleId,
-            locationId: $('#LocationID').val(),
-            selectedOnly: showSelected
         }
 
-        $('#sale-items-groups').load('/Sale/Refresh', parameters, function () {
-            initSaleItemsTree();
-        });
+        clearTimeout(wto);
+        wto = setTimeout(function () {
+            $('#sale-items-groups').hide(100);
+            $('#progress-bar').animate({ opacity: 1.0 }, 100, function () {
+                var saleId = $('#ID').val();
+                if (saleId === '0')
+                    return;
+                
+                var parameters = {
+                    saleId: saleId,
+                    locationId: $('#LocationID').val(),
+                    selectedOnly: showSelected,
+                    searchCriteria: $('#SearchCriteria').val()
+                }
+
+                $('#sale-items-groups').load('/Sale/Refresh', parameters, function () {
+                    $('#sale-items-groups').show(100, function () {
+                        initSaleItemsTree();
+                        initTooltip();
+                        $('#progress-bar').animate({ opacity: 0.0 }, 100);
+                    });
+                });
+            });
+        }, 1000);      
     });
 
     $(document).on('click', '.toggle-sale-item-recommendations', function(e) {

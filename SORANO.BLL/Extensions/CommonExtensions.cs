@@ -37,6 +37,11 @@ namespace SORANO.BLL.Extensions
                 .SingleOrDefault()?.FullPath;
         }
 
+        public static bool ContainsIgnoreCase(this string source, string toCheck)
+        {
+            return source != null && toCheck != null && source.IndexOf(toCheck, StringComparison.InvariantCultureIgnoreCase) >= 0;
+        }
+
         public static StockEntity UpdateCreatedFields(this StockEntity entity, int userId)
         {
             entity.CreatedBy = userId;

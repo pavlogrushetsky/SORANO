@@ -20,7 +20,7 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<ServiceResponse<SaleItemsSummaryDto>> GetSummaryAsync(int saleId);
 
-        Task<ServiceResponse<SaleItemsGroupsDto>> GetItemsAsync(int saleId, int locationId, bool selectedOnly);
+        Task<ServiceResponse<SaleItemsGroupsDto>> GetItemsAsync(int saleId, int locationId, bool selectedOnly, string searchCriteria);
 
         Task<ServiceResponse<bool>> ValidateItemsForAsync(int saleId);
     }

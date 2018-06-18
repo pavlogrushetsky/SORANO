@@ -51,8 +51,13 @@
     $('form').keypress(keypressHandler);
 
     $('button[type=submit]').on('click',
-        function() {
-            $(this).text('Сохранение...');
+        function () {
+            if ($(this).text() === 'Войти') {
+                $(this).text('Вход...');
+            }
+            if ($(this).text() === 'Сохранить') {
+                $(this).text('Сохранение...');
+            }           
             $(this).prop('disabled', true);
             $('form').submit();
         });
@@ -66,6 +71,10 @@ function initTooltip() {
 }
 
 function keypressHandler(e) {
+    if (e.which === 13 && e.target.className.indexOf('search') !== -1) {
+        return false;
+    }
+
     if (e.which === 13) {
         e.preventDefault();
         $(this).blur();

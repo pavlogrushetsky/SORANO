@@ -34,5 +34,7 @@ namespace SORANO.WEB.ViewModels.Sale
         public bool AllowCreation { get; set; }     
         
         public bool ShowSelected { get; set; }
+
+        public string SearchCriteria { get; set; }
     }
 }

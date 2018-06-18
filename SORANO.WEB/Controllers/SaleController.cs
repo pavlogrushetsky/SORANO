@@ -298,9 +298,9 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpPost]
-        public IActionResult Refresh(int saleId, int locationId, bool selectedOnly)
+        public IActionResult Refresh(int saleId, int locationId, bool selectedOnly, string searchCriteria)
         {
-            return ViewComponent("SaleItems", new { saleId, locationId, selectedOnly });
+            return ViewComponent("SaleItems", new { saleId, locationId, selectedOnly, searchCriteria });
         }
 
         [HttpPost]

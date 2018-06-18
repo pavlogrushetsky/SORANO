@@ -102,7 +102,7 @@
                     <span class="input-group-addon"><i class="fa fa-fw fa-address-book"></i></span>
                     <select class="form-control input-sm select-client"
                             asp-for="ClientID"></select>
-                    <span hide-if="@(!Model.AllowCreation)" 
+                    <span hide-if="@(!Model.AllowCreation)"
                           class="input-group-btn">
                         <button class="btn btn-default btn-sm"
                                 asp-action="CreateClient"
@@ -184,15 +184,13 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <div class="row">
-                        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                             <div class="input-group input-group-sm pull-left">
-                                <input class="form-control input-sm" type="text" placeholder="Поиск ..." />
-                                <span class="input-group-addon">
-                                    <span class="fa fa-fw fa-search"></span>
-                                </span>
+                                <span class="input-group-addon"><i class="fa fa-fw fa-search"></i></span>
+                                <input class="form-control input-sm search" type="text" asp-for="SearchCriteria" placeholder="Введите артикул, тип артикула, код или штрих-код для поиска..." />
                             </div>
                         </div>
-                        <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                             <button class="btn btn-sm pull-right"
                                     id="refresh-sale-items"
                                     style="margin-left: 5px; background-color: inherit;"
@@ -212,7 +210,7 @@
                                 <i class="fa fa-fw fa-eye" style="color: #2c3e50;"></i>
                             </button>
                         </div>
-                    </div> 
+                    </div>
                 </div>
                 <div class="panel-body" id="sale-items-groups">
                     @await Component.InvokeAsync("SaleItems", new { saleId = Model.ID, locationId = Model.LocationID, selectedOnly = false })

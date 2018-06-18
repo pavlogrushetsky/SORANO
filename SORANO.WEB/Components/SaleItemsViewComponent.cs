@@ -18,9 +18,9 @@ namespace SORANO.WEB.Components
             _mapper = mapper;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(int saleId, int locationId, bool selectedOnly)
+        public async Task<IViewComponentResult> InvokeAsync(int saleId, int locationId, bool selectedOnly, string searchCriteria)
         {
-            var result = await _saleService.GetItemsAsync(saleId, locationId, selectedOnly);
+            var result = await _saleService.GetItemsAsync(saleId, locationId, selectedOnly, searchCriteria);
 
             var viewModel = new SaleItemsGroupsViewModel
             {
