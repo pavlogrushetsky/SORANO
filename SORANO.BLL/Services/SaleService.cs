@@ -24,9 +24,11 @@ namespace SORANO.BLL.Services
 
             var sales = await UnitOfWork.Get<Sale>().GetAllAsync();
 
+            var orderedSales = sales.OrderByDescending(s => s.ID);
+
             response.Result = !withDeleted
-                ? sales.Where(s => !s.IsDeleted).Select(s => s.ToDto())
-                : sales.Select(s => s.ToDto());
+                ? orderedSales.Where(s => !s.IsDeleted).Select(s => s.ToDto())
+                : orderedSales.Select(s => s.ToDto());
 
             return response;
         }

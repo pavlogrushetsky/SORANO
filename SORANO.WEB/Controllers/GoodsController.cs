@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SORANO.BLL.Dtos;
 using SORANO.BLL.Services;
+using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.ViewModels.Recommendation;
 
 namespace SORANO.WEB.Controllers
@@ -37,7 +38,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            var viewModel = new GoodsIndexViewModel();
+            var viewModel = Session.Get<GoodsIndexViewModel>("goods_filter") ?? new GoodsIndexViewModel();
 
             if (!LocationId.HasValue)
             {
@@ -135,6 +136,8 @@ namespace SORANO.WEB.Controllers
         [HttpPost]
         public IActionResult Filter(GoodsIndexViewModel model)
         {
+            Session.Set("goods_filter", model);
+
             return ViewComponent("Goods", new {model});
         }
 
@@ -144,6 +147,8 @@ namespace SORANO.WEB.Controllers
             var model = new GoodsIndexViewModel();
             if (LocationId.HasValue)
                 model.LocationID = LocationId.Value;
+
+            Session.Set("goods_filter", model);
 
             return ViewComponent("Goods", new { model });
         }

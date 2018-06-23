@@ -19,7 +19,7 @@ namespace SORANO.BLL.Extensions
                 User = model.User?.ToDto(),
                 IsSubmitted = model.IsSubmitted,
                 Date = model.Date,
-                TotalPrice = model.TotalPrice,
+                TotalPrice = model.TotalPrice ?? model.Goods.Sum(g => g.Price),
                 DollarRate = model.DollarRate,
                 IsCachless = model.IsCachless,
                 EuroRate = model.EuroRate,

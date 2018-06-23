@@ -11,6 +11,7 @@ using SORANO.WEB.ViewModels.ArticleType;
 using SORANO.WEB.ViewModels.Attachment;
 using SORANO.WEB.ViewModels.AttachmentType;
 using SORANO.WEB.ViewModels.Client;
+using SORANO.WEB.ViewModels.Common;
 using SORANO.WEB.ViewModels.Delivery;
 using SORANO.WEB.ViewModels.DeliveryItem;
 using SORANO.WEB.ViewModels.Goods;
@@ -429,6 +430,12 @@ namespace SORANO.WEB.Mappings
             #region Goods
 
             CreateMap<GoodsIndexViewModel, GoodsFilterCriteriaDto>();
+
+            CreateMap<PaginationSetDto<GoodsDto>, PaginationSet<GoodsItemViewModel>>()
+                .ForMember(
+                    dest => dest.Items,
+                    source => source.MapFrom(s => s.Items)
+                );
 
             CreateMap<GoodsDto, GoodsItemViewModel>()
                 .ForMember(

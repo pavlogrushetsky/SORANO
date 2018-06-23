@@ -63,9 +63,9 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<int>(targetLocationId);
         }
 
-        public async Task<ServiceResponse<IEnumerable<GoodsDto>>> GetAllAsync(GoodsFilterCriteriaDto criteria)
+        public async Task<ServiceResponse<PaginationSetDto<GoodsDto>>> GetAllAsync(GoodsFilterCriteriaDto criteria)
         {
-            var response = new SuccessResponse<IEnumerable<GoodsDto>>();
+            var response = new SuccessResponse<PaginationSetDto<GoodsDto>>();
 
             var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => !g.IsSold && !g.IsDeleted);
             var dtos = goods.Select(a =>
@@ -108,11 +108,26 @@ namespace SORANO.BLL.Services
                 result = result.Where(g => g.Storages.OrderBy(st => st.FromDate).Last().LocationID == criteria.LocationID);
 
             if (!string.IsNullOrWhiteSpace(criteria.SearchTerm))
-                result = result.Where(g => g.DeliveryItem.Article.Name.Contains(criteria.SearchTerm)
-                                           || g.DeliveryItem.Article.Type.Name.Contains(criteria.SearchTerm));
+                result = result.Where(g => g.DeliveryItem.Article.Name.ContainsIgnoreCase(criteria.SearchTerm)
+                                           || g.DeliveryItem.Article.Type.Name.ContainsIgnoreCase(criteria.SearchTerm)
+                                           || !string.IsNullOrEmpty(g.DeliveryItem.Article.Code) && g.DeliveryItem.Article.Code.ContainsIgnoreCase(criteria.SearchTerm)
+                                           || !string.IsNullOrEmpty(g.DeliveryItem.Article.Barcode) && g.DeliveryItem.Article.Barcode.ContainsIgnoreCase(criteria.SearchTerm)
+                                           || g.DeliveryItem.Article.Type.Type != null && g.DeliveryItem.Article.Type.Type.Name.ContainsIgnoreCase(criteria.SearchTerm));
 
-            response.Result = result;
+            var resultList = result.ToList();
+            var totalCount = resultList.Count;
 
+            response.Result = new PaginationSetDto<GoodsDto>
+            {
+                Items = resultList
+                    .Skip((criteria.Page - 1) * criteria.ShowNumber)
+                    .Take(criteria.ShowNumber)
+                    .ToList(),
+                Page = criteria.Page,
+                TotalCount = totalCount,
+                TotalPages = (int)Math.Ceiling((decimal)totalCount / criteria.ShowNumber)
+            };
+                                                              
             return response;
         }
 

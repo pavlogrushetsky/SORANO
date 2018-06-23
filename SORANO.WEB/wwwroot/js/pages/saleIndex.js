@@ -10,7 +10,6 @@ function initSalesDataTable() {
         "columnDefs": [
             { "orderable": false, "targets": -1 }
         ],
-        "order": [[0, "desc"]],
         "pagingType": "numbers",
         "language": {
             "lengthMenu": "Отобразить _MENU_ продаж на странице",

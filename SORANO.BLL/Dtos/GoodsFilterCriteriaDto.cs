@@ -15,5 +15,7 @@
         public bool ShowByPiece { get; set; }
 
         public int ShowNumber { get; set; }
+
+        public int Page { get; set; }
     }
 }

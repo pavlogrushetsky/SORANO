@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Dtos;
 using SORANO.BLL.Services;
 using SORANO.BLL.Services.Abstract;
+using SORANO.WEB.ViewModels.Common;
 using SORANO.WEB.ViewModels.Goods;
 
 namespace SORANO.WEB.Components
@@ -26,12 +27,18 @@ namespace SORANO.WEB.Components
 
             var result = await _goodsService.GetAllAsync(filterDto);
 
-            var viewModel = new List<GoodsItemViewModel>();
+            var viewModel = new PaginationSet<GoodsItemViewModel>
+            {
+                Page = 1,
+                TotalPages = 1,
+                TotalCount = 0,
+                Items = new List<GoodsItemViewModel>()
+            };
 
             if (result.Status != ServiceResponseStatus.Success)
                 return View(viewModel);
 
-            viewModel = _mapper.Map<List<GoodsItemViewModel>>(result.Result);
+            viewModel = _mapper.Map<PaginationSet<GoodsItemViewModel>>(result.Result);
             return View(viewModel);
         }
     }

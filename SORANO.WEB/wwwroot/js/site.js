@@ -54,11 +54,13 @@
         function () {
             if ($(this).text() === 'Войти') {
                 $(this).text('Вход...');
+                $(this).prop('disabled', true);
             }
             if ($(this).text() === 'Сохранить') {
                 $(this).text('Сохранение...');
+                $(this).prop('disabled', true);
             }           
-            $(this).prop('disabled', true);
+            
             $('form').submit();
         });
 });
@@ -406,7 +408,6 @@ function initDeliveriesDataTable() {
         "columnDefs": [
             { "orderable": false, "targets": -1 }
         ],
-        "order": [[0, "desc"]],
         "pagingType": "numbers",
         "language": {
             "lengthMenu": "Отобразить _MENU_ поставок на странице",

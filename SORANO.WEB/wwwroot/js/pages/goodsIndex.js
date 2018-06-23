@@ -8,7 +8,68 @@
     $(document).on('click', '.goods-expand', clickExpand);
     $(document).on('click', '.add-to-cart', clickAddToCart);
     $(document).on('click', '.add-to-cart.btn-success', clickSubmitAddToCart);
+    $(document).on('click', '.page', clickPage);
+    $(document).on('change', '#ShowNumber', resetPage);
+    $(document).on('change', '#ShowByPiece', resetPage);
+    $(document).on('change', '#ArticleID', resetPage);
+    $(document).on('change', '#ArticleTypeID', resetPage);
+    $(document).on('change', '#LocationID', resetPage);
+    $(document).on('change', '#Status', resetPage);
+
+    var wto;
+
+    $(document).on('input', '#SearchTerm', function (e) {
+        e.preventDefault();
+        clearTimeout(wto);
+        wto = setTimeout(function () {
+            resetPage();
+            loadGoods(false);
+        }, 1000);
+    });
+
+    loadGoods(true);
 });
+
+function resetPage() {
+    $('#Page').val(1);
+}
+
+function getParameters() {
+    return {
+        ArticleID: $('#ArticleID').val(),
+        ArticleName: $('#ArticleName').val(),
+        ArticleTypeID: $('#ArticleTypeID').val(),
+        ArticleTypeName: $('#ArticleTypeName').val(),
+        LocationID: $('#LocationID').val(),
+        LocationName: $('#LocationName').val(),
+        SearchTerm: $('#SearchTerm').val(),
+        Status: $('#Status').val(),
+        ShowByPiece: $('#ShowByPiece').val(),
+        ShowNumber: $('#ShowNumber').val(),
+        Page: $('#Page').val()
+    }
+}
+
+function loadGoods(init) {
+    $('.goods-cards-row').hide(100);
+    $('#progress-bar').animate({ opacity: 1.0 }, 100, function () {
+
+        var parameters = getParameters();
+
+        $('.goods-cards-row').load('/Goods/Filter', parameters, function () {
+            $('.goods-cards-row').show(100, function () {
+                if (init === false) {
+                    $('.panel').removeClass('panel-default');
+                    $('.panel').addClass('panel-info');
+                }
+                
+                initFilter();
+                initTooltip();
+                $('#progress-bar').animate({ opacity: 0.0 }, 100);
+            });
+        });
+    });   
+}
 
 function clickSubmitAddToCart(e) {
     e.preventDefault();
@@ -18,15 +79,7 @@ function clickSubmitAddToCart(e) {
     button.tooltip('hide');
 
     var parameters = {
-        model: {
-            ArticleID: $('#ArticleID').val(),
-            ArticleTypeID: $('#ArticleTypeID').val(),
-            LocationID: $('#LocationID').val(),
-            SearchTerm: $('#SearchTerm').val(),
-            Status: $('#Status').val(),
-            ShowByPiece: $('#ShowByPiece').val(),
-            ShowNumber: $('#ShowNumber').val()
-        },
+        model: getParameters(),
         goods: button.data('goods'),
         saleId: button.data('saleid')
     }
@@ -35,6 +88,26 @@ function clickSubmitAddToCart(e) {
         initFilter();
         initTooltip();
     });
+}
+
+function clickPage(e) {
+    e.preventDefault();
+
+    var button = $(this);
+    var anchor = button.find('a');
+    var pageNumber = anchor.text();
+
+    if (pageNumber === '...') {
+        if (button.hasClass('left')) {
+            $('#Page').val(parseInt($('#Page').val()) - 2);
+        } else {
+            $('#Page').val(parseInt($('#Page').val()) + 2);
+        }       
+    } else {
+        $('#Page').val(pageNumber);
+    }              
+
+    loadGoods(false);
 }
 
 function clickAddToCart(e) {
@@ -132,41 +205,34 @@ function initFilter() {
 function clickFilter(e) {
     e.preventDefault();
 
-    var parameters = {
-        ArticleID: $('#ArticleID').val(),
-        ArticleTypeID: $('#ArticleTypeID').val(),
-        LocationID: $('#LocationID').val(),
-        SearchTerm: $('#SearchTerm').val(),
-        Status: $('#Status').val(),
-        ShowByPiece: $('#ShowByPiece').val(),
-        ShowNumber: $('#ShowNumber').val()
-    };
-
-    $('.goods-cards-row').load('/Goods/Filter', parameters, function () {
-        $('.panel').removeClass('panel-default');
-        $('.panel').addClass('panel-info');
-        initFilter();
-        initTooltip();
-    });
+    loadGoods(false);
 }
 
 function clickResetFilter(e) {
     e.preventDefault();
 
-    $('.goods-cards-row').load('/Goods/ClearFilter', function () {
-        $('.panel').removeClass('panel-info');
-        $('.panel').addClass('panel-default');
-        initFilter();
-        resetFilter();
-        initTooltip();
-    });
+    $('.goods-cards-row').hide(100);
+    $('#progress-bar').animate({ opacity: 1.0 }, 100, function () {
+
+        $('.goods-cards-row').load('/Goods/ClearFilter', function () {
+            $('.goods-cards-row').show(100, function () {
+                $('.panel').removeClass('panel-info');
+                $('.panel').addClass('panel-default');
+                initFilter();
+                resetFilter();
+                initTooltip();
+                $('#progress-bar').animate({ opacity: 0.0 }, 100);
+            });
+        });
+    });   
 }
 
 function resetFilter() {    
     $('#SearchTerm').val("");
     $('#Status').val(0);
     $('#ShowByPiece').val("false");
-    $('#ShowNumber').val(10);    
+    $('#ShowNumber').val(10);
+    $('#Page').val(1);
     $('.select-article').val(null).trigger('change');
     $('.select-article-type').val(null).trigger('change');   
 
@@ -204,7 +270,8 @@ function clickExpand(e) {
         Status: status,
         ShowByPiece: true,
         SearchTerm: $('#SearchTerm').val(),
-        ShowNumber: $('#ShowNumber').val()
+        ShowNumber: $('#ShowNumber').val(),
+        Page: $('#Page').val()
     }
 
     $('.goods-cards-row').load('/Goods/Expand', parameters, function () {

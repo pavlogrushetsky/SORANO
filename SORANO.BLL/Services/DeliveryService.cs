@@ -24,9 +24,11 @@ namespace SORANO.BLL.Services
 
             var deliveries = await UnitOfWork.Get<Delivery>().GetAllAsync();
 
+            var orderedDeliveries = deliveries.OrderByDescending(d => d.ID);
+
             response.Result = !withDeleted
-                ? deliveries.Where(d => !d.IsDeleted).Select(d => d.ToDto())
-                : deliveries.Select(d => d.ToDto());
+                ? orderedDeliveries.Where(d => !d.IsDeleted).Select(d => d.ToDto())
+                : orderedDeliveries.Select(d => d.ToDto());
 
             return response;
         }
@@ -37,9 +39,11 @@ namespace SORANO.BLL.Services
 
             var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(s => !locationId.HasValue || s.LocationID == locationId.Value);
 
+            var orderedDeliveries = deliveries.OrderByDescending(d => d.ID);
+
             response.Result = !withDeleted
-                ? deliveries.Where(d => !d.IsDeleted).Select(d => d.ToDto())
-                : deliveries.Select(d => d.ToDto());
+                ? orderedDeliveries.Where(d => !d.IsDeleted).Select(d => d.ToDto())
+                : orderedDeliveries.Select(d => d.ToDto());
 
             return response;
         }
