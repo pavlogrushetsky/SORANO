@@ -52,16 +52,17 @@
 
     $('button[type=submit]').on('click',
         function () {
-            if ($(this).text() === 'Войти') {
+            if ($(this).text().indexOf('Войти') > -1) {
                 $(this).text('Вход...');
                 $(this).prop('disabled', true);
+                $('form').submit();
             }
-            if ($(this).text() === 'Сохранить') {
+
+            if ($(this).text().indexOf('Сохранить') > -1) {
                 $(this).text('Сохранение...');
-                $(this).prop('disabled', true);
-            }           
-            
-            $('form').submit();
+                $(this).prop('disabled', true);    
+                $('form').submit();
+            }               
         });
 });
 
@@ -341,6 +342,7 @@ function initArticlesDataTable() {
         responsive: true,
         "autoWidth": false,
         "scrollX": false,
+        "deferRender": true,
         "columnDefs": [
             { "orderable": false, "targets": -1 }
         ],
@@ -405,6 +407,8 @@ function initDeliveriesDataTable() {
         responsive: true,
         "autoWidth": false,
         "scrollX": false,
+        "aaSorting": [],
+        "deferRender": true,
         "columnDefs": [
             { "orderable": false, "targets": -1 }
         ],

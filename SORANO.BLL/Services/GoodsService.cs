@@ -63,70 +63,88 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<int>(targetLocationId);
         }
 
+        private bool GoodsFilterPredicate(Goods goods, GoodsFilterCriteriaDto filterCriteria)
+        {
+            return !goods.IsSold 
+                && !goods.IsDeleted
+                && (filterCriteria.Status == 0 && !goods.SaleID.HasValue || filterCriteria.Status == 1 && goods.SaleID.HasValue || filterCriteria.Status != 0 && filterCriteria.Status != 1)
+                && (filterCriteria.ArticleID <= 0 || goods.DeliveryItem.ArticleID == filterCriteria.ArticleID)
+                && (filterCriteria.ArticleTypeID <= 0 || goods.DeliveryItem.Article.TypeID == filterCriteria.ArticleTypeID)
+                && (filterCriteria.LocationID <= 0 || goods.Storages.OrderBy(st => st.FromDate).Last().LocationID == filterCriteria.LocationID)
+                && (string.IsNullOrEmpty(filterCriteria.SearchTerm) || goods.DeliveryItem.Article.Name.ContainsIgnoreCase(filterCriteria.SearchTerm)
+                                                                    || goods.DeliveryItem.Article.Type.Name.ContainsIgnoreCase(filterCriteria.SearchTerm)
+                                                                    || !string.IsNullOrEmpty(goods.DeliveryItem.Article.Code) && goods.DeliveryItem.Article.Code.ContainsIgnoreCase(filterCriteria.SearchTerm)
+                                                                    || !string.IsNullOrEmpty(goods.DeliveryItem.Article.Barcode) && goods.DeliveryItem.Article.Barcode.ContainsIgnoreCase(filterCriteria.SearchTerm)
+                                                                    || goods.DeliveryItem.Article.Type.ParentType != null && goods.DeliveryItem.Article.Type.ParentType.Name.ContainsIgnoreCase(filterCriteria.SearchTerm));
+        }
+
         public async Task<ServiceResponse<PaginationSetDto<GoodsDto>>> GetAllAsync(GoodsFilterCriteriaDto criteria)
         {
             var response = new SuccessResponse<PaginationSetDto<GoodsDto>>();
 
-            var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => !g.IsSold && !g.IsDeleted);
-            var dtos = goods.Select(a =>
-            {
-                var dto = a.ToDto();
-                dto.IDs = new List<int> {dto.ID};
-                return dto;
-            }).ToList();
-
-            IEnumerable<GoodsDto> result;
             if (criteria.ShowByPiece)
-                result = dtos;
-            else
-                result = dtos.GroupBy(g => new
-                {
-                    g.DeliveryItem.ArticleID,                    
-                    g.SaleID.HasValue,
-                    g.Storages.OrderBy(st => st.FromDate).Last().LocationID
-                }).Select(gg =>
-                {
-                    var firstInGroup = gg.First();
-                    firstInGroup.IDs = gg.Select(g => g.ID).ToList();
-                    firstInGroup.Quantity = gg.Count();
-
-                    return firstInGroup;
-                });
-
-            if (criteria.Status == 0)
-                result = result.Where(g => !g.SaleID.HasValue);
-            else if (criteria.Status == 1)
-                result = result.Where(g => g.SaleID.HasValue);
-
-            if (criteria.ArticleID > 0)
-                result = result.Where(g => g.DeliveryItem.ArticleID == criteria.ArticleID);
-
-            if (criteria.ArticleTypeID > 0)
-                result = result.Where(g => g.DeliveryItem.Article.TypeID == criteria.ArticleTypeID);
-
-            if (criteria.LocationID > 0)
-                result = result.Where(g => g.Storages.OrderBy(st => st.FromDate).Last().LocationID == criteria.LocationID);
-
-            if (!string.IsNullOrWhiteSpace(criteria.SearchTerm))
-                result = result.Where(g => g.DeliveryItem.Article.Name.ContainsIgnoreCase(criteria.SearchTerm)
-                                           || g.DeliveryItem.Article.Type.Name.ContainsIgnoreCase(criteria.SearchTerm)
-                                           || !string.IsNullOrEmpty(g.DeliveryItem.Article.Code) && g.DeliveryItem.Article.Code.ContainsIgnoreCase(criteria.SearchTerm)
-                                           || !string.IsNullOrEmpty(g.DeliveryItem.Article.Barcode) && g.DeliveryItem.Article.Barcode.ContainsIgnoreCase(criteria.SearchTerm)
-                                           || g.DeliveryItem.Article.Type.Type != null && g.DeliveryItem.Article.Type.Type.Name.ContainsIgnoreCase(criteria.SearchTerm));
-
-            var resultList = result.ToList();
-            var totalCount = resultList.Count;
-
-            response.Result = new PaginationSetDto<GoodsDto>
             {
-                Items = resultList
+                var allGoods = await UnitOfWork.Get<Goods>()
+                    .GetAllAsync()
+                    .ContinueWith(r => r.Result.Where(g => GoodsFilterPredicate(g, criteria)).ToList());
+
+                var goods = allGoods
                     .Skip((criteria.Page - 1) * criteria.ShowNumber)
                     .Take(criteria.ShowNumber)
-                    .ToList(),
-                Page = criteria.Page,
-                TotalCount = totalCount,
-                TotalPages = (int)Math.Ceiling((decimal)totalCount / criteria.ShowNumber)
-            };
+                    .Select(a =>
+                    {
+                        var dto = a.ToDto();
+                        dto.IDs = new List<int> { dto.ID };
+                        return dto;
+                    })
+                    .ToList();
+
+                response.Result = new PaginationSetDto<GoodsDto>
+                {
+                    Items = goods,
+                    Page = criteria.Page,
+                    TotalCount = allGoods.Count,
+                    TotalPages = (int)Math.Ceiling((decimal)allGoods.Count / criteria.ShowNumber)
+                };
+            }
+            else
+            {
+                var allGroups = await UnitOfWork.Get<Goods>()
+                    .GetAllAsync()
+                    .ContinueWith(r =>
+                    {
+                        return r.Result
+                            .Where(g => GoodsFilterPredicate(g, criteria))
+                            .GroupBy(g => new
+                            {
+                                 g.DeliveryItem.ArticleID,
+                                 g.SaleID.HasValue,
+                                 g.Storages.OrderBy(st => st.FromDate).Last().LocationID
+                            })
+                            .ToList();
+                    });
+                    
+                var groups = allGroups
+                    .Skip((criteria.Page - 1) * criteria.ShowNumber)
+                    .Take(criteria.ShowNumber)
+                    .Select(gg =>
+                    {
+                        var firstInGroup = gg.First().ToDto();
+                        firstInGroup.IDs = gg.Select(g => g.ID).ToList();
+                        firstInGroup.Quantity = gg.Count();
+
+                        return firstInGroup;
+                    })
+                    .ToList();
+
+                response.Result = new PaginationSetDto<GoodsDto>
+                {
+                    Items = groups,
+                    Page = criteria.Page,
+                    TotalCount = allGroups.Count,
+                    TotalPages = (int)Math.Ceiling((decimal)allGroups.Count / criteria.ShowNumber)
+                };
+            }            
                                                               
             return response;
         }

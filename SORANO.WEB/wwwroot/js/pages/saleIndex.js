@@ -7,6 +7,8 @@ function initSalesDataTable() {
         responsive: true,
         "autoWidth": false,
         "scrollX": false,
+        "aaSorting": [],
+        "deferRender": true,
         "columnDefs": [
             { "orderable": false, "targets": -1 }
         ],
