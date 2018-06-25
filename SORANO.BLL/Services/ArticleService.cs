@@ -24,9 +24,11 @@ namespace SORANO.BLL.Services
 
             var articles = await UnitOfWork.Get<Article>().GetAllAsync();
 
+            var orderedArticles = articles.OrderByDescending(a => a.ModifiedDate);
+
             response.Result = !withDeleted 
-                ? articles.Where(a => !a.IsDeleted).Select(a => a.ToDto()) 
-                : articles.Select(a => a.ToDto());
+                ? orderedArticles.Where(a => !a.IsDeleted).Select(a => a.ToDto()) 
+                : orderedArticles.Select(a => a.ToDto());
 
             return response;
         }
@@ -160,7 +162,7 @@ namespace SORANO.BLL.Services
                 return response;
             }
 
-            response.Result = searched.Where(t => !t.IsDeleted).Select(t => t.ToDto());
+            response.Result = searched.Where(t => !t.IsDeleted).OrderByDescending(a => a.ModifiedDate).Select(t => t.ToDto());
             return response;
         }
     }

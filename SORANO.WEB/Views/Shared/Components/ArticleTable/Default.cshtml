@@ -34,7 +34,7 @@
         @foreach (var article in Model.Articles)
         {
             <tr class="@(article.IsDeleted ? "danger" : "")">
-                <td>@article.Modified</td>
+                <td><span class="hide">@article.ModifiedStandard</span>@article.Modified</td>
                 <td>@article.Code</td>
                 <td>
                     <a asp-controller="Article"

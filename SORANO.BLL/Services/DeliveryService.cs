@@ -24,7 +24,7 @@ namespace SORANO.BLL.Services
 
             var deliveries = await UnitOfWork.Get<Delivery>().GetAllAsync();
 
-            var orderedDeliveries = deliveries.OrderByDescending(d => d.ID);
+            var orderedDeliveries = deliveries.OrderByDescending(d => d.DeliveryDate);
 
             response.Result = !withDeleted
                 ? orderedDeliveries.Where(d => !d.IsDeleted).Select(d => d.ToDto())
@@ -39,7 +39,7 @@ namespace SORANO.BLL.Services
 
             var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(s => !locationId.HasValue || s.LocationID == locationId.Value);
 
-            var orderedDeliveries = deliveries.OrderByDescending(d => d.ID);
+            var orderedDeliveries = deliveries.OrderByDescending(d => d.DeliveryDate);
 
             response.Result = !withDeleted
                 ? orderedDeliveries.Where(d => !d.IsDeleted).Select(d => d.ToDto())

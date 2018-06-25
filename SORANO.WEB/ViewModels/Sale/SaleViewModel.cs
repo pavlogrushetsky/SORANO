@@ -18,6 +18,8 @@
 
         public string Date { get; set; }
 
+        public string DateStandard { get; set; }
+
         public string TotalPrice { get; set; }
 
         public int LocationID { get; set; }

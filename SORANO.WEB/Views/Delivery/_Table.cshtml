@@ -37,7 +37,7 @@
         @foreach (var delivery in Model.Items)
         {
             <tr class="@(delivery.IsDeleted ? "danger" : "")">
-                <td>@delivery.DeliveryDate</td>
+                <td><span class="hide">@delivery.DeliveryDateStandard</span>@delivery.DeliveryDate</td>
                 <td>
                     <a asp-controller="Delivery"
                        asp-action="Details"
@@ -71,7 +71,7 @@
                         @delivery.LocationName
                     </a>
                 </td>               
-                <td>@delivery.PaymentDate</td>
+                <td><span class="hide">@delivery.PaymentDateStandard</span>@delivery.PaymentDate</td>
                 <td>@delivery.DeliveryItemsCount</td>
                 <td>@delivery.TotalPrice @delivery.Currency</td>
                 <td>

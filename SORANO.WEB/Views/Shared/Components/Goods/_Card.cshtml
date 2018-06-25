@@ -5,6 +5,9 @@
     <div class="card-body">
         <h5>@Model.ArticleTypeName</h5>
         <h6 class="text-muted">@Model.ArticleDescription</h6>
+        <hide-if hide-if="@(string.IsNullOrWhiteSpace(Model.ArticleCode))">
+            <h5>Код: <b>@Model.ArticleCode</b></h5>
+        </hide-if>        
     </div>
     <img hide-if="@(string.IsNullOrWhiteSpace(Model.ImagePath))" 
          style="height: 200px; width: 100%; display: block; border: none;" 

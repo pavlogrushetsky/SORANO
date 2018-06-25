@@ -218,6 +218,10 @@ namespace SORANO.WEB.Mappings
                 .ForMember(
                     dest => dest.TypeName,
                     source => source.MapFrom(s => s.Type.Type == null ? s.Type.Name : $"{s.Type.Type.Name}  {'\u21d0'}  {s.Type.Name}")
+                )
+                .ForMember(
+                    dest => dest.ModifiedStandard,
+                    source => source.MapFrom(s => s.Modified.ToString("yyyyMMdd"))
                 );
 
             #endregion
@@ -271,6 +275,13 @@ namespace SORANO.WEB.Mappings
                 .ForMember(
                     dest => dest.CanBeUpdated,
                     source => source.MapFrom(s => s.CanBeDeleted)
+                )
+                .ForMember(
+                    dest => dest.DeliveryDateStandard,
+                    source => source.MapFrom(s => s.DeliveryDate.ToString("yyyyMMdd"))
+                ).ForMember(
+                    dest => dest.PaymentDateStandard,
+                    source => source.MapFrom(s => s.PaymentDate == null ? string.Empty : s.PaymentDate.Value.ToString("yyyyMMdd"))
                 );
             CreateMap<IEnumerable<DeliveryDto>, DeliveryIndexViewModel>()
                 .ForMember(
@@ -368,6 +379,10 @@ namespace SORANO.WEB.Mappings
                 .ForMember(
                     dest => dest.CanBeUpdated,
                     source => source.MapFrom(s => s.CanBeDeleted)
+                )
+                .ForMember(
+                    dest => dest.DateStandard,
+                    source => source.MapFrom(s => s.Date == null ? string.Empty : s.Date.Value.ToString("yyyyMMdd"))
                 );
             CreateMap<IEnumerable<SaleDto>, SaleIndexViewModel>()
                 .ForMember(
@@ -453,6 +468,10 @@ namespace SORANO.WEB.Mappings
                 .ForMember(
                     dest => dest.ArticleDescription,
                     source => source.MapFrom(s => s.DeliveryItem.Article.Description)
+                )
+                .ForMember(
+                    dest => dest.ArticleCode,
+                    source => source.MapFrom(s => s.DeliveryItem.Article.Code)
                 )
                 .ForMember(
                     dest => dest.ArticleTypeID,

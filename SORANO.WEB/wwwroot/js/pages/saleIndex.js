@@ -10,7 +10,9 @@ function initSalesDataTable() {
         "aaSorting": [],
         "deferRender": true,
         "columnDefs": [
-            { "orderable": false, "targets": -1 }
+            { "orderable": false, "targets": -1 },
+            { type: "currency", "targets": -4 },
+            { type: "num", "targets": -5 }
         ],
         "pagingType": "numbers",
         "language": {

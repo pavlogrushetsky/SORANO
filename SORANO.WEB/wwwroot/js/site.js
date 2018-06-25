@@ -1,6 +1,19 @@
 ﻿$(document).ready(function () {
     initTooltip();
     
+    if ($.fn.dataTableExt !== undefined) { 
+        jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+            "currency-pre": function (a) {
+                return parseFloat(a.split(' ')[0].replace(',', '.'));
+            },
+            "currency-asc": function (a, b) {
+                return a - b;
+            },
+            "currency-desc": function (a, b) {
+                return b - a;
+            }
+        });
+    }
 
     $("input.input-validation-error").closest(".input-group").addClass("has-error");
     $("select.input-validation-error").closest(".input-group").addClass("has-error");
@@ -343,10 +356,11 @@ function initArticlesDataTable() {
         "autoWidth": false,
         "scrollX": false,
         "deferRender": true,
+        "aaSorting": [],
         "columnDefs": [
-            { "orderable": false, "targets": -1 }
+            { "orderable": false, "targets": -1 },
+            { type: "currency", "targets": -2 }
         ],
-        "order": [[0, "desc"]],
         "pagingType": "numbers",
         "language": {
             "lengthMenu": "Отобразить _MENU_ артикулов на странице",
@@ -410,7 +424,9 @@ function initDeliveriesDataTable() {
         "aaSorting": [],
         "deferRender": true,
         "columnDefs": [
-            { "orderable": false, "targets": -1 }
+            { "orderable": false, "targets": -1 },
+            { type: "currency", "targets": -3 },
+            { type: "num", "targets": -4 }
         ],
         "pagingType": "numbers",
         "language": {

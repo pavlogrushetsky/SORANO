@@ -2,6 +2,10 @@
     padding-top: 50px;
 }
 
+.hide {
+    display: none;
+}
+
 .navbar-default .navbar-brand {
     color: #2c3e50;
     background-color: #f4eb42;

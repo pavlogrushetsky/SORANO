@@ -8,7 +8,11 @@
 
         public string DeliveryDate { get; set; }
 
+        public string DeliveryDateStandard { get; set; }
+
         public string PaymentDate { get; set; }
+
+        public string PaymentDateStandard { get; set; }
 
         public int DeliveryItemsCount { get; set; }
 

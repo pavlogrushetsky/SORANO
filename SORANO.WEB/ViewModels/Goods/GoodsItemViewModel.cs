@@ -10,6 +10,8 @@
 
         public string ArticleDescription { get; set; }
 
+        public string ArticleCode { get; set; }
+
         public int ArticleTypeID { get; set; }
 
         public string ArticleTypeName { get; set; }
