@@ -121,7 +121,7 @@
                     <tbody>
                         @foreach (var sale in Model.Items)
                         {
-                            <tr class="@(sale.IsDeleted ? "danger" : "")">
+                            <tr class="@(sale.IsWriteOff ? "warning" : "")">
                                 <td><span class="hide">@sale.DateStandard</span>@sale.Date</td>
                                 <td hide-if="@(!Model.ShowLocation)">
                                     <a asp-controller="Location"

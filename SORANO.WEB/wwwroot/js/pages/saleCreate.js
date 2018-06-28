@@ -66,6 +66,12 @@
         }, 1000);        
     });
 
+    $(document).on('change', "#IsWriteOff", function(e) {
+        e.preventDefault();
+
+        disableInputs();
+    });
+
     $(document).on('click', '#refresh-sale-items', function(e) {
         e.preventDefault();
 
@@ -401,6 +407,16 @@
     updateCurrencyRates();
 });
 
+function disableInputs() {
+    if ($('#IsWriteOff').is(':checked')) {
+        $('.sale-item-price').attr('disabled', true);
+        $('.sale-items-group-price').attr('disabled', true);
+    } else {
+        $('.sale-item-price').attr('disabled', false);
+        $('.sale-items-group-price').attr('disabled', false);
+    }
+}
+
 function initSaleItemsTree() {
     $('.sale-items-groups-tree > ul > li > table').attr('title', 'Свернуть ветку');
     $('.sale-items-groups-tree > ul > li > table').on('click', function (e) {
@@ -419,6 +435,7 @@ function initSaleItemsTree() {
             e.stopPropagation();
         }
     });
+    disableInputs();
 }
 
 function updateCurrencyRates() {

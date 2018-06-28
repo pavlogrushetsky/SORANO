@@ -62,6 +62,10 @@
                 <span class="label label@(Model.IsSubmitted ? "-success" : "-warning")">
                     @(Model.IsSubmitted ? "Подтверждено" : "Не подтверждено")
                 </span>
+                @if (Model.IsWriteOff)
+                {
+                    <span class="label label-default" style="margin-left: 5px;">Списание</span>
+                }
             </dd>
             <dt>@Html.DisplayNameFor(model => model.TotalPrice)</dt>
             <dd>@Html.DisplayFor(model => model.TotalPrice) @Model.Currency</dd>

@@ -21,6 +21,8 @@ namespace SORANO.BLL.Dtos
 
         public bool IsCachless { get; set; }
 
+        public bool IsWriteOff { get; set; }
+
         public DateTime? Date { get; set; }
 
         public ClientDto Client { get; set; }

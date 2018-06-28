@@ -22,6 +22,7 @@ namespace SORANO.BLL.Extensions
                 TotalPrice = model.TotalPrice ?? model.Goods.Sum(g => g.Price),
                 DollarRate = model.DollarRate,
                 IsCachless = model.IsCachless,
+                IsWriteOff = model.IsWriteOff,
                 EuroRate = model.EuroRate,
                 Goods = model.Goods.Where(di => !di.IsDeleted).Select(i => i.ToDto())
             };
@@ -45,6 +46,7 @@ namespace SORANO.BLL.Extensions
                 DollarRate = dto.DollarRate,
                 EuroRate = dto.EuroRate,
                 IsCachless = dto.IsCachless,
+                IsWriteOff = dto.IsWriteOff,
                 IsSubmitted = dto.IsSubmitted,
                 Recommendations = dto.Recommendations?.Select(r => r.ToEntity()).ToList(),
                 Attachments = dto.Attachments?.Select(a => a.ToEntity()).ToList()
@@ -62,6 +64,7 @@ namespace SORANO.BLL.Extensions
             existentSale.IsSubmitted = newSale.IsSubmitted;
             existentSale.LocationID = newSale.LocationID;
             existentSale.IsCachless = newSale.IsCachless;
+            existentSale.IsWriteOff = newSale.IsWriteOff;
         }
     }
 }

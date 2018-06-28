@@ -86,18 +86,23 @@ namespace SORANO.BLL.Services
             existentSale.UpdateFields(entity);
             existentSale.UpdateModifiedFields(userId);
 
-            if (sale.IsSubmitted)
+            foreach (var goods in existentSale.Goods)
             {
-                foreach (var goods in existentSale.Goods)
+                if (sale.IsSubmitted)
                 {
                     goods.IsSold = true;
                     goods.Storages.OrderBy(st => st.FromDate).Last().ToDate = DateTime.Now;
-                    goods.UpdateModifiedFields(userId);
-                    UnitOfWork.Get<Goods>().Update(goods);
                 }
 
-                existentSale.TotalPrice = existentSale.Goods.Sum(g => g.Price);
+                if (sale.IsWriteOff)
+                    goods.Price = 0.0M;
+
+                goods.UpdateModifiedFields(userId);                    
+
+                UnitOfWork.Get<Goods>().Update(goods);
             }
+
+            existentSale.TotalPrice = sale.IsWriteOff ? 0.0M : existentSale.Goods.Sum(g => g.Price);
 
             UpdateAttachments(entity, existentSale, userId);
             UpdateRecommendations(entity, existentSale, userId);
@@ -354,7 +359,7 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<SaleItemsGroupsDto>(saleItemsGroupsDto);
         }
 
-        public async Task<ServiceResponse<bool>> ValidateItemsForAsync(int saleId)
+        public async Task<ServiceResponse<bool>> ValidateItemsForAsync(int saleId, bool isWriteOff)
         {
             if (saleId == 0)
                 return new ServiceResponse<bool>(ServiceResponseStatus.InvalidOperation);
@@ -364,7 +369,7 @@ namespace SORANO.BLL.Services
             if (!sale.Goods.Any())
                 return new SuccessResponse<bool>();
 
-            return sale.Goods.All(g => g.Price.HasValue && g.Price.Value > 0M) 
+            return sale.Goods.All(g => isWriteOff || g.Price.HasValue && g.Price.Value > 0M) 
                 ? new SuccessResponse<bool>(true) 
                 : new SuccessResponse<bool>();
         }

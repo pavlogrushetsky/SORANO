@@ -24,6 +24,8 @@ namespace SORANO.CORE.StockEntities
 
         public bool IsCachless { get; set; }
 
+        public bool IsWriteOff { get; set; }
+
         public virtual Client Client { get; set; }
 
         public virtual Location Location { get; set; }

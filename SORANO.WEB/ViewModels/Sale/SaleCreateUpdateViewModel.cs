@@ -27,6 +27,9 @@ namespace SORANO.WEB.ViewModels.Sale
         [Display(Name = "Безналичный расчёт")]
         public bool IsCachless { get; set; }
 
+        [Display(Name = "Провести как списание")]
+        public bool IsWriteOff { get; set; }
+
         public bool IsSubmitted { get; set; }
 
         public bool AllowChangeLocation { get; set; } = true;

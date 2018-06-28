@@ -546,3 +546,11 @@ li.sale-group-selected > table > tbody > tr {
 .sale-items-groups-tree li:last-child::before {
     height: 30px
 }
+
+.table > tbody > tr.warning > td {
+    background-color: #f5cc8b;
+}
+
+.table > tbody > tr.warning:hover > td {
+    background-color: #f3c06f;
+}

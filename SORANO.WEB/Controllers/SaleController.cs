@@ -228,11 +228,13 @@ namespace SORANO.WEB.Controllers
 
                 if (model.IsSubmitted)
                 {
-                    var itemsValid = await _saleService.ValidateItemsForAsync(model.ID);
+                    var itemsValid = await _saleService.ValidateItemsForAsync(model.ID, model.IsWriteOff);
                     if (itemsValid.Status != ServiceResponseStatus.Success || !itemsValid.Result)
                     {
                         ModelState.AddModelError("", "Продажа должна содержать товары.");
-                        ModelState.AddModelError("", "Для всех товаров должна быть установлена цена.");
+
+                        if (!model.IsWriteOff)
+                            ModelState.AddModelError("", "Для всех товаров должна быть установлена цена.");
                     }
                 }
 
@@ -268,11 +270,13 @@ namespace SORANO.WEB.Controllers
 
                 if (model.IsSubmitted)
                 {
-                    var itemsValid = await _saleService.ValidateItemsForAsync(model.ID);
+                    var itemsValid = await _saleService.ValidateItemsForAsync(model.ID, model.IsWriteOff);
                     if (itemsValid.Status != ServiceResponseStatus.Success || !itemsValid.Result)
                     {
                         ModelState.AddModelError("", "Продажа должна содержать товары.");
-                        ModelState.AddModelError("", "Для всех товаров должна быть установлена цена.");
+
+                        if (!model.IsWriteOff)
+                            ModelState.AddModelError("", "Для всех товаров должна быть установлена цена.");
                     }
                 }
 

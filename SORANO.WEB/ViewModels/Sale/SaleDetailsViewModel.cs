@@ -34,6 +34,9 @@ namespace SORANO.WEB.ViewModels.Sale
         [Display(Name = "Расчёт")]
         public bool IsCachless { get; set; }
 
+        [Display(Name = "Списание")]
+        public bool IsWriteOff { get; set; }
+
         public int UserId { get; set; }
 
         [Display(Name = "Продавец")]
