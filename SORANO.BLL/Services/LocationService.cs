@@ -182,5 +182,51 @@ namespace SORANO.BLL.Services
                 ? new SuccessResponse<LocationDto>(defaultLocation) 
                 : new ServiceResponse<LocationDto>(ServiceResponseStatus.NotFound);
         }
+
+        public async Task<ServiceResponse<SummaryDto>> GetSummary(int? locationId)
+        {
+            var sales = await UnitOfWork.Get<Sale>().FindByAsync(s =>
+                s.IsSubmitted && !s.IsDeleted && (!locationId.HasValue || s.LocationID == locationId.Value));
+
+            var salesTotal = sales.Sum(s =>
+            {
+                if (s.DollarRate.HasValue)
+                    return s.TotalPrice * s.DollarRate ?? 0.0M;
+
+                if (s.EuroRate.HasValue)
+                    return s.TotalPrice * s.EuroRate ?? 0.0M;
+
+                return s.TotalPrice ?? 0.0M;
+            });
+
+            var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => !g.IsDeleted);
+
+            var filteredGoods = goods.Where(g =>
+                    !locationId.HasValue || g.Storages.OrderBy(st => st.FromDate).Last().LocationID == locationId.Value)
+                .ToList();
+
+            var deliveriesTotal = filteredGoods.Sum(g =>
+            {
+                var delivery = g.DeliveryItem.Delivery;
+                var discountedPrice = g.DeliveryItem.DiscountedPrice;
+
+                if (delivery.DollarRate.HasValue)
+                    return discountedPrice * delivery.DollarRate.Value;
+
+                if (delivery.EuroRate.HasValue)
+                    return discountedPrice * delivery.EuroRate.Value;
+
+                return g.DeliveryItem.DiscountedPrice;
+            });
+
+            var goodsCount = filteredGoods.Count(g => !g.IsSold);
+
+            return new SuccessResponse<SummaryDto>(new SummaryDto
+            {
+                GoodsCount = goodsCount,
+                TotalIncome = deliveriesTotal,
+                TotalSales = salesTotal
+            });
+        }
     }
 }

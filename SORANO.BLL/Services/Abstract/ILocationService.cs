@@ -11,5 +11,7 @@ namespace SORANO.BLL.Services.Abstract
         Task<ServiceResponse<IEnumerable<LocationDto>>> GetAllAsync(bool withDeleted, string searchTerm, int currentLocationId);
 
         Task<ServiceResponse<LocationDto>> GetDefaultLocationAsync();
+
+        Task<ServiceResponse<SummaryDto>> GetSummary(int? locationId);
     }
 }

@@ -69,6 +69,7 @@
     <Compile Include="Dtos\SaleItemsGroupsDto.cs" />
     <Compile Include="Dtos\SaleItemsSummaryDto.cs" />
     <Compile Include="Dtos\StorageDto.cs" />
+    <Compile Include="Dtos\SummaryDto.cs" />
     <Compile Include="Dtos\SupplierDto.cs" />
     <Compile Include="Dtos\UserActivityDto.cs" />
     <Compile Include="Dtos\UserActivityType.cs" />

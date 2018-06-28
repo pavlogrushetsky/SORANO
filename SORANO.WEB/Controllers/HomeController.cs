@@ -12,17 +12,14 @@ namespace SORANO.WEB.Controllers
     [CheckUser]
     public class HomeController : BaseController
     {
-        private readonly IDeliveryService _deliveryService;
-        private readonly IGoodsService _goodsService;
+        private readonly ILocationService _locationService;
 
-        public HomeController(IDeliveryService deliveryService, 
-            IGoodsService goodsService, 
+        public HomeController(ILocationService locationService, 
             IUserService userService,
             IExceptionService exceptionService) 
             : base(userService, exceptionService)
         {
-            _deliveryService = deliveryService;
-            _goodsService = goodsService;
+            _locationService = locationService;
         }
 
         public async Task<IActionResult> Index()
@@ -32,14 +29,27 @@ namespace SORANO.WEB.Controllers
                 ? (int?)null
                 : int.Parse(locationIdStr);
 
-            var deliveriesCount = await _deliveryService.GetSubmittedCountAsync(locationId);
-            var totalIncome = await _goodsService.GetTotalIncomeAsync();
+            var summary = await _locationService.GetSummary(locationId);
 
             return View(new DashboardModel
             {
-                DeliveriesCount = deliveriesCount.Result,
-                TotalIncome = Math.Round(totalIncome.Result) + " ₴"
+                TotalIncome = Format(summary.Result.TotalIncome),
+                TotalSales = Format(summary.Result.TotalSales),
+                Balance = Format(summary.Result.Balance),
+                GoodsCount = summary.Result.GoodsCount,
+                IsBalancePositive = summary.Result.IsBalancePositive
             });
+        }
+
+        private string Format(decimal value)
+        {
+            if (value > -1000.0M && value < 1000.0M)
+                return Math.Round(value) + " ₴";
+
+            if (value > -1000000.0M && value < 1000000.0M)
+                return Math.Round(value / 1000) + " тыс. ₴";
+
+            return Math.Round(value / 1000000) + " млн. ₴";                       
         }
     }
 }
