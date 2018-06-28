@@ -19,7 +19,7 @@
         @foreach (var locationType in Model)
         {
             <tr>
-                <td>@locationType.Modified</td>
+                <td><span class="hide">@locationType.ModifiedStandard</span>@locationType.Modified</td>
                 <td>
                     <a asp-controller="LocationType"
                        asp-action="Details"

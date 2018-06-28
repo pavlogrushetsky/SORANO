@@ -24,9 +24,11 @@ namespace SORANO.BLL.Services
 
             var clients = await UnitOfWork.Get<Client>().GetAllAsync();
 
+            var orderedClients = clients.OrderByDescending(c => c.ModifiedDate);
+
             response.Result = !withDeleted
-                ? clients.Where(c => !c.IsDeleted).Select(c => c.ToDto())
-                : clients.Select(c => c.ToDto());
+                ? orderedClients.Where(c => !c.IsDeleted).Select(c => c.ToDto())
+                : orderedClients.Select(c => c.ToDto());
 
             return response;
         }
@@ -108,9 +110,11 @@ namespace SORANO.BLL.Services
 
             var clients = await UnitOfWork.Get<Client>().GetAllAsync();
 
+            var orderedClients = clients.OrderByDescending(c => c.ModifiedDate);
+
             var term = searchTerm?.ToLower();
 
-            var searched = clients
+            var searched = orderedClients
                 .Where(l => string.IsNullOrEmpty(term)
                     || l.Name.ToLower().Contains(term)
                     || !string.IsNullOrWhiteSpace(l.Description) && l.Description.ToLower().Contains(term));

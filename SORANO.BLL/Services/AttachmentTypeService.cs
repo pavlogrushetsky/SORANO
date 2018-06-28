@@ -24,9 +24,11 @@ namespace SORANO.BLL.Services
 
             var attachmentTypes = await UnitOfWork.Get<AttachmentType>().GetAllAsync();
 
+            var orderedAttachmentTypes = attachmentTypes.OrderByDescending(at => at.ModifiedDate);
+
             response.Result = includeMainPicture
-                ? attachmentTypes.Select(t => t.ToDto())
-                : attachmentTypes.Where(t => !t.Name.Equals("Основное изображение")).Select(t => t.ToDto());
+                ? orderedAttachmentTypes.Select(t => t.ToDto())
+                : orderedAttachmentTypes.Where(t => !t.Name.Equals("Основное изображение")).Select(t => t.ToDto());
 
             return response;
         }
@@ -122,9 +124,11 @@ namespace SORANO.BLL.Services
 
             var attachmentTypes = await UnitOfWork.Get<AttachmentType>().GetAllAsync();
 
+            var orderedAttachmentTypes = attachmentTypes.OrderByDescending(at => at.ModifiedDate);
+
             var term = searchTerm?.ToLower();
 
-            var searched = attachmentTypes
+            var searched = orderedAttachmentTypes
                 .Where(t => !t.Name.Equals("Основное изображение"))
                 .Where(t => string.IsNullOrWhiteSpace(term)
                             || t.Name.ToLower().Contains(term)

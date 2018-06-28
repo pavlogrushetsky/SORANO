@@ -16,6 +16,8 @@
 
         public string ArticleTypeName { get; set; }
 
+        public string ArticleParentTypeName { get; set; }
+
         public int LocationID { get; set; }
 
         public string LocationName { get; set; }

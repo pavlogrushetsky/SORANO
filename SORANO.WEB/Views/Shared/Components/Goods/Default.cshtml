@@ -1,14 +1,26 @@
 ﻿@model PaginationSet<GoodsItemViewModel>
 
-<div class="col-lg-12">
-    <pagination page="@Model.Page" pages="@Model.TotalPages"></pagination>
-</div>
-@foreach (var item in Model.Items)
+@if (Model.Items.Any())
 {
-    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-        @Html.Partial("Components/Goods/_Card", item)
+    <div class="col-lg-12">
+        <pagination page="@Model.Page" pages="@Model.TotalPages"></pagination>
+    </div>
+    foreach (var item in Model.Items)
+    {
+        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            @Html.Partial("Components/Goods/_Card", item)
+        </div>
+    }
+    <div class="col-lg-12">
+        <pagination page="@Model.Page" pages="@Model.TotalPages"></pagination>
     </div>
 }
-<div class="col-lg-12">
-    <pagination page="@Model.Page" pages="@Model.TotalPages"></pagination>
-</div>
+else
+{
+    <div class="col-lg-12">
+        <div class="alert alert-dismissible alert-warning">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            Товары по указанному запросу отсутствуют
+        </div>
+    </div>
+}

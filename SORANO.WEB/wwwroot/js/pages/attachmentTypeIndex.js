@@ -7,10 +7,12 @@ function initAttachmentTypesDataTable() {
         responsive: true,
         "autoWidth": false,
         "scrollX": false,
+        "aaSorting": [],
+        "deferRender": true,
         "columnDefs": [
-            { "orderable": false, "targets": 5 }
+            { "orderable": false, "targets": -1 },
+            { type: "num", "targets": -2 }
         ],
-        "order": [[0, "desc"]],
         "pagingType": "numbers",
         "language": {
             "lengthMenu": "Отобразить _MENU_ типов на странице",

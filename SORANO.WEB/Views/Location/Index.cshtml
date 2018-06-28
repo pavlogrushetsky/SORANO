@@ -82,7 +82,7 @@
                                 @foreach (var location in Model)
                                 {
                                     <tr class="@(location.IsDeleted ? "danger" : "")">
-                                        <td>@location.Modified</td>
+                                        <td><span class="hide">@location.ModifiedStandard</span>@location.Modified</td>
                                         <td>
                                             <a asp-controller="Location"
                                                asp-action="Details"

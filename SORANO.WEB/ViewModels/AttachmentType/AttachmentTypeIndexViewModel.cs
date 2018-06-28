@@ -23,5 +23,7 @@ namespace SORANO.WEB.ViewModels.AttachmentType
         public string MimeTypes { get; set; }
 
         public string Modified { get; set; }
+
+        public string ModifiedStandard { get; set; }
     }
 }

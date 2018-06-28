@@ -17,5 +17,7 @@
         public bool CanBeDeleted { get; set; }
 
         public string Modified { get; set; }
+
+        public string ModifiedStandard { get; set; }
     }
 }

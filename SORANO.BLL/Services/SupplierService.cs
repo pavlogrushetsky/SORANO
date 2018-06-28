@@ -24,9 +24,11 @@ namespace SORANO.BLL.Services
 
             var suppliers = await UnitOfWork.Get<Supplier>().GetAllAsync();
 
+            var orderedSuppliers = suppliers.OrderByDescending(s => s.ModifiedDate);
+
             response.Result = !withDeleted
-                ? suppliers.Where(s => !s.IsDeleted).Select(s => s.ToDto())
-                : suppliers.Select(a => a.ToDto());
+                ? orderedSuppliers.Where(s => !s.IsDeleted).Select(s => s.ToDto())
+                : orderedSuppliers.Select(a => a.ToDto());
 
             return response;
         }
@@ -110,9 +112,11 @@ namespace SORANO.BLL.Services
 
             var suppliers = await UnitOfWork.Get<Supplier>().GetAllAsync();
 
+            var orderedSuppliers = suppliers.OrderByDescending(s => s.ModifiedDate);
+
             var term = searchTerm?.ToLower();
 
-            var searched = suppliers
+            var searched = orderedSuppliers
                 .Where(t => string.IsNullOrEmpty(term)
                             || t.Name.ToLower().Contains(term)
                             || t.Description.ToLower().Contains(term));

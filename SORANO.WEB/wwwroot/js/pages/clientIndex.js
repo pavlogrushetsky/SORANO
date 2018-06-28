@@ -7,10 +7,11 @@ function initClientsDataTable() {
         responsive: true,
         "autoWidth": false,
         "scrollX": false,
+        "aaSorting": [],
+        "deferRender": true,
         "columnDefs": [
             { "orderable": false, "targets": 5 }
         ],
-        "order": [[0, "desc"]],
         "pagingType": "numbers",
         "language": {
             "lengthMenu": "Отобразить _MENU_ клиентов на странице",

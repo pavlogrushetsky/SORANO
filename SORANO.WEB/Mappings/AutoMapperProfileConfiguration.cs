@@ -114,6 +114,9 @@ namespace SORANO.WEB.Mappings
                     source => source.MapFrom(s => !string.IsNullOrEmpty(s.Extensions)
                         ? string.Join(",", s.Extensions.Split(',').Select(MimeTypes.MimeTypeMap.GetMimeType))
                         : "")
+                ).ForMember(
+                    dest => dest.ModifiedStandard,
+                    source => source.MapFrom(s => s.Modified.ToString("yyyyMMdd"))
                 );
             CreateMap<AttachmentTypeDto, AttachmentTypeCreateUpdateViewModel>();
             CreateMap<AttachmentTypeDto, AttachmentTypeDeleteViewModel>();
@@ -123,7 +126,11 @@ namespace SORANO.WEB.Mappings
 
             #region Location
 
-            CreateMap<LocationDto, LocationIndexViewModel>();
+            CreateMap<LocationDto, LocationIndexViewModel>()
+                .ForMember(
+                    dest => dest.ModifiedStandard,
+                    source => source.MapFrom(s => s.Modified.ToString("yyyyMMdd"))
+                );
             CreateMap<LocationDto, LocationCreateUpdateViewModel>();
             CreateMap<LocationDto, LocationDetailsViewModel>()
                 .ForMember(
@@ -137,7 +144,11 @@ namespace SORANO.WEB.Mappings
 
             #region LocationType
 
-            CreateMap<LocationTypeDto, LocationTypeIndexViewModel>();
+            CreateMap<LocationTypeDto, LocationTypeIndexViewModel>()
+                .ForMember(
+                    dest => dest.ModifiedStandard,
+                    source => source.MapFrom(s => s.Modified.ToString("yyyyMMdd"))
+                );
             CreateMap<LocationTypeDto, LocationTypeCreateUpdateViewModel>();
             CreateMap<LocationTypeDto, LocationTypeDetailsViewModel>()
                 .ForMember(
@@ -151,7 +162,11 @@ namespace SORANO.WEB.Mappings
 
             #region Client
 
-            CreateMap<ClientDto, ClientIndexViewModel>();
+            CreateMap<ClientDto, ClientIndexViewModel>()
+                .ForMember(
+                    dest => dest.ModifiedStandard,
+                    source => source.MapFrom(s => s.Modified.ToString("yyyyMMdd"))
+                );
             CreateMap<ClientDto, ClientCreateUpdateViewModel>();
             CreateMap<ClientDto, ClientDetailsViewModel>()
                 .ForMember(
@@ -165,7 +180,11 @@ namespace SORANO.WEB.Mappings
 
             #region Supplier
 
-            CreateMap<SupplierDto, SupplierIndexViewModel>();
+            CreateMap<SupplierDto, SupplierIndexViewModel>()
+                .ForMember(
+                    dest => dest.ModifiedStandard,
+                    source => source.MapFrom(s => s.Modified.ToString("yyyyMMdd"))
+                );
             CreateMap<SupplierDto, SupplierCreateUpdateViewModel>();
             CreateMap<SupplierDto, SupplierDetailsViewModel>()
                 .ForMember(
@@ -480,6 +499,10 @@ namespace SORANO.WEB.Mappings
                 .ForMember(
                     dest => dest.ArticleTypeName,
                     source => source.MapFrom(s => s.DeliveryItem.Article.Type.Name)
+                )
+                .ForMember(
+                    dest => dest.ArticleParentTypeName,
+                    source => source.MapFrom(s => s.DeliveryItem.Article.Type.Type != null ? s.DeliveryItem.Article.Type.Type.Name : string.Empty)
                 )
                 .ForMember(
                     dest => dest.LocationID,

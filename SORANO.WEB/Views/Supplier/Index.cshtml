@@ -68,7 +68,7 @@
                         @foreach (var supplier in Model)
                         {
                             <tr class="@(supplier.IsDeleted ? "danger" : "")">
-                                <td>@supplier.Modified</td>
+                                <td><span class="hide">@supplier.ModifiedStandard</span>@supplier.Modified</td>
                                 <td>
                                     <a asp-controller="Supplier"
                                        asp-action="Details"

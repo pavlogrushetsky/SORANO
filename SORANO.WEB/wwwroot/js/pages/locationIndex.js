@@ -17,10 +17,11 @@ function initLocationsDataTable() {
         responsive: true,
         "autoWidth": false,
         "scrollX": false,
+        "aaSorting": [],
+        "deferRender": true,
         "columnDefs": [
             { "orderable": false, "targets": 4 }
         ],
-        "order": [[0, "desc"]],
         "pagingType": "numbers",
         "language": {
             "lengthMenu": "Отобразить _MENU_ мест на странице",
@@ -50,10 +51,11 @@ function initLocationTypesDataTable() {
         responsive: true,
         "autoWidth": false,
         "scrollX": false,
+        "aaSorting": [],
+        "deferRender": true,
         "columnDefs": [
             { "orderable": false, "targets": 3 }
         ],
-        "order": [[0, "desc"]],
         "pagingType": "numbers",
         "language": {
             "lengthMenu": "Отобразить _MENU_ типов мест на странице",

@@ -24,13 +24,15 @@ namespace SORANO.BLL.Services
 
             var locationTypes = await UnitOfWork.Get<LocationType>().GetAllAsync();
 
+            var orderedLocationTypes = locationTypes.OrderByDescending(l => l.ModifiedDate);
+
             if (withDeleted)
             {
-                response.Result = locationTypes.Select(t => t.ToDto());
+                response.Result = orderedLocationTypes.Select(t => t.ToDto());
                 return response;
             }
 
-            var filtered = locationTypes.Where(t => !t.IsDeleted).ToList();
+            var filtered = orderedLocationTypes.Where(t => !t.IsDeleted).ToList();
             filtered.ForEach(t =>
             {
                 t.Locations = t.Locations.Where(c => !c.IsDeleted).ToList();
@@ -130,9 +132,11 @@ namespace SORANO.BLL.Services
 
             var locationTypes = await UnitOfWork.Get<LocationType>().GetAllAsync();
 
+            var orderedLocationTypes = locationTypes.OrderByDescending(l => l.ModifiedDate);
+
             var term = searchTerm?.ToLower();
 
-            var searched = locationTypes
+            var searched = orderedLocationTypes
                 .Where(t => string.IsNullOrEmpty(term)
                             || t.Name.ToLower().Contains(term)
                             || t.Description.ToLower().Contains(term));

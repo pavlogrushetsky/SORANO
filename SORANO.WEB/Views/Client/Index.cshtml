@@ -70,7 +70,7 @@
                         @foreach (var client in Model)
                         {
                             <tr class="@(client.IsDeleted ? "danger" : "")">
-                                <td>@client.Modified</td>
+                                <td><span class="hide">@client.ModifiedStandard</span>@client.Modified</td>
                                 <td>
                                     <a asp-controller="Client"
                                        asp-action="Details"
