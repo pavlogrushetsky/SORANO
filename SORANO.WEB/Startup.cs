@@ -12,6 +12,7 @@ using SORANO.DAL.Context;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using SORANO.DAL.Repositories;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Http.Features;
 using SORANO.WEB.Mappings;
 
 namespace SORANO.WEB
@@ -39,6 +40,7 @@ namespace SORANO.WEB
 
             services.AddSingleton(mappingConfig.CreateMapper());
 
+            services.Configure<FormOptions>(x => x.ValueCountLimit = 10000);
             services.AddMvc().AddFluentValidation(v => v.RegisterValidatorsFromAssemblyContaining<Startup>());
 
             services.AddDistributedMemoryCache();

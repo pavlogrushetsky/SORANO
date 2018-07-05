@@ -554,3 +554,38 @@ li.sale-group-selected > table > tbody > tr {
 .table > tbody > tr.warning:hover > td {
     background-color: #f3c06f;
 }
+
+/*Dashboard*/
+
+.dashboard-description {
+    font-size: 13px;
+}
+
+.dashboard-value {
+    font-size: 25px;
+}
+
+@media screen and (max-width: 360px) {
+    .dashboard-icon {
+        font-size: 1.5em;
+    }
+    .dashboard-value {
+        font-size: 15px;
+    }
+
+    .dashboard-description {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 361px) and (max-width: 414px) {
+    .dashboard-icon {
+        font-size: 1.8em;
+    }
+    .dashboard-value {
+        font-size: 18px;
+    }
+    .dashboard-description {
+        display: none;
+    }
+}

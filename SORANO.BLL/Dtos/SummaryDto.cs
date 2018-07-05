@@ -2,14 +2,16 @@
 {
     public class SummaryDto
     {
-        public decimal TotalSales { get; set; }
+        public decimal MonthSales { get; set; }
 
-        public decimal TotalIncome { get; set; }
+        public decimal MonthPersonalSales { get; set; }
 
-        public decimal Balance => TotalSales - TotalIncome;
+        public decimal MonthDeliveries { get; set; }
+
+        public decimal MonthProfit { get; set; }
 
         public int GoodsCount { get; set; }
 
-        public bool IsBalancePositive => Balance >= 0.0M;
+        public bool IsProfitPositive => MonthProfit >= 0.0M;
     }
 }

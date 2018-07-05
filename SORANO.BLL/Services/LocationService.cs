@@ -183,49 +183,75 @@ namespace SORANO.BLL.Services
                 : new ServiceResponse<LocationDto>(ServiceResponseStatus.NotFound);
         }
 
-        public async Task<ServiceResponse<SummaryDto>> GetSummary(int? locationId)
+        private static decimal SumSales(Sale sale)
         {
-            var sales = await UnitOfWork.Get<Sale>().FindByAsync(s =>
-                s.IsSubmitted && !s.IsDeleted && (!locationId.HasValue || s.LocationID == locationId.Value));
+            var saleTotal = sale.DollarRate.HasValue
+                ? sale.TotalPrice * sale.DollarRate ?? 0.0M
+                : sale.EuroRate.HasValue
+                    ? sale.TotalPrice * sale.EuroRate ?? 0.0M
+                    : sale.TotalPrice ?? 0.0M;
 
-            var salesTotal = sales.Sum(s =>
+            return sale.IsWriteOff ? decimal.Negate(saleTotal) : saleTotal;
+        }
+
+        private static decimal SumProfit(Sale sale)
+        {
+            var deliveryPrice = sale.Goods.Sum(g =>
             {
-                if (s.DollarRate.HasValue)
-                    return s.TotalPrice * s.DollarRate ?? 0.0M;
+                if (g.DeliveryItem.Delivery.DollarRate.HasValue)
+                    return (g.DeliveryItem.DiscountedPrice * g.DeliveryItem.Delivery.DollarRate ?? 0.0M) / g.DeliveryItem.Quantity;
 
-                if (s.EuroRate.HasValue)
-                    return s.TotalPrice * s.EuroRate ?? 0.0M;
+                if (sale.EuroRate.HasValue)
+                    return (g.DeliveryItem.DiscountedPrice * g.DeliveryItem.Delivery.EuroRate ?? 0.0M) / g.DeliveryItem.Quantity;
 
-                return s.TotalPrice ?? 0.0M;
+                return g.DeliveryItem.DiscountedPrice / g.DeliveryItem.Quantity;
             });
+
+            var salePrice = SumSales(sale);
+
+            return salePrice - deliveryPrice;
+        }
+
+        public async Task<ServiceResponse<SummaryDto>> GetSummary(int? locationId, int userId)
+        {
+            var monthSales = await UnitOfWork.Get<Sale>().FindByAsync(s => 
+                s.IsSubmitted 
+                && !s.IsDeleted 
+                && (!locationId.HasValue || s.LocationID == locationId.Value) 
+                && s.Date.HasValue 
+                && s.Date.Value.Month == DateTime.Now.Month);
+
+            var monthSalesList = monthSales.ToList();
+
+            var salesTotal = monthSalesList.Sum(s => SumSales(s));
+            var monthProfit = monthSalesList.Sum(s => SumProfit(s));
+            var personalSalesTotal = monthSalesList.Where(s => s.CreatedBy == userId).Sum(s => SumSales(s));
 
             var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => !g.IsDeleted);
 
-            var filteredGoods = goods.Where(g =>
-                    !locationId.HasValue || g.Storages.OrderBy(st => st.FromDate).Last().LocationID == locationId.Value)
+            var filteredGoods = goods.Where(g => (!locationId.HasValue || g.Storages.OrderBy(st => st.FromDate).Last().LocationID == locationId.Value) && (!g.IsSold || g.IsSold && !g.Sale.IsSubmitted && !g.Sale.IsWriteOff))
                 .ToList();
 
-            var deliveriesTotal = filteredGoods.Sum(g =>
-            {
-                var delivery = g.DeliveryItem.Delivery;
-                var discountedPrice = g.DeliveryItem.DiscountedPrice;
+            var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(d => !d.IsDeleted && d.IsSubmitted && d.DeliveryDate.Month == DateTime.Now.Month);
+            var deliveriesTotal = deliveries
+                .Sum(d =>
+                {
+                    if (d.DollarRate.HasValue)
+                        return d.TotalDiscountedPrice * d.DollarRate.Value;
 
-                if (delivery.DollarRate.HasValue)
-                    return discountedPrice * delivery.DollarRate.Value;
+                    if (d.EuroRate.HasValue)
+                        return d.TotalDiscountedPrice * d.EuroRate.Value;
 
-                if (delivery.EuroRate.HasValue)
-                    return discountedPrice * delivery.EuroRate.Value;
-
-                return g.DeliveryItem.DiscountedPrice;
-            });
-
-            var goodsCount = filteredGoods.Count(g => !g.IsSold);
+                    return d.TotalDiscountedPrice;
+                });
 
             return new SuccessResponse<SummaryDto>(new SummaryDto
             {
-                GoodsCount = goodsCount,
-                TotalIncome = deliveriesTotal,
-                TotalSales = salesTotal
+                GoodsCount = filteredGoods.Count,
+                MonthDeliveries = deliveriesTotal,
+                MonthSales = salesTotal,
+                MonthProfit = monthProfit,
+                MonthPersonalSales = personalSalesTotal
             });
         }
     }

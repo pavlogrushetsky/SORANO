@@ -13,61 +13,76 @@
 }
 
     <div class="row">
-        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <div class="row">
                         <div class="col-xs-3">
-                            <i class="fa fa-cart-arrow-down fa-4x"></i>
+                            <i class="fa fa-archive fa-3x dashboard-icon"></i>
                         </div>
                         <div class="col-xs-9 text-right">
-                            <div class="huge" style="font-size: 30px;">@Model.TotalIncome</div>
-                            <div>Сумма поставок</div>
+                            <div class="dashboard-value">@Model.GoodsCount</div>
+                            <div class="dashboard-description">Кол-во товаров</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+        <div hide-if="@(!Model.ShowForLocation)" class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <div class="row">
                         <div class="col-xs-3">
-                            <i class="fa fa-handshake-o fa-4x"></i>
+                            <i class="fa fa-user-o fa-3x dashboard-icon"></i>
                         </div>
                         <div class="col-xs-9 text-right">
-                            <div class="huge" style="font-size: 30px;">@Model.TotalSales</div>
-                            <div>Сумма продаж</div>
+                            <div class="dashboard-value">@Model.MonthPersonalSales</div>
+                            <div class="dashboard-description">Сумма личных продаж</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-            <div class="panel panel@(Model.IsBalancePositive ? "-success" : "-danger")">
+        <div hide-if="@(!Model.IsSuperUser && Model.ShowForLocation)" class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <div class="row">
                         <div class="col-xs-3">
-                            <i class="fa fa-balance-scale fa-4x"></i>
+                            <i class="fa fa-handshake-o fa-3x dashboard-icon"></i>
                         </div>
                         <div class="col-xs-9 text-right">
-                            <div class="huge" style="font-size: 30px;">@Model.Balance</div>
-                            <div>Баланс</div>
+                            <div class="dashboard-value">@Model.MonthSales</div>
+                            <div class="dashboard-description">Сумма продаж</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+        <div hide-if="@Model.ShowForLocation" class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <div class="row">
                         <div class="col-xs-3">
-                            <i class="fa fa-archive fa-4x"></i>
+                            <i class="fa fa-cart-arrow-down fa-3x dashboard-icon"></i>
                         </div>
                         <div class="col-xs-9 text-right">
-                            <div class="huge" style="font-size: 30px;">@Model.GoodsCount</div>
-                            <div>Товаров</div>
+                            <div class="dashboard-value">@Model.MonthDeliveries</div>
+                            <div class="dashboard-description">Сумма поставок</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div hide-if="@(!Model.IsSuperUser && Model.ShowForLocation)" class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+            <div class="panel panel@(Model.IsProfitPositive ? "-success" : "-danger")">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-balance-scale fa-3x dashboard-icon"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="dashboard-value">@Model.MonthProfit</div>
+                            <div class="dashboard-description">Прибыль</div>
                         </div>
                     </div>
                 </div>

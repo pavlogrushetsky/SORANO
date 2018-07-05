@@ -29,27 +29,30 @@ namespace SORANO.WEB.Controllers
                 ? (int?)null
                 : int.Parse(locationIdStr);
 
-            var summary = await _locationService.GetSummary(locationId);
+            var summary = await _locationService.GetSummary(locationId, UserId);
 
             return View(new DashboardModel
             {
-                TotalIncome = Format(summary.Result.TotalIncome),
-                TotalSales = Format(summary.Result.TotalSales),
-                Balance = Format(summary.Result.Balance),
+                MonthDeliveries = Format(summary.Result.MonthDeliveries),
+                MonthSales = Format(summary.Result.MonthSales),
+                MonthPersonalSales = Format(summary.Result.MonthPersonalSales),
+                MonthProfit = Format(summary.Result.MonthProfit),
                 GoodsCount = summary.Result.GoodsCount,
-                IsBalancePositive = summary.Result.IsBalancePositive
+                IsProfitPositive = summary.Result.IsProfitPositive,
+                IsSuperUser = !IsJustUser,
+                ShowForLocation = locationId.HasValue
             });
         }
 
-        private string Format(decimal value)
+        private static string Format(decimal value)
         {
-            if (value > -1000.0M && value < 1000.0M)
-                return Math.Round(value) + " ₴";
+            if (value > -100000.0M && value < 100000.0M)
+                return Math.Round(value) + " грн.";
 
             if (value > -1000000.0M && value < 1000000.0M)
-                return Math.Round(value / 1000) + " тыс. ₴";
+                return Math.Round(value / 1000) + " тыс. грн.";
 
-            return Math.Round(value / 1000000) + " млн. ₴";                       
+            return Math.Round(value / 1000000) + " млн. грн.";                       
         }
     }
 }

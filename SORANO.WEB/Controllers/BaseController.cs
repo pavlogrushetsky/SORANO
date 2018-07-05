@@ -38,9 +38,15 @@ namespace SORANO.WEB.Controllers
 
         protected bool IsDeveloper => HttpContext.User.IsInRole("developer");
 
+        protected bool IsUser => HttpContext.User.IsInRole("user");
+
         protected bool IsAdministrator => HttpContext.User.IsInRole("administrator");
 
         protected bool IsManager => HttpContext.User.IsInRole("manager");
+
+        protected bool IsEditor => HttpContext.User.IsInRole("editor");
+
+        protected bool IsJustUser => IsUser && !IsAdministrator && !IsDeveloper && !IsEditor && !IsManager;
 
         protected bool AllowCreation => IsAdministrator || IsManager || IsDeveloper;
 

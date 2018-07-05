@@ -12,6 +12,6 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<ServiceResponse<LocationDto>> GetDefaultLocationAsync();
 
-        Task<ServiceResponse<SummaryDto>> GetSummary(int? locationId);
+        Task<ServiceResponse<SummaryDto>> GetSummary(int? locationId, int userId);
     }
 }
