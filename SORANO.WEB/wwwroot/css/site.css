@@ -6,6 +6,10 @@
     display: none;
 }
 
+.editor-indicator {
+    background-color: #f39c12;
+}
+
 .navbar-default .navbar-brand {
     color: #2c3e50;
     background-color: #f4eb42;

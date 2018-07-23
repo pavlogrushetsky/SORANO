@@ -67,6 +67,11 @@ namespace SORANO.WEB.Controllers
                 var viewModel = _mapper.Map<SaleIndexViewModel>(salesResult.Result);
                 viewModel.Mode = SaleTableMode.SaleIndex;
                 viewModel.ShowLocation = !LocationId.HasValue;
+                foreach (var item in viewModel.Items)
+                {
+                    item.CanBeUpdated = IsEditor || !item.IsSubmitted && !item.IsDeleted;
+                    item.CanBeDeleted = IsEditor || item.CanBeDeleted;
+                }
 
                 if (!LocationId.HasValue)
                 {
@@ -209,7 +214,10 @@ namespace SORANO.WEB.Controllers
                     return RedirectToAction("Index");
                 }
 
-                return View(_mapper.Map<SaleDeleteViewModel>(result.Result));
+                var model = _mapper.Map<SaleDeleteViewModel>(result.Result);
+                model.CanBeDeleted = IsEditor || model.CanBeDeleted;
+
+                return View(model);
             }, OnFault);
         }
 

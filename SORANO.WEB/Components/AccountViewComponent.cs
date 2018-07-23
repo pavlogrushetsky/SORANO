@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,7 @@ namespace SORANO.WEB.Components
 
             var model = _mapper.Map<UserDto, AccountViewModel>(userResult.Result);
             model.LocationName = location;
+            model.IsEditor = userResult.Result.Roles.Any(r => r.Name.Equals("editor"));
 
             return View(model);
         }

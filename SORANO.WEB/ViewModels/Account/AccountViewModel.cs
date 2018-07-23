@@ -7,5 +7,7 @@
         public string Login { get; set; }
 
         public string LocationName { get; set; }
+
+        public bool IsEditor { get; set; }
     }
 }

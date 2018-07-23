@@ -1,7 +1,7 @@
 ﻿@using SORANO.WEB.Infrastructure.Extensions
 @model AccountViewModel
 
-<li class="dropdown">    
+<li class="dropdown @(Model.IsEditor ? "editor-indicator" : "")">    
     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
         @if (!string.IsNullOrWhiteSpace(Model.LocationName))
         {

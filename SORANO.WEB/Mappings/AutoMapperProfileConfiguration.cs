@@ -395,10 +395,10 @@ namespace SORANO.WEB.Mappings
                     dest => dest.Currency,
                     source => source.MapFrom(s => s.DollarRate.HasValue ? "$" : s.EuroRate.HasValue ? "€" : "₴")
                 )
-                .ForMember(
-                    dest => dest.CanBeUpdated,
-                    source => source.MapFrom(s => s.CanBeDeleted)
-                )
+                //.ForMember(
+                //    dest => dest.CanBeUpdated,
+                //    source => source.MapFrom(s => s.CanBeDeleted)
+                //)
                 .ForMember(
                     dest => dest.DateStandard,
                     source => source.MapFrom(s => s.Date == null ? string.Empty : s.Date.Value.ToString("yyyyMMdd"))

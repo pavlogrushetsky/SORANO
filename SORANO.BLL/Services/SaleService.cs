@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SORANO.CORE.AccountEntities;
 
 namespace SORANO.BLL.Services
 {
@@ -81,14 +82,11 @@ namespace SORANO.BLL.Services
             if (existentSale == null)
                 return new ServiceResponse<SaleDto>(ServiceResponseStatus.NotFound);
 
-            var entity = sale.ToEntity();
-
-            existentSale.UpdateFields(entity);
-            existentSale.UpdateModifiedFields(userId);
+            var entity = sale.ToEntity();           
 
             foreach (var goods in existentSale.Goods)
             {
-                if (sale.IsSubmitted)
+                if (sale.IsSubmitted && !existentSale.IsSubmitted)
                 {
                     goods.IsSold = true;
                     goods.Storages.OrderBy(st => st.FromDate).Last().ToDate = DateTime.Now;
@@ -103,6 +101,8 @@ namespace SORANO.BLL.Services
             }
 
             existentSale.TotalPrice = sale.IsWriteOff ? 0.0M : existentSale.Goods.Sum(g => g.Price);
+            existentSale.UpdateFields(entity);
+            existentSale.UpdateModifiedFields(userId);
 
             UpdateAttachments(entity, existentSale, userId);
             UpdateRecommendations(entity, existentSale, userId);
@@ -121,7 +121,11 @@ namespace SORANO.BLL.Services
             if (existentSale == null)
                 return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
 
-            if (existentSale.IsSubmitted)
+
+            var user = await UnitOfWork.Get<User>().GetAsync(userId);
+            var isEditor = user.Roles.Any(r => r.Name.Equals("editor")); 
+
+            if (existentSale.IsSubmitted && !isEditor)
                 return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
             var saleGoodsIds = existentSale.Goods.Select(g => g.ID);
@@ -130,7 +134,9 @@ namespace SORANO.BLL.Services
             goods.ToList().ForEach(g =>
             {
                 g.SaleID = null;
+                g.IsSold = false;
                 g.Price = null;
+                g.Storages.OrderBy(st => st.FromDate).Last().ToDate = null;
                 g.UpdateModifiedFields(userId);
                 UnitOfWork.Get<Goods>().Update(g);
             });
@@ -175,8 +181,19 @@ namespace SORANO.BLL.Services
             if (goods == null || goods.SaleID.HasValue && goods.SaleID != saleId)
                 return new ServiceResponse<SaleItemsSummaryDto>(ServiceResponseStatus.NotFound);
 
+            var sale = await UnitOfWork.Get<Sale>().GetAsync(saleId);
+            if (sale == null)
+                return new ServiceResponse<SaleItemsSummaryDto>(ServiceResponseStatus.InvalidOperation);
+
             goods.SaleID = saleId;
             goods.Price = price;
+
+            if (sale.IsSubmitted)
+            {
+                goods.IsSold = true;
+                goods.Storages.OrderBy(st => st.FromDate).Last().ToDate = DateTime.Now;
+            }
+
             goods.UpdateModifiedFields(userId);
 
             UnitOfWork.Get<Goods>().Update(goods);
@@ -195,10 +212,21 @@ namespace SORANO.BLL.Services
             if (goodsList == null || !goodsList.Any())
                 return new ServiceResponse<SaleItemsSummaryDto>(ServiceResponseStatus.NotFound);
 
+            var sale = await UnitOfWork.Get<Sale>().GetAsync(saleId);
+            if (sale == null)
+                return new ServiceResponse<SaleItemsSummaryDto>(ServiceResponseStatus.InvalidOperation);
+
             goodsList.ForEach(g =>
             {
                 g.SaleID = saleId;
                 g.Price = price;
+
+                if (sale.IsSubmitted)
+                {
+                    g.IsSold = true;
+                    g.Storages.OrderBy(st => st.FromDate).Last().ToDate = DateTime.Now;
+                }
+
                 g.UpdateModifiedFields(userId);
 
                 UnitOfWork.Get<Goods>().Update(g);
@@ -219,6 +247,8 @@ namespace SORANO.BLL.Services
 
             goods.SaleID = null;
             goods.Price = null;
+            goods.IsSold = false;
+            goods.Storages.OrderBy(st => st.FromDate).Last().ToDate = null;
             goods.UpdateModifiedFields(userId);
 
             UnitOfWork.Get<Goods>().Update(goods);
@@ -241,6 +271,8 @@ namespace SORANO.BLL.Services
             {
                 g.SaleID = null;
                 g.Price = null;
+                g.IsSold = false;
+                g.Storages.OrderBy(st => st.FromDate).Last().ToDate = null;
                 g.UpdateModifiedFields(userId);
 
                 UnitOfWork.Get<Goods>().Update(g);
@@ -281,9 +313,9 @@ namespace SORANO.BLL.Services
             var location = await UnitOfWork.Get<Location>().GetAsync(locationId);
 
             var goods = location.Storages
-                .Where(s => !s.ToDate.HasValue)
+                .Where(s => !s.ToDate.HasValue || s.Goods.SaleID == saleId && s.Goods.Sale.IsSubmitted)
                 .Select(s => s.Goods)
-                .Where(g => g.Storages.OrderBy(st => st.FromDate).Last().LocationID == locationId && !g.IsDeleted && (!g.SaleID.HasValue || g.SaleID == saleId && !g.IsSold))
+                .Where(g => g.Storages.OrderBy(st => st.FromDate).Last().LocationID == locationId && !g.IsDeleted && (!g.SaleID.HasValue || g.SaleID == saleId))
                 .Where(g => searchCriteria == null 
                     || g.DeliveryItem.Article.Name.ContainsIgnoreCase(searchCriteria) 
                     || g.DeliveryItem.Article.Type.Name.ContainsIgnoreCase(searchCriteria)
@@ -316,7 +348,7 @@ namespace SORANO.BLL.Services
                         Items = items.Select(i => new SaleItemDto
                         {
                             GoodsId = i.ID,
-                            IsSelected = i.SaleID == saleId && !i.IsSold,
+                            IsSelected = i.SaleID == saleId,
                             Price = i.Price,
                             Recommendations = i.Recommendations
                                 .Concat(i.DeliveryItem.Recommendations)
