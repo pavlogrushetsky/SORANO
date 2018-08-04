@@ -12,8 +12,8 @@ namespace SORANO.CORE.StockEntities
 
         public string Description { get; set; }
 
-        public virtual AttachmentType Type { get; set; }
+        public AttachmentType Type { get; set; }
 
-        public virtual ICollection<StockEntity> ParentEntities { get; set; } = new HashSet<StockEntity>();
+        public ICollection<StockEntity> ParentEntities { get; set; } = new HashSet<StockEntity>();
     }
 }

@@ -8,6 +8,6 @@
 
         public string Comment { get; set; }
 
-        public virtual StockEntity ParentEntity { get; set; }
+        public StockEntity ParentEntity { get; set; }
     }
 }

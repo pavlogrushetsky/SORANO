@@ -13,9 +13,9 @@ namespace SORANO.BLL.Extensions
             {
                 ID = model.ID,
                 DeliveryID = model.DeliveryID,
-                Delivery = model.Delivery.ToDto(),
+                Delivery = model.Delivery?.ToDto(),
                 ArticleID = model.ArticleID,
-                Article = model.Article.ToDto(),
+                Article = model.Article?.ToDto(),
                 Quantity = model.Quantity,
                 UnitPrice = model.UnitPrice,
                 GrossPrice = model.GrossPrice,
@@ -24,7 +24,7 @@ namespace SORANO.BLL.Extensions
             };
 
             dto.MapDetails(model);
-            dto.CanBeDeleted = !(model.Delivery.IsSubmitted || model.IsDeleted);
+            dto.CanBeDeleted = !((model.Delivery?.IsSubmitted ?? false) || model.IsDeleted);
 
             return dto;
         }

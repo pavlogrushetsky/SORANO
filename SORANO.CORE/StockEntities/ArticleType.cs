@@ -10,10 +10,10 @@ namespace SORANO.CORE.StockEntities
 
         public string Description { get; set; }
 
-        public virtual ArticleType ParentType { get; set; }
+        public ArticleType ParentType { get; set; }
 
-        public virtual ICollection<ArticleType> ChildTypes { get; set; } = new HashSet<ArticleType>();
+        public ICollection<ArticleType> ChildTypes { get; set; } = new HashSet<ArticleType>();
 
-        public virtual ICollection<Article> Articles { get; set; } = new HashSet<Article>();
+        public ICollection<Article> Articles { get; set; } = new HashSet<Article>();
     }
 }

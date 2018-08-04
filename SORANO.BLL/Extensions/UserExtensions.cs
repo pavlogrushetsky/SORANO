@@ -16,7 +16,7 @@ namespace SORANO.BLL.Extensions
                 Login = model.Login,
                 Description = model.Description,
                 IsBlocked = model.IsBlocked,
-                Roles = model.Roles.Select(r => r.ToDto()),
+                Roles = model.Roles?.Select(r => r.ToDto()),
                 Locations = model.Locations?.Select(l => l.ToDto())
             };
 

@@ -26,12 +26,12 @@ namespace SORANO.CORE.StockEntities
 
         public bool IsWriteOff { get; set; }
 
-        public virtual Client Client { get; set; }
+        public Client Client { get; set; }
 
-        public virtual Location Location { get; set; }
+        public Location Location { get; set; }
 
         public User User { get; set; }
 
-        public virtual ICollection<Goods> Goods { get; set; } = new HashSet<Goods>();
+        public ICollection<Goods> Goods { get; set; } = new HashSet<Goods>();
     }
 }

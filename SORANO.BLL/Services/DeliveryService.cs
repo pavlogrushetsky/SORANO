@@ -18,11 +18,11 @@ namespace SORANO.BLL.Services
 
         #region CRUD methods
 
-        public async Task<ServiceResponse<IEnumerable<DeliveryDto>>> GetAllAsync(bool withDeleted)
+        public ServiceResponse<IEnumerable<DeliveryDto>> GetAll(bool withDeleted)
         {
             var response = new SuccessResponse<IEnumerable<DeliveryDto>>();
 
-            var deliveries = await UnitOfWork.Get<Delivery>().GetAllAsync();
+            var deliveries = UnitOfWork.Get<Delivery>().GetAll();
 
             var orderedDeliveries = deliveries.OrderByDescending(d => d.DeliveryDate);
 
@@ -37,7 +37,7 @@ namespace SORANO.BLL.Services
         {
             var response = new SuccessResponse<IEnumerable<DeliveryDto>>();
 
-            var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(s => !locationId.HasValue || s.LocationID == locationId.Value);
+            var deliveries = UnitOfWork.Get<Delivery>().GetAll(d => !locationId.HasValue || d.LocationID == locationId.Value, d => d.Supplier, d => d.Items);
 
             var orderedDeliveries = deliveries.OrderByDescending(d => d.DeliveryDate);
 
@@ -240,14 +240,14 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<int>> GetSubmittedCountAsync(int? locationId)
         {
-            var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(d => d.IsSubmitted && !d.IsDeleted && (!locationId.HasValue || d.LocationID == locationId.Value));
+            var deliveries = UnitOfWork.Get<Delivery>().GetAll(d => d.IsSubmitted && !d.IsDeleted && (!locationId.HasValue || d.LocationID == locationId.Value));
 
             return new SuccessResponse<int>(deliveries?.Count() ?? 0);
         }
 
         public async Task<ServiceResponse<int>> GetUnsubmittedCountAsync(int? locationId)
         {
-            var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(d => !d.IsSubmitted && !d.IsDeleted && (!locationId.HasValue || d.LocationID == locationId.Value));
+            var deliveries = UnitOfWork.Get<Delivery>().GetAll(d => !d.IsSubmitted && !d.IsDeleted && (!locationId.HasValue || d.LocationID == locationId.Value));
 
             return new SuccessResponse<int>(deliveries?.Count() ?? 0);
         }        

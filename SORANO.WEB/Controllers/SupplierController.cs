@@ -48,7 +48,7 @@ namespace SORANO.WEB.Controllers
             {
                 bool showDeleted = Session.GetBool("ShowDeletedSuppliers");
 
-                var suppliersResult = await _supplierService.GetAllAsync(showDeleted);
+                var suppliersResult = _supplierService.GetAll(showDeleted);
 
                 if (suppliersResult.Status != ServiceResponseStatus.Success)
                 {

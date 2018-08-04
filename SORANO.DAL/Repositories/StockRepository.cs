@@ -20,47 +20,88 @@ namespace SORANO.DAL.Repositories
             _dataSet = _context.Set<T>();
         }
 
-        public virtual IEnumerable<T> GetAll()
+        #region Get All
+
+        public virtual IQueryable<T> GetAll()
         {
-            return _dataSet.AsEnumerable();
+            return _dataSet;
         }
 
-        public virtual async Task<IEnumerable<T>> GetAllAsync()
+        public virtual IQueryable<T> GetAll(Expression<Func<T, bool>> predicate)
         {
-            var entities = await _dataSet.ToListAsync();
-
-            return entities;
+            return _dataSet
+                .Where(predicate);
         }
+
+        public virtual IQueryable<T> GetAll(params Expression<Func<T, object>>[] includeProperties)
+        {
+            return includeProperties
+                .Aggregate(_dataSet.AsQueryable(), (current, property) => current.Include(property));
+        }
+
+        public virtual IQueryable<T> GetAll(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includeProperties)
+        {
+            return includeProperties
+                .Aggregate(_dataSet.Where(predicate).AsQueryable(), (current, property) => current.Include(property));
+        }
+
+        #endregion
+
+        #region Get
 
         public virtual T Get(int id)
         {
-            return _dataSet.FirstOrDefault(x => x.ID == id);
+            return _dataSet
+                .FirstOrDefault(x => x.ID == id);
+        }
+
+        public T Get(int id, params Expression<Func<T, object>>[] includeProperties)
+        {
+            return includeProperties
+                .Aggregate(_dataSet.AsQueryable(), (current, property) => current.Include(property))
+                .FirstOrDefault(x => x.ID == id);
         }
 
         public virtual async Task<T> GetAsync(int id)
         {
-            return await _dataSet.FirstOrDefaultAsync(x => x.ID == id);
+            return await _dataSet
+                .FirstOrDefaultAsync(x => x.ID == id);
+        }
+
+        public async Task<T> GetAsync(int id, params Expression<Func<T, object>>[] includeProperties)
+        {
+            return await includeProperties
+                .Aggregate(_dataSet.AsQueryable(), (current, property) => current.Include(property))
+                .FirstOrDefaultAsync(x => x.ID == id);
         }
 
         public virtual T Get(Expression<Func<T, bool>> predicate)
         {
-            return _dataSet.FirstOrDefault(predicate);
+            return _dataSet
+                .FirstOrDefault(predicate);
+        }
+
+        public T Get(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includeProperties)
+        {
+            return includeProperties
+                .Aggregate(_dataSet.AsQueryable(), (current, property) => current.Include(property))
+                .FirstOrDefault(predicate);
         }
 
         public virtual async Task<T> GetAsync(Expression<Func<T, bool>> predicate)
         {
-            return await _dataSet.FirstOrDefaultAsync(predicate);
+            return await _dataSet
+                .FirstOrDefaultAsync(predicate);
         }
 
-        public virtual IEnumerable<T> FindBy(Expression<Func<T, bool>> predicate)
+        public async Task<T> GetAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includeProperties)
         {
-            return _dataSet.Where(predicate);
+            return await includeProperties
+                .Aggregate(_dataSet.AsQueryable(), (current, property) => current.Include(property))
+                .FirstOrDefaultAsync(predicate);
         }
 
-        public virtual async Task<IEnumerable<T>> FindByAsync(Expression<Func<T, bool>> predicate)
-        {
-            return await _dataSet.Where(predicate).ToListAsync();
-        }
+        #endregion
 
         public virtual int Count()
         {

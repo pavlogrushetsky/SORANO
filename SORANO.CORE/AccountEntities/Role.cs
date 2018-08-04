@@ -8,6 +8,6 @@ namespace SORANO.CORE.AccountEntities
 
         public string Description { get; set; }
 
-        public virtual ICollection<User> Users { get; set; } = new HashSet<User>();
+        public ICollection<User> Users { get; set; } = new HashSet<User>();
     }
 }

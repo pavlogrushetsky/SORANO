@@ -65,7 +65,7 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<DeliveryItemsDto>> GetForDeliveryAsync(int deliveryId)
         {
-            var items = await UnitOfWork.Get<DeliveryItem>().FindByAsync(i => i.DeliveryID == deliveryId);
+            var items = UnitOfWork.Get<DeliveryItem>().GetAll(i => i.DeliveryID == deliveryId);
             var delivery = await UnitOfWork.Get<Delivery>().GetAsync(deliveryId);
 
             return new SuccessResponse<DeliveryItemsDto>(new DeliveryItemsDto
@@ -78,11 +78,11 @@ namespace SORANO.BLL.Services
             });
         }
 
-        public async Task<ServiceResponse<IEnumerable<DeliveryItemDto>>> GetAllAsync(bool withDeleted)
+        public ServiceResponse<IEnumerable<DeliveryItemDto>> GetAll(bool withDeleted)
         {
             var response = new SuccessResponse<IEnumerable<DeliveryItemDto>>();
 
-            var deliveryItems = await UnitOfWork.Get<DeliveryItem>().GetAllAsync();
+            var deliveryItems = UnitOfWork.Get<DeliveryItem>().GetAll();
 
             response.Result = !withDeleted
                 ? deliveryItems.Where(di => !di.IsDeleted).Select(di => di.ToDto())

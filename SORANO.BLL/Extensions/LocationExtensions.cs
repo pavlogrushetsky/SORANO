@@ -14,12 +14,15 @@ namespace SORANO.BLL.Extensions
                 Name = model.Name,
                 Comment = model.Comment,
                 TypeID = model.TypeID,
-                Type = model.Type.ToDto(),
-                Deliveries = model.Deliveries.Where(d => !d.IsDeleted).Select(d => d.ToDto())
+                Type = model.Type?.ToDto(),
+                Deliveries = model.Deliveries?.Where(d => !d.IsDeleted).Select(d => d.ToDto())
             };
 
             dto.MapDetails(model);
-            dto.CanBeDeleted = !model.Deliveries.Any() && !model.Storages.Any() && !model.Sales.Any() && !model.IsDeleted;
+            dto.CanBeDeleted = (!model.Deliveries?.Any() ?? false) && 
+                               (!model.Storages?.Any() ?? false) && 
+                               (!model.Sales?.Any() ?? false) && 
+                               !model.IsDeleted;
 
             return dto;
         }

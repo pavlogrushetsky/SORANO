@@ -14,7 +14,7 @@ namespace SORANO.BLL.Extensions
                 LocationID = model.LocationID,
                 FromDate = model.FromDate,
                 ToDate = model.ToDate,
-                Location = model.Location.ToDto()
+                Location = model.Location?.ToDto()
             };
         }
     }

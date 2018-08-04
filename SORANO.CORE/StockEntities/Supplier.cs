@@ -8,6 +8,6 @@ namespace SORANO.CORE.StockEntities
 
         public string Description { get; set; }
 
-        public virtual ICollection<Delivery> Deliveries { get; set; } = new HashSet<Delivery>();
+        public ICollection<Delivery> Deliveries { get; set; } = new HashSet<Delivery>();
     }
 }

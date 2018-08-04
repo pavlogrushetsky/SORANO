@@ -18,19 +18,14 @@ namespace SORANO.BLL.Services
 
         #region CRUD methods
 
-        public async Task<ServiceResponse<IEnumerable<LocationDto>>> GetAllAsync(bool withDeleted)
+        public ServiceResponse<IEnumerable<LocationDto>> GetAll(bool withDeleted)
         {
-            var response = new SuccessResponse<IEnumerable<LocationDto>>();
+            var locations = UnitOfWork.Get<Location>()
+                .GetAll(l => withDeleted || !l.IsDeleted)
+                .OrderByDescending(l => l.ModifiedDate)
+                .ToList();
 
-            var locations = await UnitOfWork.Get<Location>().GetAllAsync();
-
-            var orderedLocations = locations.OrderByDescending(l => l.ModifiedDate);
-
-            response.Result = !withDeleted
-                ? orderedLocations.Where(l => !l.IsDeleted).Select(l => l.ToDto())
-                : orderedLocations.Select(l => l.ToDto());
-
-            return response;
+            return new SuccessResponse<IEnumerable<LocationDto>>(locations.ToList().Select(l => l.ToDto()));
         }
 
         public async Task<ServiceResponse<LocationDto>> GetAsync(int id)
@@ -121,61 +116,23 @@ namespace SORANO.BLL.Services
 
         #endregion
 
-        public async Task<ServiceResponse<Dictionary<LocationDto, int>>> GetLocationsForArticleAsync(int? articleId, int? except)
+        public ServiceResponse<IEnumerable<LocationDto>> GetAll(bool withDeleted, string searchTerm, int currentLocationId)
         {
-            var allGoods = await UnitOfWork.Get<Goods>().GetAllAsync();
-            Dictionary<LocationDto, int> locations;
-
-            // TODO
-            //if (!articleId.HasValue || articleId == 0)
-            //{
-            //    locations = allGoods.Where(g => !g.SaleDate.HasValue)
-            //        .GroupBy(g => g.Storages.Single(s => !s.ToDate.HasValue).Location)
-            //        .ToDictionary(gr => gr.Key.ToDto(), gr => gr.Count());
-            //}
-            //else
-            //{
-            //    locations = allGoods.Where(g => !g.SaleDate.HasValue && g.DeliveryItem.ArticleID == articleId)
-            //            .GroupBy(g => g.Storages.Single(s => !s.ToDate.HasValue).Location)
-            //            .ToDictionary(gr => gr.Key.ToDto(), gr => gr.Count());
-            //}
-
-            //return !except.HasValue 
-            //    ? new SuccessResponse<Dictionary<LocationDto, int>>(locations) 
-            //    : new SuccessResponse<Dictionary<LocationDto, int>>(locations.Where(l => l.Key.ID != except).ToDictionary(l => l.Key, l => l.Value));
-
-            return null;
-        }
-
-        public async Task<ServiceResponse<IEnumerable<LocationDto>>> GetAllAsync(bool withDeleted, string searchTerm, int currentLocationId)
-        {
-            var response = new SuccessResponse<IEnumerable<LocationDto>>();
-
-            var locations = await UnitOfWork.Get<Location>().GetAllAsync();
-
-            var orderedLocations = locations.OrderByDescending(l => l.ModifiedDate);
-
             var term = searchTerm?.ToLower();
+            var locations = UnitOfWork.Get<Location>()
+                .GetAll(l => l.ID != currentLocationId &&
+                             (term == null || l.Name.ToLower().Contains(term) || l.Comment != null && l.Comment.ToLower().Contains(term)) && 
+                             (withDeleted || !l.IsDeleted))
+                .OrderByDescending(l => l.ModifiedDate)
+                .ToList()
+                .Select(l => l.ToDto());
 
-
-            var searched = orderedLocations
-                .Where(l => l.ID != currentLocationId && (string.IsNullOrEmpty(term)
-                            || l.Name.ToLower().Contains(term)
-                            || !string.IsNullOrWhiteSpace(l.Comment) && l.Comment.ToLower().Contains(term)));
-
-            if (withDeleted)
-            {
-                response.Result = searched.Select(t => t.ToDto());
-                return response;
-            }
-
-            response.Result = searched.Where(t => !t.IsDeleted).Select(t => t.ToDto());
-            return response;
+            return new SuccessResponse<IEnumerable<LocationDto>>(locations);
         }
 
         public async Task<ServiceResponse<LocationDto>> GetDefaultLocationAsync()
         {
-            var locations = await UnitOfWork.Get<Location>().GetAllAsync();
+            var locations = UnitOfWork.Get<Location>().GetAll();
 
             var defaultLocation = locations.FirstOrDefault(l => !l.IsDeleted)?.ToDto();
             return defaultLocation != null 
@@ -194,17 +151,30 @@ namespace SORANO.BLL.Services
             return sale.IsWriteOff ? decimal.Negate(saleTotal) : saleTotal;
         }
 
-        private static decimal SumProfit(Sale sale)
+        private static decimal SumDeliveries(Delivery delivery)
+        {
+            return delivery.DollarRate.HasValue
+                ? delivery.TotalDiscountedPrice * delivery.DollarRate.Value
+                : delivery.EuroRate.HasValue
+                    ? delivery.TotalDiscountedPrice * delivery.EuroRate.Value
+                    : delivery.TotalDiscountedPrice;
+        }
+
+        private static decimal SumProfit(Sale sale, IReadOnlyCollection<DeliveryItem> deliveryItems)
         {
             var deliveryPrice = sale.Goods.Sum(g =>
             {
-                if (g.DeliveryItem.Delivery.DollarRate.HasValue)
-                    return (g.DeliveryItem.DiscountedPrice * g.DeliveryItem.Delivery.DollarRate ?? 0.0M) / g.DeliveryItem.Quantity;
+                var deliveryItem = deliveryItems
+                    .First(di => di.Goods.Select(dig => dig.ID).Contains(g.ID));
 
-                if (sale.EuroRate.HasValue)
-                    return (g.DeliveryItem.DiscountedPrice * g.DeliveryItem.Delivery.EuroRate ?? 0.0M) / g.DeliveryItem.Quantity;
+                var euroRate = deliveryItem.Delivery.EuroRate;
+                var dollarRate = deliveryItem.Delivery.DollarRate;
 
-                return g.DeliveryItem.DiscountedPrice / g.DeliveryItem.Quantity;
+                return dollarRate.HasValue
+                    ? (deliveryItem.DiscountedPrice * dollarRate ?? 0.0M) / deliveryItem.Quantity
+                    : euroRate.HasValue
+                        ? (deliveryItem.DiscountedPrice * euroRate ?? 0.0M) / deliveryItem.Quantity
+                        : deliveryItem.DiscountedPrice / deliveryItem.Quantity;
             });
 
             var salePrice = SumSales(sale);
@@ -212,42 +182,49 @@ namespace SORANO.BLL.Services
             return salePrice - deliveryPrice;
         }
 
-        public async Task<ServiceResponse<SummaryDto>> GetSummary(int? locationId, int userId)
+        public ServiceResponse<SummaryDto> GetSummary(int? locationId, int userId)
         {
-            var monthSales = await UnitOfWork.Get<Sale>().FindByAsync(s => 
-                s.IsSubmitted 
-                && !s.IsDeleted 
-                && (!locationId.HasValue || s.LocationID == locationId.Value) 
-                && s.Date.HasValue 
-                && s.Date.Value.Month == DateTime.Now.Month);
-
-            var monthSalesList = monthSales.ToList();
-
-            var salesTotal = monthSalesList.Sum(s => SumSales(s));
-            var monthProfit = monthSalesList.Sum(s => SumProfit(s));
-            var personalSalesTotal = monthSalesList.Where(s => s.CreatedBy == userId).Sum(s => SumSales(s));
-
-            var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => !g.IsDeleted);
-
-            var filteredGoods = goods.Where(g => (!locationId.HasValue || g.Storages.OrderBy(st => st.FromDate).Last().LocationID == locationId.Value) && (!g.IsSold || g.IsSold && !g.Sale.IsSubmitted && !g.Sale.IsWriteOff))
+            var monthSales = UnitOfWork.Get<Sale>()
+                .GetAll(s => s.IsSubmitted && 
+                             !s.IsDeleted && 
+                             (!locationId.HasValue || s.LocationID == locationId.Value) && 
+                             s.Date.HasValue && 
+                             s.Date.Value.Month == DateTime.Now.Month, 
+                    s => s.Goods)
                 .ToList();
 
-            var deliveries = await UnitOfWork.Get<Delivery>().FindByAsync(d => !d.IsDeleted && d.IsSubmitted && d.DeliveryDate.Month == DateTime.Now.Month);
-            var deliveriesTotal = deliveries
-                .Sum(d =>
-                {
-                    if (d.DollarRate.HasValue)
-                        return d.TotalDiscountedPrice * d.DollarRate.Value;
+            var soldGoodsDeliveryItems = UnitOfWork.Get<DeliveryItem>()
+                .GetAll(di => monthSales
+                        .SelectMany(s => s.Goods)
+                        .Select(g => g.DeliveryItemID)
+                        .Contains(di.ID),
+                    di => di.Delivery)
+                .ToList();
 
-                    if (d.EuroRate.HasValue)
-                        return d.TotalDiscountedPrice * d.EuroRate.Value;
+            var salesTotal = monthSales.Sum(s => SumSales(s));
+            var monthProfit = monthSales.Sum(s => SumProfit(s, soldGoodsDeliveryItems));
+            var personalSalesTotal = monthSales.Where(s => s.CreatedBy == userId).Sum(s => SumSales(s));
 
-                    return d.TotalDiscountedPrice;
-                });
+            var goods = UnitOfWork.Get<Goods>()
+                .GetAll(g => !g.IsDeleted &&  
+                             (!g.IsSold || g.IsSold && !g.Sale.IsSubmitted && !g.Sale.IsWriteOff),
+                    g => g.Storages)
+                .ToList()
+                .Where(g => !locationId.HasValue || 
+                            g.Storages.OrderBy(st => st.FromDate).Last().LocationID == locationId.Value)
+                .ToList();
+
+            var deliveries = UnitOfWork.Get<Delivery>()
+                .GetAll(d => !d.IsDeleted && 
+                             d.IsSubmitted && 
+                             d.DeliveryDate.Month == DateTime.Now.Month)
+                .ToList();
+
+            var deliveriesTotal = deliveries.Sum(d => SumDeliveries(d));
 
             return new SuccessResponse<SummaryDto>(new SummaryDto
             {
-                GoodsCount = filteredGoods.Count,
+                GoodsCount = goods.Count,
                 MonthDeliveries = deliveriesTotal,
                 MonthSales = salesTotal,
                 MonthProfit = monthProfit,

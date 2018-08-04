@@ -8,11 +8,7 @@ namespace SORANO.BLL.Services.Abstract
     {
         Task<ServiceResponse<int>> ChangeLocationAsync(IEnumerable<int> ids, int targetLocationId, int num, int userId);
 
-        Task<ServiceResponse<int>> SaleAsync(int articleId, int locationId, int clientId, int num, decimal price, int userId);
-
-        Task<ServiceResponse<IEnumerable<GoodsDto>>> GetSoldGoodsAsync();       
-
-        Task<ServiceResponse<decimal>> GetTotalIncomeAsync();
+        Task<ServiceResponse<int>> SaleAsync(int articleId, int locationId, int clientId, int num, decimal price, int userId);     
 
         Task<ServiceResponse<PaginationSetDto<GoodsDto>>> GetAllAsync(GoodsFilterCriteriaDto criteria);
 

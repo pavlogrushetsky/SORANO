@@ -33,9 +33,7 @@ namespace SORANO.WEB.Controllers
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
-            {
                 return View(model);
-            }
 
             var result = await UserService.GetAsync(model.Login, model.Password, model.LocationID);
 
@@ -84,9 +82,7 @@ namespace SORANO.WEB.Controllers
         {
             var result = await UserService.GetAsync(id);
             if (result.Status != ServiceResponseStatus.Success || result.Result == null)
-            {
                 return NotFound();
-            }
 
             return View(new ChangePasswordViewModel
             {
@@ -99,9 +95,7 @@ namespace SORANO.WEB.Controllers
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
             if (!ModelState.IsValid)
-            {
                 return View(model);
-            }
 
             var result = await UserService.GetAsync(model.Login, model.OldPassword);
 

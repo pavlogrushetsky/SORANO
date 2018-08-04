@@ -18,9 +18,9 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<IEnumerable<string>>> GetAllForAsync(string type)
         {
-            var attachments = await UnitOfWork.Get<Attachment>().GetAllAsync();
+            var attachments = UnitOfWork.Get<Attachment>().GetAll();
             
-            return new SuccessResponse<IEnumerable<string>>(attachments.Where(a => a.ParentEntities.Any(p =>
+            return new SuccessResponse<IEnumerable<string>>(attachments.ToList().Where(a => a.ParentEntities.Any(p =>
             {
                 var memberInfo = p.GetType().BaseType;
                 return memberInfo != null && memberInfo.Name.ToLower().Equals(type);
@@ -38,11 +38,11 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<IEnumerable<AttachmentDto>>> GetPicturesExceptAsync(int currentMainPictureId)
         {
-            var attachments = await UnitOfWork.Get<Attachment>().GetAllAsync();
+            var attachments = UnitOfWork.Get<Attachment>().GetAll();
 
             var extensions = "png,bmp,dwg,gif,ico,jpeg,jpg,pic,tif,tiff".Split(',');
 
-            return new SuccessResponse<IEnumerable<AttachmentDto>>(attachments
+            return new SuccessResponse<IEnumerable<AttachmentDto>>(attachments.ToList()
                 .Where(a => a.ID != currentMainPictureId 
                     && extensions.Contains(Path.GetExtension(a.FullPath)?.TrimStart('.'))).Select(a => a.ToDto()));
         }

@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using SORANO.BLL.Dtos;
 
 namespace SORANO.BLL.Services.Abstract
 {
     public interface IArticleTypeService : IBaseService<ArticleTypeDto>
     {
-        Task<ServiceResponse<IEnumerable<ArticleTypeDto>>> GetTreeAsync(bool withDeleted, string searchTerm);
+        ServiceResponse<IEnumerable<ArticleTypeDto>> GetTree(bool withDeleted, string searchTerm);
 
-        Task<ServiceResponse<IEnumerable<ArticleTypeDto>>> GetAllAsync(bool withDeleted, string searchTerm, int currentTypeId = 0);
+        ServiceResponse<IEnumerable<ArticleTypeDto>> GetAll(bool withDeleted, string searchTerm, int currentTypeId = 0);
     }
 }

@@ -14,17 +14,17 @@ namespace SORANO.BLL.Extensions
                 ClientID = model.ClientID,
                 Client = model.Client?.ToDto(),
                 LocationID = model.LocationID,
-                Location = model.Location.ToDto(),
+                Location = model.Location?.ToDto(),
                 UserID = model.UserID,
                 User = model.User?.ToDto(),
                 IsSubmitted = model.IsSubmitted,
                 Date = model.Date,
-                TotalPrice = model.TotalPrice ?? model.Goods.Sum(g => g.Price),
+                TotalPrice = model.TotalPrice ?? model.Goods?.Sum(g => g.Price),
                 DollarRate = model.DollarRate,
                 IsCachless = model.IsCachless,
                 IsWriteOff = model.IsWriteOff,
                 EuroRate = model.EuroRate,
-                Goods = model.Goods.Where(di => !di.IsDeleted).Select(i => i.ToDto())
+                Goods = model.Goods?.Where(di => !di.IsDeleted).Select(i => i.ToDto())
             };
 
             dto.MapDetails(model);

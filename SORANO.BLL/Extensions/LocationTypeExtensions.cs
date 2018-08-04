@@ -13,11 +13,11 @@ namespace SORANO.BLL.Extensions
                 ID = model.ID,
                 Name = model.Name,
                 Description = model.Description,
-                Locations = model.Locations.Select(l => l.ToDto())
+                Locations = model.Locations?.Select(l => l.ToDto())
             };
 
             dto.MapDetails(model);
-            dto.CanBeDeleted = model.Locations.All(a => a.IsDeleted) && !model.IsDeleted;
+            dto.CanBeDeleted = (model.Locations?.All(a => a.IsDeleted) ?? false) && !model.IsDeleted;
 
             return dto;
         }

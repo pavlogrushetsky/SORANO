@@ -11,14 +11,14 @@ namespace SORANO.CORE.StockEntities
 
         public string Comment { get; set; }
 
-        public virtual LocationType Type { get; set; }
+        public LocationType Type { get; set; }
 
-        public virtual ICollection<Storage> Storages { get; set; } = new HashSet<Storage>();
+        public ICollection<Storage> Storages { get; set; } = new HashSet<Storage>();
 
-        public virtual ICollection<Sale> Sales { get; set; } = new HashSet<Sale>();
+        public ICollection<Sale> Sales { get; set; } = new HashSet<Sale>();
 
-        public virtual ICollection<Delivery> Deliveries { get; set; } = new HashSet<Delivery>();
+        public ICollection<Delivery> Deliveries { get; set; } = new HashSet<Delivery>();
 
-        public virtual ICollection<User> Users { get; set; } = new HashSet<User>();
+        public ICollection<User> Users { get; set; } = new HashSet<User>();
     }
 }

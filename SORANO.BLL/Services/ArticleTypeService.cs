@@ -18,15 +18,15 @@ namespace SORANO.BLL.Services
 
         #region CRUD methods
 
-        public async Task<ServiceResponse<IEnumerable<ArticleTypeDto>>> GetAllAsync(bool withDeleted)
+        public ServiceResponse<IEnumerable<ArticleTypeDto>> GetAll(bool withDeleted)
         {
             var response = new SuccessResponse<IEnumerable<ArticleTypeDto>>();
 
-            var articleTypes = await UnitOfWork.Get<ArticleType>().GetAllAsync();
+            var articleTypes = UnitOfWork.Get<ArticleType>().GetAll(at => at.Articles, at => at.ChildTypes, at => at.ParentType);
 
             if (withDeleted)
             {
-                response.Result = articleTypes.Select(t => t.ToDto());
+                response.Result = articleTypes.ToList().Select(t => t.ToDto());
                 return response;
             }
 
@@ -121,61 +121,56 @@ namespace SORANO.BLL.Services
 
         #endregion
 
-        public async Task<ServiceResponse<IEnumerable<ArticleTypeDto>>> GetTreeAsync(bool withDeleted, string searchTerm)
+        public ServiceResponse<IEnumerable<ArticleTypeDto>> GetTree(bool withDeleted, string searchTerm)
         {
-            var response = new SuccessResponse<IEnumerable<ArticleTypeDto>>();
-
-            var articleTypes = await UnitOfWork.Get<ArticleType>().GetAllAsync();
-
             var term = searchTerm?.ToLower();
 
-            if (withDeleted)
-            {
-                response.Result = articleTypes.Where(t => t.ParentType == null).Filter(term).Select(t => t.ToDto(term));
-                return response;
-            }
+            var articleTypes = UnitOfWork.Get<ArticleType>()
+                .GetAll(at => withDeleted || !at.IsDeleted,
+                    at => at.Articles, 
+                    at => at.ChildTypes, 
+                    at => at.ParentType)
+                .ToList();
 
-            var filtered = articleTypes.Where(t => !t.IsDeleted).ToList();
-            filtered.ForEach(t =>
-            {
-                t.ChildTypes = t.ChildTypes.Where(c => !c.IsDeleted).ToList();
-                t.Articles = t.Articles.Where(a => !a.IsDeleted).ToList();
-            });
+            if (!withDeleted)
+                articleTypes.ForEach(t =>
+                {
+                    t.Articles = t.Articles.Where(a => !a.IsDeleted).ToList();
+                    t.ChildTypes = t.ChildTypes.Where(ct => !ct.IsDeleted).ToList();
+                });
 
-            response.Result = filtered.Where(t => t.ParentType == null).Filter(term).Select(t => t.ToDto(term));
-            return response;
-        }      
+            var tree = articleTypes.Where(at => at.ParentType == null)
+                .Filter(term)
+                .Select(t => t.ToDto(term))
+                .ToList();
 
-        public async Task<ServiceResponse<IEnumerable<ArticleTypeDto>>> GetAllAsync(bool withDeleted, string searchTerm, int currentTypeId = 0)
+            return new SuccessResponse<IEnumerable<ArticleTypeDto>>(tree);
+        }        
+
+        public ServiceResponse<IEnumerable<ArticleTypeDto>> GetAll(bool withDeleted, string searchTerm, int currentTypeId = 0)
         {
-            var response = new SuccessResponse<IEnumerable<ArticleTypeDto>>();
-
-            var articleTypes = await UnitOfWork.Get<ArticleType>().GetAllAsync();
-
             var term = searchTerm?.ToLower();
 
-            var searched = articleTypes
-                .Where(t => (string.IsNullOrEmpty(term)
-                    || t.Name.ToLower().Contains(term)
-                    || !string.IsNullOrWhiteSpace(t.Description) && t.Description.ToLower().Contains(term)
-                    || t.ParentType != null && t.ParentType.Name.ToLower().Contains(term))
-                && t.ID != currentTypeId);
+            var articleTypes = UnitOfWork.Get<ArticleType>()
+                .GetAll(t => (term == null || 
+                              t.Name.ToLower().Contains(term) || 
+                              t.Description != null && t.Description.ToLower().Contains(term) || 
+                              t.ParentType != null && t.ParentType.Name.ToLower().Contains(term)) && 
+                             t.ID != currentTypeId && 
+                             (withDeleted || !t.IsDeleted),
+                    t => t.Articles,
+                    t => t.ChildTypes,
+                    t => t.ParentType)
+                .ToList();
 
-            if (withDeleted)
-            {
-                response.Result = searched.Select(t => t.ToDto());
-                return response;
-            }
+            if (!withDeleted)
+                articleTypes.ForEach(t =>
+                {
+                    t.Articles = t.Articles.Where(a => !a.IsDeleted).ToList();
+                    t.ChildTypes = t.ChildTypes.Where(ct => !ct.IsDeleted).ToList();
+                });
 
-            var filtered = searched.Where(t => !t.IsDeleted).ToList();
-            filtered.ForEach(t =>
-            {
-                t.ChildTypes = t.ChildTypes.Where(c => !c.IsDeleted).ToList();
-                t.Articles = t.Articles.Where(a => !a.IsDeleted).ToList();
-            });
-
-            response.Result = filtered.Select(t => t.ToDto());
-            return response;
+            return new SuccessResponse<IEnumerable<ArticleTypeDto>>(articleTypes.Select(t => t.ToDto()));
         }
     }
 }

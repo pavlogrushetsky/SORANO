@@ -35,11 +35,11 @@ namespace SORANO.WEB.Controllers
         #region GET Actions
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return await TryGetActionResultAsync(async () => 
+            return TryGetActionResult(() => 
             {
-                var usersResult = await UserService.GetAllAsync();
+                var usersResult = UserService.GetAll();
 
                 if (usersResult.Status != ServiceResponseStatus.Success)
                 {
@@ -54,7 +54,6 @@ namespace SORANO.WEB.Controllers
                     user.CanBeDeleted = user.ID != UserId;
                 }
 
-
                 return View(models);
             }, ex => 
             {
@@ -64,11 +63,11 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            return await TryGetActionResultAsync(async () => 
+            return TryGetActionResult(() => 
             {
-                var roles = await _roleService.GetAllAsync();
+                var roles = _roleService.GetAll();
 
                 var userRoles = roles.Result.Select(r => new SelectListItem
                 {
@@ -76,13 +75,13 @@ namespace SORANO.WEB.Controllers
                     Text = r.Description
                 });
 
-                var locations = await _locationService.GetAllAsync(false);
+                var locations = _locationService.GetAll(false);
 
                 var userLocations = locations.Result.Select(l => new SelectListItem
                 {
                     Value = l.ID.ToString(),
                     Text = l.Name
-                });
+                }).OrderBy(l => l.Text);
 
                 return View(new UserCreateUpdateViewModel
                 {
@@ -107,7 +106,7 @@ namespace SORANO.WEB.Controllers
 
                 var model = _mapper.Map<UserCreateUpdateViewModel>(result.Result);
 
-                var roles = await _roleService.GetAllAsync();
+                var roles = _roleService.GetAll();
 
                 var userRoles = roles.Result.Select(r => new SelectListItem
                 {
@@ -116,7 +115,7 @@ namespace SORANO.WEB.Controllers
                     Selected = result.Result.Roles.Select(x => x.ID).Contains(r.ID)
                 });
 
-                var locations = await _locationService.GetAllAsync(false);
+                var locations = _locationService.GetAll(false);
 
                 var userLocations = locations.Result.Select(l => new SelectListItem
                 {
@@ -204,13 +203,9 @@ namespace SORANO.WEB.Controllers
                 var result = await UserService.DeleteAsync(model.ID);
 
                 if (result.Status == ServiceResponseStatus.Success)
-                {
                     TempData["Success"] = $"Пользователь \"{model.Login}\" был успешно удалён.";
-                }
                 else
-                {
                     TempData["Error"] = "Не удалось удалить пользователя.";
-                }
 
                 return RedirectToAction("Index");
             }, OnFault);
@@ -234,9 +229,7 @@ namespace SORANO.WEB.Controllers
                     TempData["Success"] = $"Пользователь \"{model.Login}\" был успешно {status}.";
                 }
                 else
-                {
-                    TempData["Error"] = "Не удалось обновить пользователя.";
-                }                
+                    TempData["Error"] = "Не удалось обновить пользователя.";               
 
                 return RedirectToAction("Index");
             }, OnFault);           
@@ -249,9 +242,7 @@ namespace SORANO.WEB.Controllers
             return await TryGetActionResultAsync(async () =>
             {
                 if (!ModelState.IsValid)
-                {
                     return View("Create", model);
-                }
 
                 var user = _mapper.Map<UserDto>(model);
 
@@ -281,9 +272,7 @@ namespace SORANO.WEB.Controllers
             return await TryGetActionResultAsync(async () =>
             {
                 if (!ModelState.IsValid)
-                {
                     return View(model);
-                }
 
                 var user = _mapper.Map<UserDto>(model);
 

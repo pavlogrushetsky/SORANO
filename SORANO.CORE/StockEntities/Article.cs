@@ -18,8 +18,8 @@ namespace SORANO.CORE.StockEntities
 
         public decimal? RecommendedPrice { get; set; }
 
-        public virtual ArticleType Type { get; set; }
+        public ArticleType Type { get; set; }
 
-        public virtual ICollection<DeliveryItem> DeliveryItems { get; set; } = new HashSet<DeliveryItem>();
+        public ICollection<DeliveryItem> DeliveryItems { get; set; } = new HashSet<DeliveryItem>();
     }
 }

@@ -12,8 +12,8 @@ namespace SORANO.CORE.StockEntities
 
         public DateTime? ToDate { get; set; }
 
-        public virtual Goods Goods { get; set; }
+        public Goods Goods { get; set; }
 
-        public virtual Location Location { get; set; }
+        public Location Location { get; set; }
     }
 }

@@ -34,11 +34,11 @@ namespace SORANO.WEB.Controllers
         #region GET Actions
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return await TryGetActionResultAsync(async () =>
+            return TryGetActionResult(() =>
             {
-                var result = await AttachmentTypeService.GetAllAsync(true);
+                var result = AttachmentTypeService.GetAll(true);
 
                 if (result.Status != ServiceResponseStatus.Success)
                 {
@@ -178,9 +178,9 @@ namespace SORANO.WEB.Controllers
         #endregion
 
         [HttpPost]
-        public async Task<JsonResult> GetAttachmentTypes(string term)
+        public JsonResult GetAttachmentTypes(string term)
         {
-            var attachmentTypes = await AttachmentTypeService.GetAllAsync(term);
+            var attachmentTypes = AttachmentTypeService.GetAll(term);
 
             return Json(new
             {

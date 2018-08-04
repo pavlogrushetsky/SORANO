@@ -18,11 +18,11 @@ namespace SORANO.BLL.Services
 
         #region CRUD methods
 
-        public async Task<ServiceResponse<IEnumerable<SupplierDto>>> GetAllAsync(bool withDeleted)
+        public ServiceResponse<IEnumerable<SupplierDto>> GetAll(bool withDeleted)
         {
             var response = new SuccessResponse<IEnumerable<SupplierDto>>();
 
-            var suppliers = await UnitOfWork.Get<Supplier>().GetAllAsync();
+            var suppliers = UnitOfWork.Get<Supplier>().GetAll(s => s.Deliveries);
 
             var orderedSuppliers = suppliers.OrderByDescending(s => s.ModifiedDate);
 
@@ -110,7 +110,7 @@ namespace SORANO.BLL.Services
         {
             var response = new SuccessResponse<IEnumerable<SupplierDto>>();
 
-            var suppliers = await UnitOfWork.Get<Supplier>().GetAllAsync();
+            var suppliers = UnitOfWork.Get<Supplier>().GetAll(s => s.Deliveries);
 
             var orderedSuppliers = suppliers.OrderByDescending(s => s.ModifiedDate);
 
@@ -133,7 +133,7 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<SupplierDto>> GetDefaultSupplierAsync()
         {
-            var suppliers = await UnitOfWork.Get<Supplier>().GetAllAsync();
+            var suppliers = UnitOfWork.Get<Supplier>().GetAll();
 
             var defaultSupplier = suppliers.FirstOrDefault(l => !l.IsDeleted)?.ToDto();
             return defaultSupplier != null

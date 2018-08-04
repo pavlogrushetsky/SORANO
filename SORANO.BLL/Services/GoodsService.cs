@@ -30,7 +30,7 @@ namespace SORANO.BLL.Services
             if (ids == null)
                 throw new ArgumentNullException(nameof(ids));
 
-            var existentEntities = await UnitOfWork.Get<Goods>().FindByAsync(g => ids.Contains(g.ID));
+            var existentEntities = UnitOfWork.Get<Goods>().GetAll(g => ids.Contains(g.ID));
             var existentGoods = existentEntities.ToList().Take(num).ToList();
 
             if (!existentGoods.Any())
@@ -84,9 +84,9 @@ namespace SORANO.BLL.Services
 
             if (criteria.ShowByPiece)
             {
-                var allGoods = await UnitOfWork.Get<Goods>()
-                    .GetAllAsync()
-                    .ContinueWith(r => r.Result.Where(g => GoodsFilterPredicate(g, criteria)).ToList());
+                var allGoods = UnitOfWork.Get<Goods>()
+                    .GetAll(g => GoodsFilterPredicate(g, criteria), g => g.DeliveryItem, g => g.Storages, g => g.Sale, g => g.Attachments).ToList();
+                    //.ContinueWith(r => r.Result.Where(g => GoodsFilterPredicate(g, criteria)).ToList());
 
                 var goods = allGoods
                     .Skip((criteria.Page - 1) * criteria.ShowNumber)
@@ -109,22 +109,20 @@ namespace SORANO.BLL.Services
             }
             else
             {
-                var allGroups = await UnitOfWork.Get<Goods>()
-                    .GetAllAsync()
-                    .ContinueWith(r =>
-                    {
-                        return r.Result
-                            .Where(g => GoodsFilterPredicate(g, criteria))
-                            .GroupBy(g => new
-                            {
-                                 g.DeliveryItem.ArticleID,
-                                 g.SaleID.HasValue,
-                                 g.Storages.OrderBy(st => st.FromDate).Last().LocationID
-                            })
-                            .ToList();
-                    });
+                var allGroups = UnitOfWork.Get<Goods>()
+                    .GetAll(g => g.DeliveryItem, g => g.Storages, g => g.Sale, g => g.Attachments);
+
+                var filteredGroups = allGroups.Where(g => GoodsFilterPredicate(g, criteria))
+                        .GroupBy(g => new
+                        {
+                            g.DeliveryItem.ArticleID,
+                            g.SaleID.HasValue,
+                            g.Storages.OrderBy(st => st.FromDate).Last().LocationID
+                        })
+                        .ToList();
                     
-                var groups = allGroups
+
+                var groups = filteredGroups
                     .Skip((criteria.Page - 1) * criteria.ShowNumber)
                     .Take(criteria.ShowNumber)
                     .Select(gg =>
@@ -141,37 +139,17 @@ namespace SORANO.BLL.Services
                 {
                     Items = groups,
                     Page = criteria.Page,
-                    TotalCount = allGroups.Count,
-                    TotalPages = (int)Math.Ceiling((decimal)allGroups.Count / criteria.ShowNumber)
+                    TotalCount = filteredGroups.Count,
+                    TotalPages = (int)Math.Ceiling((decimal)filteredGroups.Count / criteria.ShowNumber)
                 };
             }            
                                                               
             return response;
         }
 
-        public async Task<ServiceResponse<IEnumerable<GoodsDto>>> GetSoldGoodsAsync()
-        {
-            //var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
-
-            //return new SuccessResponse<IEnumerable<GoodsDto>>(goods.Select(g => g.ToDto()));
-
-            return new SuccessResponse<IEnumerable<GoodsDto>>(new List<GoodsDto>());
-        }
-
-        public async Task<ServiceResponse<decimal>> GetTotalIncomeAsync()
-        {
-            //var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => g.SaleDate.HasValue && g.SaleLocationID.HasValue && g.SalePrice.HasValue);
-
-            //var sum = goods?.Sum(g => g.SalePrice) ?? 0.0M;
-
-            //return new SuccessResponse<decimal>(sum);
-
-            return new SuccessResponse<decimal>();
-        }
-
         public async Task<ServiceResponse<int>> SaleAsync(int articleId, int locationId, int clientId, int num, decimal price, int userId)
         {
-            var storages = await UnitOfWork.Get<Storage>().GetAllAsync();
+            var storages = UnitOfWork.Get<Storage>().GetAll();
 
             var currentStorages = storages
                 .Where(s => s.LocationID == locationId && s.Goods.DeliveryItem.ArticleID == articleId && !s.ToDate.HasValue)
@@ -210,7 +188,7 @@ namespace SORANO.BLL.Services
             if (ids == null)
                 throw new ArgumentNullException(nameof(ids));
 
-            var existentEntities = await UnitOfWork.Get<Goods>().FindByAsync(g => ids.Contains(g.ID));
+            var existentEntities = UnitOfWork.Get<Goods>().GetAll(g => ids.Contains(g.ID));
             var existentGoods = existentEntities.ToList();
 
             if (!existentGoods.Any())
@@ -242,7 +220,7 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<bool>> AddToCartAsync(IEnumerable<int> ids, int saleId, int userId)
         {
-            var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => ids.Contains(g.ID));
+            var goods = UnitOfWork.Get<Goods>().GetAll(g => ids.Contains(g.ID));
             var list = goods?.ToList();
             if (list == null || !list.Any())
                 return new ServiceResponse<bool>(ServiceResponseStatus.NotFound);

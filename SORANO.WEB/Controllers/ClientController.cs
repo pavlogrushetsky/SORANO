@@ -47,7 +47,7 @@ namespace SORANO.WEB.Controllers
             {
                 var showDeleted = Session.GetBool("ShowDeletedClients");
 
-                var clientsResult = await _clientService.GetAllAsync(showDeleted);
+                var clientsResult = _clientService.GetAll(showDeleted);
 
                 if (clientsResult.Status != ServiceResponseStatus.Success)
                 {

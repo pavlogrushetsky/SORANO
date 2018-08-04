@@ -18,28 +18,38 @@ namespace SORANO.BLL.Services
 
         #region CRUD methods
 
-        public async Task<ServiceResponse<IEnumerable<ArticleDto>>> GetAllAsync(bool withDeleted)
+        public ServiceResponse<IEnumerable<ArticleDto>> GetAll(bool withDeleted)
         {
-            var response = new SuccessResponse<IEnumerable<ArticleDto>>();
+            var articles =  UnitOfWork.Get<Article>()
+                .GetAll(a => withDeleted || !a.IsDeleted,
+                    a => a.Type, 
+                    a => a.DeliveryItems)
+                .OrderByDescending(a => a.ModifiedDate)
+                .ToList();
 
-            var articles = await UnitOfWork.Get<Article>().GetAllAsync();
-
-            var orderedArticles = articles.OrderByDescending(a => a.ModifiedDate);
-
-            response.Result = !withDeleted 
-                ? orderedArticles.Where(a => !a.IsDeleted).Select(a => a.ToDto()) 
-                : orderedArticles.Select(a => a.ToDto());
-
-            return response;
+            return new SuccessResponse<IEnumerable<ArticleDto>>(articles.Select(a => a.ToDto()));
         }
 
         public async Task<ServiceResponse<ArticleDto>> GetAsync(int id)
         {
-            var article = await UnitOfWork.Get<Article>().GetAsync(a => a.ID == id);
+            var article = await UnitOfWork.Get<Article>()
+                .GetAsync(a => a.ID == id,
+                    a => a.Type);
 
-            return article == null 
-                ? new ServiceResponse<ArticleDto>(ServiceResponseStatus.NotFound) 
-                : new SuccessResponse<ArticleDto>(article.ToDto());
+            if (article == null)
+                return new ServiceResponse<ArticleDto>(ServiceResponseStatus.NotFound);
+
+            var deliveryItems = UnitOfWork.Get<DeliveryItem>()
+                .GetAll(di => di.ArticleID == id,
+                    di => di.Delivery,
+                    di => di.Article)
+                .ToList();
+
+            article.DeliveryItems = deliveryItems;
+            article.Attachments = GetAttachments(id).ToList();
+            article.Recommendations = GetRecommendations(id).ToList();
+
+            return new SuccessResponse<ArticleDto>(article.ToDto());
         }
 
         public async Task<ServiceResponse<int>> CreateAsync(ArticleDto article, int userId)
@@ -47,8 +57,8 @@ namespace SORANO.BLL.Services
             if (article == null)
                 throw new ArgumentNullException(nameof(article));
 
-            var articlesWithSameBarcode = await UnitOfWork.Get<Article>()
-                .FindByAsync(a => a.Barcode != null && a.Barcode.Equals(article.Barcode) && a.ID != article.ID);
+            var articlesWithSameBarcode = UnitOfWork.Get<Article>()
+                .GetAll(a => a.Barcode != null && a.Barcode.Equals(article.Barcode) && a.ID != article.ID);
 
             if (articlesWithSameBarcode.Any())
                 return new ServiceResponse<int>(ServiceResponseStatus.AlreadyExists);
@@ -76,8 +86,8 @@ namespace SORANO.BLL.Services
             if (existentEntity == null)
                 return new ServiceResponse<ArticleDto>(ServiceResponseStatus.NotFound);
 
-            var articlesWithSameBarcode = await UnitOfWork.Get<Article>()
-                .FindByAsync(a => a.Barcode != null && a.Barcode.Equals(article.Barcode) && a.ID != article.ID);
+            var articlesWithSameBarcode = UnitOfWork.Get<Article>()
+                .GetAll(a => a.Barcode != null && a.Barcode.Equals(article.Barcode) && a.ID != article.ID);
 
             if (articlesWithSameBarcode.Any())
                 return new ServiceResponse<ArticleDto>(ServiceResponseStatus.AlreadyExists);
@@ -118,34 +128,11 @@ namespace SORANO.BLL.Services
 
         #endregion
 
-        public async Task<ServiceResponse<IDictionary<ArticleDto, int>>> GetArticlesForLocationAsync(int? locationId)
-        {
-            var goods = await UnitOfWork.Get<Goods>().GetAllAsync();
-
-            IDictionary<ArticleDto, int> result = null;
-
-            // TODO
-            //if (!locationId.HasValue || locationId == 0)
-            //{                
-            //    result = goods.Where(g => !g.Sale.Date.HasValue)
-            //        .GroupBy(g => g.DeliveryItem.Article)
-            //        .ToDictionary(gr => gr.Key.ToDto(), gr => gr.Count());
-            //}
-            //else
-            //{
-            //    result = goods.Where(g => !g.SaleDate.HasValue && g.Storages.Single(s => !s.ToDate.HasValue).LocationID == locationId)
-            //        .GroupBy(g => g.DeliveryItem.Article)
-            //        .ToDictionary(gr => gr.Key.ToDto(), gr => gr.Count());
-            //}            
-
-            return new SuccessResponse<IDictionary<ArticleDto, int>>(result);
-        }
-
-        public async Task<ServiceResponse<IEnumerable<ArticleDto>>> GetAllAsync(bool withDeleted, string searchTerm)
+        public ServiceResponse<IEnumerable<ArticleDto>> GetAll(bool withDeleted, string searchTerm)
         {
             var response = new SuccessResponse<IEnumerable<ArticleDto>>();
 
-            var articles = await UnitOfWork.Get<Article>().GetAllAsync();
+            var articles = UnitOfWork.Get<Article>().GetAll();
 
             var term = searchTerm?.ToLower();
 

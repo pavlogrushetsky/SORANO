@@ -9,7 +9,7 @@ function initUsersDataTable() {
         "scrollX": false,
         "columnDefs": [
             { "orderable": false, "targets": 2 },
-            { "orderable": false, "targets": 4 }
+            { "orderable": false, "targets": -1 }
         ],
         "pagingType": "numbers",
         "language": {

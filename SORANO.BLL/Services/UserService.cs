@@ -21,9 +21,11 @@ namespace SORANO.BLL.Services
             _unitOfWork = unitOfWork;
         }        
 
-        public async Task<ServiceResponse<IEnumerable<UserDto>>> GetAllAsync()
+        public ServiceResponse<IEnumerable<UserDto>> GetAll()
         {
-            var users = await _unitOfWork.Get<User>().GetAllAsync();
+            var users = _unitOfWork.Get<User>()
+                .GetAll(u => u.Roles, u => u.Locations)
+                .ToList();
 
             return new SuccessResponse<IEnumerable<UserDto>>(users.Select(u => u.ToDto()));       
         }
@@ -31,10 +33,12 @@ namespace SORANO.BLL.Services
         public async Task<ServiceResponse<UserDto>> CreateAsync(UserDto user)
         {
             if (user == null)
-                throw new ArgumentNullException(nameof(user));
+                return new ServiceResponse<UserDto>(ServiceResponseStatus.InvalidOperation);
 
-            var usersWithSameLogin = await _unitOfWork.Get<User>()
-                .FindByAsync(u => u.Login.Equals(user.Login) && u.ID != user.ID);
+            var usersWithSameLogin = _unitOfWork.Get<User>()
+                .GetAll(u => u.Login.Equals(user.Login) && 
+                             u.ID != user.ID)
+                .ToList();
 
             if (usersWithSameLogin.Any())
                 return new ServiceResponse<UserDto>(ServiceResponseStatus.AlreadyExists);
@@ -42,17 +46,17 @@ namespace SORANO.BLL.Services
             var entity = user.ToEntity();
             entity.Password = CryptoHelper.Hash(user.Password);
 
-            var roles = await _unitOfWork.Get<Role>().GetAllAsync();
-            var rolesToAttach = roles.Where(r => user.Roles.Select(x => x.ID).Contains(r.ID));
-
-            entity.Roles = rolesToAttach.ToList();
+            var userRoleIds = user.Roles.Select(x => x.ID).ToList();
+            entity.Roles = _unitOfWork.Get<Role>()
+                .GetAll(r => userRoleIds.Contains(r.ID))
+                .ToList();
 
             if (user.Locations != null && user.Locations.Any())
             {
-                var locations = await _unitOfWork.Get<Location>().GetAllAsync();
-                var locationsToAttach = locations.Where(l => user.Locations.Select(x => x.ID).Contains(l.ID));
-
-                entity.Locations = locationsToAttach.ToList();
+                var userLocationIds = user.Locations.Select(l => l.ID);
+                entity.Locations = _unitOfWork.Get<Location>()
+                    .GetAll(l => userLocationIds.Contains(l.ID))
+                    .ToList();
             }            
 
             _unitOfWork.Get<User>().Add(entity);
@@ -67,13 +71,18 @@ namespace SORANO.BLL.Services
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var existentUser = await _unitOfWork.Get<User>().GetAsync(user.ID);
+            var existentUser = await _unitOfWork.Get<User>()
+                .GetAsync(user.ID, 
+                    u => u.Roles, 
+                    u => u.Locations);
 
             if (existentUser == null)
                 return new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound);
 
-            var usersWithSameLogin = await _unitOfWork.Get<User>()
-                .FindByAsync(u => u.Login.Equals(user.Login) && u.ID != user.ID);
+            var usersWithSameLogin = _unitOfWork.Get<User>()
+                .GetAll(u => u.Login.Equals(user.Login) && 
+                             u.ID != user.ID)
+                .ToList();
 
             if (usersWithSameLogin.Any())
                 return new ServiceResponse<UserDto>(ServiceResponseStatus.AlreadyExists);
@@ -83,46 +92,40 @@ namespace SORANO.BLL.Services
             existentUser.IsBlocked = user.IsBlocked;
 
             if (!string.IsNullOrEmpty(user.Password))
-            {
                 existentUser.Password = CryptoHelper.Hash(user.Password);
-            }
 
-            var roles = await _unitOfWork.Get<Role>().GetAllAsync();
+            var roles = _unitOfWork.Get<Role>()
+                .GetAll()
+                .ToList();
 
             user.Roles.ToList().ForEach(r =>
             {
                 if (!existentUser.Roles.Select(er => er.ID).Contains(r.ID))
-                {
                     existentUser.Roles.Add(roles.Single(x => x.ID == r.ID));
-                }
             });
 
             existentUser.Roles.ToList().ForEach(er =>
             {
                 if (!user.Roles.Select(r => r.ID).Contains(er.ID))
-                {
                     existentUser.Roles.Remove(er);
-                }
             });
 
             if (user.Locations != null)
             {
-                var locations = await _unitOfWork.Get<Location>().GetAllAsync();
+                var locations = _unitOfWork.Get<Location>()
+                    .GetAll()
+                    .ToList();
 
                 user.Locations.ToList().ForEach(l =>
                 {
                     if (!existentUser.Locations.Select(er => er.ID).Contains(l.ID))
-                    {
                         existentUser.Locations.Add(locations.Single(x => x.ID == l.ID));
-                    }
                 });
 
                 existentUser.Locations.ToList().ForEach(er =>
                 {
                     if (!user.Locations.Select(r => r.ID).Contains(er.ID))
-                    {
                         existentUser.Locations.Remove(er);
-                    }
                 });
             }
             else
@@ -142,7 +145,8 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<bool>> DeleteAsync(int id)
         {
-            var existentUser = await _unitOfWork.Get<User>().GetAsync(u => u.ID == id);
+            var existentUser = await _unitOfWork.Get<User>()
+                .GetAsync(u => u.ID == id);
 
             _unitOfWork.Get<User>().Delete(existentUser);
 
@@ -153,7 +157,10 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<UserDto>> GetAsync(string login, int? locationId)
         {
-            var user = await _unitOfWork.Get<User>().GetAsync(u => u.Login.Equals(login));
+            var user = await _unitOfWork.Get<User>()
+                .GetAsync(u => u.Login.Equals(login), 
+                    u => u.Locations,
+                    u => u.Roles);
 
             if (user == null)
                 return new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound);
@@ -169,7 +176,11 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<UserDto>> GetAsync(string login)
         {
-            var user = await _unitOfWork.Get<User>().GetAsync(u => u.Login.Equals(login));
+            var user = await _unitOfWork.Get<User>()
+                .GetAsync(u => u.Login.Equals(login),
+                    u => u.Roles,
+                    u => u.Locations);
+
             return user == null
                 ? new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound)
                 : new SuccessResponse<UserDto>(user.ToDto());
@@ -177,12 +188,10 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<UserDto>> GetAsync(int id)
         {
-            var user = await _unitOfWork.Get<User>().GetAsync(u => u.ID == id);
-
-            //user.Sales.SelectMany(s => s.Items.SelectMany(si => si.Goods)).ToList().ForEach(s =>
-            //{
-            //    s.Goods = _unitOfWork.Get<Goods>().Get(g => g.ID == s.GoodsID);
-            //});
+            var user = await _unitOfWork.Get<User>()
+                .GetAsync(u => u.ID == id,
+                    u => u.Roles,
+                    u => u.Locations);
 
             return new SuccessResponse<UserDto>(user.ToDto());           
         }
@@ -192,9 +201,11 @@ namespace SORANO.BLL.Services
             var hash = CryptoHelper.Hash(password);
 
             var user = await _unitOfWork.Get<User>()
-                .GetAsync(u => !u.IsBlocked 
-                    && u.Login.Equals(login) 
-                    && u.Password.Equals(hash));
+                .GetAsync(u => !u.IsBlocked && 
+                               u.Login.Equals(login) && 
+                               u.Password.Equals(hash), 
+                    u => u.Locations, 
+                    u => u.Roles);
 
             if (user == null)
                 return new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound);
@@ -215,7 +226,9 @@ namespace SORANO.BLL.Services
             var user = await _unitOfWork.Get<User>()
                 .GetAsync(u => !u.IsBlocked
                                && u.Login.Equals(login)
-                               && u.Password.Equals(hash));
+                               && u.Password.Equals(hash),
+                    u => u.Roles,
+                    u => u.Locations);
 
             return user == null
                 ? new ServiceResponse<UserDto>(ServiceResponseStatus.NotFound)
@@ -224,7 +237,8 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<bool>> ChangePasswordAsync(string login, string newPassword)
         {
-            var user = await _unitOfWork.Get<User>().GetAsync(u => u.Login.Equals(login));
+            var user = await _unitOfWork.Get<User>()
+                .GetAsync(u => u.Login.Equals(login));
 
             user.Password = CryptoHelper.Hash(newPassword);
 
@@ -235,21 +249,24 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<bool>(true);
         }
 
-        public async Task<ServiceResponse<bool>> Exists(string login, int userId = 0)
+        public ServiceResponse<bool> Exists(string login, int userId = 0)
         {
             if (string.IsNullOrEmpty(login))
-            {
                 return new SuccessResponse<bool>();
-            }
 
-            var userWithSameLogin = await _unitOfWork.Get<User>().FindByAsync(u => u.Login.Equals(login) && u.ID != userId);
+            var userWithSameLogin = _unitOfWork.Get<User>()
+                .GetAll(u => u.Login.Equals(login) && 
+                             u.ID != userId);
 
             return new SuccessResponse<bool>(userWithSameLogin.Any());
         }
 
         public ServiceResponse<UserDto> Get(string login)
         {
-            var user = _unitOfWork.Get<User>().Get(u => u.Login.Equals(login));
+            var user = _unitOfWork.Get<User>()
+                .Get(u => u.Login.Equals(login),
+                    u => u.Roles,
+                    u => u.Locations);
 
             return new SuccessResponse<UserDto>(user.ToDto());
         }

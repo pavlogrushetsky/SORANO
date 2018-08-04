@@ -18,9 +18,11 @@ namespace SORANO.WEB.Components
             _mapper = mapper;
         }
 
+#pragma warning disable 1998
         public async Task<IViewComponentResult> InvokeAsync(bool showDeleted, ArticleTableMode mode)
+#pragma warning restore 1998
         {
-            var articlesResult = await _articleService.GetAllAsync(showDeleted);
+            var articlesResult = _articleService.GetAll(showDeleted);
             if (articlesResult.Status != ServiceResponseStatus.Success)
             {
                 
