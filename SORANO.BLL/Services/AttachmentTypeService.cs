@@ -18,19 +18,16 @@ namespace SORANO.BLL.Services
 
         #region CRUD methods
 
-        public async Task<ServiceResponse<IEnumerable<AttachmentTypeDto>>> GetAllAsync(bool includeMainPicture)
+        public ServiceResponse<IEnumerable<AttachmentTypeDto>> GetAll(bool includeMainPicture)
         {
-            var response = new SuccessResponse<IEnumerable<AttachmentTypeDto>>();
+            var attachmentTypes = UnitOfWork.Get<AttachmentType>()
+                .GetAll(at => includeMainPicture || !at.Name.Equals("Основное изображение"), 
+                    at => at.TypeAttachments,
+                    at => at.Attachments)
+                .OrderByDescending(at => at.ModifiedDate)
+                .ToList();
 
-            var attachmentTypes = await UnitOfWork.Get<AttachmentType>().GetAllAsync();
-
-            var orderedAttachmentTypes = attachmentTypes.OrderByDescending(at => at.ModifiedDate);
-
-            response.Result = includeMainPicture
-                ? orderedAttachmentTypes.Select(t => t.ToDto())
-                : orderedAttachmentTypes.Where(t => !t.Name.Equals("Основное изображение")).Select(t => t.ToDto());
-
-            return response;
+            return new SuccessResponse<IEnumerable<AttachmentTypeDto>>(attachmentTypes.Select(at => at.ToDto()));
         }
 
         public async Task<ServiceResponse<AttachmentTypeDto>> GetAsync(int id)
@@ -47,7 +44,7 @@ namespace SORANO.BLL.Services
             if (attachmentType == null)
                 throw new ArgumentNullException(nameof(attachmentType));
 
-            var attachmentTypes = await UnitOfWork.Get<AttachmentType>().FindByAsync(t => t.Name.Equals(attachmentType.Name) && t.ID != attachmentType.ID);
+            var attachmentTypes = UnitOfWork.Get<AttachmentType>().GetAll(t => t.Name.Equals(attachmentType.Name) && t.ID != attachmentType.ID);
 
             if (attachmentTypes.Any())
                 return new ServiceResponse<int>(ServiceResponseStatus.AlreadyExists);
@@ -73,7 +70,7 @@ namespace SORANO.BLL.Services
             if (existentEntity == null)
                 return new ServiceResponse<AttachmentTypeDto>(ServiceResponseStatus.NotFound);
 
-            var attachmentTypes = await UnitOfWork.Get<AttachmentType>().FindByAsync(t => t.Name.Equals(attachmentType.Name) && t.ID != attachmentType.ID);
+            var attachmentTypes = UnitOfWork.Get<AttachmentType>().GetAll(t => t.Name.Equals(attachmentType.Name) && t.ID != attachmentType.ID);
 
             if (attachmentTypes.Any())
                 return new ServiceResponse<AttachmentTypeDto>(ServiceResponseStatus.AlreadyExists);
@@ -118,26 +115,20 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<int>(type.ID);
         }
 
-        public async Task<ServiceResponse<IEnumerable<AttachmentTypeDto>>> GetAllAsync(string searchTerm)
+        public ServiceResponse<IEnumerable<AttachmentTypeDto>> GetAll(string searchTerm)
         {
-            var response = new SuccessResponse<IEnumerable<AttachmentTypeDto>>();
-
-            var attachmentTypes = await UnitOfWork.Get<AttachmentType>().GetAllAsync();
-
-            var orderedAttachmentTypes = attachmentTypes.OrderByDescending(at => at.ModifiedDate);
-
             var term = searchTerm?.ToLower();
 
-            var searched = orderedAttachmentTypes
-                .Where(t => !t.Name.Equals("Основное изображение"))
-                .Where(t => string.IsNullOrWhiteSpace(term)
-                            || t.Name.ToLower().Contains(term)
-                            || t.Comment.ToLower().Contains(term)
-                            || t.Extensions.ToLower().Contains(term));
+            var attachmentTypes = UnitOfWork.Get<AttachmentType>()
+                .GetAll(at => !at.Name.Equals("Основное изображение") && 
+                              term == null || 
+                              at.Name.ToLower().Contains(term) || 
+                              at.Comment.ToLower().Contains(term) || 
+                              at.Extensions.ToLower().Contains(term))
+                .OrderByDescending(at => at.Name)
+                .ToList();           
 
-            response.Result = searched.Select(t => t.ToDto());
-
-            return response;
+            return new SuccessResponse<IEnumerable<AttachmentTypeDto>>(attachmentTypes.Select(at => at.ToDto()));
         }
     }
 }

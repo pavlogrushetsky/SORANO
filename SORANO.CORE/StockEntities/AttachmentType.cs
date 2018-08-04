@@ -10,6 +10,6 @@ namespace SORANO.CORE.StockEntities
 
         public string Extensions { get; set; }
 
-        public virtual ICollection<Attachment> TypeAttachments { get; set; } = new HashSet<Attachment>();
+        public ICollection<Attachment> TypeAttachments { get; set; } = new HashSet<Attachment>();
     }
 }

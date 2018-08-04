@@ -12,6 +12,6 @@ namespace SORANO.CORE.StockEntities
 
         public string CardNumber { get; set; }
 
-        public virtual ICollection<Sale> Sales { get; set; } = new HashSet<Sale>();
+        public ICollection<Sale> Sales { get; set; } = new HashSet<Sale>();
     }
 }

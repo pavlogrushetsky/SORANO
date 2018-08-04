@@ -18,11 +18,11 @@ namespace SORANO.BLL.Services
 
         #region CRUD methods
 
-        public async Task<ServiceResponse<IEnumerable<LocationTypeDto>>> GetAllAsync(bool withDeleted)
+        public ServiceResponse<IEnumerable<LocationTypeDto>> GetAll(bool withDeleted)
         {
             var response = new SuccessResponse<IEnumerable<LocationTypeDto>>();
 
-            var locationTypes = await UnitOfWork.Get<LocationType>().GetAllAsync();
+            var locationTypes = UnitOfWork.Get<LocationType>().GetAll(l => l.Locations);
 
             var orderedLocationTypes = locationTypes.OrderByDescending(l => l.ModifiedDate);
 
@@ -57,7 +57,7 @@ namespace SORANO.BLL.Services
             if (locationType == null)
                 throw new ArgumentNullException(nameof(locationType));
 
-            var locationTypes = await UnitOfWork.Get<LocationType>().FindByAsync(t => t.Name.Equals(locationType.Name) && t.ID != locationType.ID);
+            var locationTypes = UnitOfWork.Get<LocationType>().GetAll(t => t.Name.Equals(locationType.Name) && t.ID != locationType.ID);
 
             if (locationTypes.Any())
                 return new ServiceResponse<int>(ServiceResponseStatus.AlreadyExists);
@@ -85,7 +85,7 @@ namespace SORANO.BLL.Services
             if (existentEntity == null)
                 return new ServiceResponse<LocationTypeDto>(ServiceResponseStatus.NotFound);
 
-            var locationTypes = await UnitOfWork.Get<LocationType>().FindByAsync(t => t.Name.Equals(locationType.Name) && t.ID != locationType.ID);
+            var locationTypes = UnitOfWork.Get<LocationType>().GetAll(t => t.Name.Equals(locationType.Name) && t.ID != locationType.ID);
 
             if (locationTypes.Any())
                 return new ServiceResponse<LocationTypeDto>(ServiceResponseStatus.AlreadyExists);
@@ -130,7 +130,7 @@ namespace SORANO.BLL.Services
         {
             var response = new SuccessResponse<IEnumerable<LocationTypeDto>>();
 
-            var locationTypes = await UnitOfWork.Get<LocationType>().GetAllAsync();
+            var locationTypes = UnitOfWork.Get<LocationType>().GetAll(l => l.Locations);
 
             var orderedLocationTypes = locationTypes.OrderByDescending(l => l.ModifiedDate);
 

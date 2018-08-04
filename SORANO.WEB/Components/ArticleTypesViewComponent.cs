@@ -17,9 +17,11 @@ namespace SORANO.WEB.Components
             _mapper = mapper;
         }
 
+#pragma warning disable 1998
         public async Task<IViewComponentResult> InvokeAsync(bool showDeleted, string searchTerm)
+#pragma warning restore 1998
         {
-            var result = await _articleTypeService.GetTreeAsync(showDeleted, searchTerm);
+            var result = _articleTypeService.GetTree(showDeleted, searchTerm);
 
             var viewModel = _mapper.Map<ArticleTypeTreeViewModel>(result.Result);
             viewModel.ShowDeleted = showDeleted;

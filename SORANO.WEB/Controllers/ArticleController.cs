@@ -337,9 +337,9 @@ namespace SORANO.WEB.Controllers
         #endregion
 
         [HttpPost]
-        public async Task<JsonResult> GetArticles(string term)
+        public JsonResult GetArticles(string term)
         {
-            var articles = await _articleService.GetAllAsync(false, term);
+            var articles = _articleService.GetAll(false, term);
 
             var selectModels = _mapper.Map<IEnumerable<ArticleSelectViewModel>>(articles.Result);
 

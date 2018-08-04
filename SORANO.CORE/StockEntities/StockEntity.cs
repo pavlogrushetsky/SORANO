@@ -18,14 +18,14 @@ namespace SORANO.CORE.StockEntities
 
         public int? DeletedBy { get; set; }
 
-        public virtual User CreatedByUser { get; set; }
+        public User CreatedByUser { get; set; }
 
-        public virtual User ModifiedByUser { get; set; }
+        public User ModifiedByUser { get; set; }
 
-        public virtual User DeletedByUser { get; set; }
+        public User DeletedByUser { get; set; }
 
-        public virtual ICollection<Recommendation> Recommendations { get; set; } = new HashSet<Recommendation>();
+        public ICollection<Recommendation> Recommendations { get; set; } = new HashSet<Recommendation>();
 
-        public virtual ICollection<Attachment> Attachments { get; set; } = new HashSet<Attachment>();
+        public ICollection<Attachment> Attachments { get; set; } = new HashSet<Attachment>();
     }
 }

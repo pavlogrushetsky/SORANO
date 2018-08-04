@@ -1,7 +1,6 @@
 ﻿using SORANO.BLL.Services.Abstract;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using SORANO.BLL.Dtos;
 using SORANO.BLL.Extensions;
 using SORANO.CORE.AccountEntities;
@@ -18,9 +17,11 @@ namespace SORANO.BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<ServiceResponse<IEnumerable<RoleDto>>> GetAllAsync()
+        public ServiceResponse<IEnumerable<RoleDto>> GetAll()
         {
-            var roles =  await _unitOfWork.Get<Role>().GetAllAsync();     
+            var roles = _unitOfWork.Get<Role>()
+                .GetAll()
+                .ToList();     
             
             return new SuccessResponse<IEnumerable<RoleDto>>(roles.Select(r => r.ToDto()));
         }

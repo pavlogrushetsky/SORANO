@@ -18,10 +18,10 @@ namespace SORANO.CORE.StockEntities
 
         public decimal DiscountedPrice { get; set; }
 
-        public virtual Delivery Delivery { get; set; }
+        public Delivery Delivery { get; set; }
 
-        public virtual Article Article { get; set; }
+        public Article Article { get; set; }
 
-        public virtual ICollection<Goods> Goods { get; set; } = new HashSet<Goods>();
+        public ICollection<Goods> Goods { get; set; } = new HashSet<Goods>();
     }
 }

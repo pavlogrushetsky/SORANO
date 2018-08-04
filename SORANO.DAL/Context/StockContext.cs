@@ -11,6 +11,7 @@ namespace SORANO.DAL.Context
     {
         public StockContext(string connectionString) : base(connectionString)
         {
+            Configuration.LazyLoadingEnabled = false;
         }
 
         public IDbSet<StockEntity> StockEntities { get; set; }

@@ -13,7 +13,7 @@ namespace SORANO.CORE.AccountEntities
 
         public bool IsBlocked { get; set; }
 
-        public virtual ICollection<Role> Roles { get; set; } = new HashSet<Role>();
+        public ICollection<Role> Roles { get; set; } = new HashSet<Role>();
 
         public ICollection<StockEntity> CreatedEntities { get; set; } = new HashSet<StockEntity>();
 
@@ -23,6 +23,6 @@ namespace SORANO.CORE.AccountEntities
 
         public ICollection<Sale> Sales { get; set; } = new HashSet<Sale>();
 
-        public virtual ICollection<Location> Locations { get; set; } = new HashSet<Location>();
+        public ICollection<Location> Locations { get; set; } = new HashSet<Location>();
     }
 }

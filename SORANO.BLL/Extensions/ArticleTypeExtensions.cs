@@ -16,12 +16,12 @@ namespace SORANO.BLL.Extensions
                 Description = model.Description,
                 TypeID = model.ParentType?.ID,
                 Type = model.ParentType?.ToDto(),
-                ChildTypes = model.ChildTypes.Filter(term).Select(t => t.ToDto()),
-                Articles = model.Articles.Select(a => a.ToDto())
+                ChildTypes = model.ChildTypes?.Filter(term).Select(t => t.ToDto()),
+                Articles = model.Articles?.Select(a => a.ToDto())
             };
 
             dto.MapDetails(model);
-            dto.CanBeDeleted = model.Articles.All(a => a.IsDeleted) && !model.IsDeleted;
+            dto.CanBeDeleted = (model.Articles?.All(a => a.IsDeleted) ?? false) && !model.IsDeleted;
 
             return dto;
         }
@@ -53,9 +53,9 @@ namespace SORANO.BLL.Extensions
 
         public static IEnumerable<ArticleType> Filter(this IEnumerable<ArticleType> types, string term)
         {
-            return string.IsNullOrWhiteSpace(term) 
-                ? types 
-                : types.Where(t => t.Filter(term) || t.ChildTypes.Filter(term).Any());
+            return string.IsNullOrWhiteSpace(term)
+                ? types
+                : types.Where(t => Filter(t, term) || Filter(t.ChildTypes, term).Any());
         }
 
         private static bool Filter(this ArticleType type, string term)

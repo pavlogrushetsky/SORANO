@@ -52,7 +52,7 @@ namespace SORANO.WEB.Controllers
                 var showDeletedLocations = Session.GetBool("ShowDeletedLocations");
                 var showDeletedLocationTypes = Session.GetBool("ShowDeletedLocationTypes");
 
-                var locationsResult = await _locationService.GetAllAsync(showDeletedLocations);
+                var locationsResult = _locationService.GetAll(showDeletedLocations);
 
                 if (locationsResult.Status != ServiceResponseStatus.Success)
                 {
@@ -316,9 +316,9 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<JsonResult> GetLocations(string term, int currentLocationId = 0)
+        public JsonResult GetLocations(string term, int currentLocationId = 0)
         {
-            var locations = await _locationService.GetAllAsync(false, term, currentLocationId);
+            var locations = _locationService.GetAll(false, term, currentLocationId);
 
             return Json(new
             {

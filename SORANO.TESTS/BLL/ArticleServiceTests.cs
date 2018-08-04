@@ -31,12 +31,12 @@ namespace SORANO.TESTS.BLL
 
             
             _repositoryMock = new Mock<IStockRepository<Article>>();
-            _repositoryMock.Setup(r => r.GetAllAsync())
-                .ReturnsAsync(_articles);
+            _repositoryMock.Setup(r => r.GetAll())
+                .Returns(_articles.AsQueryable);
             _repositoryMock.Setup(r => r.GetAsync(It.IsAny<Expression<Func<Article, bool>>>()))
                 .ReturnsAsync((Expression<Func<Article, bool>> predicate) => _articles.SingleOrDefault(predicate.Compile()));
-            _repositoryMock.Setup(r => r.FindByAsync(It.IsAny<Expression<Func<Article, bool>>>()))
-                .ReturnsAsync((Expression<Func<Article, bool>> predicate) => _articles.Where(predicate.Compile()));
+            _repositoryMock.Setup(r => r.GetAll(It.IsAny<Expression<Func<Article, bool>>>()))
+                .Returns((Expression<Func<Article, bool>> predicate) => _articles.Where(predicate.Compile()).AsQueryable());
             _repositoryMock.Setup(r => r.Add(It.IsAny<Article>()))
                 .Returns((Article article) => article);
             _repositoryMock.Setup(r => r.Update(It.IsAny<Article>()))
@@ -45,48 +45,6 @@ namespace SORANO.TESTS.BLL
             _unitOfWorkMock = new Mock<IUnitOfWork>();
             _unitOfWorkMock.Setup(u => u.Get<Article>())
                 .Returns(_repositoryMock.Object);
-        }
-
-        [TestMethod]
-        public async Task GetAllAsync_WithDeleted()
-        {            
-            var service = new ArticleService(_unitOfWorkMock.Object);
-
-            var result = await service.GetAllAsync(true);
-
-            Assert.IsNotNull(result);            
-            Assert.AreEqual(result.Status, ServiceResponseStatus.Success);
-            Assert.IsNotNull(result.Result);
-
-            var list = result.Result.ToList();
-            
-            Assert.AreEqual(list.Count, 3);
-            Assert.AreEqual(list[0].ID, 1);
-            Assert.AreEqual(list[0].Name, "Article #1");
-            Assert.AreEqual(list[1].ID, 2);
-            Assert.AreEqual(list[1].Name, "Article #2");
-            Assert.AreEqual(list[2].ID, 3);
-            Assert.AreEqual(list[2].Name, "Article #3");
-        }
-
-        [TestMethod]
-        public async Task GetAllAsync_WithoutDeleted()
-        {
-            var service = new ArticleService(_unitOfWorkMock.Object);
-
-            var result = await service.GetAllAsync(false);
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual(result.Status, ServiceResponseStatus.Success);
-            Assert.IsNotNull(result.Result);
-
-            var articles = result.Result.ToList();
-
-            Assert.AreEqual(articles.Count, 2);
-            Assert.AreEqual(articles[0].ID, 1);
-            Assert.AreEqual(articles[0].Name, "Article #1");
-            Assert.AreEqual(articles[1].ID, 3);
-            Assert.AreEqual(articles[1].Name, "Article #3");
         }
 
         [TestMethod]

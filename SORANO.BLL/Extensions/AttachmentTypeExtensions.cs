@@ -15,12 +15,13 @@ namespace SORANO.BLL.Extensions
                 Name = model.Name,
                 Comment = model.Comment,
                 Extensions = model.Extensions,
-                AttachmentsCount = model.TypeAttachments.Count,
+                AttachmentsCount = model.TypeAttachments?.Count ?? 0,
                 CanBeUpdated = !model.Name.Equals("Основное изображение")
             };
 
             dto.MapDetails(model);
-            dto.CanBeDeleted = model.Attachments.All(a => a.IsDeleted) && !model.IsDeleted && !model.Name.Equals("Основное изображение");
+            dto.CanBeDeleted = (model.Attachments?.All(a => a.IsDeleted) ?? false) &&
+                               !model.IsDeleted && !model.Name.Equals("Основное изображение");
 
             return dto;
         }

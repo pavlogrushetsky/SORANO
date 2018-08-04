@@ -12,9 +12,9 @@ namespace SORANO.BLL.Extensions
             {
                 ID = model.ID,
                 SupplierID = model.SupplierID,
-                Supplier = model.Supplier.ToDto(),
+                Supplier = model.Supplier?.ToDto(),
                 LocationID = model.LocationID,
-                Location = model.DeliveryLocation.ToDto(),
+                Location = model.DeliveryLocation?.ToDto(),
                 BillNumber = model.BillNumber,
                 DeliveryDate = model.DeliveryDate,
                 PaymentDate = model.PaymentDate,

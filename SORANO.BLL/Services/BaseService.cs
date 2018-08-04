@@ -1,4 +1,5 @@
-﻿using SORANO.CORE.StockEntities;
+﻿using System.Collections.Generic;
+using SORANO.CORE.StockEntities;
 using SORANO.DAL.Repositories;
 using System.Linq;
 using SORANO.BLL.Extensions;
@@ -103,6 +104,21 @@ namespace SORANO.BLL.Services
                     a.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
                     to.Attachments.Add(a);
                 });            
+        }
+
+        protected IEnumerable<Attachment> GetAttachments(int entityId)
+        {
+            return UnitOfWork.Get<Attachment>()
+                .GetAll(a => a.ParentEntities.Any(e => e.ID == entityId),
+                    a => a.Type)
+                .ToList();
+        }
+
+        protected IEnumerable<Recommendation> GetRecommendations(int entityId)
+        {
+            return UnitOfWork.Get<Recommendation>()
+                .GetAll(r => r.ParentEntityID == entityId)
+                .ToList();
         }
     }
 }

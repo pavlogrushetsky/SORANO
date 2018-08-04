@@ -19,11 +19,11 @@ namespace SORANO.BLL.Extensions
                 RecommendedPrice = model.RecommendedPrice,
                 TypeID = model.TypeID,
                 Type = model.Type?.ToDto(),
-                DeliveryItems = model.DeliveryItems.Where(di => !di.IsDeleted && !di.Delivery.IsDeleted).Select(i => i.ToDto())
+                DeliveryItems = model.DeliveryItems?.Where(di => !di.IsDeleted && !di.Delivery.IsDeleted).Select(i => i.ToDto())
             };
 
             dto.MapDetails(model);
-            dto.CanBeDeleted = !model.DeliveryItems.Any() && !model.IsDeleted;
+            dto.CanBeDeleted = (!model.DeliveryItems?.Any() ?? false) && !model.IsDeleted;
 
             return dto;
         }

@@ -16,17 +16,17 @@ namespace SORANO.BLL.Extensions
                 Sale = model.Sale?.ToDto(),
                 IsSold = model.IsSold,
                 Price = model.Price,
-                RecommendedPrice = model.DeliveryItem.Article.RecommendedPrice,
+                RecommendedPrice = model.DeliveryItem?.Article?.RecommendedPrice,
                 //ClientID = model.ClientID,TODO
                 //SalePrice = model.SalePrice,
                 //SaleDate = model.SaleDate,
                 //SoldBy = model.SoldBy,
                 //SaleLocationID = model.SaleLocationID,
-                DeliveryItem = model.DeliveryItem.ToDto(),
+                DeliveryItem = model.DeliveryItem?.ToDto(),
                 //Client = model.Client?.ToDto(),
                 //SoldByUser = model.SoldByUser?.Login,
                 //SaleLocation = model.SaleLocation?.ToDto(),
-                Storages = model.Storages.OrderByDescending(s => s.FromDate).Select(s => s.ToDto()).ToList(),
+                Storages = model.Storages?.OrderByDescending(s => s.FromDate).Select(s => s.ToDto()).ToList(),
                 Quantity = 1
             };
 

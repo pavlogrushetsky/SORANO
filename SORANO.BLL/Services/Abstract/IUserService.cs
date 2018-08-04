@@ -18,7 +18,7 @@ namespace SORANO.BLL.Services.Abstract
 
         ServiceResponse<UserDto> Get(string login);
 
-        Task<ServiceResponse<IEnumerable<UserDto>>> GetAllAsync();
+        ServiceResponse<IEnumerable<UserDto>> GetAll();
 
         Task<ServiceResponse<UserDto>> CreateAsync(UserDto user);
 
@@ -28,6 +28,6 @@ namespace SORANO.BLL.Services.Abstract
 
         Task<ServiceResponse<UserDto>> UpdateAsync(UserDto user);
 
-        Task<ServiceResponse<bool>> Exists(string login, int userId = 0);
+        ServiceResponse<bool> Exists(string login, int userId = 0);
     }
 }

@@ -18,9 +18,11 @@ namespace SORANO.WEB.Components
             _mapper = mapper;
         }
 
+#pragma warning disable 1998
         public async Task<IViewComponentResult> InvokeAsync(bool withDeleted = false)
+#pragma warning restore 1998
         {
-            var locationTypes = await _locationTypeService.GetAllAsync(withDeleted);
+            var locationTypes = _locationTypeService.GetAll(withDeleted);
 
             return View(_mapper.Map<IEnumerable<LocationTypeIndexViewModel>>(locationTypes.Result));
         }

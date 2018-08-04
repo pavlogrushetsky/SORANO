@@ -8,6 +8,6 @@ namespace SORANO.BLL.Services.Abstract
     {
         Task<ServiceResponse<int>> GetMainPictureTypeIdAsync(int userId);
 
-        Task<ServiceResponse<IEnumerable<AttachmentTypeDto>>> GetAllAsync(string searchTerm);       
+        ServiceResponse<IEnumerable<AttachmentTypeDto>> GetAll(string searchTerm);       
     }
 }

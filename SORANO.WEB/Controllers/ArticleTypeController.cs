@@ -278,9 +278,9 @@ namespace SORANO.WEB.Controllers
         #endregion
 
         [HttpPost]
-        public async Task<JsonResult> GetArticleTypes(string term, int currentTypeId = 0)
+        public JsonResult GetArticleTypes(string term, int currentTypeId = 0)
         {
-            var articleTypes = await _articleTypeService.GetAllAsync(false, term, currentTypeId);
+            var articleTypes = _articleTypeService.GetAll(false, term, currentTypeId);
 
             return Json(new
             {

@@ -16,7 +16,7 @@ namespace SORANO.BLL.Extensions
                 FullPath = model.FullPath,
                 Extension = Path.GetExtension(model.Name),
                 AttachmentTypeID = model.AttachmentTypeID,
-                AttachmentType = model.Type.ToDto()
+                AttachmentType = model.Type?.ToDto()
             };
         }
 

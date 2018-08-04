@@ -27,10 +27,10 @@ namespace SORANO.CORE.StockEntities
 
         public bool IsSubmitted { get; set; }
 
-        public virtual Supplier Supplier { get; set; }
+        public Supplier Supplier { get; set; }
 
-        public virtual ICollection<DeliveryItem> Items { get; set; } = new HashSet<DeliveryItem>();
+        public ICollection<DeliveryItem> Items { get; set; } = new HashSet<DeliveryItem>();
 
-        public virtual Location DeliveryLocation { get; set; }
+        public Location DeliveryLocation { get; set; }
     }
 }

@@ -18,11 +18,11 @@ namespace SORANO.BLL.Services
 
         #region CRUD methods
 
-        public async Task<ServiceResponse<IEnumerable<ClientDto>>> GetAllAsync(bool withDeleted)
+        public ServiceResponse<IEnumerable<ClientDto>> GetAll(bool withDeleted)
         {
             var response = new SuccessResponse<IEnumerable<ClientDto>>();
 
-            var clients = await UnitOfWork.Get<Client>().GetAllAsync();
+            var clients = UnitOfWork.Get<Client>().GetAll(c => c.Sales);
 
             var orderedClients = clients.OrderByDescending(c => c.ModifiedDate);
 
@@ -108,7 +108,7 @@ namespace SORANO.BLL.Services
         {
             var response = new SuccessResponse<IEnumerable<ClientDto>>();
 
-            var clients = await UnitOfWork.Get<Client>().GetAllAsync();
+            var clients = UnitOfWork.Get<Client>().GetAll(c => c.Sales);
 
             var orderedClients = clients.OrderByDescending(c => c.ModifiedDate);
 

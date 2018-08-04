@@ -19,11 +19,11 @@ namespace SORANO.BLL.Services
 
         #region CRUD Methods
 
-        public async Task<ServiceResponse<IEnumerable<SaleDto>>> GetAllAsync(bool withDeleted)
+        public ServiceResponse<IEnumerable<SaleDto>> GetAll(bool withDeleted)
         {
             var response = new SuccessResponse<IEnumerable<SaleDto>>();
 
-            var sales = await UnitOfWork.Get<Sale>().GetAllAsync();
+            var sales = UnitOfWork.Get<Sale>().GetAll();
 
             var orderedSales = sales.OrderByDescending(s => s.Date ?? DateTime.MinValue);
 
@@ -129,7 +129,7 @@ namespace SORANO.BLL.Services
                 return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
             var saleGoodsIds = existentSale.Goods.Select(g => g.ID);
-            var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => saleGoodsIds.Contains(g.ID));
+            var goods = UnitOfWork.Get<Goods>().GetAll(g => saleGoodsIds.Contains(g.ID));
 
             goods.ToList().ForEach(g =>
             {
@@ -155,7 +155,7 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<int>> GetUnsubmittedCountAsync(int? locationId)
         {
-            var sales = await UnitOfWork.Get<Sale>().FindByAsync(s => !s.IsSubmitted && !s.IsDeleted && (!locationId.HasValue || s.LocationID == locationId.Value));
+            var sales = UnitOfWork.Get<Sale>().GetAll(s => !s.IsSubmitted && !s.IsDeleted && (!locationId.HasValue || s.LocationID == locationId.Value));
 
             return new SuccessResponse<int>(sales?.Count() ?? 0);
         }
@@ -164,7 +164,7 @@ namespace SORANO.BLL.Services
         {
             var response = new SuccessResponse<IEnumerable<SaleDto>>();
 
-            var sales = await UnitOfWork.Get<Sale>().FindByAsync(s => !locationId.HasValue || s.LocationID == locationId.Value);
+            var sales = UnitOfWork.Get<Sale>().GetAll(s => !locationId.HasValue || s.LocationID == locationId.Value, s => s.Client, s => s.Location, s => s.Goods);
 
             var orderedSales = sales.OrderByDescending(s => s.Date ?? DateTime.MinValue);
 
@@ -207,7 +207,7 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<SaleItemsSummaryDto>> AddGoodsAsync(IEnumerable<int> goodsIds, decimal? price, int saleId, int userId)
         {
-            var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => goodsIds.Contains(g.ID) && !g.SaleID.HasValue);
+            var goods = UnitOfWork.Get<Goods>().GetAll(g => goodsIds.Contains(g.ID) && !g.SaleID.HasValue);
             var goodsList = goods?.ToList();
             if (goodsList == null || !goodsList.Any())
                 return new ServiceResponse<SaleItemsSummaryDto>(ServiceResponseStatus.NotFound);
@@ -262,7 +262,7 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<SaleItemsSummaryDto>> RemoveGoodsAsync(IEnumerable<int> goodsIds, int saleId, int userId)
         {
-            var goods = await UnitOfWork.Get<Goods>().FindByAsync(g => goodsIds.Contains(g.ID) && g.SaleID.HasValue && g.SaleID.Value == saleId);
+            var goods = UnitOfWork.Get<Goods>().GetAll(g => goodsIds.Contains(g.ID) && g.SaleID.HasValue && g.SaleID.Value == saleId);
             var goodsList = goods?.ToList();
             if (goodsList == null || !goodsList.Any())
                 return new ServiceResponse<SaleItemsSummaryDto>(ServiceResponseStatus.NotFound);

@@ -12,10 +12,10 @@ namespace SORANO.CORE.StockEntities
 
         public bool IsSold { get; set; }
 
-        public virtual DeliveryItem DeliveryItem { get; set; }
+        public DeliveryItem DeliveryItem { get; set; }
 
-        public virtual Sale Sale { get; set; }
+        public Sale Sale { get; set; }
 
-        public virtual ICollection<Storage> Storages { get; set; } = new HashSet<Storage>();
+        public ICollection<Storage> Storages { get; set; } = new HashSet<Storage>();
     }
 }
