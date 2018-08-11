@@ -48,13 +48,13 @@ namespace SORANO.WEB.Controllers
         #region GET Actions
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return await TryGetActionResultAsync(async () => 
+            return TryGetActionResult(() => 
             {
                 var showDeleted = Session.GetBool("ShowDeletedDeliveries");
 
-                var deliveriesResult = await _deliveryService.GetAllAsync(showDeleted, LocationId);
+                var deliveriesResult = _deliveryService.GetAll(showDeleted, LocationId);
 
                 if (deliveriesResult.Status != ServiceResponseStatus.Success)
                 {
@@ -64,7 +64,7 @@ namespace SORANO.WEB.Controllers
 
                 ViewBag.ShowDeleted = showDeleted;
 
-                await ClearAttachments();
+                ClearAttachments();
 
                 var viewModel = _mapper.Map<DeliveryIndexViewModel>(deliveriesResult.Result);
                 viewModel.Mode = DeliveryTableMode.DeliveryIndex;

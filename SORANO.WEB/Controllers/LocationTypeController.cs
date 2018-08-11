@@ -53,7 +53,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                await ClearAttachments();
+                ClearAttachments();
 
                 LocationTypeCreateUpdateViewModel model;
 
@@ -80,7 +80,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                await ClearAttachments();
+                ClearAttachments();
 
                 LocationTypeCreateUpdateViewModel model;
 
@@ -112,7 +112,7 @@ namespace SORANO.WEB.Controllers
         {
             return await TryGetActionResultAsync(async () =>
             {
-                await ClearAttachments();
+                ClearAttachments();
 
                 var result = await _locationTypeService.GetAsync(id);
 
@@ -129,7 +129,7 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            await ClearAttachments();
+            ClearAttachments();
 
             return await TryGetActionResultAsync(async () =>
             {

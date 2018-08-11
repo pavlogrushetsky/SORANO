@@ -221,7 +221,7 @@ namespace SORANO.WEB.Mappings
             CreateMap<ArticleDto, ArticleDetailsViewModel>()
                 .ForMember(
                     dest => dest.MainPicturePath,
-                    source => source.MapFrom(s => s.MainPicture.FullPath)
+                    source => source.MapFrom(s => s.MainPicture == null ? string.Empty : s.MainPicture.FullPath)
                 )
                 .ForMember(
                     dest => dest.Table,
@@ -232,7 +232,7 @@ namespace SORANO.WEB.Mappings
             CreateMap<ArticleDto, ArticleViewModel>()
                 .ForMember(
                     dest => dest.MainPicturePath,
-                    source => source.MapFrom(s => s.MainPicture.FullPath)
+                    source => source.MapFrom(s => s.MainPicture == null ? string.Empty : s.MainPicture.FullPath)
                 )
                 .ForMember(
                     dest => dest.TypeName,
@@ -250,7 +250,7 @@ namespace SORANO.WEB.Mappings
             CreateMap<ArticleTypeDto, ArticleTypeIndexViewModel>()
                 .ForMember(
                     dest => dest.MainPicturePath,
-                    source => source.MapFrom(s => s.MainPicture.FullPath)
+                    source => source.MapFrom(s => s.MainPicture == null ? string.Empty : s.MainPicture.FullPath)
                 );
             CreateMap<IEnumerable<ArticleTypeDto>, ArticleTypeTreeViewModel>()
                 .ForMember(
@@ -262,7 +262,7 @@ namespace SORANO.WEB.Mappings
             CreateMap<ArticleTypeDto, ArticleTypeDetailsViewModel>()
                 .ForMember(
                     dest => dest.MainPicturePath,
-                    source => source.MapFrom(s => s.MainPicture.FullPath)
+                    source => source.MapFrom(s => s.MainPicture == null ? string.Empty : s.MainPicture.FullPath)
                 );
             CreateMap<ArticleTypeDto, ArticleTypeDeleteViewModel>();
 
@@ -273,7 +273,7 @@ namespace SORANO.WEB.Mappings
             CreateMap<DeliveryDto, DeliveryViewModel>()
                 .ForMember(
                     dest => dest.DeliveryItemsCount,
-                    source => source.MapFrom(s => s.Items.Count())
+                    source => source.MapFrom(s => s.ItemsCount)
                 )
                 .ForMember(
                     dest => dest.SupplierName,
@@ -377,7 +377,7 @@ namespace SORANO.WEB.Mappings
             CreateMap<SaleDto, SaleViewModel>()
                 .ForMember(
                     dest => dest.SaleItemsCount,
-                    source => source.MapFrom(s => s.Goods.Count())
+                    source => source.MapFrom(s => s.GoodsCount)
                 )
                 .ForMember(
                     dest => dest.LocationName,
@@ -482,35 +482,35 @@ namespace SORANO.WEB.Mappings
                 )
                 .ForMember(
                     dest => dest.ArticleName,
-                    source => source.MapFrom(s => s.DeliveryItem.Article.Name)
+                    source => source.MapFrom(s => s.Article.Name)
                 )
                 .ForMember(
                     dest => dest.ArticleDescription,
-                    source => source.MapFrom(s => s.DeliveryItem.Article.Description)
+                    source => source.MapFrom(s => s.Article.Description)
                 )
                 .ForMember(
                     dest => dest.ArticleCode,
-                    source => source.MapFrom(s => s.DeliveryItem.Article.Code)
+                    source => source.MapFrom(s => s.Article.Code)
                 )
                 .ForMember(
                     dest => dest.ArticleTypeID,
-                    source => source.MapFrom(s => s.DeliveryItem.Article.TypeID)
+                    source => source.MapFrom(s => s.Article.TypeID)
                 )
                 .ForMember(
                     dest => dest.ArticleTypeName,
-                    source => source.MapFrom(s => s.DeliveryItem.Article.Type.Name)
+                    source => source.MapFrom(s => s.ArticleType.Name)
                 )
                 .ForMember(
                     dest => dest.ArticleParentTypeName,
-                    source => source.MapFrom(s => s.DeliveryItem.Article.Type.Type != null ? s.DeliveryItem.Article.Type.Type.Name : string.Empty)
+                    source => source.MapFrom(s => s.ArticleTypeParentType != null ? s.ArticleTypeParentType.Name : string.Empty)
                 )
                 .ForMember(
                     dest => dest.LocationID,
-                    source => source.MapFrom(s => s.Storages.OrderBy(st => st.FromDate).Last().LocationID)
+                    source => source.MapFrom(s => s.CurrentLocation.ID)
                 )
                 .ForMember(
                     dest => dest.LocationName,
-                    source => source.MapFrom(s => s.Storages.OrderBy(st => st.FromDate).Last().Location.Name)
+                    source => source.MapFrom(s => s.CurrentLocation.Name)
                 )
                 .ForMember(
                     dest => dest.IsSold,
@@ -518,7 +518,7 @@ namespace SORANO.WEB.Mappings
                 )                
                 .ForMember(
                     dest => dest.ImagePath,
-                    source => source.MapFrom(s => s.DeliveryItem.Article.MainPicture.FullPath)
+                    source => source.MapFrom(s => s.Picture == null ? string.Empty : s.Picture.FullPath)
                 );
 
             CreateMap<GoodsDto, GoodsDetailsViewModel>()

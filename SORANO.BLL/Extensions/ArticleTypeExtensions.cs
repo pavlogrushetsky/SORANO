@@ -16,7 +16,7 @@ namespace SORANO.BLL.Extensions
                 Description = model.Description,
                 TypeID = model.ParentType?.ID,
                 Type = model.ParentType?.ToDto(),
-                ChildTypes = model.ChildTypes?.Filter(term).Select(t => t.ToDto()),
+                ChildTypes = model.ChildTypes?.Select(ct => ct.ToDto()).Filter(term),
                 Articles = model.Articles?.Select(a => a.ToDto())
             };
 
@@ -51,20 +51,46 @@ namespace SORANO.BLL.Extensions
             existentArticleType.ParentTypeId = newArticleType.ParentTypeId;
         }
 
-        public static IEnumerable<ArticleType> Filter(this IEnumerable<ArticleType> types, string term)
+        public static IEnumerable<ArticleTypeDto> Filter(this IEnumerable<ArticleTypeDto> types, string term)
         {
             return string.IsNullOrWhiteSpace(term)
                 ? types
-                : types.Where(t => Filter(t, term) || Filter(t.ChildTypes, term).Any());
+                : types
+                    .Where(t => t.Filter(term) || 
+                                t.ChildTypes.Filter(term).Any() ||
+                                t.Articles.Any(a => a.Filter(term)))
+                    .Select(t =>
+                    {
+                        t.ChildTypes = t.ChildTypes.Filter(term);
+                        var filteredArticles = t.Articles.Where(a => a.Filter(term)).ToList();
+                        if (filteredArticles.Count != t.Articles.Count())
+                            t.Articles = filteredArticles;
+                        return t;
+                    });
         }
 
-        private static bool Filter(this ArticleType type, string term)
+        private static bool Filter(this ArticleTypeDto type, string term)
         {
             if (string.IsNullOrWhiteSpace(term))
                 return true;
 
-            return type.Name.ToLower().Contains(term)
-                   || !string.IsNullOrWhiteSpace(type.Description) && type.Description.ToLower().Contains(term);
+            return type.Name.ToLower().Contains(term) || 
+                   !string.IsNullOrWhiteSpace(type.Description) && 
+                   type.Description.ToLower().Contains(term);
+        }
+
+        private static bool Filter(this ArticleDto article, string term)
+        {
+            if (string.IsNullOrWhiteSpace(term))
+                return true;
+
+            return article.Name.ToLower().Contains(term) ||
+                   !string.IsNullOrWhiteSpace(article.Description) && 
+                   article.Description.ToLower().Contains(term) ||
+                   !string.IsNullOrWhiteSpace(article.Code) && 
+                   article.Code.ToLower().Contains(term) ||
+                   !string.IsNullOrWhiteSpace(article.Barcode) && 
+                   article.Barcode.ToLower().Contains(term);
         }
     }
 }

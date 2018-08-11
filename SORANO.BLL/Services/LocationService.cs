@@ -23,9 +23,26 @@ namespace SORANO.BLL.Services
             var locations = UnitOfWork.Get<Location>()
                 .GetAll(l => withDeleted || !l.IsDeleted)
                 .OrderByDescending(l => l.ModifiedDate)
+                .Select(l => new LocationDto
+                {
+                    ID = l.ID,
+                    Name = l.Name,
+                    Comment = l.Comment,
+                    TypeID = l.TypeID,
+                    Type = new LocationTypeDto
+                    {
+                        ID = l.Type.ID,
+                        Name = l.Type.Name
+                    },
+                    Modified = l.ModifiedDate,
+                    CanBeDeleted = !l.IsDeleted &&
+                                   !l.Deliveries.Any() &&
+                                   !l.Storages.Any() &&
+                                   !l.Sales.Any()
+                })
                 .ToList();
 
-            return new SuccessResponse<IEnumerable<LocationDto>>(locations.ToList().Select(l => l.ToDto()));
+            return new SuccessResponse<IEnumerable<LocationDto>>(locations);
         }
 
         public async Task<ServiceResponse<LocationDto>> GetAsync(int id)

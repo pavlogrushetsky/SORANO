@@ -20,25 +20,36 @@ namespace SORANO.BLL.Services
 
         public ServiceResponse<IEnumerable<ArticleTypeDto>> GetAll(bool withDeleted)
         {
-            var response = new SuccessResponse<IEnumerable<ArticleTypeDto>>();
-
-            var articleTypes = UnitOfWork.Get<ArticleType>().GetAll(at => at.Articles, at => at.ChildTypes, at => at.ParentType);
-
-            if (withDeleted)
-            {
-                response.Result = articleTypes.ToList().Select(t => t.ToDto());
-                return response;
-            }
-
-            var filtered = articleTypes.Where(t => !t.IsDeleted).ToList();
-            filtered.ForEach(t =>
-            {
-                t.ChildTypes = t.ChildTypes.Where(c => !c.IsDeleted).ToList();
-                t.Articles = t.Articles.Where(a => !a.IsDeleted).ToList();
-            });
-
-            response.Result = filtered.Select(t => t.ToDto());
-            return response;
+            var articleTypes = UnitOfWork.Get<ArticleType>()
+                .GetAll(at => withDeleted || !at.IsDeleted)
+                .OrderByDescending(at => at.ModifiedDate)
+                .Select(at => new ArticleTypeDto
+                {
+                    ID = at.ID,
+                    Name = at.Name,
+                    Description = at.Description,
+                    TypeID = at.ParentTypeId,
+                    Type = at.ParentType == null 
+                        ? null
+                        : new ArticleTypeDto
+                        {
+                            ID = at.ParentType.ID,
+                            Name = at.ParentType.Name,
+                            Description = at.ParentType.Description
+                        },
+                    ChildTypes = at.ChildTypes.Select(ct => new ArticleTypeDto
+                    {
+                        ID = ct.ID,
+                        Name = ct.Name,
+                        Description = ct.Description
+                    }),
+                    Modified = at.ModifiedDate,
+                    CanBeDeleted = !at.IsDeleted &&
+                                   at.Articles.All(a => a.IsDeleted)
+                })
+                .ToList();
+            
+            return new SuccessResponse<IEnumerable<ArticleTypeDto>>(articleTypes);
         }
 
         public async Task<ServiceResponse<ArticleTypeDto>> GetAsync(int id)
@@ -126,22 +137,59 @@ namespace SORANO.BLL.Services
             var term = searchTerm?.ToLower();
 
             var articleTypes = UnitOfWork.Get<ArticleType>()
-                .GetAll(at => withDeleted || !at.IsDeleted,
-                    at => at.Articles, 
-                    at => at.ChildTypes, 
-                    at => at.ParentType)
+                .GetAll(at => withDeleted || !at.IsDeleted)
+                .Select(at => new ArticleTypeDto
+                {
+                    ID = at.ID,
+                    Name = at.Name,
+                    Description = at.Description,
+                    TypeID = at.ParentTypeId,
+                    MainPicture = at.Attachments
+                        .Where(a => !a.IsDeleted && 
+                                    a.Type.Name.Equals("Основное изображение"))
+                            .Select(a => new AttachmentDto
+                            {
+                                FullPath = a.FullPath
+                            })
+                            .FirstOrDefault(),
+                    CanBeDeleted = !at.IsDeleted &&
+                                   at.Articles.All(a => a.IsDeleted)
+                })
                 .ToList();
 
-            if (!withDeleted)
-                articleTypes.ForEach(t =>
+            var articles = UnitOfWork.Get<Article>()
+                .GetAll(a => withDeleted || !a.IsDeleted)
+                .Select(a => new ArticleDto
                 {
-                    t.Articles = t.Articles.Where(a => !a.IsDeleted).ToList();
-                    t.ChildTypes = t.ChildTypes.Where(ct => !ct.IsDeleted).ToList();
-                });
+                    ID = a.ID,
+                    Name = a.Name,
+                    Description = a.Description,
+                    Producer = a.Producer,
+                    Code = a.Code,
+                    Barcode = a.Barcode,
+                    RecommendedPrice = a.RecommendedPrice,
+                    TypeID = a.TypeID,
+                    MainPicture = a.Attachments
+                        .Where(x => !x.IsDeleted &&
+                                    x.Type.Name.Equals("Основное изображение"))
+                        .Select(x => new AttachmentDto
+                        {
+                            FullPath = x.FullPath
+                        })
+                        .FirstOrDefault(),
+                    CanBeDeleted = !a.IsDeleted &&
+                                   !a.DeliveryItems.Any()
+                })
+                .ToList();
 
-            var tree = articleTypes.Where(at => at.ParentType == null)
+            articleTypes.ForEach(type =>
+            {
+                type.ChildTypes = new List<ArticleTypeDto>(articleTypes.Where(at => at.TypeID == type.ID));
+                type.Articles = new List<ArticleDto>(articles.Where(a => a.TypeID == type.ID));
+            });
+
+            var tree = articleTypes.Where(at => !at.TypeID.HasValue)
                 .Filter(term)
-                .Select(t => t.ToDto(term))
                 .ToList();
 
             return new SuccessResponse<IEnumerable<ArticleTypeDto>>(tree);

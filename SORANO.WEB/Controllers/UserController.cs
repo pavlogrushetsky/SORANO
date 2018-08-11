@@ -51,7 +51,7 @@ namespace SORANO.WEB.Controllers
                 foreach (var user in models)
                 {
                     user.CanBeBlocked = user.ID != UserId;
-                    user.CanBeDeleted = user.ID != UserId;
+                    user.CanBeDeleted = user.ID != UserId && !user.HasActivities;
                 }
 
                 return View(models);

@@ -61,7 +61,7 @@ namespace SORANO.DAL.Context.Configurations
                     ul.MapLeftKey("UserID");
                     ul.MapRightKey("LocationID");
                     ul.ToTable("UsersLocations");
-                });
+                });           
 
             ToTable("Users");
         }

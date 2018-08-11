@@ -6,7 +6,7 @@ namespace SORANO.BLL.Services.Abstract
 {
     public interface IDeliveryService : IBaseService<DeliveryDto>
     {
-        Task<ServiceResponse<IEnumerable<DeliveryDto>>> GetAllAsync(bool withDeleted, int? locationId);
+        ServiceResponse<IEnumerable<DeliveryDto>> GetAll(bool withDeleted, int? locationId);
 
         Task<ServiceResponse<int>> GetUnsubmittedCountAsync(int? locationId);
 

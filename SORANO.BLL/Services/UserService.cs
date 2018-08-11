@@ -24,10 +24,30 @@ namespace SORANO.BLL.Services
         public ServiceResponse<IEnumerable<UserDto>> GetAll()
         {
             var users = _unitOfWork.Get<User>()
-                .GetAll(u => u.Roles, u => u.Locations)
+                .GetAll()
+                .Select(u => new UserDto
+                {
+                    ID = u.ID,
+                    Login = u.Login,
+                    Description = u.Description,
+                    IsBlocked = u.IsBlocked,
+                    Roles = u.Roles.Select(r => new RoleDto
+                    {
+                        ID = r.ID,
+                        Description = r.Description
+                    }),
+                    Locations = u.Locations.Select(l => new LocationDto
+                    {
+                        ID = l.ID,
+                        Name = l.Name
+                    }),
+                    HasActivities = u.CreatedEntities.Any() ||
+                                    u.ModifiedEntities.Any() ||
+                                    u.DeletedEntities.Any()
+                })
                 .ToList();
 
-            return new SuccessResponse<IEnumerable<UserDto>>(users.Select(u => u.ToDto()));       
+            return new SuccessResponse<IEnumerable<UserDto>>(users);       
         }
 
         public async Task<ServiceResponse<UserDto>> CreateAsync(UserDto user)

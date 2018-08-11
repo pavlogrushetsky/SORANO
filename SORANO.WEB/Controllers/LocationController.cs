@@ -45,9 +45,9 @@ namespace SORANO.WEB.Controllers
 
         [HttpGet]
         [CheckUser]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return await TryGetActionResultAsync(async () =>
+            return TryGetActionResult(() =>
             {
                 var showDeletedLocations = Session.GetBool("ShowDeletedLocations");
                 var showDeletedLocationTypes = Session.GetBool("ShowDeletedLocationTypes");
@@ -63,7 +63,7 @@ namespace SORANO.WEB.Controllers
                 ViewBag.ShowDeletedLocations = showDeletedLocations;
                 ViewBag.ShowDeletedLocationTypes = showDeletedLocationTypes;
 
-                await ClearAttachments();
+                ClearAttachments();
 
                 return View(_mapper.Map<IEnumerable<LocationIndexViewModel>>(locationsResult.Result));
             }, ex =>

@@ -21,13 +21,30 @@ namespace SORANO.BLL.Services
         public ServiceResponse<IEnumerable<ArticleDto>> GetAll(bool withDeleted)
         {
             var articles =  UnitOfWork.Get<Article>()
-                .GetAll(a => withDeleted || !a.IsDeleted,
-                    a => a.Type, 
-                    a => a.DeliveryItems)
+                .GetAll(a => withDeleted || !a.IsDeleted)
                 .OrderByDescending(a => a.ModifiedDate)
+                .Select(a => new ArticleDto
+                {
+                    ID = a.ID,
+                    Name = a.Name,
+                    Description = a.Description,
+                    Producer = a.Producer,
+                    Code = a.Code,
+                    Barcode = a.Barcode,
+                    RecommendedPrice = a.RecommendedPrice,
+                    TypeID = a.TypeID,
+                    Type = new ArticleTypeDto
+                    {
+                        ID = a.Type.ID,
+                        Name = a.Type.Name
+                    },
+                    Modified = a.ModifiedDate,
+                    CanBeDeleted = !a.IsDeleted &&
+                                   !a.DeliveryItems.Any()
+                })
                 .ToList();
 
-            return new SuccessResponse<IEnumerable<ArticleDto>>(articles.Select(a => a.ToDto()));
+            return new SuccessResponse<IEnumerable<ArticleDto>>(articles);
         }
 
         public async Task<ServiceResponse<ArticleDto>> GetAsync(int id)
@@ -130,27 +147,21 @@ namespace SORANO.BLL.Services
 
         public ServiceResponse<IEnumerable<ArticleDto>> GetAll(bool withDeleted, string searchTerm)
         {
-            var response = new SuccessResponse<IEnumerable<ArticleDto>>();
-
-            var articles = UnitOfWork.Get<Article>().GetAll();
-
             var term = searchTerm?.ToLower();
+            var termNotSpecified = string.IsNullOrEmpty(term);
 
-            var searched = articles
-                .Where(a => string.IsNullOrEmpty(term)
-                            || a.Name.ToLower().Contains(term)
-                            || a.Type.Name.ToLower().Contains(term)
-                            || !string.IsNullOrWhiteSpace(a.Code) && a.Code.ToLower().Contains(term)
-                            || !string.IsNullOrWhiteSpace(a.Barcode) && a.Barcode.ToLower().Contains(term));
+            var articles = UnitOfWork.Get<Article>()
+                .GetAll(a => (withDeleted || !a.IsDeleted) && 
+                             (termNotSpecified || 
+                             a.Name.ToLower().Contains(term) || 
+                             a.Type.Name.ToLower().Contains(term) || 
+                             a.Code != null && a.Code.ToLower().Contains(term) || 
+                             a.Barcode != null && a.Barcode.ToLower().Contains(term)),
+                        a => a.Type)
+                .OrderByDescending(a => a.ModifiedDate)
+                .ToList();            
 
-            if (withDeleted)
-            {
-                response.Result = searched.Select(t => t.ToDto());
-                return response;
-            }
-
-            response.Result = searched.Where(t => !t.IsDeleted).OrderByDescending(a => a.ModifiedDate).Select(t => t.ToDto());
-            return response;
+            return new SuccessResponse<IEnumerable<ArticleDto>>(articles.Select(a => a.ToDto()));
         }
     }
 }

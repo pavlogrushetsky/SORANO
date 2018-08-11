@@ -31,6 +31,8 @@ namespace SORANO.BLL.Dtos
 
         public bool IsSubmitted { get; set; }
 
+        public int ItemsCount { get; set; }
+
         public IEnumerable<DeliveryItemDto> Items { get; set; }
     }
 }

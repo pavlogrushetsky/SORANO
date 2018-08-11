@@ -20,17 +20,22 @@ namespace SORANO.BLL.Services
 
         public ServiceResponse<IEnumerable<ClientDto>> GetAll(bool withDeleted)
         {
-            var response = new SuccessResponse<IEnumerable<ClientDto>>();
+            var clients = UnitOfWork.Get<Client>()
+                .GetAll(c => withDeleted || !c.IsDeleted)
+                .OrderByDescending(c => c.ModifiedDate)
+                .Select(c => new ClientDto
+                {
+                    ID = c.ID,
+                    Name = c.Name,
+                    Description = c.Description,
+                    PhoneNumber = c.PhoneNumber,
+                    CardNumber = c.CardNumber,
+                    Modified = c.ModifiedDate,
+                    CanBeDeleted = !c.IsDeleted && !c.Sales.Any()
+                })
+                .ToList();
 
-            var clients = UnitOfWork.Get<Client>().GetAll(c => c.Sales);
-
-            var orderedClients = clients.OrderByDescending(c => c.ModifiedDate);
-
-            response.Result = !withDeleted
-                ? orderedClients.Where(c => !c.IsDeleted).Select(c => c.ToDto())
-                : orderedClients.Select(c => c.ToDto());
-
-            return response;
+            return new SuccessResponse<IEnumerable<ClientDto>>(clients);
         }
 
         public async Task<ServiceResponse<ClientDto>> GetAsync(int id)

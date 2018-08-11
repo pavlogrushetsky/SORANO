@@ -20,22 +20,29 @@ namespace SORANO.BLL.Services
 
         public ServiceResponse<IEnumerable<SupplierDto>> GetAll(bool withDeleted)
         {
-            var response = new SuccessResponse<IEnumerable<SupplierDto>>();
+            var suppliers = UnitOfWork.Get<Supplier>()
+                .GetAll(s => withDeleted || !s.IsDeleted)
+                .OrderByDescending(s => s.ModifiedDate)
+                .Select(s => new SupplierDto
+                {
+                    ID = s.ID,
+                    Name = s.Name,
+                    Description = s.Description,
+                    Modified = s.ModifiedDate,
+                    CanBeDeleted = !s.IsDeleted && !s.Deliveries.Any()
+                })
+                .ToList();
 
-            var suppliers = UnitOfWork.Get<Supplier>().GetAll(s => s.Deliveries);
-
-            var orderedSuppliers = suppliers.OrderByDescending(s => s.ModifiedDate);
-
-            response.Result = !withDeleted
-                ? orderedSuppliers.Where(s => !s.IsDeleted).Select(s => s.ToDto())
-                : orderedSuppliers.Select(a => a.ToDto());
-
-            return response;
+            return new SuccessResponse<IEnumerable<SupplierDto>>(suppliers);
         }
 
         public async Task<ServiceResponse<SupplierDto>> GetAsync(int id)
         {
-            var supplier = await UnitOfWork.Get<Supplier>().GetAsync(s => s.ID == id);
+            var supplier = await UnitOfWork.Get<Supplier>()
+                .GetAsync(s => s.ID == id,
+                    s => s.Deliveries,
+                    s => s.Attachments,
+                    s => s.Recommendations);
 
             return supplier == null 
                 ? new ServiceResponse<SupplierDto>(ServiceResponseStatus.NotFound) 

@@ -6,7 +6,7 @@ namespace SORANO.BLL.Dtos
     public class GoodsDto : BaseDto
     {
         // ReSharper disable once InconsistentNaming
-        public List<int> IDs { get; set; }
+        public IEnumerable<int> IDs { get; set; }
 
         public int DeliveryItemID { get; set; }
 
@@ -26,6 +26,12 @@ namespace SORANO.BLL.Dtos
 
         public DeliveryItemDto DeliveryItem { get; set; }
 
+        public ArticleDto Article { get; set; }
+
+        public ArticleTypeDto ArticleType { get; set; }
+
+        public ArticleTypeDto ArticleTypeParentType { get; set; }
+
         public ClientDto Client { get; set; }
 
         public string SoldByUser { get; set; }
@@ -34,6 +40,8 @@ namespace SORANO.BLL.Dtos
 
         public IEnumerable<StorageDto> Storages { get; set; }
 
+        public LocationDto CurrentLocation { get; set; }
+
         public int Quantity { get; set; }
 
         public int? SaleID { get; set; }
@@ -41,5 +49,7 @@ namespace SORANO.BLL.Dtos
         public SaleDto Sale { get; set; }
 
         public bool IsSold { get; set; }
+
+        public AttachmentDto Picture { get; set; }
     }
 }

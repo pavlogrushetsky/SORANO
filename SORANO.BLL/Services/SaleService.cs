@@ -153,26 +153,61 @@ namespace SORANO.BLL.Services
 
         #endregion
 
-        public async Task<ServiceResponse<int>> GetUnsubmittedCountAsync(int? locationId)
+        public ServiceResponse<int> GetUnsubmittedCount(int? locationId)
         {
-            var sales = UnitOfWork.Get<Sale>().GetAll(s => !s.IsSubmitted && !s.IsDeleted && (!locationId.HasValue || s.LocationID == locationId.Value));
+            var salesCount = UnitOfWork.Get<Sale>()
+                .GetAll(s => !s.IsSubmitted && 
+                             !s.IsDeleted && 
+                             (!locationId.HasValue || 
+                              s.LocationID == locationId.Value))
+                .ToList()
+                .Count;
 
-            return new SuccessResponse<int>(sales?.Count() ?? 0);
+            return new SuccessResponse<int>(salesCount);
         }
 
-        public async Task<ServiceResponse<IEnumerable<SaleDto>>> GetAllAsync(bool withDeleted, int? locationId)
+        public ServiceResponse<IEnumerable<SaleDto>> GetAll(bool withDeleted, int? locationId)
         {
-            var response = new SuccessResponse<IEnumerable<SaleDto>>();
+            var sales = UnitOfWork.Get<Sale>()
+                .GetAll(s => (withDeleted || !s.IsDeleted) && 
+                             (!locationId.HasValue || s.LocationID == locationId.Value))
+                .OrderByDescending(s => s.Date ?? DateTime.MinValue)
+                .Select(s => new SaleDto
+                {
+                    ID = s.ID,
+                    ClientID = s.ClientID,
+                    Client = s.Client == null
+                        ? null
+                        : new ClientDto
+                        {
+                            ID = s.Client.ID,
+                            Name = s.Client.Name
+                        },
+                    LocationID = s.LocationID,
+                    Location = new LocationDto
+                    {
+                        ID = s.Location.ID,
+                        Name = s.Location.Name
+                    },
+                    UserID = s.UserID,
+                    User = new UserDto
+                    {
+                        ID = s.User.ID,
+                        Login = s.User.Login
+                    },
+                    IsSubmitted = s.IsSubmitted,
+                    IsCachless = s.IsCachless,
+                    IsWriteOff = s.IsWriteOff,
+                    DollarRate = s.DollarRate,
+                    EuroRate = s.EuroRate,
+                    TotalPrice = s.TotalPrice ?? s.Goods.Sum(g => g.Price),
+                    Date = s.Date,
+                    Modified = s.ModifiedDate,
+                    GoodsCount = s.Goods.Count
+                })                
+                .ToList();
 
-            var sales = UnitOfWork.Get<Sale>().GetAll(s => !locationId.HasValue || s.LocationID == locationId.Value, s => s.Client, s => s.Location, s => s.Goods);
-
-            var orderedSales = sales.OrderByDescending(s => s.Date ?? DateTime.MinValue);
-
-            response.Result = !withDeleted
-                ? orderedSales.Where(s => !s.IsDeleted).Select(s => s.ToDto())
-                : orderedSales.Select(s => s.ToDto());
-
-            return response;
+            return new SuccessResponse<IEnumerable<SaleDto>>(sales);
         }
 
         public async Task<ServiceResponse<SaleItemsSummaryDto>> AddGoodsAsync(int goodsId, decimal? price, int saleId, int userId)

@@ -16,6 +16,8 @@ namespace SORANO.WEB.ViewModels.User
 
         public bool CanBeDeleted { get; set; }
 
+        public bool HasActivities { get; set; }
+
         public IEnumerable<string> Roles { get; set; }
 
         public IEnumerable<string> Locations { get; set; }

@@ -41,9 +41,9 @@ namespace SORANO.WEB.Controllers
         #region GET Actions
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return await TryGetActionResultAsync(async () =>
+            return TryGetActionResult(() =>
             {
                 var showDeleted = Session.GetBool("ShowDeletedClients");
 
@@ -57,7 +57,7 @@ namespace SORANO.WEB.Controllers
 
                 ViewBag.ShowDeleted = showDeleted;
 
-                await ClearAttachments();
+                ClearAttachments();
 
                 return View(_mapper.Map<IEnumerable<ClientIndexViewModel>>(clientsResult.Result));
             }, ex =>

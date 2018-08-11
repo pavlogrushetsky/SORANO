@@ -17,7 +17,9 @@ namespace SORANO.WEB.Components
             _userService = userService;
         }
 
+#pragma warning disable 1998
         public async Task<IViewComponentResult> InvokeAsync()
+#pragma warning restore 1998
         {
             var userResult = _userService.Get(HttpContext.User.FindFirst(ClaimTypes.Name)?.Value);
             var userId = userResult.Status == ServiceResponseStatus.Success ? userResult.Result.ID : 0;
@@ -27,7 +29,7 @@ namespace SORANO.WEB.Components
                 ? (int?)null
                 : int.Parse(locationIdStr);
 
-            var count = await _saleService.GetUnsubmittedCountAsync(locationId);
+            var count = _saleService.GetUnsubmittedCount(locationId);
 
             return View(count.Result);
         }

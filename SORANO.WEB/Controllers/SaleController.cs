@@ -46,13 +46,13 @@ namespace SORANO.WEB.Controllers
         #region GET Actions
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return await TryGetActionResultAsync(async () =>
+            return TryGetActionResult(() =>
             {
                 var showDeleted = Session.GetBool("ShowDeletedSales");
 
-                var salesResult = await _saleService.GetAllAsync(showDeleted, LocationId);
+                var salesResult = _saleService.GetAll(showDeleted, LocationId);
 
                 if (salesResult.Status != ServiceResponseStatus.Success)
                 {
@@ -62,7 +62,7 @@ namespace SORANO.WEB.Controllers
 
                 ViewBag.ShowDeleted = showDeleted;
 
-                await ClearAttachments();
+                ClearAttachments();
 
                 var viewModel = _mapper.Map<SaleIndexViewModel>(salesResult.Result);
                 viewModel.Mode = SaleTableMode.SaleIndex;
@@ -423,9 +423,9 @@ namespace SORANO.WEB.Controllers
         #endregion
 
         [HttpPost]
-        public async Task<JsonResult> GetSales(int locationId)
+        public JsonResult GetSales(int locationId)
         {
-            var sales = await _saleService.GetAllAsync(false, locationId);
+            var sales = _saleService.GetAll(false, locationId);
 
             return Json(new
             {

@@ -42,9 +42,9 @@ namespace SORANO.WEB.Controllers
 
         [HttpGet]
         [Authorize(Roles = "developer,administrator,manager,user")]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return await TryGetActionResultAsync(async () =>
+            return TryGetActionResult(() =>
             {
                 var showDeletedArticles = Session.GetBool("ShowDeletedArticles");
                 var showDeletedArticleTypes = Session.GetBool("ShowDeletedArticleTypes");
@@ -52,7 +52,7 @@ namespace SORANO.WEB.Controllers
                 ViewBag.ShowDeletedArticles = showDeletedArticles;
                 ViewBag.ShowDeletedArticleTypes = showDeletedArticleTypes;
 
-                await ClearAttachments();
+                ClearAttachments();
 
                 return View();
             }, ex =>

@@ -14,6 +14,8 @@ namespace SORANO.BLL.Dtos
 
         public bool IsBlocked { get; set; }
 
+        public bool HasActivities { get; set; }
+
         public IEnumerable<RoleDto> Roles { get; set; }
 
         public IEnumerable<GoodsDto> SoldGoods { get; set; }

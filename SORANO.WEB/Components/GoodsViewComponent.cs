@@ -21,11 +21,13 @@ namespace SORANO.WEB.Components
             _mapper = mapper;
         }
 
+#pragma warning disable 1998
         public async Task<IViewComponentResult> InvokeAsync(GoodsIndexViewModel model)
+#pragma warning restore 1998
         {
             var filterDto = _mapper.Map<GoodsFilterCriteriaDto>(model);
 
-            var result = await _goodsService.GetAllAsync(filterDto);
+            var result = _goodsService.GetAll(filterDto);
 
             var viewModel = new PaginationSet<GoodsItemViewModel>
             {

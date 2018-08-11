@@ -21,13 +21,24 @@ namespace SORANO.BLL.Services
         public ServiceResponse<IEnumerable<AttachmentTypeDto>> GetAll(bool includeMainPicture)
         {
             var attachmentTypes = UnitOfWork.Get<AttachmentType>()
-                .GetAll(at => includeMainPicture || !at.Name.Equals("Основное изображение"), 
-                    at => at.TypeAttachments,
-                    at => at.Attachments)
+                .GetAll(at => includeMainPicture || !at.Name.Equals("Основное изображение"))
                 .OrderByDescending(at => at.ModifiedDate)
+                .Select(at => new AttachmentTypeDto
+                {
+                    ID = at.ID,
+                    Name = at.Name,
+                    Comment = at.Comment,
+                    Extensions = at.Extensions,
+                    AttachmentsCount = at.TypeAttachments.Count,
+                    Modified = at.ModifiedDate,
+                    CanBeUpdated = !at.Name.Equals("Основное изображение"),
+                    CanBeDeleted = !at.IsDeleted &&
+                                   !at.TypeAttachments.Any() &&
+                                   !at.Name.Equals("Основное изображение")
+                })
                 .ToList();
 
-            return new SuccessResponse<IEnumerable<AttachmentTypeDto>>(attachmentTypes.Select(at => at.ToDto()));
+            return new SuccessResponse<IEnumerable<AttachmentTypeDto>>(attachmentTypes);
         }
 
         public async Task<ServiceResponse<AttachmentTypeDto>> GetAsync(int id)

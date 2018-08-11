@@ -20,32 +20,78 @@ namespace SORANO.BLL.Services
 
         public ServiceResponse<IEnumerable<DeliveryDto>> GetAll(bool withDeleted)
         {
-            var response = new SuccessResponse<IEnumerable<DeliveryDto>>();
+            var deliveries = UnitOfWork.Get<Delivery>()
+                .GetAll(d => withDeleted || !d.IsDeleted)
+                .OrderByDescending(d => d.ModifiedDate)
+                .Select(d => new DeliveryDto
+                {
+                    ID = d.ID,
+                    SupplierID = d.SupplierID,
+                    Supplier = new SupplierDto
+                    {
+                        ID = d.Supplier.ID,
+                        Name = d.Supplier.Name
+                    },
+                    LocationID = d.LocationID,
+                    Location = new LocationDto
+                    {
+                        ID = d.DeliveryLocation.ID,
+                        Name = d.DeliveryLocation.Name
+                    },
+                    BillNumber = d.BillNumber,
+                    DeliveryDate = d.DeliveryDate,
+                    PaymentDate = d.PaymentDate,
+                    DollarRate = d.DollarRate,
+                    EuroRate = d.EuroRate,
+                    TotalGrossPrice = d.TotalGrossPrice,
+                    TotalDiscount = d.TotalDiscount,
+                    TotalDiscountedPrice = d.TotalDiscountedPrice,
+                    IsSubmitted = d.IsSubmitted,
+                    Modified = d.ModifiedDate,
+                    CanBeDeleted = !d.IsDeleted && !d.IsSubmitted
+                })
+                .ToList();
 
-            var deliveries = UnitOfWork.Get<Delivery>().GetAll();
-
-            var orderedDeliveries = deliveries.OrderByDescending(d => d.DeliveryDate);
-
-            response.Result = !withDeleted
-                ? orderedDeliveries.Where(d => !d.IsDeleted).Select(d => d.ToDto())
-                : orderedDeliveries.Select(d => d.ToDto());
-
-            return response;
+            return new SuccessResponse<IEnumerable<DeliveryDto>>(deliveries);
         }
 
-        public async Task<ServiceResponse<IEnumerable<DeliveryDto>>> GetAllAsync(bool withDeleted, int? locationId)
+        public ServiceResponse<IEnumerable<DeliveryDto>> GetAll(bool withDeleted, int? locationId)
         {
-            var response = new SuccessResponse<IEnumerable<DeliveryDto>>();
+            var deliveries = UnitOfWork.Get<Delivery>()
+                .GetAll(d => (withDeleted || !d.IsDeleted) 
+                             && (!locationId.HasValue || d.LocationID == locationId.Value))
+                .OrderByDescending(d => d.ModifiedDate)
+                .Select(d => new DeliveryDto
+                {
+                    ID = d.ID,
+                    SupplierID = d.SupplierID,
+                    Supplier = new SupplierDto
+                    {
+                        ID = d.Supplier.ID,
+                        Name = d.Supplier.Name
+                    },
+                    LocationID = d.LocationID,
+                    Location = new LocationDto
+                    {
+                        ID = d.DeliveryLocation.ID,
+                        Name = d.DeliveryLocation.Name
+                    },
+                    BillNumber = d.BillNumber,
+                    DeliveryDate = d.DeliveryDate,
+                    PaymentDate = d.PaymentDate,
+                    DollarRate = d.DollarRate,
+                    EuroRate = d.EuroRate,
+                    TotalGrossPrice = d.TotalGrossPrice,
+                    TotalDiscount = d.TotalDiscount,
+                    TotalDiscountedPrice = d.TotalDiscountedPrice,
+                    IsSubmitted = d.IsSubmitted,
+                    Modified = d.ModifiedDate,
+                    ItemsCount = d.Items.Count,
+                    CanBeDeleted = !d.IsDeleted && !d.IsSubmitted
+                })
+                .ToList();
 
-            var deliveries = UnitOfWork.Get<Delivery>().GetAll(d => !locationId.HasValue || d.LocationID == locationId.Value, d => d.Supplier, d => d.Items);
-
-            var orderedDeliveries = deliveries.OrderByDescending(d => d.DeliveryDate);
-
-            response.Result = !withDeleted
-                ? orderedDeliveries.Where(d => !d.IsDeleted).Select(d => d.ToDto())
-                : orderedDeliveries.Select(d => d.ToDto());
-
-            return response;
+            return new SuccessResponse<IEnumerable<DeliveryDto>>(deliveries);
         }
 
         public async Task<ServiceResponse<DeliveryDto>> GetAsync(int id)

@@ -6,7 +6,7 @@ namespace SORANO.BLL.Services.Abstract
 {
     public interface IAttachmentService
     {
-        Task<ServiceResponse<IEnumerable<string>>> GetAllForAsync(string type);
+        ServiceResponse<IEnumerable<string>> GetAllFor(string type);
 
         Task<ServiceResponse<IEnumerable<AttachmentDto>>> GetPicturesExceptAsync(int currentMainPictureId);
 

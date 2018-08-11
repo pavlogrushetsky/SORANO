@@ -42,9 +42,9 @@ namespace SORANO.WEB.Controllers
 
         [HttpGet]
         [Authorize(Roles = "developer,administrator,manager,user")]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return await TryGetActionResultAsync(async () =>
+            return TryGetActionResult(() =>
             {
                 bool showDeleted = Session.GetBool("ShowDeletedSuppliers");
 
@@ -58,7 +58,7 @@ namespace SORANO.WEB.Controllers
 
                 ViewBag.ShowDeleted = showDeleted;
 
-                await ClearAttachments();
+                ClearAttachments();
 
                 return View(_mapper.Map<IEnumerable<SupplierIndexViewModel>>(suppliersResult.Result));
             }, ex => 

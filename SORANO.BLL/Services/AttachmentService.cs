@@ -16,15 +16,20 @@ namespace SORANO.BLL.Services
         {
         }
 
-        public async Task<ServiceResponse<IEnumerable<string>>> GetAllForAsync(string type)
+        public ServiceResponse<IEnumerable<string>> GetAllFor(string type)
         {
-            var attachments = UnitOfWork.Get<Attachment>().GetAll();
-            
-            return new SuccessResponse<IEnumerable<string>>(attachments.ToList().Where(a => a.ParentEntities.Any(p =>
-            {
-                var memberInfo = p.GetType().BaseType;
-                return memberInfo != null && memberInfo.Name.ToLower().Equals(type);
-            })).Select(a => a.FullPath));
+            var attachments = UnitOfWork.Get<Attachment>()
+                .GetAll(a => a.ParentEntities)
+                .ToList()
+                .Where(a => a.ParentEntities.Any(p =>
+                {
+                    var memberInfo = p.GetType().BaseType;
+                    return memberInfo != null && memberInfo.Name.ToLower().Equals(type);
+                }))
+                .Select(a => a.FullPath)
+                .ToList();
+
+            return new SuccessResponse<IEnumerable<string>>(attachments);          
         }
 
         public async Task<ServiceResponse<bool>> HasMainPictureAsync(int id, int mainPictureId)

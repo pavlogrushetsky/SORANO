@@ -248,7 +248,7 @@ namespace SORANO.WEB.Controllers
             }
         }
 
-        protected virtual async Task ClearAttachments()
+        protected virtual void ClearAttachments()
         {
             var path = Environment.WebRootPath + "/attachments/" + _entityTypeName + "/";
             if (!Directory.Exists(path))
@@ -257,7 +257,7 @@ namespace SORANO.WEB.Controllers
             }
 
             var files = Directory.GetFiles(path);
-            var attachments = await AttachmentService.GetAllForAsync(_entityTypeName);
+            var attachments = AttachmentService.GetAllFor(_entityTypeName);
             var fileNames = attachments.Result.Select(Path.GetFileName).ToList();
 
             foreach (var file in files)
