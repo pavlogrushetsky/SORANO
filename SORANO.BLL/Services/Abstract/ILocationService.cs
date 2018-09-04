@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using SORANO.BLL.Dtos;
 
 namespace SORANO.BLL.Services.Abstract
@@ -8,7 +7,7 @@ namespace SORANO.BLL.Services.Abstract
     {
         ServiceResponse<IEnumerable<LocationDto>> GetAll(bool withDeleted, string searchTerm, int currentLocationId);
 
-        Task<ServiceResponse<LocationDto>> GetDefaultLocationAsync();
+        ServiceResponse<LocationDto> GetDefaultLocation();
 
         ServiceResponse<SummaryDto> GetSummary(int? locationId, int userId);
     }

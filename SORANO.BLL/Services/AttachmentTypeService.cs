@@ -34,7 +34,8 @@ namespace SORANO.BLL.Services
                     CanBeUpdated = !at.Name.Equals("Основное изображение"),
                     CanBeDeleted = !at.IsDeleted &&
                                    !at.TypeAttachments.Any() &&
-                                   !at.Name.Equals("Основное изображение")
+                                   !at.Name.Equals("Основное изображение"),
+                    IsDeleted = at.IsDeleted
                 })
                 .ToList();
 
@@ -121,7 +122,8 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<int>> GetMainPictureTypeIdAsync(int userId)
         {
-            var type = await UnitOfWork.Get<AttachmentType>().GetAsync(t => t.Name.Equals("Основное изображение"));
+            var type = await UnitOfWork.Get<AttachmentType>()
+                .GetAsync(t => t.Name.Equals("Основное изображение"));
 
             return new SuccessResponse<int>(type.ID);
         }

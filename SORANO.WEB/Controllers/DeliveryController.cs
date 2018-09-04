@@ -113,7 +113,7 @@ namespace SORANO.WEB.Controllers
                         locationId = LocationId.Value;
                     else
                     {
-                        var defaultLocation = await _locationService.GetDefaultLocationAsync();
+                        var defaultLocation = _locationService.GetDefaultLocation();
                         if (defaultLocation.Status != ServiceResponseStatus.Success)
                         {
                             TempData["Error"] = "Не удалось назначить место по умолчанию.";
@@ -123,7 +123,7 @@ namespace SORANO.WEB.Controllers
                         locationId = defaultLocation.Result.ID;
                     }
 
-                    var defaultSupplier = await _supplierService.GetDefaultSupplierAsync();
+                    var defaultSupplier = _supplierService.GetDefaultSupplier();
                     if (defaultSupplier.Status != ServiceResponseStatus.Success)
                     {
                         TempData["Error"] = "Не удалось назначить поставщика по умолчанию.";

@@ -61,7 +61,7 @@ namespace SORANO.BLL.Extensions
             }
         }
 
-        public static void UpdateFields(this DeliveryItem existentDelivery, DeliveryItem newDelivery)
+        public static DeliveryItem UpdateFields(this DeliveryItem existentDelivery, DeliveryItem newDelivery)
         {
             existentDelivery.ArticleID = newDelivery.ArticleID;
             existentDelivery.Quantity = newDelivery.Quantity;
@@ -69,6 +69,8 @@ namespace SORANO.BLL.Extensions
             existentDelivery.GrossPrice = newDelivery.GrossPrice;
             existentDelivery.Discount = newDelivery.Discount;
             existentDelivery.DiscountedPrice = newDelivery.DiscountedPrice;
+
+            return existentDelivery;
         }
     }
 }

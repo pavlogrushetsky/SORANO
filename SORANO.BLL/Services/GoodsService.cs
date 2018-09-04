@@ -5,7 +5,6 @@ using SORANO.DAL.Repositories;
 using System.Threading.Tasks;
 using SORANO.CORE.StockEntities;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using SORANO.BLL.Dtos;
 using SORANO.BLL.Extensions;
 
@@ -64,21 +63,6 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<int>(targetLocationId);
         }
 
-        private bool GoodsFilterPredicate(Goods goods, GoodsFilterCriteriaDto filterCriteria)
-        {
-            return !goods.IsSold && 
-                   !goods.IsDeleted && 
-                   (filterCriteria.Status == 0 && !goods.SaleID.HasValue || filterCriteria.Status == 1 && goods.SaleID.HasValue || filterCriteria.Status != 0 && filterCriteria.Status != 1) &&
-                   (filterCriteria.ArticleID <= 0 || goods.DeliveryItem.ArticleID == filterCriteria.ArticleID) && 
-                   (filterCriteria.ArticleTypeID <= 0 || goods.DeliveryItem.Article.TypeID == filterCriteria.ArticleTypeID) && 
-                   (filterCriteria.LocationID <= 0 || goods.Storages.OrderBy(st => st.FromDate).Last().LocationID == filterCriteria.LocationID) && 
-                   (string.IsNullOrEmpty(filterCriteria.SearchTerm) || goods.DeliveryItem.Article.Name.ContainsIgnoreCase(filterCriteria.SearchTerm)
-                                                                    || goods.DeliveryItem.Article.Type.Name.ContainsIgnoreCase(filterCriteria.SearchTerm)
-                                                                    || !string.IsNullOrEmpty(goods.DeliveryItem.Article.Code) && goods.DeliveryItem.Article.Code.ContainsIgnoreCase(filterCriteria.SearchTerm)
-                                                                    || !string.IsNullOrEmpty(goods.DeliveryItem.Article.Barcode) && goods.DeliveryItem.Article.Barcode.ContainsIgnoreCase(filterCriteria.SearchTerm)
-                                                                    || goods.DeliveryItem.Article.Type.ParentType != null && goods.DeliveryItem.Article.Type.ParentType.Name.ContainsIgnoreCase(filterCriteria.SearchTerm));
-        }
-
         public ServiceResponse<PaginationSetDto<GoodsDto>> GetAll(GoodsFilterCriteriaDto criteria)
         {
             var response = new SuccessResponse<PaginationSetDto<GoodsDto>>();
@@ -126,168 +110,159 @@ namespace SORANO.BLL.Services
                 })
                 .Where(g => !hasLocationId || g.location.ID == locationId);
 
-            try
+            if (criteria.ShowByPiece)
             {
-                if (criteria.ShowByPiece)
-                {
-                    var goods = filteredGoods
-                        .Select(g => new GoodsDto
-                        {
-                            IDs = new List<int> {g.goods.ID},
-                            ID = g.goods.ID,
-                            DeliveryItemID = g.deliveryItem.ID,
-                            DeliveryItem = new DeliveryItemDto
-                            {
-                                ID = g.deliveryItem.ID,
-                                ArticleID = g.article.ID                                
-                            },
-                            Article = new ArticleDto
-                            {
-                                ID = g.article.ID,
-                                Name = g.article.Name,
-                                Description = g.article.Description,
-                                Code = g.article.Code,
-                                Barcode = g.article.Barcode,
-                                TypeID = g.article.TypeID
-                            },
-                            Picture = g.article.Attachments
-                                .Where(a => !a.IsDeleted &&
-                                            a.Type.Name.Equals("Основное изображение"))
-                                .Select(a => new AttachmentDto
-                                {
-                                    FullPath = a.FullPath
-                                })
-                                .FirstOrDefault(),
-                            ArticleType = new ArticleTypeDto
-                            {
-                                ID = g.articleType.ID,
-                                Name = g.articleType.Name
-                            },
-                            ArticleTypeParentType = g.articleTypeType == null
-                                ? null
-                                : new ArticleTypeDto
-                                {
-                                    ID = g.articleTypeType.ID,
-                                    Name = g.articleTypeType.Name
-                                },
-                            CurrentLocation = new LocationDto
-                            {
-                                ID = g.location.ID,
-                                Name = g.location.Name
-                            },
-                            SaleID = g.goods.SaleID,
-                            IsSold = g.goods.IsSold,
-                            Price = g.goods.Price,
-                            RecommendedPrice = g.article.RecommendedPrice,
-                            Quantity = 1
-                        })
-                        .ToList();
-
-                    var group = goods
-                        .Skip((criteria.Page - 1) * criteria.ShowNumber)
-                        .Take(criteria.ShowNumber)
-                        .ToList();
-
-                    response.Result = new PaginationSetDto<GoodsDto>
+                var goods = filteredGoods
+                    .Select(g => new GoodsDto
                     {
-                        Items = group,
-                        Page = criteria.Page,
-                        TotalCount = goods.Count,
-                        TotalPages = (int)Math.Ceiling((decimal)goods.Count / criteria.ShowNumber)
-                    };
-                }
-                else
+                        IDs = new List<int> {g.goods.ID},
+                        ID = g.goods.ID,
+                        DeliveryItemID = g.deliveryItem.ID,
+                        DeliveryItem = new DeliveryItemDto
+                        {
+                            ID = g.deliveryItem.ID,
+                            ArticleID = g.article.ID                                
+                        },
+                        Article = new ArticleDto
+                        {
+                            ID = g.article.ID,
+                            Name = g.article.Name,
+                            Description = g.article.Description,
+                            Code = g.article.Code,
+                            Barcode = g.article.Barcode,
+                            TypeID = g.article.TypeID
+                        },
+                        Picture = g.article.Attachments
+                            .Where(a => !a.IsDeleted &&
+                                        a.Type.Name.Equals("Основное изображение"))
+                            .Select(a => new AttachmentDto
+                            {
+                                FullPath = a.FullPath
+                            })
+                            .FirstOrDefault(),
+                        ArticleType = new ArticleTypeDto
+                        {
+                            ID = g.articleType.ID,
+                            Name = g.articleType.Name
+                        },
+                        ArticleTypeParentType = g.articleTypeType == null
+                            ? null
+                            : new ArticleTypeDto
+                            {
+                                ID = g.articleTypeType.ID,
+                                Name = g.articleTypeType.Name
+                            },
+                        CurrentLocation = new LocationDto
+                        {
+                            ID = g.location.ID,
+                            Name = g.location.Name
+                        },
+                        SaleID = g.goods.SaleID,
+                        IsSold = g.goods.IsSold,
+                        Price = g.goods.Price,
+                        RecommendedPrice = g.article.RecommendedPrice,
+                        Quantity = 1
+                    })
+                    .ToList();
+
+                var group = goods
+                    .Skip((criteria.Page - 1) * criteria.ShowNumber)
+                    .Take(criteria.ShowNumber)
+                    .ToList();
+
+                response.Result = new PaginationSetDto<GoodsDto>
                 {
-                    var groups = filteredGoods
-                        .GroupBy(g => new
-                        {
-                            g.article,
-                            g.goods.SaleID.HasValue,
-                            g.location
-                        })
-                        .Select(g => new
-                        {
-                            ids = g.Select(x => x.goods.ID),
-                            g.Key.location,
-                            g.Key.article,
-                            articleType = g.Key.article.Type,
-                            articleTypeType = g.Key.article.Type.ParentType,
-                            count = g.Count(),
-                            first = g.FirstOrDefault()
-                        })
-                        .Select(g => new GoodsDto
-                        {
-                            IDs = g.ids,
-                            ID = g.first.goods.ID,
-                            DeliveryItemID = g.first.deliveryItem.ID,
-                            DeliveryItem = new DeliveryItemDto
-                            {
-                                ID = g.first.deliveryItem.ID,
-                                ArticleID = g.article.ID
-                            },
-                            Article = new ArticleDto
-                            {
-                                ID = g.article.ID,
-                                Name = g.article.Name,
-                                Description = g.article.Description,
-                                Code = g.article.Code,
-                                Barcode = g.article.Barcode,
-                                TypeID = g.article.TypeID
-                            },
-                            Picture = g.article.Attachments
-                                .Where(a => !a.IsDeleted &&
-                                            a.Type.Name.Equals("Основное изображение"))
-                                .Select(a => new AttachmentDto
-                                {
-                                    FullPath = a.FullPath
-                                })
-                                .FirstOrDefault(),
-                            ArticleType = new ArticleTypeDto
-                            {
-                                ID = g.articleType.ID,
-                                Name = g.articleType.Name
-                            },
-                            ArticleTypeParentType = g.articleTypeType == null
-                                ? null
-                                : new ArticleTypeDto
-                                {
-                                    ID = g.articleTypeType.ID,
-                                    Name = g.articleTypeType.Name
-                                },
-                            CurrentLocation = new LocationDto
-                            {
-                                ID = g.location.ID,
-                                Name = g.location.Name
-                            },
-                            SaleID = g.first.goods.SaleID,
-                            IsSold = g.first.goods.IsSold,
-                            Price = g.first.goods.Price,
-                            RecommendedPrice = g.article.RecommendedPrice,
-                            Quantity = g.count
-                        })
-                        .ToList();
-
-
-                    var group = groups
-                        .Skip((criteria.Page - 1) * criteria.ShowNumber)
-                        .Take(criteria.ShowNumber)
-                        .ToList();
-
-                    response.Result = new PaginationSetDto<GoodsDto>
-                    {
-                        Items = group,
-                        Page = criteria.Page,
-                        TotalCount = groups.Count,
-                        TotalPages = (int)Math.Ceiling((decimal)groups.Count / criteria.ShowNumber)
-                    };
-                }
+                    Items = group,
+                    Page = criteria.Page,
+                    TotalCount = goods.Count,
+                    TotalPages = (int)Math.Ceiling((decimal)goods.Count / criteria.ShowNumber)
+                };
             }
-            catch (Exception e)
+            else
             {
-                throw;
-            }
+                var groups = filteredGoods
+                    .GroupBy(g => new
+                    {
+                        g.article,
+                        g.goods.SaleID.HasValue,
+                        g.location
+                    })
+                    .Select(g => new
+                    {
+                        ids = g.Select(x => x.goods.ID),
+                        g.Key.location,
+                        g.Key.article,
+                        articleType = g.Key.article.Type,
+                        articleTypeType = g.Key.article.Type.ParentType,
+                        count = g.Count(),
+                        first = g.FirstOrDefault()
+                    })
+                    .Select(g => new GoodsDto
+                    {
+                        IDs = g.ids,
+                        ID = g.first.goods.ID,
+                        DeliveryItemID = g.first.deliveryItem.ID,
+                        DeliveryItem = new DeliveryItemDto
+                        {
+                            ID = g.first.deliveryItem.ID,
+                            ArticleID = g.article.ID
+                        },
+                        Article = new ArticleDto
+                        {
+                            ID = g.article.ID,
+                            Name = g.article.Name,
+                            Description = g.article.Description,
+                            Code = g.article.Code,
+                            Barcode = g.article.Barcode,
+                            TypeID = g.article.TypeID
+                        },
+                        Picture = g.article.Attachments
+                            .Where(a => !a.IsDeleted &&
+                                        a.Type.Name.Equals("Основное изображение"))
+                            .Select(a => new AttachmentDto
+                            {
+                                FullPath = a.FullPath
+                            })
+                            .FirstOrDefault(),
+                        ArticleType = new ArticleTypeDto
+                        {
+                            ID = g.articleType.ID,
+                            Name = g.articleType.Name
+                        },
+                        ArticleTypeParentType = g.articleTypeType == null
+                            ? null
+                            : new ArticleTypeDto
+                            {
+                                ID = g.articleTypeType.ID,
+                                Name = g.articleTypeType.Name
+                            },
+                        CurrentLocation = new LocationDto
+                        {
+                            ID = g.location.ID,
+                            Name = g.location.Name
+                        },
+                        SaleID = g.first.goods.SaleID,
+                        IsSold = g.first.goods.IsSold,
+                        Price = g.first.goods.Price,
+                        RecommendedPrice = g.article.RecommendedPrice,
+                        Quantity = g.count
+                    })
+                    .ToList();
 
-                       
+
+                var group = groups
+                    .Skip((criteria.Page - 1) * criteria.ShowNumber)
+                    .Take(criteria.ShowNumber)
+                    .ToList();
+
+                response.Result = new PaginationSetDto<GoodsDto>
+                {
+                    Items = group,
+                    Page = criteria.Page,
+                    TotalCount = groups.Count,
+                    TotalPages = (int)Math.Ceiling((decimal)groups.Count / criteria.ShowNumber)
+                };
+            }                     
                                                               
             return response;
         }

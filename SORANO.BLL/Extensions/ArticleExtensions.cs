@@ -50,7 +50,7 @@ namespace SORANO.BLL.Extensions
             return entity;
         }
 
-        public static void UpdateFields(this Article existentArticle, Article newArticle)
+        public static Article UpdateFields(this Article existentArticle, Article newArticle)
         {
             existentArticle.Name = newArticle.Name;
             existentArticle.Description = newArticle.Description;
@@ -59,6 +59,8 @@ namespace SORANO.BLL.Extensions
             existentArticle.Barcode = newArticle.Barcode;
             existentArticle.RecommendedPrice = newArticle.RecommendedPrice;
             existentArticle.TypeID = newArticle.TypeID;
+
+            return existentArticle;
         }
     }
 }

@@ -48,7 +48,8 @@ namespace SORANO.BLL.Services
                     TotalDiscountedPrice = d.TotalDiscountedPrice,
                     IsSubmitted = d.IsSubmitted,
                     Modified = d.ModifiedDate,
-                    CanBeDeleted = !d.IsDeleted && !d.IsSubmitted
+                    CanBeDeleted = !d.IsDeleted && !d.IsSubmitted,
+                    IsDeleted = d.IsDeleted
                 })
                 .ToList();
 
@@ -87,7 +88,8 @@ namespace SORANO.BLL.Services
                     IsSubmitted = d.IsSubmitted,
                     Modified = d.ModifiedDate,
                     ItemsCount = d.Items.Count,
-                    CanBeDeleted = !d.IsDeleted && !d.IsSubmitted
+                    CanBeDeleted = !d.IsDeleted && !d.IsSubmitted,
+                    IsDeleted = d.IsDeleted
                 })
                 .ToList();
 
@@ -96,11 +98,22 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<DeliveryDto>> GetAsync(int id)
         {
-            var delivery = await UnitOfWork.Get<Delivery>().GetAsync(d => d.ID == id);
+            var delivery = await UnitOfWork.Get<Delivery>().GetAsync(d => d.ID == id, d => d.Supplier, d => d.DeliveryLocation);
 
-            return delivery == null 
-                ? new ServiceResponse<DeliveryDto>(ServiceResponseStatus.NotFound) 
-                : new SuccessResponse<DeliveryDto>(delivery.ToDto());
+            if (delivery == null)
+                return new ServiceResponse<DeliveryDto>(ServiceResponseStatus.NotFound);
+
+            var deliveryItems = UnitOfWork.Get<DeliveryItem>()
+                .GetAll(di => di.DeliveryID == id,
+                    di => di.Delivery,
+                    di => di.Article)
+                .ToList();
+
+            delivery.Items = deliveryItems;
+            delivery.Attachments = GetAttachments(id).ToList();
+            delivery.Recommendations = GetRecommendations(id).ToList();
+
+            return new SuccessResponse<DeliveryDto>(delivery.ToDto());
         }
 
         public async Task<ServiceResponse<int>> CreateAsync(DeliveryDto delivery, int userId)
@@ -120,39 +133,8 @@ namespace SORANO.BLL.Services
 
             location.UpdateModifiedFields(userId);
 
-            //foreach (var item in entity.Items)
-            //{
-            //    item.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            //    item.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            //    item.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-            //}
-
             entity.Recommendations?.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
             entity.Attachments?.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-
-            //if (entity.IsSubmitted)
-            //{
-            //    foreach (var item in entity.Items)
-            //    {
-            //        for (var i = 0; i < item.Quantity; i++)
-            //        {
-            //            var goods = new Goods();
-
-            //            goods.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-
-            //            var storage = new Storage
-            //            {
-            //                LocationID = delivery.LocationID,
-            //                FromDate = DateTime.Now
-            //            };
-
-            //            storage.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-
-            //            goods.Storages.Add(storage);
-            //            item.Goods.Add(goods);
-            //        }
-            //    }
-            //}
 
             var saved = UnitOfWork.Get<Delivery>().Add(entity);
 
@@ -173,8 +155,14 @@ namespace SORANO.BLL.Services
 
             var entity = delivery.ToEntity();
 
-            existentEntity.UpdateFields(entity);
-            existentEntity.UpdateModifiedFields(userId);
+            existentEntity.Attachments = GetAttachments(existentEntity.ID).ToList();
+            existentEntity.Recommendations = GetRecommendations(existentEntity.ID).ToList();
+
+            existentEntity
+                .UpdateFields(entity)
+                .UpdateAttachments(entity, UnitOfWork, userId)
+                .UpdateRecommendations(entity, UnitOfWork, userId)
+                .UpdateModifiedFields(userId);
 
             if (entity.IsSubmitted)
             {
@@ -199,9 +187,6 @@ namespace SORANO.BLL.Services
                     }
                 }
             }
-
-            UpdateAttachments(entity, existentEntity, userId);
-            UpdateRecommendations(entity, existentEntity, userId);
 
             var updated = UnitOfWork.Get<Delivery>().Update(existentEntity);
 
@@ -239,61 +224,22 @@ namespace SORANO.BLL.Services
 
         #endregion
 
-        private void UpdateDeliveryItems(Delivery from, Delivery to, int userId)
+        public ServiceResponse<int> GetSubmittedCount(int? locationId)
         {
-            to.Items
-                .Where(d => !from.Items.Select(x => x.ID).Contains(d.ID))
-                .ToList()
-                .ForEach(d =>
-                {
-                    d.UpdateDeletedFields(userId);
-                    UnitOfWork.Get<DeliveryItem>().Update(d);
-                });
-
-            from.Items
-                .Where(d => to.Items.Select(x => x.ID).Contains(d.ID))
-                .ToList()
-                .ForEach(d =>
-                {
-                    var di = to.Items.SingleOrDefault(x => x.ID == d.ID);
-                    if (di == null)
-                    {
-                        return;
-                    }
-                    di.ArticleID = d.ArticleID;
-                    di.Discount = d.Discount;
-                    di.DiscountedPrice = d.DiscountedPrice;
-                    di.GrossPrice = d.GrossPrice;
-                    di.Quantity = d.Quantity;
-                    di.UnitPrice = d.UnitPrice;
-                    di.UpdateModifiedFields(userId);
-                    UpdateAttachments(d, di, userId);
-                    UpdateRecommendations(d, di, userId);
-                });
-
-            from.Items
-                .Where(d => !to.Items.Select(x => x.ID).Contains(d.ID))
-                .ToList()
-                .ForEach(d =>
-                {
-                    d.DeliveryID = to.ID;
-                    d.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-                    d.Recommendations.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-                    d.Attachments.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
-                    to.Items.Add(d);
-                });
-        }
-
-        public async Task<ServiceResponse<int>> GetSubmittedCountAsync(int? locationId)
-        {
-            var deliveries = UnitOfWork.Get<Delivery>().GetAll(d => d.IsSubmitted && !d.IsDeleted && (!locationId.HasValue || d.LocationID == locationId.Value));
+            var deliveries = UnitOfWork.Get<Delivery>()
+                .GetAll(d => d.IsSubmitted && 
+                !d.IsDeleted && 
+                (!locationId.HasValue || d.LocationID == locationId.Value));
 
             return new SuccessResponse<int>(deliveries?.Count() ?? 0);
         }
 
-        public async Task<ServiceResponse<int>> GetUnsubmittedCountAsync(int? locationId)
+        public ServiceResponse<int> GetUnsubmittedCount(int? locationId)
         {
-            var deliveries = UnitOfWork.Get<Delivery>().GetAll(d => !d.IsSubmitted && !d.IsDeleted && (!locationId.HasValue || d.LocationID == locationId.Value));
+            var deliveries = UnitOfWork.Get<Delivery>()
+                .GetAll(d => !d.IsSubmitted && 
+                !d.IsDeleted && 
+                (!locationId.HasValue || d.LocationID == locationId.Value));
 
             return new SuccessResponse<int>(deliveries?.Count() ?? 0);
         }        

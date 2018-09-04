@@ -285,9 +285,9 @@ namespace SORANO.WEB.Controllers
         #endregion
 
         [HttpPost]
-        public async Task<JsonResult> GetSuppliers(string term)
+        public JsonResult GetSuppliers(string term)
         {
-            var suppliers = await _supplierService.GetAllAsync(false, term);
+            var suppliers = _supplierService.GetAll(false, term);
 
             return Json(new
             {

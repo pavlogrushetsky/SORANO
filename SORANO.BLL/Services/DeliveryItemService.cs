@@ -116,11 +116,14 @@ namespace SORANO.BLL.Services
 
             var entity = deliveryItem.ToEntity();
 
-            existentEntity.UpdateFields(entity);
-            existentEntity.UpdateModifiedFields(userId);
+            existentEntity.Attachments = GetAttachments(existentEntity.ID).ToList();
+            existentEntity.Recommendations = GetRecommendations(existentEntity.ID).ToList();
 
-            UpdateAttachments(entity, existentEntity, userId);
-            UpdateRecommendations(entity, existentEntity, userId);
+            existentEntity
+                .UpdateFields(entity)
+                .UpdateAttachments(entity, UnitOfWork, userId)
+                .UpdateRecommendations(entity, UnitOfWork, userId)
+                .UpdateModifiedFields(userId);
 
             var updated = UnitOfWork.Get<DeliveryItem>().Update(existentEntity);
 

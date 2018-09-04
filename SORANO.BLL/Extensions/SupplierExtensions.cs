@@ -39,10 +39,12 @@ namespace SORANO.BLL.Extensions
             return entity;
         }
 
-        public static void UpdateFields(this Supplier existentSupplier, Supplier newSupplier)
+        public static Supplier UpdateFields(this Supplier existentSupplier, Supplier newSupplier)
         {
             existentSupplier.Name = newSupplier.Name;
             existentSupplier.Description = newSupplier.Description;
+
+            return existentSupplier;
         }
     }
 }

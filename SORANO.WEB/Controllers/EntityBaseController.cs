@@ -46,8 +46,7 @@ namespace SORANO.WEB.Controllers
             {
                 MemoryCache.Remove(key);
 
-                var m = cachedModel as T;
-                if (m != null && Session.GetBool(validKey))
+                if (cachedModel is T m && Session.GetBool(validKey))
                 {
                     Session.SetBool(validKey, false);
                     model = m;

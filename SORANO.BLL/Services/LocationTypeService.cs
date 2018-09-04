@@ -30,7 +30,8 @@ namespace SORANO.BLL.Services
                     Description = lt.Description,
                     Modified = lt.ModifiedDate,
                     CanBeDeleted = !lt.IsDeleted &&
-                                   !lt.Locations.Any()
+                                   !lt.Locations.Any(),
+                    IsDeleted = lt.IsDeleted
                 })
                 .ToList();
 
@@ -39,10 +40,13 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<LocationTypeDto>> GetAsync(int id)
         {
-            var locationType = await UnitOfWork.Get<LocationType>().GetAsync(t => t.ID == id);
+            var locationType = await UnitOfWork.Get<LocationType>().GetAsync(t => t.ID == id, t => t.Locations);
 
             if (locationType == null)
                 return new ServiceResponse<LocationTypeDto>(ServiceResponseStatus.NotFound);
+
+            locationType.Attachments = GetAttachments(id).ToList();
+            locationType.Recommendations = GetRecommendations(id).ToList();
 
             return new SuccessResponse<LocationTypeDto>(locationType.ToDto());
         }
@@ -87,11 +91,14 @@ namespace SORANO.BLL.Services
 
             var entity = locationType.ToEntity();
 
-            existentEntity.UpdateFields(entity);
-            existentEntity.UpdateModifiedFields(userId);
+            existentEntity.Attachments = GetAttachments(existentEntity.ID).ToList();
+            existentEntity.Recommendations = GetRecommendations(existentEntity.ID).ToList();
 
-            UpdateRecommendations(entity, existentEntity, userId);
-            UpdateAttachments(entity, existentEntity, userId);
+            existentEntity
+                .UpdateFields(entity)
+                .UpdateAttachments(entity, UnitOfWork, userId)
+                .UpdateRecommendations(entity, UnitOfWork, userId)
+                .UpdateModifiedFields(userId);
 
             UnitOfWork.Get<LocationType>().Update(existentEntity);
 
@@ -121,7 +128,7 @@ namespace SORANO.BLL.Services
 
         #endregion
 
-        public async Task<ServiceResponse<IEnumerable<LocationTypeDto>>> GetAllAsync(bool withDeleted, string searchTerm)
+        public ServiceResponse<IEnumerable<LocationTypeDto>> GetAll(bool withDeleted, string searchTerm)
         {
             var response = new SuccessResponse<IEnumerable<LocationTypeDto>>();
 

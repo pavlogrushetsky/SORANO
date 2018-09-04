@@ -38,7 +38,8 @@ namespace SORANO.BLL.Services
                     CanBeDeleted = !l.IsDeleted &&
                                    !l.Deliveries.Any() &&
                                    !l.Storages.Any() &&
-                                   !l.Sales.Any()
+                                   !l.Sales.Any(),
+                    IsDeleted = l.IsDeleted
                 })
                 .ToList();
 
@@ -47,10 +48,21 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<LocationDto>> GetAsync(int id)
         {
-            var location = await UnitOfWork.Get<Location>().GetAsync(s => s.ID == id);
+            var location = await UnitOfWork.Get<Location>().GetAsync(l => l.ID == id, l => l.Type);
 
             if (location == null)
                 return new ServiceResponse<LocationDto>(ServiceResponseStatus.NotFound);
+
+            var deliveries = UnitOfWork.Get<Delivery>()
+                .GetAll(d => d.LocationID == id,
+                    d => d.Supplier,
+                    d => d.DeliveryLocation,
+                    d => d.Items)
+                .ToList();
+
+            location.Deliveries = deliveries;
+            location.Attachments = GetAttachments(id).ToList();
+            location.Recommendations = GetRecommendations(id).ToList();
 
             return new SuccessResponse<LocationDto>(location.ToDto());
         }
@@ -88,9 +100,7 @@ namespace SORANO.BLL.Services
             if (existentEntity == null)
                 return new ServiceResponse<LocationDto>(ServiceResponseStatus.NotFound);
 
-            var entity = location.ToEntity();
-
-            existentEntity.UpdateFields(entity);
+            var entity = location.ToEntity();            
 
             var type = await UnitOfWork.Get<LocationType>().GetAsync(t => t.ID == location.TypeID);
 
@@ -98,12 +108,16 @@ namespace SORANO.BLL.Services
             {
                 existentEntity.Type = type;
                 type.UpdateModifiedFields(userId);
-            }           
+            }
 
-            existentEntity.UpdateModifiedFields(userId);
+            existentEntity.Attachments = GetAttachments(existentEntity.ID).ToList();
+            existentEntity.Recommendations = GetRecommendations(existentEntity.ID).ToList();
 
-            UpdateRecommendations(entity, existentEntity, userId);
-            UpdateAttachments(entity, existentEntity, userId);
+            existentEntity
+                .UpdateFields(entity)
+                .UpdateAttachments(entity, UnitOfWork, userId)
+                .UpdateRecommendations(entity, UnitOfWork, userId)
+                .UpdateModifiedFields(userId);
 
             UnitOfWork.Get<Location>().Update(existentEntity);
 
@@ -147,7 +161,7 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<IEnumerable<LocationDto>>(locations);
         }
 
-        public async Task<ServiceResponse<LocationDto>> GetDefaultLocationAsync()
+        public ServiceResponse<LocationDto> GetDefaultLocation()
         {
             var locations = UnitOfWork.Get<Location>().GetAll();
 

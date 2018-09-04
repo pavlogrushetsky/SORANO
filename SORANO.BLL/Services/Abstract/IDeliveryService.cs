@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using SORANO.BLL.Dtos;
 
 namespace SORANO.BLL.Services.Abstract
@@ -8,8 +7,8 @@ namespace SORANO.BLL.Services.Abstract
     {
         ServiceResponse<IEnumerable<DeliveryDto>> GetAll(bool withDeleted, int? locationId);
 
-        Task<ServiceResponse<int>> GetUnsubmittedCountAsync(int? locationId);
+        ServiceResponse<int> GetUnsubmittedCount(int? locationId);
 
-        Task<ServiceResponse<int>> GetSubmittedCountAsync(int? locationId);
+        ServiceResponse<int> GetSubmittedCount(int? locationId);
     }
 }

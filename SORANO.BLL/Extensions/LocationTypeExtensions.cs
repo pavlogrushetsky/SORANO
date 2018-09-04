@@ -39,10 +39,12 @@ namespace SORANO.BLL.Extensions
             return entity;
         }
 
-        public static void UpdateFields(this LocationType existentLocationType, LocationType newLocationType)
+        public static LocationType UpdateFields(this LocationType existentLocationType, LocationType newLocationType)
         {
             existentLocationType.Name = newLocationType.Name;
             existentLocationType.Description = newLocationType.Description;
+
+            return existentLocationType;
         }
     }
 }

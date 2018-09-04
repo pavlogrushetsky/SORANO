@@ -43,12 +43,14 @@ namespace SORANO.BLL.Extensions
             return entity;
         }
 
-        public static void UpdateFields(this Client existentClient, Client newClient)
+        public static Client UpdateFields(this Client existentClient, Client newClient)
         {
             existentClient.Name = newClient.Name;
             existentClient.Description = newClient.Description;
             existentClient.PhoneNumber = newClient.PhoneNumber;
             existentClient.CardNumber = newClient.CardNumber;
+
+            return existentClient;
         }
     }
 }

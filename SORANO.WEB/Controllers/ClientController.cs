@@ -237,9 +237,9 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<JsonResult> GetClients(string term)
+        public JsonResult GetClients(string term)
         {
-            var locations = await _clientService.GetAllAsync(false, term);
+            var locations = _clientService.GetAll(false, term);
 
             return Json(new
             {

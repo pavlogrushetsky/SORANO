@@ -39,6 +39,7 @@ namespace SORANO.BLL.Services
                         Name = a.Type.Name
                     },
                     Modified = a.ModifiedDate,
+                    IsDeleted = a.IsDeleted,
                     CanBeDeleted = !a.IsDeleted &&
                                    !a.DeliveryItems.Any()
                 })
@@ -75,7 +76,9 @@ namespace SORANO.BLL.Services
                 throw new ArgumentNullException(nameof(article));
 
             var articlesWithSameBarcode = UnitOfWork.Get<Article>()
-                .GetAll(a => a.Barcode != null && a.Barcode.Equals(article.Barcode) && a.ID != article.ID);
+                .GetAll(a => a.Barcode != null && 
+                a.Barcode.Equals(article.Barcode) && 
+                a.ID != article.ID);
 
             if (articlesWithSameBarcode.Any())
                 return new ServiceResponse<int>(ServiceResponseStatus.AlreadyExists);
@@ -104,18 +107,23 @@ namespace SORANO.BLL.Services
                 return new ServiceResponse<ArticleDto>(ServiceResponseStatus.NotFound);
 
             var articlesWithSameBarcode = UnitOfWork.Get<Article>()
-                .GetAll(a => a.Barcode != null && a.Barcode.Equals(article.Barcode) && a.ID != article.ID);
+                .GetAll(a => a.Barcode != null && 
+                a.Barcode.Equals(article.Barcode) && 
+                a.ID != article.ID);
 
             if (articlesWithSameBarcode.Any())
                 return new ServiceResponse<ArticleDto>(ServiceResponseStatus.AlreadyExists);
 
             var entity = article.ToEntity();
 
-            existentEntity.UpdateFields(entity);
-            existentEntity.UpdateModifiedFields(userId);
+            existentEntity.Attachments = GetAttachments(existentEntity.ID).ToList();
+            existentEntity.Recommendations = GetRecommendations(existentEntity.ID).ToList();
 
-            UpdateAttachments(entity, existentEntity, userId);
-            UpdateRecommendations(entity, existentEntity, userId);
+            existentEntity
+                .UpdateFields(entity)
+                .UpdateAttachments(entity, UnitOfWork, userId)
+                .UpdateRecommendations(entity, UnitOfWork, userId)
+                .UpdateModifiedFields(userId);
 
             UnitOfWork.Get<Article>().Update(existentEntity);
 

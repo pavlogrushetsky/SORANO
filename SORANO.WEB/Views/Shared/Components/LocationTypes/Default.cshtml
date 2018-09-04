@@ -18,7 +18,7 @@
     <tbody>
         @foreach (var locationType in Model)
         {
-            <tr>
+            <tr class="@(locationType.IsDeleted ? "danger" : "")">
                 <td><span class="hide">@locationType.ModifiedStandard</span>@locationType.Modified</td>
                 <td>
                     <a asp-controller="LocationType"
@@ -43,29 +43,32 @@
                        title="">
                         <i class="fa fa-fw fa-info-circle" aria-hidden="true"></i>
                     </a>
-                    <a asp-controller="LocationType"
-                       asp-action="Update"
-                       asp-route-id="@locationType.ID"
-                       class="btn btn-xs btn-default"
-                       data-toggle="tooltip"
-                       data-placement="bottom"
-                       data-original-title="Редактировать свойства типа мест"
-                       title="">
-                        <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
-                    </a>
-                    @if (locationType.CanBeDeleted)
+                    @if (!locationType.IsDeleted)
                     {
-                        <a class="btn btn-xs btn-danger"
+                        <a asp-controller="LocationType"
+                           asp-action="Update"
+                           asp-route-id="@locationType.ID"
+                           class="btn btn-xs btn-default"
                            data-toggle="tooltip"
                            data-placement="bottom"
-                           data-original-title="Удалить тип мест"
-                           title=""
-                           asp-controller="LocationType"
-                           asp-action="Delete"
-                           asp-route-id="@locationType.ID">
-                            <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
+                           data-original-title="Редактировать свойства типа мест"
+                           title="">
+                            <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
                         </a>
-                    }                    
+                        if (locationType.CanBeDeleted)
+                         {
+                             <a class="btn btn-xs btn-danger"
+                                data-toggle="tooltip"
+                                data-placement="bottom"
+                                data-original-title="Удалить тип мест"
+                                title=""
+                                asp-controller="LocationType"
+                                asp-action="Delete"
+                                asp-route-id="@locationType.ID">
+                                 <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
+                             </a>
+                         } 
+                    }                                     
                 </td>
             </tr>
         }

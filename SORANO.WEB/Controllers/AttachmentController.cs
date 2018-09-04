@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
@@ -37,16 +36,16 @@ namespace SORANO.WEB.Controllers
         #region GET Actions
 
         [HttpGet]
-        public async Task<IActionResult> SelectMainPicture(int currentMainPictureId, string returnUrl)
+        public IActionResult SelectMainPicture(int currentMainPictureId, string returnUrl)
         {
-            return await TryGetActionResultAsync(async () =>
+            return TryGetActionResult(() =>
             {
                 if (string.IsNullOrEmpty(returnUrl))
                 {
                     return BadRequest();
                 }
 
-                var picturesResult = await _attachmentService.GetPicturesExceptAsync(currentMainPictureId);
+                var picturesResult = _attachmentService.GetPicturesExcept(currentMainPictureId);
 
                 if (picturesResult.Status != ServiceResponseStatus.Success)
                 {

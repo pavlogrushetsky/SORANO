@@ -31,7 +31,8 @@ namespace SORANO.BLL.Services
                     PhoneNumber = c.PhoneNumber,
                     CardNumber = c.CardNumber,
                     Modified = c.ModifiedDate,
-                    CanBeDeleted = !c.IsDeleted && !c.Sales.Any()
+                    CanBeDeleted = !c.IsDeleted && !c.Sales.Any(),
+                    IsDeleted = c.IsDeleted
                 })
                 .ToList();
 
@@ -40,11 +41,15 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<ClientDto>> GetAsync(int id)
         {
-            var client = await UnitOfWork.Get<Client>().GetAsync(s => s.ID == id);
+            var client = await UnitOfWork.Get<Client>().GetAsync(s => s.ID == id, c => c.Sales);
 
-            return client == null 
-                ? new ServiceResponse<ClientDto>(ServiceResponseStatus.NotFound) 
-                : new SuccessResponse<ClientDto>(client.ToDto());
+            if (client == null)
+                return new ServiceResponse<ClientDto>(ServiceResponseStatus.NotFound);
+
+            client.Attachments = GetAttachments(id).ToList();
+            client.Recommendations = GetRecommendations(id).ToList();
+
+            return new SuccessResponse<ClientDto>(client.ToDto());
         }
 
         public async Task<ServiceResponse<int>> CreateAsync(ClientDto client, int userId)
@@ -77,11 +82,14 @@ namespace SORANO.BLL.Services
 
             var entity = client.ToEntity();
 
-            existentEntity.UpdateFields(entity);        
-            existentEntity.UpdateModifiedFields(userId);
+            existentEntity.Attachments = GetAttachments(existentEntity.ID).ToList();
+            existentEntity.Recommendations = GetRecommendations(existentEntity.ID).ToList();
 
-            UpdateAttachments(entity, existentEntity, userId);
-            UpdateRecommendations(entity, existentEntity, userId);
+            existentEntity
+                .UpdateFields(entity)
+                .UpdateAttachments(entity, UnitOfWork, userId)
+                .UpdateRecommendations(entity, UnitOfWork, userId)
+                .UpdateModifiedFields(userId);        
 
             UnitOfWork.Get<Client>().Update(existentEntity);
 
@@ -109,7 +117,7 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<int>(id);
         }
 
-        public async Task<ServiceResponse<IEnumerable<ClientDto>>> GetAllAsync(bool withDeleted, string searchTerm)
+        public ServiceResponse<IEnumerable<ClientDto>> GetAll(bool withDeleted, string searchTerm)
         {
             var response = new SuccessResponse<IEnumerable<ClientDto>>();
 

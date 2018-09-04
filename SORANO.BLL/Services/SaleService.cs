@@ -101,11 +101,13 @@ namespace SORANO.BLL.Services
             }
 
             existentSale.TotalPrice = sale.IsWriteOff ? 0.0M : existentSale.Goods.Sum(g => g.Price);
-            existentSale.UpdateFields(entity);
-            existentSale.UpdateModifiedFields(userId);
-
-            UpdateAttachments(entity, existentSale, userId);
-            UpdateRecommendations(entity, existentSale, userId);
+            existentSale.Attachments = GetAttachments(existentSale.ID).ToList();
+            existentSale.Recommendations = GetRecommendations(existentSale.ID).ToList();
+            existentSale
+                .UpdateFields(entity)
+                .UpdateAttachments(entity, UnitOfWork, userId)
+                .UpdateRecommendations(entity, UnitOfWork, userId)
+                .UpdateModifiedFields(userId);
 
             var updated = UnitOfWork.Get<Sale>().Update(existentSale);
 

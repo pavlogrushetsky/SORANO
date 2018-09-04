@@ -21,11 +21,7 @@ namespace SORANO.BLL.Services
             var attachments = UnitOfWork.Get<Attachment>()
                 .GetAll(a => a.ParentEntities)
                 .ToList()
-                .Where(a => a.ParentEntities.Any(p =>
-                {
-                    var memberInfo = p.GetType().BaseType;
-                    return memberInfo != null && memberInfo.Name.ToLower().Equals(type);
-                }))
+                .Where(a => a.ParentEntities.Any(p => p.GetType().Name.ToLower().Equals(type)))
                 .Select(a => a.FullPath)
                 .ToList();
 
@@ -41,7 +37,7 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<bool>(existentMainPicture != null && existentMainPicture.ID == mainPictureId);
         }
 
-        public async Task<ServiceResponse<IEnumerable<AttachmentDto>>> GetPicturesExceptAsync(int currentMainPictureId)
+        public ServiceResponse<IEnumerable<AttachmentDto>> GetPicturesExcept(int currentMainPictureId)
         {
             var attachments = UnitOfWork.Get<Attachment>().GetAll();
 

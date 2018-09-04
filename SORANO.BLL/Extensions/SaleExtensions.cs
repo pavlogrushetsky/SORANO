@@ -55,7 +55,7 @@ namespace SORANO.BLL.Extensions
             return entity;
         }
 
-        public static void UpdateFields(this Sale existentSale, Sale newSale)
+        public static Sale UpdateFields(this Sale existentSale, Sale newSale)
         {
             existentSale.ClientID = newSale.ClientID;
             existentSale.Date = newSale.Date;
@@ -65,6 +65,8 @@ namespace SORANO.BLL.Extensions
             existentSale.LocationID = newSale.LocationID;
             existentSale.IsCachless = newSale.IsCachless;
             existentSale.IsWriteOff = newSale.IsWriteOff;
+
+            return existentSale;
         }
     }
 }

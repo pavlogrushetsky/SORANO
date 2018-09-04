@@ -24,6 +24,7 @@ namespace SORANO.BLL.Extensions
                 TotalDiscount = model.TotalDiscount,
                 TotalDiscountedPrice = model.TotalDiscountedPrice,
                 IsSubmitted = model.IsSubmitted,
+                ItemsCount = model.Items?.Count ?? 0,
                 Items = model.Items?.Where(di => !di.IsDeleted).Select(i => i.ToDto())
             };
 
@@ -70,7 +71,7 @@ namespace SORANO.BLL.Extensions
             };
         }
 
-        public static void UpdateFields(this Delivery existentDelivery, Delivery newDelivery)
+        public static Delivery UpdateFields(this Delivery existentDelivery, Delivery newDelivery)
         {
             existentDelivery.BillNumber = newDelivery.BillNumber;
             existentDelivery.DeliveryDate = newDelivery.DeliveryDate;
@@ -80,6 +81,8 @@ namespace SORANO.BLL.Extensions
             existentDelivery.IsSubmitted = newDelivery.IsSubmitted;
             existentDelivery.PaymentDate = newDelivery.PaymentDate;
             existentDelivery.SupplierID = newDelivery.SupplierID;
+
+            return existentDelivery;
         }
     }
 }

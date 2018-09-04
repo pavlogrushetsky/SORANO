@@ -13,14 +13,16 @@ namespace SORANO.WEB.Components
             _deliveryService = deliveryService;
         }
 
+#pragma warning disable 1998
         public async Task<IViewComponentResult> InvokeAsync()
+#pragma warning restore 1998
         {
             var locationIdStr = HttpContext.User.FindFirst("LocationId")?.Value;
             var locationId = string.IsNullOrWhiteSpace(locationIdStr)
                 ? (int?)null
                 : int.Parse(locationIdStr);
 
-            var count = await _deliveryService.GetUnsubmittedCountAsync(locationId);
+            var count = _deliveryService.GetUnsubmittedCount(locationId);
 
             return View(count.Result);
         }

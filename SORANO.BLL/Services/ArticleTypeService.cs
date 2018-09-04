@@ -54,11 +54,19 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<ArticleTypeDto>> GetAsync(int id)
         {
-            var articleType = await UnitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id);
+            var articleType = await UnitOfWork.Get<ArticleType>()
+                .GetAsync(t => t.ID == id, 
+                t => t.Articles, 
+                t => t.ParentType, 
+                t => t.ChildTypes);
 
-            return articleType == null 
-                ? new ServiceResponse<ArticleTypeDto>(ServiceResponseStatus.NotFound) 
-                : new SuccessResponse<ArticleTypeDto>(articleType.ToDto());
+            if (articleType == null)
+                return new ServiceResponse<ArticleTypeDto>(ServiceResponseStatus.NotFound);
+
+            articleType.Attachments = GetAttachments(id).ToList();
+            articleType.Recommendations = GetRecommendations(id).ToList();
+
+            return new SuccessResponse<ArticleTypeDto>(articleType.ToDto());
         }
 
         public async Task<ServiceResponse<int>> CreateAsync(ArticleTypeDto articleType, int userId)
@@ -91,11 +99,14 @@ namespace SORANO.BLL.Services
 
             var entity = articleType.ToEntity();
 
-            existentEntity.UpdateFields(entity);            
-            existentEntity.UpdateModifiedFields(userId);
+            existentEntity.Attachments = GetAttachments(existentEntity.ID).ToList();
+            existentEntity.Recommendations = GetRecommendations(existentEntity.ID).ToList();
 
-            UpdateAttachments(entity, existentEntity, userId);
-            UpdateRecommendations(entity, existentEntity, userId);
+            existentEntity
+                .UpdateFields(entity)
+                .UpdateAttachments(entity, UnitOfWork, userId)
+                .UpdateRecommendations(entity, UnitOfWork, userId)
+                .UpdateModifiedFields(userId);            
 
             UnitOfWork.Get<ArticleType>().Update(existentEntity);
 
@@ -153,7 +164,8 @@ namespace SORANO.BLL.Services
                             })
                             .FirstOrDefault(),
                     CanBeDeleted = !at.IsDeleted &&
-                                   at.Articles.All(a => a.IsDeleted)
+                                   at.Articles.All(a => a.IsDeleted),
+                    IsDeleted = at.IsDeleted
                 })
                 .ToList();
 
@@ -178,7 +190,8 @@ namespace SORANO.BLL.Services
                         })
                         .FirstOrDefault(),
                     CanBeDeleted = !a.IsDeleted &&
-                                   !a.DeliveryItems.Any()
+                                   !a.DeliveryItems.Any(),
+                    IsDeleted = a.IsDeleted
                 })
                 .ToList();
 
