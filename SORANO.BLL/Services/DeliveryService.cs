@@ -148,7 +148,7 @@ namespace SORANO.BLL.Services
             if (delivery == null)
                 throw new ArgumentNullException(nameof(delivery));
 
-            var existentEntity = await UnitOfWork.Get<Delivery>().GetAsync(d => d.ID == delivery.ID);
+            var existentEntity = await UnitOfWork.Get<Delivery>().GetAsync(d => d.ID == delivery.ID, d => d.Items);
 
             if (existentEntity == null)
                 return new ServiceResponse<DeliveryDto>(ServiceResponseStatus.NotFound);
@@ -188,11 +188,11 @@ namespace SORANO.BLL.Services
                 }
             }
 
-            var updated = UnitOfWork.Get<Delivery>().Update(existentEntity);
+            UnitOfWork.Get<Delivery>().Update(existentEntity);
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<DeliveryDto>(updated.ToDto());
+            return new SuccessResponse<DeliveryDto>();
         }               
 
         public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)

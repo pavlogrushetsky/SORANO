@@ -119,27 +119,18 @@ namespace SORANO.BLL.Services
 
         public ServiceResponse<IEnumerable<ClientDto>> GetAll(bool withDeleted, string searchTerm)
         {
-            var response = new SuccessResponse<IEnumerable<ClientDto>>();
-
-            var clients = UnitOfWork.Get<Client>().GetAll(c => c.Sales);
-
-            var orderedClients = clients.OrderByDescending(c => c.ModifiedDate);
-
             var term = searchTerm?.ToLower();
+            var clients = UnitOfWork.Get<Client>()
+                .GetAll(c =>
+                    (term == null || c.Name.ToLower().Contains(term) ||
+                     c.Description != null && c.Description.ToLower().Contains(term)) &&
+                    (withDeleted || !c.IsDeleted), 
+                    c => c.Sales)
+                .OrderByDescending(c => c.ModifiedDate)
+                .ToList()
+                .Select(c => c.ToDto());
 
-            var searched = orderedClients
-                .Where(l => string.IsNullOrEmpty(term)
-                    || l.Name.ToLower().Contains(term)
-                    || !string.IsNullOrWhiteSpace(l.Description) && l.Description.ToLower().Contains(term));
-
-            if (withDeleted)
-            {
-                response.Result = searched.Select(t => t.ToDto());
-                return response;
-            }
-
-            response.Result = searched.Where(t => !t.IsDeleted).Select(t => t.ToDto());
-            return response;
+            return new SuccessResponse<IEnumerable<ClientDto>>(clients);
         }
 
         #endregion

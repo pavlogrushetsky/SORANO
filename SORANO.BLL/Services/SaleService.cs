@@ -36,11 +36,15 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<SaleDto>> GetAsync(int id)
         {
-            var sale = await UnitOfWork.Get<Sale>().GetAsync(id);
+            var sale = await UnitOfWork.Get<Sale>().GetAsync(id, s => s.Client, s => s.Location, s => s.User, s => s.Goods);
 
-            return sale == null
-                ? new ServiceResponse<SaleDto>(ServiceResponseStatus.NotFound)
-                : new SuccessResponse<SaleDto>(sale.ToDto());
+            if (sale == null)
+                return new ServiceResponse<SaleDto>(ServiceResponseStatus.NotFound);
+
+            sale.Attachments = GetAttachments(id).ToList();
+            sale.Recommendations = GetRecommendations(id).ToList();
+
+            return new SuccessResponse<SaleDto>(sale.ToDto());
         }
 
         public async Task<ServiceResponse<int>> CreateAsync(SaleDto sale, int userId)
@@ -82,23 +86,29 @@ namespace SORANO.BLL.Services
             if (existentSale == null)
                 return new ServiceResponse<SaleDto>(ServiceResponseStatus.NotFound);
 
-            var entity = sale.ToEntity();           
+            var goods = UnitOfWork.Get<Goods>()
+                .GetAll(g => g.SaleID == sale.ID, g => g.Storages)
+                .ToList();
 
-            foreach (var goods in existentSale.Goods)
+            existentSale.Goods = goods;
+
+            foreach (var good in existentSale.Goods)
             {
                 if (sale.IsSubmitted && !existentSale.IsSubmitted)
                 {
-                    goods.IsSold = true;
-                    goods.Storages.OrderBy(st => st.FromDate).Last().ToDate = DateTime.Now;
+                    good.IsSold = true;
+                    good.Storages.OrderBy(st => st.FromDate).Last().ToDate = DateTime.Now;
                 }
 
                 if (sale.IsWriteOff)
-                    goods.Price = 0.0M;
+                    good.Price = 0.0M;
 
-                goods.UpdateModifiedFields(userId);                    
+                good.UpdateModifiedFields(userId);                    
 
-                UnitOfWork.Get<Goods>().Update(goods);
+                UnitOfWork.Get<Goods>().Update(good);
             }
+
+            var entity = sale.ToEntity();
 
             existentSale.TotalPrice = sale.IsWriteOff ? 0.0M : existentSale.Goods.Sum(g => g.Price);
             existentSale.Attachments = GetAttachments(existentSale.ID).ToList();
@@ -109,11 +119,11 @@ namespace SORANO.BLL.Services
                 .UpdateRecommendations(entity, UnitOfWork, userId)
                 .UpdateModifiedFields(userId);
 
-            var updated = UnitOfWork.Get<Sale>().Update(existentSale);
+            UnitOfWork.Get<Sale>().Update(existentSale);
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<SaleDto>(updated.ToDto());
+            return new SuccessResponse<SaleDto>();
         }
 
         public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
@@ -123,15 +133,14 @@ namespace SORANO.BLL.Services
             if (existentSale == null)
                 return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
 
-
-            var user = await UnitOfWork.Get<User>().GetAsync(userId);
+            var user = await UnitOfWork.Get<User>().GetAsync(userId, u => u.Roles);
             var isEditor = user.Roles.Any(r => r.Name.Equals("editor")); 
 
             if (existentSale.IsSubmitted && !isEditor)
                 return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
             var saleGoodsIds = existentSale.Goods.Select(g => g.ID);
-            var goods = UnitOfWork.Get<Goods>().GetAll(g => saleGoodsIds.Contains(g.ID));
+            var goods = UnitOfWork.Get<Goods>().GetAll(g => saleGoodsIds.Contains(g.ID), g => g.Storages);
 
             goods.ToList().ForEach(g =>
             {
@@ -324,7 +333,7 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<SaleItemsSummaryDto>> GetSummaryAsync(int saleId)
         {
-            var sale = await UnitOfWork.Get<Sale>().GetAsync(saleId);
+            var sale = await UnitOfWork.Get<Sale>().GetAsync(saleId, s => s.Goods);
             if (sale == null)
                 return new ServiceResponse<SaleItemsSummaryDto>(ServiceResponseStatus.NotFound);
 
@@ -342,90 +351,141 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<SaleItemsSummaryDto>(summary);
         }
 
+        private class GoodsQueryResult
+        {
+            public List<Goods> Goods { get; set; }
+
+            public Delivery Delivery { get; set; }
+
+            public List<Recommendation> Recommendations { get; set; }
+
+            public DeliveryItem DeliveryItem { get; set; }
+
+            public Article Article { get; set; }
+
+            public ArticleType ArticleType { get; set; }
+
+            public string PictureFullPath => Article.GetMainPicturePath() ?? ArticleType.GetMainPicturePath();
+        }
+
         public async Task<ServiceResponse<SaleItemsGroupsDto>> GetItemsAsync(int saleId, int locationId, bool selectedOnly, string searchCriteria)
         {
             if (locationId == 0)
                 return new ServiceResponse<SaleItemsGroupsDto>(ServiceResponseStatus.InvalidOperation);
 
-            var location = await UnitOfWork.Get<Location>().GetAsync(locationId);
+            var term = searchCriteria?.ToLower();
+            var hasTerm = !string.IsNullOrWhiteSpace(term);            
 
-            var goods = location.Storages
-                .Where(s => !s.ToDate.HasValue || s.Goods.SaleID == saleId && s.Goods.Sale.IsSubmitted)
-                .Select(s => s.Goods)
-                .Where(g => g.Storages.OrderBy(st => st.FromDate).Last().LocationID == locationId && !g.IsDeleted && (!g.SaleID.HasValue || g.SaleID == saleId))
-                .Where(g => searchCriteria == null 
-                    || g.DeliveryItem.Article.Name.ContainsIgnoreCase(searchCriteria) 
-                    || g.DeliveryItem.Article.Type.Name.ContainsIgnoreCase(searchCriteria)
-                    || !string.IsNullOrEmpty(g.DeliveryItem.Article.Code) && g.DeliveryItem.Article.Code.ContainsIgnoreCase(searchCriteria)
-                    || !string.IsNullOrEmpty(g.DeliveryItem.Article.Barcode) && g.DeliveryItem.Article.Barcode.ContainsIgnoreCase(searchCriteria)
-                    || g.DeliveryItem.Article.Type.ParentType != null && g.DeliveryItem.Article.Type.ParentType.Name.ContainsIgnoreCase(searchCriteria))               
-                .ToList();                                  
+            var storages = UnitOfWork.Get<Storage>()
+                .GetAll(s => s.LocationID == locationId &&
+                             (!s.ToDate.HasValue || s.Goods.SaleID == saleId && s.Goods.Sale.IsSubmitted))
+                .ToList();
+            var goodsIds = storages.Select(s => s.GoodsID).ToList();
+            
+            var goods = UnitOfWork.Get<Goods>()
+                .GetAll(g => goodsIds.Contains(g.ID) && !g.IsDeleted && (!g.SaleID.HasValue || g.SaleID == saleId), g => g.Recommendations)
+                .Select(g => new
+                {
+                    goods = g,
+                    location = g.Storages
+                        .OrderByDescending(st => st.FromDate)
+                        .Select(s => s.Location)
+                        .FirstOrDefault(),
+                    article = g.DeliveryItem.Article,
+                    articleType = g.DeliveryItem.Article.Type,
+                    articleTypeParent = g.DeliveryItem.Article.Type.ParentType
+                })
+                .Where(g => g.location.ID == locationId &&
+                            (!hasTerm ||
+                                g.article.Name.ToLower().Contains(term) ||
+                                g.articleType.Name.ToLower().Contains(term) ||
+                                !string.IsNullOrEmpty(g.article.Code) && g.article.Code.ToLower().Contains(term) ||
+                                !string.IsNullOrEmpty(g.article.Barcode) && g.article.Barcode.ToLower().Contains(term) ||
+                                g.articleTypeParent != null && !string.IsNullOrEmpty(g.articleTypeParent.Name) &&
+                                g.articleTypeParent.Name.ToLower().Contains(term)
+                            ))
+                .Select(g => g.goods)
+                .GroupBy(g => g.DeliveryItem.ArticleID)
+                .Select(g => new {goods = g.AsEnumerable().ToList()})
+                .Select(g => new {g.goods, first = g.goods.FirstOrDefault()})
+                .Select(g => new GoodsQueryResult
+                {
+                    Goods = g.goods,
+                    DeliveryItem = g.first.DeliveryItem,
+                    Delivery = g.first.DeliveryItem.Delivery,
+                    Article = g.first.DeliveryItem.Article,
+                    ArticleType = g.first.DeliveryItem.Article.Type
+                })
+                .ToList();
+
+                goods.ForEach(g =>
+                {
+                    g.Recommendations = UnitOfWork.Get<Recommendation>()
+                        .GetAll(r => r.ParentEntityID == g.Article.ID || 
+                            r.ParentEntityID == g.ArticleType.ID ||
+                            r.ParentEntityID == g.DeliveryItem.ID || 
+                            r.ParentEntityID == g.Delivery.ID || 
+                            r.ParentEntityID == locationId ||
+                            r.ParentEntityID == g.Delivery.SupplierID)
+                        .ToList();
+
+                    g.Article.Attachments = GetAttachments(g.Article.ID).ToList();
+                    g.ArticleType.Attachments = GetAttachments(g.ArticleType.ID).ToList();
+                });                
+
+            var groups = goods.Select(g => new SaleItemsGroupDto
+            {
+                ArticleName = g.Article.Name,
+                RecommendedPrice = g.Article.RecommendedPrice,
+                ArticleTypeName = g.ArticleType.Name,
+                Count = g.Goods.Count,
+                MainPicturePath = g.PictureFullPath,
+                Items = g.Goods.Select(i => new SaleItemDto
+                {
+                    GoodsId = i.ID,
+                    IsSelected = i.SaleID == saleId,
+                    Price = i.Price,
+                    Recommendations = i.Recommendations
+                            .Concat(g.Recommendations)
+                            .Select(r => r.ToDto())
+                            .ToList()
+                })
+                .Where(i => !selectedOnly || i.IsSelected)
+                .ToList()
+            })
+            .Where(g => g.Items.Any())
+            .OrderBy(g => g.ArticleName)
+            .ToList();
 
             var summaryDto = await GetSummaryAsync(saleId);
 
-            var saleItemsGroupsDto = new SaleItemsGroupsDto
+            groups.ForEach(g =>
+            {
+                g.SelectedCount = g.Items.Count(i => i.IsSelected);
+                var firstItemPrice = g.Items.FirstOrDefault()?.Price;
+                if (firstItemPrice.HasValue)
+                {
+                    g.Price = g.Items.All(i => i.Price.HasValue && i.Price.Value == firstItemPrice.Value)
+                        ? firstItemPrice.Value
+                        : (decimal?)null;
+                }
+                else
+                {
+                    g.Price = null;
+                }
+
+                if (g.Items.Any())
+                    g.GoodsIds = g.Items.Select(id => id.GoodsId.ToString())
+                        .Aggregate((i, j) => i + ',' + j);
+            });
+
+            var saleItems = new SaleItemsGroupsDto
             {
                 Summary = summaryDto.Result,
-                Groups = goods.GroupBy(g => new
-                {
-                    g.DeliveryItem.ArticleID
-                }).Select(group =>
-                {
-                    var items = group.AsEnumerable().ToList();
-                    var first = items.First();
-
-                    var groupDto = new SaleItemsGroupDto
-                    {
-                        ArticleName = first.DeliveryItem.Article.Name,
-                        RecommendedPrice = first.DeliveryItem.Article.RecommendedPrice,
-                        ArticleTypeName = first.DeliveryItem.Article.Type.Name,
-                        Count = items.Count,                       
-                        MainPicturePath = first.DeliveryItem.Article.GetMainPicturePath()
-                                          ?? first.DeliveryItem.Article.Type.GetMainPicturePath(),
-                        Items = items.Select(i => new SaleItemDto
-                        {
-                            GoodsId = i.ID,
-                            IsSelected = i.SaleID == saleId,
-                            Price = i.Price,
-                            Recommendations = i.Recommendations
-                                .Concat(i.DeliveryItem.Recommendations)
-                                .Concat(i.DeliveryItem.Delivery.Recommendations)
-                                .Concat(i.DeliveryItem.Article.Recommendations)
-                                .Concat(i.DeliveryItem.Article.Type.Recommendations)
-                                .Concat(i.DeliveryItem.Delivery.Supplier.Recommendations)
-                                .Concat(i.Storages.OrderBy(st => st.FromDate).Last().Location.Recommendations)
-                                .Select(r => r.ToDto())
-                                .ToList()
-                        })
-                        .Where(i => !selectedOnly || i.IsSelected)
-                        .ToList()
-                    };
-
-                    groupDto.SelectedCount = groupDto.Items.Count(i => i.IsSelected);
-                    var firstItemPrice = groupDto.Items.FirstOrDefault()?.Price;
-                    if (firstItemPrice.HasValue)
-                    {
-                        groupDto.Price = groupDto.Items.All(i => i.Price.HasValue && i.Price.Value == firstItemPrice.Value)
-                            ? firstItemPrice.Value
-                            : (decimal?)null;
-                    }
-                    else
-                    {
-                        groupDto.Price = null;
-                    }
-
-                    if (groupDto.Items.Any())
-                        groupDto.GoodsIds = groupDto.Items.Select(id => id.GoodsId.ToString())
-                            .Aggregate((i, j) => i + ',' + j);
-
-                    return groupDto;
-                })
-                .Where(g => g.Items.Any())
-                .OrderBy(g => g.ArticleName)
-                .ToList()
+                Groups = groups
             };
 
-            return new SuccessResponse<SaleItemsGroupsDto>(saleItemsGroupsDto);
+            return new SuccessResponse<SaleItemsGroupsDto>(saleItems);        
         }
 
         public async Task<ServiceResponse<bool>> ValidateItemsForAsync(int saleId, bool isWriteOff)
@@ -433,7 +493,7 @@ namespace SORANO.BLL.Services
             if (saleId == 0)
                 return new ServiceResponse<bool>(ServiceResponseStatus.InvalidOperation);
 
-            var sale = await UnitOfWork.Get<Sale>().GetAsync(saleId);
+            var sale = await UnitOfWork.Get<Sale>().GetAsync(saleId, s => s.Goods);
 
             if (!sale.Goods.Any())
                 return new SuccessResponse<bool>();

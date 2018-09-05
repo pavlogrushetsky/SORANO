@@ -121,37 +121,29 @@ namespace SORANO.BLL.Services
 
         public ServiceResponse<IEnumerable<SupplierDto>> GetAll(bool withDeleted, string searchTerm)
         {
-            var response = new SuccessResponse<IEnumerable<SupplierDto>>();
-
-            var suppliers = UnitOfWork.Get<Supplier>().GetAll(s => s.Deliveries);
-
-            var orderedSuppliers = suppliers.OrderByDescending(s => s.ModifiedDate);
-
             var term = searchTerm?.ToLower();
 
-            var searched = orderedSuppliers
-                .Where(t => string.IsNullOrEmpty(term)
-                            || t.Name.ToLower().Contains(term)
-                            || t.Description.ToLower().Contains(term));
+            var suppliers = UnitOfWork.Get<Supplier>()
+                .GetAll(s => (term == null || s.Name.ToLower().Contains(term) || s.Description != null && s.Description.ToLower().Contains(term)) && 
+                (withDeleted || !s.IsDeleted), 
+                s => s.Deliveries)
+                .OrderByDescending(s => s.ModifiedDate)
+                .ToList()
+                .Select(s => s.ToDto());
 
-            if (withDeleted)
-            {
-                response.Result = searched.Select(t => t.ToDto());
-                return response;
-            }
-
-            response.Result = searched.Where(t => !t.IsDeleted).Select(t => t.ToDto());
-            return response;
+            return new SuccessResponse<IEnumerable<SupplierDto>>(suppliers);
         }
 
         public ServiceResponse<SupplierDto> GetDefaultSupplier()
         {
-            var suppliers = UnitOfWork.Get<Supplier>().GetAll();
+            var supplier = UnitOfWork.Get<Supplier>()
+                .GetAll(s => !s.IsDeleted, s => s.Deliveries)
+                .ToList()
+                .FirstOrDefault();
 
-            var defaultSupplier = suppliers.FirstOrDefault(l => !l.IsDeleted)?.ToDto();
-            return defaultSupplier != null
-                ? new SuccessResponse<SupplierDto>(defaultSupplier)
-                : new ServiceResponse<SupplierDto>(ServiceResponseStatus.NotFound);
+            return supplier == null 
+                ? new ServiceResponse<SupplierDto>(ServiceResponseStatus.NotFound) 
+                : new SuccessResponse<SupplierDto>(supplier.ToDto());
         }
     }
 }

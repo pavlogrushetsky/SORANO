@@ -43,7 +43,10 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
         {
-            var existentDeliveryItem = await UnitOfWork.Get<DeliveryItem>().GetAsync(t => t.ID == id);
+            var existentDeliveryItem = await UnitOfWork.Get<DeliveryItem>()
+                .GetAsync(t => t.ID == id, 
+                i => i.Attachments, 
+                i => i.Recommendations);
 
             if (existentDeliveryItem == null)
                 return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
@@ -65,15 +68,20 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<DeliveryItemsDto>> GetForDeliveryAsync(int deliveryId)
         {
-            var items = UnitOfWork.Get<DeliveryItem>().GetAll(i => i.DeliveryID == deliveryId);
+            var items = UnitOfWork.Get<DeliveryItem>()
+                .GetAll(i => i.DeliveryID == deliveryId, i => i.Delivery, i => i.Article)
+                .OrderByDescending(i => i.CreatedDate)
+                .ToList()
+                .Select(i => i.ToDto())
+                .ToList()
+                .Enumerate();
+
+
             var delivery = await UnitOfWork.Get<Delivery>().GetAsync(deliveryId);
 
             return new SuccessResponse<DeliveryItemsDto>(new DeliveryItemsDto
             {
-                Items = items.OrderByDescending(i => i.CreatedDate)
-                    .Select(i => i.ToDto())
-                    .ToList()
-                    .Enumerate(),
+                Items = items,
                 Summary = delivery.GetSummary()
             });
         }
@@ -93,11 +101,18 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<DeliveryItemDto>> GetAsync(int id)
         {
-            var deliveryItem = await UnitOfWork.Get<DeliveryItem>().GetAsync(d => d.ID == id);
+            var deliveryItem = await UnitOfWork.Get<DeliveryItem>()
+                .GetAsync(d => d.ID == id,
+                d => d.Article,
+                d => d.Delivery);
 
-            return deliveryItem == null
-                ? new ServiceResponse<DeliveryItemDto>(ServiceResponseStatus.NotFound)
-                : new SuccessResponse<DeliveryItemDto>(deliveryItem.ToDto());
+            if (deliveryItem == null)
+                return new ServiceResponse<DeliveryItemDto>(ServiceResponseStatus.NotFound);
+
+            deliveryItem.Attachments = GetAttachments(id).ToList();
+            deliveryItem.Recommendations = GetRecommendations(id).ToList();
+
+            return new SuccessResponse<DeliveryItemDto>(deliveryItem.ToDto());
         }
 
         public async Task<ServiceResponse<DeliveryItemDto>> UpdateAsync(DeliveryItemDto deliveryItem, int userId)
