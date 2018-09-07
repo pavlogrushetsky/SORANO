@@ -269,14 +269,15 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<int>> SaleAsync(int articleId, int locationId, int clientId, int num, decimal price, int userId)
         {
-            var storages = UnitOfWork.Get<Storage>().GetAll();
-
-            var currentStorages = storages
-                .Where(s => s.LocationID == locationId && s.Goods.DeliveryItem.ArticleID == articleId && !s.ToDate.HasValue)
+            var storages = UnitOfWork.Get<Storage>()
+                .GetAll(s => s.LocationID == locationId && 
+                    s.Goods.DeliveryItem.ArticleID == articleId && 
+                    !s.ToDate.HasValue, 
+                    g => g.Goods)
                 .Take(num)
                 .ToList();
 
-            currentStorages.ForEach(storage =>
+            storages.ForEach(storage =>
             {
                 storage.ToDate = DateTime.Now.Date;
                 storage.UpdateModifiedFields(userId);
@@ -284,15 +285,8 @@ namespace SORANO.BLL.Services
                 UnitOfWork.Get<Storage>().Update(storage);
             });
 
-            currentStorages.Select(s => s.Goods).ToList().ForEach(goods =>
+            storages.Select(s => s.Goods).ToList().ForEach(goods =>
             {
-                // TODO
-                //goods.SaleDate = DateTime.Now;
-                //goods.SaleLocationID = locationId;
-                //goods.SoldBy = userId;
-                //goods.SalePrice = price;
-                //goods.ClientID = clientId;
-
                 goods.UpdateModifiedFields(userId);
 
                 UnitOfWork.Get<Goods>().Update(goods);

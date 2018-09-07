@@ -223,7 +223,7 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<SaleItemsSummaryDto>> AddGoodsAsync(int goodsId, decimal? price, int saleId, int userId)
         {
-            var goods = await UnitOfWork.Get<Goods>().GetAsync(goodsId);
+            var goods = await UnitOfWork.Get<Goods>().GetAsync(goodsId, g => g.Storages);
             if (goods == null || goods.SaleID.HasValue && goods.SaleID != saleId)
                 return new ServiceResponse<SaleItemsSummaryDto>(ServiceResponseStatus.NotFound);
 
@@ -253,7 +253,7 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<SaleItemsSummaryDto>> AddGoodsAsync(IEnumerable<int> goodsIds, decimal? price, int saleId, int userId)
         {
-            var goods = UnitOfWork.Get<Goods>().GetAll(g => goodsIds.Contains(g.ID) && !g.SaleID.HasValue);
+            var goods = UnitOfWork.Get<Goods>().GetAll(g => goodsIds.Contains(g.ID) && !g.SaleID.HasValue, g => g.Storages);
             var goodsList = goods?.ToList();
             if (goodsList == null || !goodsList.Any())
                 return new ServiceResponse<SaleItemsSummaryDto>(ServiceResponseStatus.NotFound);
@@ -287,7 +287,7 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<SaleItemsSummaryDto>> RemoveGoodsAsync(int goodsId, int saleId, int userId)
         {
-            var goods = await UnitOfWork.Get<Goods>().GetAsync(goodsId);
+            var goods = await UnitOfWork.Get<Goods>().GetAsync(goodsId, g => g.Storages);
             if (goods?.SaleID == null || goods.SaleID != saleId)
                 return new ServiceResponse<SaleItemsSummaryDto>(ServiceResponseStatus.NotFound);
 
@@ -308,7 +308,7 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<SaleItemsSummaryDto>> RemoveGoodsAsync(IEnumerable<int> goodsIds, int saleId, int userId)
         {
-            var goods = UnitOfWork.Get<Goods>().GetAll(g => goodsIds.Contains(g.ID) && g.SaleID.HasValue && g.SaleID.Value == saleId);
+            var goods = UnitOfWork.Get<Goods>().GetAll(g => goodsIds.Contains(g.ID) && g.SaleID.HasValue && g.SaleID.Value == saleId, g => g.Storages);
             var goodsList = goods?.ToList();
             if (goodsList == null || !goodsList.Any())
                 return new ServiceResponse<SaleItemsSummaryDto>(ServiceResponseStatus.NotFound);

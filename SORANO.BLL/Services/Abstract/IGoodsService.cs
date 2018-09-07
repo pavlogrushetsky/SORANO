@@ -12,8 +12,6 @@ namespace SORANO.BLL.Services.Abstract
 
         ServiceResponse<PaginationSetDto<GoodsDto>> GetAll(GoodsFilterCriteriaDto criteria);
 
-        Task<ServiceResponse<IEnumerable<GoodsDto>>> GetAvailableForLocationAsync(int locationId, int saleId, bool selectedOnly = false); 
-
         Task<ServiceResponse<GoodsDto>> GetAsync(int id);
 
         Task<ServiceResponse<GoodsDto>> AddRecommendationsAsync(IEnumerable<int> ids, IEnumerable<RecommendationDto> recommendations, int userId);
