@@ -26,6 +26,6 @@ namespace SORANO.WEB.ViewModels.Goods
 
         public int Quantity { get; set; }
 
-        public bool HasMainPicture => !string.IsNullOrWhiteSpace(MainPicture.FullPath);
+        public bool HasMainPicture => !string.IsNullOrWhiteSpace(MainPicture?.FullPath);
     }
 }

@@ -15,95 +15,98 @@
     </ul>
 }
 
-<form asp-action="AddRecommendations"
-      asp-controller="Goods"
-      method="post">
-    @for (var i = 0; i < Model.Recommendations.Count; i++)
-    {
-        <input type="hidden" asp-for="@Model.Recommendations[i].ID"/>
-    }
-    @Html.HiddenFor(m => m.MainPicture.FullPath)
-    @Html.HiddenFor(m => m.ArticleName)
-    @Html.HiddenFor(m => m.ArticleDescription)
-    @Html.HiddenFor(m => m.ArticleTypeName)
-    @Html.HiddenFor(m => m.LocationName)
-    @Html.HiddenFor(m => m.DeliveryPrice)
-    @Html.HiddenFor(m => m.Currency)
-    @Html.HiddenFor(m => m.Quantity)
-    @Html.HiddenFor(m => m.Ids)
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    @if (Model.Quantity > 1)
-    {
+    <form asp-action="AddRecommendations"
+          asp-controller="Goods"
+          method="post">
+        @for (var i = 0; i < Model.Recommendations.Count; i++)
+        {
+            <input type="hidden" asp-for="@Model.Recommendations[i].ID" />
+        }
+        @if (Model.HasMainPicture)
+        {
+            @Html.HiddenFor(m => m.MainPicture.FullPath)
+        }
+        @Html.HiddenFor(m => m.ArticleName)
+        @Html.HiddenFor(m => m.ArticleDescription)
+        @Html.HiddenFor(m => m.ArticleTypeName)
+        @Html.HiddenFor(m => m.LocationName)
+        @Html.HiddenFor(m => m.DeliveryPrice)
+        @Html.HiddenFor(m => m.Currency)
+        @Html.HiddenFor(m => m.Quantity)
+        @Html.HiddenFor(m => m.Ids)
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @if (Model.Quantity > 1)
+        {
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="alert alert-dismissible alert-info">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Информация:</strong> Изменения будут сохранены для группы выбранных товаров
+                    </div>
+                </div>
+            </div>
+        }
         <div class="row">
-            <div class="col-lg-12">
-                <div class="alert alert-dismissible alert-info">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <strong>Информация:</strong> Изменения будут сохранены для группы выбранных товаров
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div style="float: left;">
+                    @if (Model.HasMainPicture)
+                    {
+                        <img src="@Url.Content(Model.MainPicture.FullPath)" />
+                    }
+                </div>
+                <div style="float: left;">
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.ArticleName)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.ArticleName)
+                        </dd>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.ArticleDescription)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.ArticleDescription)
+                        </dd>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.ArticleTypeName)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.ArticleTypeName)
+                        </dd>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.LocationName)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.LocationName)
+                        </dd>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.DeliveryPrice)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.DeliveryPrice) @Html.DisplayFor(model => model.Currency)
+                        </dd>
+                    </dl>
                 </div>
             </div>
         </div>
-    }
-    <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12">
-            <div style="float: left;">
-                @if (Model.HasMainPicture)
-                {
-                    <img src="@Url.Content(Model.MainPicture.FullPath)"/>
-                }
-            </div>
-            <div style="float: left;">
-                <dl class="dl-horizontal">
-                    <dt>
-                        @Html.DisplayNameFor(model => model.ArticleName)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.ArticleName)
-                    </dd>
-                    <dt>
-                        @Html.DisplayNameFor(model => model.ArticleDescription)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.ArticleDescription)
-                    </dd>
-                    <dt>
-                        @Html.DisplayNameFor(model => model.ArticleTypeName)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.ArticleTypeName)
-                    </dd>
-                    <dt>
-                        @Html.DisplayNameFor(model => model.LocationName)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.LocationName)
-                    </dd>
-                    <dt>
-                        @Html.DisplayNameFor(model => model.DeliveryPrice)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.DeliveryPrice) @Html.DisplayFor(model => model.Currency)
-                    </dd>
-                </dl>
-            </div>
-        </div>        
-    </div>
-    <div class="row">
-        <div class="col-lg-6 col-md-12 col-sm-12">
-            @Html.Partial("~/Views/Shared/_RecommendationsForm.cshtml", Model)
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12">
-            <div class="form-group">
-                <a class="btn btn-default btn-sm" asp-controller="Goods" asp-action="Index">
-                    <i class="fa fa-fw fa-close"></i>
-                    Отмена
-                </a>
-                <button type="submit" class="btn btn-primary btn-sm">
-                    <i class="fa fa-fw fa-save"></i>
-                    Сохранить
-                </button>
+        <div class="row">
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                @Html.Partial("~/Views/Shared/_RecommendationsForm.cshtml", Model)
             </div>
         </div>
-    </div>
-</form>
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="form-group">
+                    <a class="btn btn-default btn-sm" asp-controller="Goods" asp-action="Index">
+                        <i class="fa fa-fw fa-close"></i>
+                        Отмена
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="fa fa-fw fa-save"></i>
+                        Сохранить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>

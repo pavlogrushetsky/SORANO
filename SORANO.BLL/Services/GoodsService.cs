@@ -18,11 +18,27 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<GoodsDto>> GetAsync(int id)
         {
-            var goods = await UnitOfWork.Get<Goods>().GetAsync(id);
+            var goods = await UnitOfWork.Get<Goods>().GetAsync(id, g => g.Sale, g => g.DeliveryItem);
 
-            return goods == null
-                ? new ServiceResponse<GoodsDto>(ServiceResponseStatus.NotFound)
-                : new SuccessResponse<GoodsDto>(goods.ToDto());
+            if (goods == null)
+                return new ServiceResponse<GoodsDto>(ServiceResponseStatus.NotFound);
+
+            var article = await UnitOfWork.Get<Article>().GetAsync(goods.DeliveryItem.ArticleID, a => a.Type);
+            article.Attachments = GetAttachments(article.ID).ToList();
+
+            var delivery = await UnitOfWork.Get<Delivery>().GetAsync(goods.DeliveryItem.DeliveryID);
+
+            var storages = UnitOfWork.Get<Storage>().GetAll(s => s.GoodsID == id, s => s.Location).ToList();
+
+            goods.DeliveryItem.Delivery = delivery;
+            goods.DeliveryItem.Article = article;
+            goods.Storages = storages;
+            goods.Recommendations = GetRecommendations(id).ToList();
+            goods.Attachments = GetAttachments(id).ToList();
+
+            var dto = goods.ToDto();
+
+            return new SuccessResponse<GoodsDto>(dto);
         }
 
         public async Task<ServiceResponse<int>> ChangeLocationAsync(IEnumerable<int> ids, int targetLocationId, int num, int userId)
@@ -30,13 +46,15 @@ namespace SORANO.BLL.Services
             if (ids == null)
                 throw new ArgumentNullException(nameof(ids));
 
-            var existentEntities = UnitOfWork.Get<Goods>().GetAll(g => ids.Contains(g.ID));
-            var existentGoods = existentEntities.ToList().Take(num).ToList();
+            var existentEntities = UnitOfWork.Get<Goods>()
+                .GetAll(g => ids.Contains(g.ID), g => g.Storages)
+                .Take(num)
+                .ToList();
 
-            if (!existentGoods.Any())
+            if (!existentEntities.Any())
                 return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
 
-            existentGoods.ForEach(e =>
+            existentEntities.ForEach(e =>
             {
                 var storage = e.Storages.OrderBy(st => st.FromDate).Last();
                 storage.ToDate = DateTime.Now;

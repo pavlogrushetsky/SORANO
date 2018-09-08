@@ -14,7 +14,7 @@
 
     <div class="row">
         <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
-            <div class="panel panel-default">
+            <div class="panel panel-default" data-toggle="tooltip" title="Количество товаров в учёте (включая отложенные)">
                 <div class="panel-heading">
                     <div class="row">
                         <div class="col-xs-3">
@@ -29,7 +29,7 @@
             </div>
         </div>
         <div hide-if="@(!Model.ShowForLocation)" class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
-            <div class="panel panel-default">
+            <div class="panel panel-default" data-toggle="tooltip" title="Сумма личных подтверждённых продаж">
                 <div class="panel-heading">
                     <div class="row">
                         <div class="col-xs-3">
@@ -44,7 +44,7 @@
             </div>
         </div>
         <div hide-if="@(!Model.IsSuperUser && Model.ShowForLocation)" class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
-            <div class="panel panel-default">
+            <div class="panel panel-default" data-toggle="tooltip" title="Сумма подтверждённых продаж текущего месяца">
                 <div class="panel-heading">
                     <div class="row">
                         <div class="col-xs-3">
@@ -59,7 +59,7 @@
             </div>
         </div>
         <div hide-if="@Model.ShowForLocation" class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
-            <div class="panel panel-default">
+            <div class="panel panel-default" data-toggle="tooltip" title="Сумма подтверждённых поставок текущего месяца">
                 <div class="panel-heading">
                     <div class="row">
                         <div class="col-xs-3">
@@ -74,7 +74,7 @@
             </div>
         </div>
         <div hide-if="@(!Model.IsSuperUser && Model.ShowForLocation)" class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
-            <div class="panel panel@(Model.IsProfitPositive ? "-success" : "-danger")">
+            <div class="panel panel@(Model.IsProfitPositive ? "-success" : "-danger")" data-toggle="tooltip" title="Прибыль текущего месяца (сумма разности цены продажи и цены закупки проданных товаров)">
                 <div class="panel-heading">
                     <div class="row">
                         <div class="col-xs-3">

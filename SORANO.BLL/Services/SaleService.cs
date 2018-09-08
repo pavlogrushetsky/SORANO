@@ -383,7 +383,7 @@ namespace SORANO.BLL.Services
             var goodsIds = storages.Select(s => s.GoodsID).ToList();
             
             var goods = UnitOfWork.Get<Goods>()
-                .GetAll(g => goodsIds.Contains(g.ID) && !g.IsDeleted && (!g.SaleID.HasValue || g.SaleID == saleId), g => g.Recommendations)
+                .GetAll(g => goodsIds.Contains(g.ID) && !g.IsDeleted && (!g.SaleID.HasValue || g.SaleID == saleId))
                 .Select(g => new
                 {
                     goods = g,
@@ -418,20 +418,41 @@ namespace SORANO.BLL.Services
                 })
                 .ToList();
 
-                goods.ForEach(g =>
-                {
-                    g.Recommendations = UnitOfWork.Get<Recommendation>()
-                        .GetAll(r => r.ParentEntityID == g.Article.ID || 
-                            r.ParentEntityID == g.ArticleType.ID ||
-                            r.ParentEntityID == g.DeliveryItem.ID || 
-                            r.ParentEntityID == g.Delivery.ID || 
-                            r.ParentEntityID == locationId ||
-                            r.ParentEntityID == g.Delivery.SupplierID)
-                        .ToList();
+            var goodsRecommendations = GetRecommendations(goodsIds).ToList();
 
-                    g.Article.Attachments = GetAttachments(g.Article.ID).ToList();
-                    g.ArticleType.Attachments = GetAttachments(g.ArticleType.ID).ToList();
-                });                
+            goods.SelectMany(g => g.Goods).ToList().ForEach(g =>
+            {
+                g.Recommendations = goodsRecommendations
+                    .Where(r => r.ParentEntityID == g.ID)
+                    .ToList();
+            });
+
+            var recIds = new List<int>
+            {
+                locationId
+            };
+            recIds.AddRange(goods.Select(g => g.Article.ID).Distinct());
+            recIds.AddRange(goods.Select(g => g.ArticleType.ID).Distinct());
+            recIds.AddRange(goods.Select(g => g.DeliveryItem.ID).Distinct());
+            recIds.AddRange(goods.Select(g => g.Delivery.ID).Distinct());
+            recIds.AddRange(goods.Select(g => g.Delivery.SupplierID).Distinct());
+
+            var recommendations = GetRecommendations(recIds).ToList();
+
+            goods.ForEach(g =>
+            {
+                g.Recommendations = recommendations
+                    .Where(r => r.ParentEntityID == g.Article.ID || 
+                        r.ParentEntityID == g.ArticleType.ID ||
+                        r.ParentEntityID == g.DeliveryItem.ID || 
+                        r.ParentEntityID == g.Delivery.ID || 
+                        r.ParentEntityID == locationId ||
+                        r.ParentEntityID == g.Delivery.SupplierID)
+                    .ToList();
+
+                g.Article.Attachments = GetAttachments(g.Article.ID).ToList();
+                g.ArticleType.Attachments = GetAttachments(g.ArticleType.ID).ToList();
+            });                
 
             var groups = goods.Select(g => new SaleItemsGroupDto
             {
@@ -445,10 +466,9 @@ namespace SORANO.BLL.Services
                     GoodsId = i.ID,
                     IsSelected = i.SaleID == saleId,
                     Price = i.Price,
-                    Recommendations = i.Recommendations
-                            .Concat(g.Recommendations)
-                            .Select(r => r.ToDto())
-                            .ToList()
+                    Recommendations = i.Recommendations.Concat(g.Recommendations)
+                        .Select(r => r.ToDto())
+                        .ToList()
                 })
                 .Where(i => !selectedOnly || i.IsSelected)
                 .ToList()

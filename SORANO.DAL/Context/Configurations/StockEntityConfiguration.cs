@@ -6,7 +6,7 @@ namespace SORANO.DAL.Context.Configurations
     internal abstract class StockEntityConfiguration<T> : EntityTypeConfiguration<T> where T : StockEntity
     {
         protected StockEntityConfiguration()
-        {
+        {          
             HasKey(e => e.ID);
 
             Property(e => e.IsDeleted)

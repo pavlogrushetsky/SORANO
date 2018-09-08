@@ -37,5 +37,12 @@ namespace SORANO.BLL.Services
                 .GetAll(r => r.ParentEntityID == entityId, r => r.ParentEntity)
                 .ToList();
         }
+
+        protected IEnumerable<Recommendation> GetRecommendations(IEnumerable<int> entitiesId)
+        {
+            return UnitOfWork.Get<Recommendation>()
+                .GetAll(r => entitiesId.Contains(r.ParentEntityID), r => r.ParentEntity)
+                .ToList();
+        }
     }
 }
