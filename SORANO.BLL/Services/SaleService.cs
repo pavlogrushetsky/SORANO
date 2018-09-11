@@ -36,11 +36,22 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<SaleDto>> GetAsync(int id)
         {
-            var sale = await UnitOfWork.Get<Sale>().GetAsync(id, s => s.Client, s => s.Location, s => s.User, s => s.Goods);
+            var sale = await UnitOfWork.Get<Sale>().GetAsync(id, s => s.Client, s => s.Location, s => s.User);
 
             if (sale == null)
                 return new ServiceResponse<SaleDto>(ServiceResponseStatus.NotFound);
 
+            var goods = UnitOfWork.Get<Goods>().GetAll(g => g.SaleID == id, g => g.DeliveryItem).ToList();
+
+            var articleIds = goods.Select(g => g.DeliveryItem.ArticleID).ToList();
+            var articles = UnitOfWork.Get<Article>().GetAll(a => articleIds.Contains(a.ID)).ToList();
+
+            goods.ForEach(g =>
+            {
+                g.DeliveryItem.Article = articles.FirstOrDefault(a => a.ID == g.DeliveryItem.ArticleID);
+            });
+
+            sale.Goods = goods;
             sale.Attachments = GetAttachments(id).ToList();
             sale.Recommendations = GetRecommendations(id).ToList();
 
@@ -128,7 +139,7 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
         {
-            var existentSale = await UnitOfWork.Get<Sale>().GetAsync(id);
+            var existentSale = await UnitOfWork.Get<Sale>().GetAsync(id, s => s.Goods, s => s.Attachments, s => s.Recommendations);
 
             if (existentSale == null)
                 return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
@@ -140,9 +151,9 @@ namespace SORANO.BLL.Services
                 return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
             var saleGoodsIds = existentSale.Goods.Select(g => g.ID);
-            var goods = UnitOfWork.Get<Goods>().GetAll(g => saleGoodsIds.Contains(g.ID), g => g.Storages);
+            var goods = UnitOfWork.Get<Goods>().GetAll(g => saleGoodsIds.Contains(g.ID), g => g.Storages).ToList();
 
-            goods.ToList().ForEach(g =>
+            goods.ForEach(g =>
             {
                 g.SaleID = null;
                 g.IsSold = false;

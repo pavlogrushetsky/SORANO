@@ -224,12 +224,13 @@ namespace SORANO.BLL.Services
                     s => s.Goods)
                 .ToList();
 
+            var deliveryItemsIds = monthSales
+                .SelectMany(s => s.Goods)
+                .Select(g => g.DeliveryItemID)
+                .ToList();
+
             var soldGoodsDeliveryItems = UnitOfWork.Get<DeliveryItem>()
-                .GetAll(di => monthSales
-                        .SelectMany(s => s.Goods)
-                        .Select(g => g.DeliveryItemID)
-                        .Contains(di.ID),
-                    di => di.Delivery)
+                .GetAll(di => deliveryItemsIds.Contains(di.ID), di => di.Delivery, di => di.Goods)
                 .ToList();
 
             var salesTotal = monthSales.Sum(s => SumSales(s));
