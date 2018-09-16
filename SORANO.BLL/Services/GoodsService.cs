@@ -113,6 +113,7 @@ namespace SORANO.BLL.Services
                               g.DeliveryItem.Article.Barcode.ToLower().Contains(term) || 
                               g.DeliveryItem.Article.Type.ParentType != null && 
                               g.DeliveryItem.Article.Type.ParentType.Name.ToLower().Contains(term)), g => g.DeliveryItem)
+                .OrderByDescending(g => g.ModifiedDate)
                 .ToList();
 
             var goodsIds = filteredGoods.Select(g => g.ID).ToList();
@@ -132,7 +133,7 @@ namespace SORANO.BLL.Services
                     locationId == goodsCurrentStorages.FirstOrDefault(st => st.GoodsID == g.ID)?.LocationID)
                 .ToList();
 
-            var articleIds = filteredByLocationGoods.Select(g => g.DeliveryItem.ArticleID).ToList();
+            var articleIds = filteredByLocationGoods.Select(g => g.DeliveryItem.ArticleID).Distinct().ToList();
             var articles = UnitOfWork.Get<Article>().GetAll(a => articleIds.Contains(a.ID), a => a.Type).ToList();
 
             var articleAttachments = GetMainPictures(articleIds);
@@ -144,7 +145,7 @@ namespace SORANO.BLL.Services
             {
                 a.Type.ParentType = articleParentTypes.FirstOrDefault(at => at.ID == a.Type.ParentTypeId);
                 a.Attachments = articleAttachments
-                    .Where(at => at.ParentEntities.Any(pe => articleIds.Contains(pe.ID)))
+                    .Where(at => at.ParentEntities.Any(pe => pe.ID == a.ID))
                     .ToList();
             });
 
