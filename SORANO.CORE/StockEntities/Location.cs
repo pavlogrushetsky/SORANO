@@ -20,5 +20,7 @@ namespace SORANO.CORE.StockEntities
         public ICollection<Delivery> Deliveries { get; set; } = new HashSet<Delivery>();
 
         public ICollection<User> Users { get; set; } = new HashSet<User>();
+
+        public ICollection<Visit> Visits { get; set; } = new HashSet<Visit>();
     }
 }

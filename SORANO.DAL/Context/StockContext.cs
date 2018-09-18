@@ -50,6 +50,10 @@ namespace SORANO.DAL.Context
 
         public IDbSet<Exception> Exceptions { get; set; }
 
+        public IDbSet<Visit> Visits { get; set; }
+
+        public IDbSet<Visitor> Visitors { get; set; }
+
         public virtual async Task CommitAsync()
         {
             await SaveChangesAsync();
@@ -81,6 +85,8 @@ namespace SORANO.DAL.Context
             builder.Configurations.Add(new SupplierConfiguration());
             builder.Configurations.Add(new SaleConfiguration());
             builder.Configurations.Add(new ExceptionConfiguration());
+            builder.Configurations.Add(new VisitConfiguration());
+            builder.Configurations.Add(new VisitorConfiguration());
         }
     }
 }

@@ -61,6 +61,10 @@
     <Compile Include="StockEntities\StockEntity.cs" />
     <Compile Include="StockEntities\Storage.cs" />
     <Compile Include="StockEntities\Supplier.cs" />
+    <Compile Include="StockEntities\Visit.cs" />
+    <Compile Include="StockEntities\Visitor.cs" />
+    <Compile Include="StockEntities\VisitorAgeGroups.cs" />
+    <Compile Include="StockEntities\VisitorGenders.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

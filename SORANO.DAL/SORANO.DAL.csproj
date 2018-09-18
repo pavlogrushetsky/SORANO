@@ -67,6 +67,8 @@
     <Compile Include="Context\Configurations\StorageConfiguration.cs" />
     <Compile Include="Context\Configurations\SupplierConfiguration.cs" />
     <Compile Include="Context\Configurations\UserConfiguration.cs" />
+    <Compile Include="Context\Configurations\VisitConfiguration.cs" />
+    <Compile Include="Context\Configurations\VisitorConfiguration.cs" />
     <Compile Include="Context\StockContextFactory.cs" />
     <Compile Include="Repositories\IStockRepository.cs" />
     <Compile Include="Repositories\IUnitOfWork.cs" />
