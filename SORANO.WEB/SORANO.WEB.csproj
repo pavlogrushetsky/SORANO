@@ -81,6 +81,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Views\Shared\Components\VisitForm\Default.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="wwwroot\js\pages\goodsSales.min.js">
       <DependentUpon>goodsSales.js</DependentUpon>
     </Content>
