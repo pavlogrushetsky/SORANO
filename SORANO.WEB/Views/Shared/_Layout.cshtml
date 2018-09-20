@@ -37,35 +37,45 @@
         </div>
         <div class="collapse navbar-collapse" id="navbar-collapse">
             <ul class="nav navbar-nav">
-                <li><a asp-controller="Home" asp-action="Index"><i class="fa fa-fw fa-home" aria-hidden="true"></i>&nbsp;Главная <span class="sr-only">(current)</span></a></li>
+                <li>
+                    <a asp-controller="Home" asp-action="Index">
+                        <i class="fa fa-fw fa-home" aria-hidden="true"></i>
+                        <span class="menu-item" style="display: none">Главная</span> 
+                        <span class="sr-only">(current)</span>
+                    </a>
+                </li>
                 <li>
                     <a asp-controller="Delivery" asp-action="Index">
                         <i class="fa fa-fw fa-cart-arrow-down" aria-hidden="true"></i>
-                        Поставки
+                        <span class="menu-item" style="display: none">Поставки</span>
                         @await Component.InvokeAsync("DeliveriesUnsubmittedCount")
                     </a>
                 </li>
                 <li>
                     <a asp-controller="Sale" asp-action="Index">
                         <i class="fa fa-fw fa-handshake-o" aria-hidden="true"></i>
-                        Продажи
+                        <span class="menu-item" style="display: none">Продажи</span>
                         @await Component.InvokeAsync("SalesUnsubmittedCount")
                     </a>
                 </li>
                 <li>
                     <a asp-controller="Goods" asp-action="Index">
                         <i class="fa fa-fw fa-archive" aria-hidden="true"></i>
-                        Товары
+                        <span class="menu-item" style="display: none">Товары</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" type="button" data-toggle="modal" data-target="#visitForm">
+                    <a href="#" type="button" id="showVisitForm">
                         <i class="fa fa-fw fa-venus-mars" aria-hidden="true"></i>
-                        Посещение
+                        <span class="menu-item" style="display: none">Посещение</span>
                     </a>
                 </li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-fw fa-cog" aria-hidden="true"></i>&nbsp;Управление <span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                        <i class="fa fa-fw fa-cog" aria-hidden="true"></i>
+                        <span class="menu-item" style="display: none">Управление</span>
+                        <span class="caret"></span>
+                    </a>
                     <ul class="dropdown-menu" role="menu">
                         <li><a asp-controller="Article" asp-action="Index"><i class="fa fa-fw fa-barcode" aria-hidden="true"></i>&nbsp;Артикулы и типы артикулов</a></li>
                         <li><a asp-controller="Supplier" asp-action="Index"><i class="fa fa-fw fa-truck" aria-hidden="true"></i>&nbsp;Поставщики</a></li>
@@ -135,8 +145,7 @@
             @RenderBody()
         </div>       
     </div>
-    <div class="row">
-        @await Component.InvokeAsync("VisitForm")
+    <div class="row" id="visitFormContainer">        
     </div>
     <hr/>
     <footer>

@@ -1,19 +1,6 @@
 ﻿$(document).ready(function () {
     $.fn.select2.defaults.set('theme', 'bootstrap');
 
-    initDateTimePicker('#visit-date');
-
-    initGenericSelect({
-        selectElementClass: '.select-location',
-        valueElementId: '#LocationID',
-        displayElementId: '#LocationName',
-        noResultsText: 'Магазины не найдены',
-        searchingText: 'Поиск магазинов...',
-        errorLoadingText: 'Невозможно загрузить результаты поиска',
-        placeholderText: 'Магазин',
-        url: '/Location/GetLocations'
-    });
-
     initTooltip();
     
     if ($.fn.dataTableExt !== undefined) { 
@@ -29,6 +16,12 @@
             }
         });
     }
+
+    $('ul.nav > li > a').hover(function() {
+        $(this).children('span.menu-item').css({ 'display': 'inline-block' });
+    }, function() {
+        $(this).children('span.menu-item').css({ 'display': 'none' });
+    });
 
     $("input.input-validation-error").closest(".input-group").addClass("has-error");
     $("select.input-validation-error").closest(".input-group").addClass("has-error");
@@ -94,12 +87,49 @@
         });
 
     $(document).keydown(function (e) {
-        if (e.keyCode === 186 && e.ctrlKey) {
-            $('#visitForm').modal('show');
+        if (e.keyCode === 186 && e.ctrlKey) {            
+            $.get('/Visit/Create', function (data) {
+                $('#visitForm').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+                $('#visitFormContainer').html(data);
+                initDateTimePicker('#visit-date');
+                initGenericSelect({
+                    selectElementClass: '.select-location',
+                    valueElementId: '#LocationID',
+                    displayElementId: '#LocationName',
+                    noResultsText: 'Магазины не найдены',
+                    searchingText: 'Поиск магазинов...',
+                    errorLoadingText: 'Невозможно загрузить результаты поиска',
+                    placeholderText: 'Магазин',
+                    url: '/Location/GetLocations'
+                });
+                $('form').keypress(keypressHandler);
+                $('#visitForm').modal('show');
+            });
         }
     });
 
-    $('#visitForm').on('shown.bs.modal', function () {
+    $('#showVisitForm').on('click', function () {
+        $.get('/Visit/Create', function (data) {
+            $('#visitFormContainer').html(data);
+            initDateTimePicker('#visit-date');
+            initGenericSelect({
+                selectElementClass: '.select-location',
+                valueElementId: '#LocationID',
+                displayElementId: '#LocationName',
+                noResultsText: 'Магазины не найдены',
+                searchingText: 'Поиск магазинов...',
+                errorLoadingText: 'Невозможно загрузить результаты поиска',
+                placeholderText: 'Магазин',
+                url: '/Location/GetLocations'
+            });
+            $('form').keypress(keypressHandler);
+            $('#visitForm').modal('show');
+        });      
+    }); 
+
+    $(document).on('show.bs.modal', '#visitForm', function () {       
         $(this).find('[autofocus]').focus();
     });
 });

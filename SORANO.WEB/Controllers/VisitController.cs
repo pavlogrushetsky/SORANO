@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Filters;
@@ -21,13 +22,27 @@ namespace SORANO.WEB.Controllers
             _exceptionService = exceptionService;
         }
 
+        [HttpGet]
+        public PartialViewResult Create()
+        {
+            var model = new VisitCreateViewModel
+            {
+                Code = "мж2",
+                Date = DateTime.Now.ToString("dd.MM.yyyy"),
+                LocationID = LocationId ?? 0,
+                LocationName = LocationName ?? string.Empty
+            };
+
+            return PartialView("_Visit", model);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(VisitCreateViewModel model)
         {
             return TryGetActionResult(() =>
             {
-                return NoContent();
+                return PartialView("_Visit", model);
 
             }, OnFault);
         }
