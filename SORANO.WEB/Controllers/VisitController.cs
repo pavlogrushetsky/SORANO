@@ -42,6 +42,9 @@ namespace SORANO.WEB.Controllers
         {
             return TryGetActionResult(() =>
             {
+                if (ModelState.IsValid)
+                    return Content(string.Empty);
+
                 return PartialView("_Visit", model);
 
             }, OnFault);
@@ -50,7 +53,7 @@ namespace SORANO.WEB.Controllers
         private IActionResult OnFault(string ex)
         {
             TempData["Error"] = ex;
-            return NoContent();
+            return RedirectToAction("Index", "Home");
         }
     }
 }

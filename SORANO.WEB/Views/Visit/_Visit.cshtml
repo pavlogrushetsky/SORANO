@@ -1,64 +1,50 @@
 ﻿@model VisitCreateViewModel
 
-<div class="col-lg-6 col-lg-offset-3 col-sm-8 col-sm-offset-2 col-xs-12">
-    <div id="visitForm" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">
-                        <i class="fa fa-fw fa-venus-mars" aria-hidden="true"></i>
-                        Новое посещение
-                    </h4>
+<form asp-controller="Visit" asp-action="Create" method="post" id="visitForm">
+    <input type="hidden" asp-for="LocationID" />
+    <input type="hidden" asp-for="LocationName" />
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group">
+                <label class="control-label" asp-for="Code"></label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-group"></i></span>
+                    <input class="form-control input-sm" type="text" asp-for="Code" placeholder="Код посетителей" autofocus />
                 </div>
-                <div class="modal-body">
-                    <form asp-controller="Visit" asp-action="Create" method="post">
-                        <input type="hidden" asp-for="LocationID" />
-                        <input type="hidden" asp-for="LocationName" />
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="form-group">
-                                    <label class="control-label" asp-for="Code"></label>
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-addon"><i class="fa fa-fw fa-group"></i></span>
-                                        <input class="form-control input-sm" type="text" asp-for="Code" placeholder="Код посетителей" autofocus />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label" asp-for="Date"></label>
-                                    <div class="input-group input-group-sm date" id="visit-date">
-                                        <input class="form-control input-sm" type="text" asp-for="Date" placeholder="Дата посещения" />
-                                        <span class="input-group-addon">
-                                            <span class="fa fa-fw fa-calendar"></span>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label" asp-for="LocationID"></label>
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
-                                        <select class="form-control input-sm select-location" asp-for="LocationID"></select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="form-group">
-                                    <button class="btn btn-default btn-sm" data-dismiss="modal">
-                                        <i class="fa fa-fw fa-close"></i>
-                                        Отмена
-                                    </button>
-                                    <button type="submit" class="btn btn-primary btn-sm">
-                                        <i class="fa fa-fw fa-save"></i>
-                                        Сохранить
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                <span asp-validation-for="Code" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="Date"></label>
+                <div class="input-group input-group-sm date" id="visit-date">
+                    <input class="form-control input-sm" type="text" asp-for="Date" placeholder="Дата посещения" />
+                    <span class="input-group-addon">
+                        <span class="fa fa-fw fa-calendar"></span>
+                    </span>
                 </div>
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="LocationID"></label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
+                    <select class="form-control input-sm select-location" asp-for="LocationID"></select>
+                </div>
+                <span asp-validation-for="LocationID" class="text-danger"></span>
             </div>
         </div>
     </div>
-</div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group">
+                <button class="btn btn-default btn-sm" data-dismiss="modal">
+                    <i class="fa fa-fw fa-close"></i>
+                    Отмена
+                </button>
+                <button type="submit" id="btnSubmitVisitForm" class="btn btn-primary btn-sm">
+                    <i class="fa fa-fw fa-save"></i>
+                    Сохранить
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
