@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SORANO.BLL.Dtos;
+using SORANO.BLL.Services;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels.Visit;
@@ -11,15 +15,17 @@ namespace SORANO.WEB.Controllers
     [CheckUser]
     public class VisitController : BaseController
     {
-        private readonly IUserService _userService;
-        private readonly IExceptionService _exceptionService;
+        private readonly IMapper _mapper;
+        private readonly IVisitService _visitService;
 
         public VisitController(IUserService userService, 
-            IExceptionService exceptionService) 
+            IExceptionService exceptionService, 
+            IMapper mapper, 
+            IVisitService visitService) 
             : base(userService, exceptionService)
         {
-            _userService = userService;
-            _exceptionService = exceptionService;
+            _mapper = mapper;
+            _visitService = visitService;
         }
 
         [HttpGet]
@@ -38,22 +44,21 @@ namespace SORANO.WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(VisitCreateViewModel model)
+        public async Task<IActionResult> Create(VisitCreateViewModel model)
         {
-            return TryGetActionResult(() =>
+            return await TryGetActionResultAsync(async () =>
             {
-                if (ModelState.IsValid)
-                    return Content(string.Empty);
+                if (!ModelState.IsValid)
+                    return PartialView("_Visit", model);
 
-                return PartialView("_Visit", model);
+                var visit = _mapper.Map<VisitDto>(model);
+                var result = await _visitService.CreateAsync(visit, UserId);
+                if (result.Status != ServiceResponseStatus.Success)
+                    return PartialView("_Visit", model);
 
-            }, OnFault);
-        }
+                return Content(string.Empty);
 
-        private IActionResult OnFault(string ex)
-        {
-            TempData["Error"] = ex;
-            return RedirectToAction("Index", "Home");
+            }, ex => Content(string.Empty));
         }
     }
 }

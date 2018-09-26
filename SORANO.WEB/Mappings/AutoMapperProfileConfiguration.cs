@@ -22,6 +22,7 @@ using SORANO.WEB.ViewModels.Sale;
 using SORANO.WEB.ViewModels.Storage;
 using SORANO.WEB.ViewModels.Supplier;
 using SORANO.WEB.ViewModels.User;
+using SORANO.WEB.ViewModels.Visit;
 
 namespace SORANO.WEB.Mappings
 {
@@ -709,6 +710,12 @@ namespace SORANO.WEB.Mappings
                         ID = r
                     }))
                 );
+
+            #endregion
+
+            #region Visit
+
+            CreateMap<VisitCreateViewModel, VisitDto>();
 
             #endregion
         }

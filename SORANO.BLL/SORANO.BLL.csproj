@@ -74,6 +74,7 @@
     <Compile Include="Dtos\UserActivityDto.cs" />
     <Compile Include="Dtos\UserActivityType.cs" />
     <Compile Include="Dtos\UserDto.cs" />
+    <Compile Include="Dtos\VisitDto.cs" />
     <Compile Include="Extensions\ArticleExtensions.cs" />
     <Compile Include="Extensions\ArticleTypeExtensions.cs" />
     <Compile Include="Extensions\AttachmentExtensions.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="Extensions\StorageExtensions.cs" />
     <Compile Include="Extensions\SupplierExtensions.cs" />
     <Compile Include="Extensions\UserExtensions.cs" />
+    <Compile Include="Extensions\VisitExtensions.cs" />
     <Compile Include="Helpers\CryptoHelper.cs" />
     <Compile Include="Extensions\CommonExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -116,6 +118,7 @@
     <Compile Include="Services\Abstract\ISaleService.cs" />
     <Compile Include="Services\Abstract\ISupplierService.cs" />
     <Compile Include="Services\Abstract\IUserService.cs" />
+    <Compile Include="Services\Abstract\IVisitService.cs" />
     <Compile Include="Services\ArticleService.cs" />
     <Compile Include="Services\ArticleTypeService.cs" />
     <Compile Include="Services\AttachmentService.cs" />
@@ -133,6 +136,7 @@
     <Compile Include="Services\ServiceResponse.cs" />
     <Compile Include="Services\SupplierService.cs" />
     <Compile Include="Services\UserService.cs" />
+    <Compile Include="Services\VisitService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SORANO.CORE\SORANO.CORE.csproj">
