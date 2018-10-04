@@ -34,7 +34,7 @@ namespace SORANO.WEB.Controllers
             var model = new VisitCreateViewModel
             {
                 Code = "мж2",
-                Date = DateTime.Now.ToString("dd.MM.yyyy"),
+                Date = DateTime.Now.ToString("dd.MM.yyyy HH:mm"),
                 LocationID = LocationId ?? 0,
                 LocationName = LocationName ?? string.Empty
             };

@@ -17,12 +17,6 @@
         });
     }
 
-    $('ul.nav > li > a').hover(function() {
-        $(this).children('span.menu-item').css({ 'display': 'inline-block' });
-    }, function() {
-        $(this).children('span.menu-item').css({ 'display': 'none' });
-        });
-
     initErrors();    
 
     $(window).on('resize', function () {
@@ -135,7 +129,7 @@ function initErrors() {
 }
 
 function initVisitModal() {
-    initDateTimePicker('#visit-date');
+    initDateTimePickerFormat('#visit-date', 'DD.MM.YYYY HH:mm:ss');
     initGenericSelect({
         selectElementClass: '.select-location',
         valueElementId: '#LocationID',
@@ -188,6 +182,35 @@ function keypressHandler(e) {
         $(this).blur();
         $('button[type=submit]:not(#btnSubmitVisitForm)').focus().click();
     }
+}
+
+function initDateTimePickerFormat(element, format) {
+    $(element).datetimepicker({
+        locale: 'ru',
+        format: format,
+        showTodayButton: true,
+        showClear: true,
+        showClose: true,
+        icons: {
+            clear: 'fa fa-trash',
+            close: 'fa fa-times',
+            today: 'fa fa-calendar-check-o'
+        },
+        tooltips: {
+            today: 'Текущая дата',
+            clear: 'Очистить выбор',
+            close: 'Закрыть окно',
+            nextMonth: 'Следующий месяц',
+            prevMonth: 'Предыдущий месяц',
+            selectMonth: 'Выбрать месяц',
+            selectYear: 'Выбрать год',
+            selectDecade: 'Выбрать десятилетие',
+            nextYear: 'Следующий год',
+            nextDecade: 'Следующее десятилетие',
+            prevYear: 'Предыдущий год',
+            prevDecade: 'Предыдущее десятилетие'
+        }
+    });
 }
 
 function initDateTimePicker(element) {

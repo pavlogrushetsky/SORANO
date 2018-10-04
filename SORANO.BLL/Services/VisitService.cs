@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using SORANO.BLL.Dtos;
 using SORANO.BLL.Extensions;
@@ -32,13 +34,44 @@ namespace SORANO.BLL.Services
 
             var visit = model.ToEntity();
 
-            visit.UpdateCreatedFields(userId).UpdateModifiedFields(userId);
+            visit
+                .UpdateCreatedFields(userId)
+                .UpdateModifiedFields(userId);                
+
+            Regex.Matches(model.Code, @"^(([мМжЖ]+[1234]{1})+)$")
+                .OfType<Match>()
+                .ToList()
+                .ForEach(visitorCode =>
+                {
+                    var code = visitorCode.Value;
+                    var ageGroup = (VisitorAgeGroups)Enum.Parse(typeof(VisitorAgeGroups), code.Last().ToString());
+                    code.Substring(0, code.Length - 1)
+                        .ToLower()
+                        .Select(c => c)
+                        .ToList()
+                        .ForEach(genderCode =>
+                        {
+                            var visitor = new Visitor
+                            {
+                                AgeGroup = ageGroup,
+                                Gender = genderCode.Equals('м')
+                                    ? VisitorGenders.Male
+                                    : VisitorGenders.Female
+                            };
+
+                            visitor
+                                .UpdateCreatedFields(userId)
+                                .UpdateModifiedFields(userId);
+
+                            visit.Visitors.Add(visitor);
+                        });
+                });
 
             var added = UnitOfWork.Get<Visit>().Add(visit);
 
             await UnitOfWork.SaveAsync();
 
-            return new SuccessResponse<int>(added.ID);
+            return new SuccessResponse<int>(added.ID);           
         }
 
         public Task<ServiceResponse<VisitDto>> UpdateAsync(VisitDto model, int userId)

@@ -715,7 +715,11 @@ namespace SORANO.WEB.Mappings
 
             #region Visit
 
-            CreateMap<VisitCreateViewModel, VisitDto>();
+            CreateMap<VisitCreateViewModel, VisitDto>()
+                .ForMember(
+                    dest => dest.Date,
+                    source => source.MapFrom(s => Convert.ToDateTime(s.Date))
+                );
 
             #endregion
         }
