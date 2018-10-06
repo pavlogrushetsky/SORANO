@@ -1,0 +1,60 @@
+﻿@{
+    ViewBag.Title = "SORANO - Посещения";
+    ViewBag.Header = "Посещения";
+    ViewBag.Icon = "fa fa-venus-mars";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/datatables.net-bs/css/dataTables.bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" />
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li class="active">Посещения</li>
+    </ul>
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Таблица посещений
+                <manager>
+                    <a class="btn btn-success btn-xs pull-right"
+                       id="btn-add-visit"
+                       tooltip="Добавить посещение"
+                       tooltip-placement="right">
+                        <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
+                    </a>
+                </manager>
+                <a class="btn btn-default btn-xs pull-right"
+                   id="refresh-visits"
+                   style="margin-right: 5px;"
+                   tooltip="Обновить данные"
+                   tooltip-placement="bottom">
+                    <i class="fa fa-fw fa-refresh" aria-hidden="true"></i>
+                </a>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+                <div id="visits" style="display: none;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/lib/datatables.net-responsive-bs/js/responsive.bootstrap.min.js"></script>
+    <environment names="Development">
+        <script src="~/js/pages/visitIndex.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/js/pages/visitIndex.min.js" asp-append-version="true"></script>
+    </environment>
+}

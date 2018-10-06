@@ -29,6 +29,12 @@ namespace SORANO.WEB.Controllers
         }
 
         [HttpGet]
+        public IActionResult Index() => View();
+
+        [HttpGet]
+        public IActionResult Table() => ViewComponent("VisitsTable");
+
+        [HttpGet]
         public PartialViewResult Create()
         {
             var model = new VisitCreateViewModel

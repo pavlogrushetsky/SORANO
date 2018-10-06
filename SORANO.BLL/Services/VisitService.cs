@@ -19,7 +19,20 @@ namespace SORANO.BLL.Services
 
         public ServiceResponse<IEnumerable<VisitDto>> GetAll(bool withDeleted)
         {
-            throw new NotImplementedException();
+            var visits = UnitOfWork.Get<Visit>()
+                .GetAll()
+                .OrderByDescending(a => a.Date)
+                .Select(v => new VisitDto
+                {
+                    ID = v.ID,
+                    Code = v.Code.ToUpper(),
+                    Date = v.Date,
+                    LocationID = v.LocationID,
+                    LocationName = v.Location.Name
+                })
+                .ToList();
+
+            return new SuccessResponse<IEnumerable<VisitDto>>(visits);
         }
 
         public Task<ServiceResponse<VisitDto>> GetAsync(int id)

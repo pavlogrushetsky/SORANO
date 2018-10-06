@@ -82,12 +82,10 @@
                         <li><a asp-controller="Client" asp-action="Index"><i class="fa fa-fw fa-address-book" aria-hidden="true"></i>&nbsp;Клиенты</a></li>
                         <li><a asp-controller="Location" asp-action="Index"><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i>&nbsp;Места и типы мест</a></li>
                         <li><a asp-controller="AttachmentType" asp-action="Index"><i class="fa fa-fw fa-paperclip" aria-hidden="true"></i>&nbsp;Типы вложений</a></li>
-                        @* ReSharper disable once UlTagContainsNonLiElements *@
+                        <li class="divider"></li>
+                        <li><a asp-controller="Visit" asp-action="Index"><i class="fa fa-fw fa-venus-mars" aria-hidden="true"></i>&nbsp;Посещения</a></li>
                         <administrator>
-                            <li class="divider"></li>
-                            <li>
-                                <a asp-controller="User" asp-action="Index"><i class="fa fa-fw fa-users" aria-hidden="true"></i>&nbsp;Пользователи</a>
-                            </li>
+                            <li><a asp-controller="User" asp-action="Index"><i class="fa fa-fw fa-users" aria-hidden="true"></i>&nbsp;Пользователи</a></li>
                         </administrator>
                     </ul>
                 </li>

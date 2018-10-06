@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SORANO.BLL.Dtos
 {
@@ -9,5 +10,9 @@ namespace SORANO.BLL.Dtos
         public DateTime Date { get; set; }
 
         public int LocationID { get; set; }
+
+        public string LocationName { get; set; }
+
+        public List<string> Visitors { get; set; }
     }
 }
