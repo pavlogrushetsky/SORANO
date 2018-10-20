@@ -117,7 +117,7 @@ namespace SORANO.BLL.Services
 
         public async Task<ServiceResponse<int>> DeleteAsync(int id, int userId)
         {
-            var existentArticleType = await UnitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id);
+            var existentArticleType = await UnitOfWork.Get<ArticleType>().GetAsync(t => t.ID == id, t => t.Articles);
 
             if (existentArticleType == null)
                 return new ServiceResponse<int>(ServiceResponseStatus.NotFound);

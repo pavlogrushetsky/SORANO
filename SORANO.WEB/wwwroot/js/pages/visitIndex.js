@@ -13,7 +13,25 @@
             initVisitModal();
             $('#visitFormModal').modal('show');
         });
+  });
+
+  $(document).on('click', '#btn-update-visit', function () {
+    var button = $(this);
+    button.tooltip('hide');
+    var parameters = {
+      id: button.data('visitid')
+    };
+
+    $.get('/Visit/Update', parameters, function (data) {
+      $('#visitFormBody').html(data);
+      initVisitModal();
+      $('#visitFormModal').modal('show');
     });
+  });
+
+  $('#visitFormModal').on('hidden.bs.modal', function() {
+    loadVisits();
+  });
 });
 
 function loadVisits() {

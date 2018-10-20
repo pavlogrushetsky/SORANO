@@ -32,33 +32,26 @@
                     <a asp-controller="Location"
                        asp-action="Details"
                        asp-route-id="@visit.LocationID"
-                       data-toggle="tooltip"
-                       data-placement="bottom"
-                       data-original-title="Просмотреть информацию о месте"
-                       title="">
+                       tooltip="Просмотреть информацию о месте"
+                       tooltip-placement="bottom">
                         @visit.LocationName
                     </a>
                 </td>
                 <td nowrap="nowrap">
                     <manager>
-                        <a asp-controller="Visit"
-                           asp-action="Update"
-                           asp-route-id="@visit.ID"
+                        <button id="btn-update-visit"
+                           data-visitid="@visit.ID"
                            class="btn btn-xs btn-default"
-                           data-toggle="tooltip"
-                           data-placement="bottom"
-                           data-original-title="Редактировать посещение"
-                           title="">
+                           tooltip="Редактировать посещение"
+                           tooltip-placement="bottom">
                             <i class="fa fa-fw fa-pencil-square" aria-hidden="true"></i>
-                        </a>
+                        </button>
                         <a asp-controller="Visit"
                            asp-action="Delete"
                            asp-route-id="@visit.ID"
                            class="btn btn-xs btn-danger"
-                           data-toggle="tooltip"
-                           data-placement="bottom"
-                           data-original-title="Удалить посещение"
-                           title="Удалить посещение">
+                           tooltip="Удалить посещение"
+                           tooltip-placement="bottom">
                             <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
                         </a>
                     </manager>

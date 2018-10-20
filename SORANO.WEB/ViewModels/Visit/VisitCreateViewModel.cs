@@ -4,6 +4,8 @@ namespace SORANO.WEB.ViewModels.Visit
 {
     public class VisitCreateViewModel
     {
+        public int ID { get; set; }
+
         [Display(Name = "Код посетителей:")]
         public string Code { get; set; }
 

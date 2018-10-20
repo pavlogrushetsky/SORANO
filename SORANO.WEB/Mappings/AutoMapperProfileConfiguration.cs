@@ -721,6 +721,12 @@ namespace SORANO.WEB.Mappings
                     source => source.MapFrom(s => Convert.ToDateTime(s.Date))
                 );
 
+            CreateMap<VisitDto, VisitCreateViewModel>()
+                .ForMember(
+                    dest => dest.Date,
+                    source => source.MapFrom(s => s.Date.ToString("dd.MM.yyyy HH:mm"))
+                );
+
             CreateMap<IEnumerable<VisitDto>, VisitTableViewModel>()
                 .ForMember(
                     dest => dest.Visits,

@@ -37,15 +37,27 @@ namespace SORANO.WEB.Controllers
         [HttpGet]
         public PartialViewResult Create()
         {
-            var model = new VisitCreateViewModel
+            return PartialView("_Visit", new VisitCreateViewModel
             {
                 Code = "мж2",
                 Date = DateTime.Now.ToString("dd.MM.yyyy HH:mm"),
                 LocationID = LocationId ?? 0,
                 LocationName = LocationName ?? string.Empty
-            };
+            });
+        }
 
-            return PartialView("_Visit", model);
+        [HttpGet]
+        public async Task<PartialViewResult> Update(int id)
+        {
+            var model = await _visitService.GetAsync(id);
+            return PartialView("_Visit", new VisitCreateViewModel
+            {
+                ID = model.Result.ID,
+                Code = model.Result.Code,
+                Date = model.Result.Date.ToString("dd.MM.yyyy HH:mm"),
+                LocationID = model.Result.LocationID,
+                LocationName = model.Result.LocationName
+            });
         }
 
         [HttpPost]
@@ -58,13 +70,77 @@ namespace SORANO.WEB.Controllers
                     return PartialView("_Visit", model);
 
                 var visit = _mapper.Map<VisitDto>(model);
-                var result = await _visitService.CreateAsync(visit, UserId);
-                if (result.Status != ServiceResponseStatus.Success)
+                bool success;
+                if (model.ID == 0)
+                {
+                    var result = await _visitService.CreateAsync(visit, UserId);
+                    success = result.Status == ServiceResponseStatus.Success;
+                }
+                else
+                {
+                    var result = await _visitService.UpdateAsync(visit, UserId);
+                    success = result.Status == ServiceResponseStatus.Success;
+                }
+
+                if (!success)
                     return PartialView("_Visit", model);
 
                 return Content(string.Empty);
 
             }, ex => Content(string.Empty));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _visitService.GetAsync(id);
+
+                if (result.Status != ServiceResponseStatus.Success)
+                {
+                    TempData["Error"] = "Не удалось найти указанный артикул.";
+                    return RedirectToAction("Index");
+                }
+
+                var model = new VisitCreateViewModel
+                {
+                    ID = result.Result.ID,
+                    Code = result.Result.Code,
+                    Date = result.Result.Date.ToString("dd.MM.yyyy HH:mm"),
+                    LocationID = result.Result.LocationID,
+                    LocationName = result.Result.LocationName
+                };
+                return View(model);
+            }, OnFault);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "developer,administrator,manager")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(VisitCreateViewModel model)
+        {
+            return await TryGetActionResultAsync(async () =>
+            {
+                var result = await _visitService.DeleteAsync(model.ID, UserId);
+
+                if (result.Status == ServiceResponseStatus.Success)
+                {
+                    TempData["Success"] = "Посещение было успешно удалено.";
+                }
+                else
+                {
+                    TempData["Error"] = "Не удалось удалить посещение.";
+                }
+
+                return RedirectToAction("Index");
+            }, OnFault);
+        }
+
+        private IActionResult OnFault(string ex)
+        {
+            TempData["Error"] = ex;
+            return RedirectToAction("Index");
         }
     }
 }

@@ -1,0 +1,42 @@
+﻿@model VisitCreateViewModel
+
+@{
+    ViewBag.Title = "SORANO - Удаление посещения";
+    ViewBag.Header = "Удаление";
+    ViewBag.Description = "посещения";
+    ViewBag.Icon = "fa fa-fw fa-trash";
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li><a asp-controller="Location" asp-action="Index">Посещения</a></li>
+        <li class="active">Удаление посещения</li>
+    </ul>
+}
+
+<div class="row">
+    @await Component.InvokeAsync("CanBeDeleted", new
+    {
+        canBeDeleted = true,
+        error = "",
+        warning = "Вы уверены, что хотите удалить выбранное посещение?"
+    })
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="ID" />
+            <div class="form-group">
+                <a class="btn btn-default btn-sm" asp-controller="Visit" asp-action="Index">
+                    <i class="fa fa-fw fa-close"></i>
+                    Отмена
+                </a>
+                <button type="submit" class="btn btn-danger btn-sm">
+                    <i class="fa fa-fw fa-trash"></i>
+                    Удалить
+                </button>              
+            </div>
+        </form>
+    </div>
+</div>
