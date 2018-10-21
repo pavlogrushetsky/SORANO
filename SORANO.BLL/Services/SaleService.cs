@@ -385,40 +385,30 @@ namespace SORANO.BLL.Services
                 return new ServiceResponse<SaleItemsGroupsDto>(ServiceResponseStatus.InvalidOperation);
 
             var term = searchCriteria?.ToLower();
-            var hasTerm = !string.IsNullOrWhiteSpace(term);            
+            var hasTerm = !string.IsNullOrWhiteSpace(term);
 
-            var storages = UnitOfWork.Get<Storage>()
-                .GetAll(s => s.LocationID == locationId &&
-                             (!s.ToDate.HasValue || s.Goods.SaleID == saleId && s.Goods.Sale.IsSubmitted))
-                .ToList();
-            var goodsIds = storages.Select(s => s.GoodsID).ToList();
-            
-            var goods = UnitOfWork.Get<Goods>()
-                .GetAll(g => goodsIds.Contains(g.ID) && !g.IsDeleted && (!g.SaleID.HasValue || g.SaleID == saleId))
+            var goods = UnitOfWork.Get<Storage>()
+                .GetAll(s => s.LocationID == locationId && (!s.ToDate.HasValue || s.Goods.SaleID == saleId && s.Goods.Sale.IsSubmitted))
+                .Select(g => g.Goods)
+                .Where(g => !g.SaleID.HasValue || g.SaleID == saleId)
                 .Select(g => new
                 {
                     goods = g,
-                    location = g.Storages
-                        .OrderByDescending(st => st.FromDate)
-                        .Select(s => s.Location)
-                        .FirstOrDefault(),
                     article = g.DeliveryItem.Article,
                     articleType = g.DeliveryItem.Article.Type,
                     articleTypeParent = g.DeliveryItem.Article.Type.ParentType
                 })
-                .Where(g => g.location.ID == locationId &&
-                            (!hasTerm ||
-                                g.article.Name.ToLower().Contains(term) ||
-                                g.articleType.Name.ToLower().Contains(term) ||
-                                !string.IsNullOrEmpty(g.article.Code) && g.article.Code.ToLower().Contains(term) ||
-                                !string.IsNullOrEmpty(g.article.Barcode) && g.article.Barcode.ToLower().Contains(term) ||
-                                g.articleTypeParent != null && !string.IsNullOrEmpty(g.articleTypeParent.Name) &&
-                                g.articleTypeParent.Name.ToLower().Contains(term)
-                            ))
+                .Where(g => !hasTerm ||
+                            g.article.Name.ToLower().Contains(term) ||
+                            g.articleType.Name.ToLower().Contains(term) ||
+                            !string.IsNullOrEmpty(g.article.Code) && g.article.Code.ToLower().Contains(term) ||
+                            !string.IsNullOrEmpty(g.article.Barcode) && g.article.Barcode.ToLower().Contains(term) ||
+                            g.articleTypeParent != null && !string.IsNullOrEmpty(g.articleTypeParent.Name) &&
+                            g.articleTypeParent.Name.ToLower().Contains(term))
                 .Select(g => g.goods)
                 .GroupBy(g => g.DeliveryItem.ArticleID)
-                .Select(g => new {goods = g.AsEnumerable().ToList()})
-                .Select(g => new {g.goods, first = g.goods.FirstOrDefault()})
+                .Select(g => new { goods = g.AsEnumerable().ToList() })
+                .Select(g => new { g.goods, first = g.goods.FirstOrDefault() })
                 .Select(g => new GoodsQueryResult
                 {
                     Goods = g.goods,
@@ -429,26 +419,21 @@ namespace SORANO.BLL.Services
                 })
                 .ToList();
 
-            var goodsRecommendations = GetRecommendations(goodsIds).ToList();
-
+            var goodsIds = goods.SelectMany(g => g.Goods).Select(g => g.ID);
+            var goodsRecomendations = GetRecommendations(goodsIds);
             goods.SelectMany(g => g.Goods).ToList().ForEach(g =>
             {
-                g.Recommendations = goodsRecommendations
-                    .Where(r => r.ParentEntityID == g.ID)
-                    .ToList();
+                g.Recommendations = goodsRecomendations.Where(r => r.ParentEntityID == g.ID).ToList();
             });
 
-            var recIds = new List<int>
-            {
-                locationId
-            };
+            var recIds = new List<int> { locationId };
             recIds.AddRange(goods.Select(g => g.Article.ID).Distinct());
             recIds.AddRange(goods.Select(g => g.ArticleType.ID).Distinct());
             recIds.AddRange(goods.Select(g => g.DeliveryItem.ID).Distinct());
             recIds.AddRange(goods.Select(g => g.Delivery.ID).Distinct());
             recIds.AddRange(goods.Select(g => g.Delivery.SupplierID).Distinct());
 
-            var recommendations = GetRecommendations(recIds).ToList();
+            var recommendations = recIds.SelectMany(GetRecommendations).ToList();
 
             goods.ForEach(g =>
             {

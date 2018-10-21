@@ -106,6 +106,10 @@ namespace SORANO.WEB.Controllers
                 {
                     model = cachedForCreateLocation;
                 }
+                else if (TryGetCached(out var cachedForDeliveryItem, CacheKeys.DeliveryItemCacheKey, CacheKeys.DeliveryItemCacheValidKey))
+                {
+                    model = cachedForDeliveryItem;
+                }
                 else
                 {
                     int locationId;
@@ -189,6 +193,10 @@ namespace SORANO.WEB.Controllers
                 else if (TryGetCached(out var cachedForCreateArticle, CacheKeys.CreateArticleCacheKey, CacheKeys.CreateArticleCacheValidKey))
                 {
                     model = cachedForCreateArticle;
+                }
+                else if (TryGetCached(out var cachedForDeliveryItem, CacheKeys.DeliveryItemCacheKey, CacheKeys.DeliveryItemCacheValidKey))
+                {
+                    model = cachedForDeliveryItem;
                 }
                 else
                 {
@@ -287,7 +295,11 @@ namespace SORANO.WEB.Controllers
         [LoadAttachments]
         public IActionResult AddItem(DeliveryCreateUpdateViewModel model, string returnUrl, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            return TryGetActionResult(() => RedirectToAction("Create", "DeliveryItem", new { returnUrl, deliveryId = model.ID }), ex =>
+            return TryGetActionResult(() =>
+            {
+                MemoryCache.Set(CacheKeys.DeliveryItemCacheKey, model);
+                return RedirectToAction("Create", "DeliveryItem", new {returnUrl, deliveryId = model.ID});
+            }, ex =>
             {
                 TempData["Error"] = ex;
                 return View("Create", model);
@@ -299,7 +311,11 @@ namespace SORANO.WEB.Controllers
         [LoadAttachments]
         public IActionResult UpdateItem(DeliveryCreateUpdateViewModel model, string returnUrl, int deliveryItemId, IFormFile mainPictureFile, IFormFileCollection attachments)
         {
-            return TryGetActionResult(() => RedirectToAction("Update", "DeliveryItem", new { returnUrl, deliveryItemId }), ex =>
+            return TryGetActionResult(() =>
+            {
+                MemoryCache.Set(CacheKeys.DeliveryItemCacheKey, model);
+                return RedirectToAction("Update", "DeliveryItem", new {returnUrl, deliveryItemId});
+            }, ex =>
             {
                 TempData["Error"] = ex;
                 return View("Create", model);

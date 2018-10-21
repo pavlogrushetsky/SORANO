@@ -9,8 +9,10 @@ using SORANO.BLL.Dtos;
 using SORANO.BLL.Services;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure;
+using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels.Attachment;
+using SORANO.WEB.ViewModels.Delivery;
 using SORANO.WEB.ViewModels.DeliveryItem;
 
 namespace SORANO.WEB.Controllers
@@ -190,6 +192,13 @@ namespace SORANO.WEB.Controllers
                 }
 
                 TempData["Success"] = "Позиция поставки была успешно добавлена.";
+
+                if (MemoryCache.TryGetValue(CacheKeys.DeliveryItemCacheKey, out DeliveryCreateUpdateViewModel delivery))
+                {
+                    MemoryCache.Set(CacheKeys.DeliveryItemCacheKey, delivery);
+                    Session.SetBool(CacheKeys.DeliveryItemCacheValidKey, true);
+                }
+
                 return Redirect(model.ReturnPath);
             }, ex =>
             {
@@ -223,6 +232,13 @@ namespace SORANO.WEB.Controllers
                 }
 
                 TempData["Success"] = "Позиция поставки была успешно обновлена.";
+
+                if (MemoryCache.TryGetValue(CacheKeys.DeliveryItemCacheKey, out DeliveryCreateUpdateViewModel delivery))
+                {
+                    MemoryCache.Set(CacheKeys.DeliveryItemCacheKey, delivery);
+                    Session.SetBool(CacheKeys.DeliveryItemCacheValidKey, true);
+                }
+
                 return Redirect(model.ReturnPath);
             }, ex =>
             {
@@ -262,6 +278,12 @@ namespace SORANO.WEB.Controllers
             if (string.IsNullOrEmpty(model.ReturnPath))
             {
                 return BadRequest();
+            }
+
+            if (MemoryCache.TryGetValue(CacheKeys.DeliveryItemCacheKey, out DeliveryCreateUpdateViewModel delivery))
+            {
+                MemoryCache.Set(CacheKeys.DeliveryItemCacheKey, delivery);
+                Session.SetBool(CacheKeys.DeliveryItemCacheValidKey, true);
             }
 
             return Redirect(model.ReturnPath);

@@ -55,9 +55,10 @@ namespace SORANO.BLL.Services
 
         protected IEnumerable<Attachment> GetMainPictures(IEnumerable<int> entitiesId)
         {
-            return UnitOfWork.Get<Attachment>()
-                .GetAll(a => !a.IsDeleted && a.Type.Name.Equals("Основное изображение") && a.ParentEntities.Any(e => entitiesId.Contains(e.ID)), a => a.ParentEntities)
-                .ToList();
+            var query = UnitOfWork.Get<Attachment>()
+                .GetAll(a => !a.IsDeleted && a.Type.Name.Equals("Основное изображение"), a => a.ParentEntities);
+
+            return query.ToList().Where(a => a.ParentEntities.Any(e => entitiesId.Contains(e.ID)));
         }
     }
 }
