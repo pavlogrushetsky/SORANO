@@ -718,7 +718,7 @@ namespace SORANO.WEB.Mappings
             CreateMap<VisitCreateViewModel, VisitDto>()
                 .ForMember(
                     dest => dest.Date,
-                    source => source.MapFrom(s => Convert.ToDateTime(s.Date))
+                    source => source.MapFrom(s => DateTime.ParseExact(s.Date, "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture))
                 );
 
             CreateMap<VisitDto, VisitCreateViewModel>()
