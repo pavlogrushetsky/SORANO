@@ -1,0 +1,23 @@
+﻿@{
+    ViewBag.Title = "SORANO - Отчёты";
+    ViewBag.Header = "Отчёты";
+    ViewBag.Icon = "fa fa-file-text-o";
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li class="active">Отчёты</li>
+    </ul>
+}
+
+
+
+@section Scripts {
+    <environment names="Development">
+        <script src="~/js/pages/report.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/js/pages/report.min.js" asp-append-version="true"></script>
+    </environment>
+}

@@ -37,28 +37,28 @@
         </div>
         <div class="collapse navbar-collapse" id="navbar-collapse">
             <ul class="nav navbar-nav">
-                <li>
+                <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Home" ? "active" : "")">
                     <a asp-controller="Home" asp-action="Index">
                         <i class="fa fa-fw fa-home" aria-hidden="true"></i>
                         <span class="menu-item">Главная</span> 
                         <span class="sr-only">(current)</span>
                     </a>
                 </li>
-                <li>
+                <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Delivery" ? "active" : "")">
                     <a asp-controller="Delivery" asp-action="Index">
                         <i class="fa fa-fw fa-cart-arrow-down" aria-hidden="true"></i>
                         <span class="menu-item">Поставки</span>
                         @await Component.InvokeAsync("DeliveriesUnsubmittedCount")
                     </a>
                 </li>
-                <li>
+                <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Sale" ? "active" : "")">
                     <a asp-controller="Sale" asp-action="Index">
                         <i class="fa fa-fw fa-handshake-o" aria-hidden="true"></i>
                         <span class="menu-item">Продажи</span>
                         @await Component.InvokeAsync("SalesUnsubmittedCount")
                     </a>
                 </li>
-                <li>
+                <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Goods" ? "active" : "")">
                     <a asp-controller="Goods" asp-action="Index">
                         <i class="fa fa-fw fa-archive" aria-hidden="true"></i>
                         <span class="menu-item">Товары</span>
@@ -70,6 +70,14 @@
                         <span class="menu-item">Посещение</span>
                     </a>
                 </li>
+                <administrator>
+                    <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Report" ? "active" : "")">
+                        <a asp-controller="Report" asp-action="Index">
+                            <i class="fa fa-fw fa-file-text-o" aria-hidden="true"></i>
+                            <span class="menu-item">Отчёты</span>
+                        </a>
+                    </li>
+                </administrator>               
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                         <i class="fa fa-fw fa-cog" aria-hidden="true"></i>
@@ -77,15 +85,29 @@
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a asp-controller="Article" asp-action="Index"><i class="fa fa-fw fa-barcode" aria-hidden="true"></i>&nbsp;Артикулы и типы артикулов</a></li>
-                        <li><a asp-controller="Supplier" asp-action="Index"><i class="fa fa-fw fa-truck" aria-hidden="true"></i>&nbsp;Поставщики</a></li>
-                        <li><a asp-controller="Client" asp-action="Index"><i class="fa fa-fw fa-address-book" aria-hidden="true"></i>&nbsp;Клиенты</a></li>
-                        <li><a asp-controller="Location" asp-action="Index"><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i>&nbsp;Места и типы мест</a></li>
-                        <li><a asp-controller="AttachmentType" asp-action="Index"><i class="fa fa-fw fa-paperclip" aria-hidden="true"></i>&nbsp;Типы вложений</a></li>
+                        <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Article" || ViewContext.RouteData.Values["Controller"].ToString() == "ArticleType" ? "active" : "")">
+                            <a asp-controller="Article" asp-action="Index"><i class="fa fa-fw fa-barcode" aria-hidden="true"></i>&nbsp;Артикулы и типы артикулов</a>
+                        </li>
+                        <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Supplier" ? "active" : "")">
+                            <a asp-controller="Supplier" asp-action="Index"><i class="fa fa-fw fa-truck" aria-hidden="true"></i>&nbsp;Поставщики</a>
+                        </li>
+                        <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Client" ? "active" : "")">
+                            <a asp-controller="Client" asp-action="Index"><i class="fa fa-fw fa-address-book" aria-hidden="true"></i>&nbsp;Клиенты</a>
+                        </li>
+                        <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Location" || ViewContext.RouteData.Values["Controller"].ToString() == "LocationType" ? "active" : "")">
+                            <a asp-controller="Location" asp-action="Index"><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i>&nbsp;Места и типы мест</a>
+                        </li>
+                        <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "AttachmentType" ? "active" : "")">
+                            <a asp-controller="AttachmentType" asp-action="Index"><i class="fa fa-fw fa-paperclip" aria-hidden="true"></i>&nbsp;Типы вложений</a>
+                        </li>
                         <li class="divider"></li>
-                        <li><a asp-controller="Visit" asp-action="Index"><i class="fa fa-fw fa-venus-mars" aria-hidden="true"></i>&nbsp;Посещения</a></li>
+                        <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Visit" ? "active" : "")">
+                            <a asp-controller="Visit" asp-action="Index"><i class="fa fa-fw fa-venus-mars" aria-hidden="true"></i>&nbsp;Посещения</a>
+                        </li>
                         <administrator>
-                            <li><a asp-controller="User" asp-action="Index"><i class="fa fa-fw fa-users" aria-hidden="true"></i>&nbsp;Пользователи</a></li>
+                            <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "User" ? "active" : "")">
+                                <a asp-controller="User" asp-action="Index"><i class="fa fa-fw fa-users" aria-hidden="true"></i>&nbsp;Пользователи</a>
+                            </li>
                         </administrator>
                     </ul>
                 </li>
