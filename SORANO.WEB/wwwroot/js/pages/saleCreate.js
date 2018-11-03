@@ -48,12 +48,12 @@
                 if (saleId === '0')
                     return;
 
-                var parameters = {
-                    saleId: saleId,
-                    locationId: $("#LocationID").val(),
-                    selectedOnly: $('#ShowSelected').val(),
-                    searchCriteria: $('#SearchCriteria').val()
-                }
+              var parameters = {
+                saleId: saleId,
+                locationId: $("#LocationID").val(),
+                selectedOnly: $('#ShowSelected').val(),
+                searchCriteria: $('#SearchCriteria').val()
+              };
 
                 $('#sale-items-groups').load('/Sale/Refresh', parameters, function () {
                     $('#sale-items-groups').show(100, function () {
@@ -85,12 +85,12 @@
                 if (saleId === '0')
                     return;
 
-                var parameters = {
-                    saleId: saleId,
-                    locationId: $("#LocationID").val(),
-                    selectedOnly: $('#ShowSelected').val(),
-                    searchCriteria: $('#SearchCriteria').val()
-                }
+              var parameters = {
+                saleId: saleId,
+                locationId: $("#LocationID").val(),
+                selectedOnly: $('#ShowSelected').val(),
+                searchCriteria: $('#SearchCriteria').val()
+              };
 
                 $('#sale-items-groups').load('/Sale/Refresh', parameters, function () {
                     $('#sale-items-groups').show(100, function () {
@@ -132,13 +132,13 @@
                 var saleId = $('#ID').val();
                 if (saleId === '0')
                     return;
-                
-                var parameters = {
-                    saleId: saleId,
-                    locationId: $('#LocationID').val(),
-                    selectedOnly: showSelected,
-                    searchCriteria: $('#SearchCriteria').val()
-                }
+
+              var parameters = {
+                saleId: saleId,
+                locationId: $('#LocationID').val(),
+                selectedOnly: showSelected,
+                searchCriteria: $('#SearchCriteria').val()
+              };
 
                 $('#sale-items-groups').load('/Sale/Refresh', parameters, function () {
                     $('#sale-items-groups').show(100, function () {
@@ -234,11 +234,11 @@
         var formattedPrice = formatDecimal(price);
         priceInput.val(formattedPrice);
 
-        var parameters = {
-            saleId: $('#ID').val(),
-            goodsIds: button.data('goodsids'),
-            price: formattedPrice
-        }
+      var parameters = {
+        saleId: $('#ID').val(),
+        goodsIds: button.data('goodsids'),
+        price: formattedPrice
+      };
 
         $.ajax({
             type: 'POST',
@@ -286,10 +286,10 @@
         var input = button.closest('tr').find('input.sale-item-price');
         input.val('0,00');
 
-        var parameters = {
-            saleId: $('#ID').val(),
-            goodsId: button.data('goodsid')
-        }
+      var parameters = {
+        saleId: $('#ID').val(),
+        goodsId: button.data('goodsid')
+      };
 
         $.ajax({
             type: 'POST',
@@ -335,10 +335,10 @@
         var price = '0,00';
         priceInput.val(price);
 
-        var parameters = {
-            saleId: $('#ID').val(),
-            goodsIds: button.data('goodsids')
-        }
+      var parameters = {
+        saleId: $('#ID').val(),
+        goodsIds: button.data('goodsids')
+      };
 
         $.ajax({
             type: 'POST',

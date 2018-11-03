@@ -197,6 +197,7 @@ namespace SORANO.WEB.Controllers
                 var model = _mapper.Map<SaleCreateUpdateViewModel>(result.Result);
                 model.IsUpdate = true;
                 model.AllowChangeLocation = false;
+                model.ShowSelected = true;
 
                 return View("Create", model);
             }, OnFault);

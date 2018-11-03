@@ -507,6 +507,11 @@ img.sale-img {
     color: #95a5a6;
 }
 
+    .sale-items-groups-tree li > table tr span.sale-item-group-code {
+        font-size: 12px;
+        color: #3498db;
+    }
+
 li.sale-item-selected > table > tbody > tr {
     background-color: #def1ed !important;
 }

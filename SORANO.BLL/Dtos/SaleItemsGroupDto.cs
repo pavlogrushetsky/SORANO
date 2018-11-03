@@ -8,6 +8,8 @@ namespace SORANO.BLL.Dtos
 
         public string ArticleTypeName { get; set; }
 
+        public string ArticleCode { get; set; }
+
         public decimal? Price { get; set; }
 
         public decimal? RecommendedPrice { get; set; }

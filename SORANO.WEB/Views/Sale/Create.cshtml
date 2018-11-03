@@ -212,15 +212,15 @@
                                     style="background-color: inherit;"
                                     data-toggle="tooltip"
                                     data-placement="bottom"
-                                    data-original-title="Отобразить выбранные товары"
+                                    data-original-title="@(Model.ShowSelected ? "Отобразить все товары" : "Отобразить выбранные товары")"
                                     title="">
-                                <i class="fa fa-fw fa-eye" style="color: #2c3e50;"></i>
+                                <i class="fa fa-fw @(Model.ShowSelected ? "fa-eye-slash" : "fa-eye")" style="color: #2c3e50;"></i>
                             </button>
                         </div>
                     </div>
                 </div>
                 <div class="panel-body" id="sale-items-groups">
-                    @await Component.InvokeAsync("SaleItems", new { saleId = Model.ID, locationId = Model.LocationID, selectedOnly = false })
+                    @await Component.InvokeAsync("SaleItems", new { saleId = Model.ID, locationId = Model.LocationID, selectedOnly = true })
                 </div>
             </div>
         </div>

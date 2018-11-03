@@ -384,6 +384,16 @@ namespace SORANO.BLL.Services
             if (locationId == 0)
                 return new ServiceResponse<SaleItemsGroupsDto>(ServiceResponseStatus.InvalidOperation);
 
+            if (!selectedOnly && string.IsNullOrEmpty(searchCriteria))
+            {
+                var summary = await GetSummaryAsync(saleId);
+                return new SuccessResponse<SaleItemsGroupsDto>(new SaleItemsGroupsDto
+                {
+                    Groups = new List<SaleItemsGroupDto>(),
+                    Summary = summary.Result
+                });
+            }
+
             var term = searchCriteria?.ToLower();
             var hasTerm = !string.IsNullOrWhiteSpace(term);
 
@@ -454,6 +464,7 @@ namespace SORANO.BLL.Services
             {
                 ArticleName = g.Article.Name,
                 RecommendedPrice = g.Article.RecommendedPrice,
+                ArticleCode = g.Article.Code,
                 ArticleTypeName = g.ArticleType.Name,
                 Count = g.Goods.Count,
                 MainPicturePath = g.PictureFullPath,
