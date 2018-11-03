@@ -234,6 +234,15 @@ namespace SORANO.BLL.Services
             return new SuccessResponse<int>(deliveries?.Count() ?? 0);
         }
 
+        public ServiceResponse<int> GetItemsCount(int deliveryId)
+        {
+            var count = UnitOfWork.Get<DeliveryItem>()
+                .GetAll(di => di.DeliveryID == deliveryId)
+                .Count();
+
+            return new SuccessResponse<int>(count);
+        }
+
         public ServiceResponse<int> GetUnsubmittedCount(int? locationId)
         {
             var deliveries = UnitOfWork.Get<Delivery>()

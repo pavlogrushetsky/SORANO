@@ -10,5 +10,7 @@ namespace SORANO.BLL.Services.Abstract
         ServiceResponse<int> GetUnsubmittedCount(int? locationId);
 
         ServiceResponse<int> GetSubmittedCount(int? locationId);
+
+        ServiceResponse<int> GetItemsCount(int deliveryId);
     }
 }

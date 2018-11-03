@@ -46,68 +46,13 @@ namespace SORANO.WEB.Validators
                 .Must(BeValidPrice)
                 .WithMessage("Значение должно быть указано в формате #,##");
 
-            //RuleFor(d => d.TotalGrossPrice)
-            //    .Must((d, p) =>
-            //    {
-            //        var parsedTotal = decimal.TryParse(p, NumberStyles.Any, new CultureInfo("en-US"), out decimal total);
-
-            //        if (!parsedTotal)
-            //        {
-            //            return false;
-            //        }
-
-            //        return d.Items.Sum(di => 
-            //        {
-            //            var parsed = decimal.TryParse(di.UnitPrice, NumberStyles.Any, new CultureInfo("en-US"), out decimal price);
-            //            return parsed ? price * di.Quantity : 0.0M;
-            //        }) == total;
-            //    })
-            //    .WithMessage("Общая сумма некорректна");
-
             RuleFor(d => d.TotalDiscount)
                 .Must(BeValidPrice)
                 .WithMessage("Значение должно быть указано в формате #,##");
 
-            //RuleFor(d => d.TotalDiscount)
-            //    .Must((d, p) =>
-            //    {
-            //        var parsedTotal = decimal.TryParse(p, NumberStyles.Any, new CultureInfo("en-US"), out decimal total);
-
-            //        if (!parsedTotal)
-            //        {
-            //            return false;
-            //        }
-
-            //        return d.Items.Sum(di => 
-            //        {
-            //            var parsed = decimal.TryParse(di.Discount, NumberStyles.Any, new CultureInfo("en-US"), out decimal price);
-            //            return parsed ? price : 0.0M;
-            //        }) == total;
-            //    })
-            //    .WithMessage("Общая сумма скидки некорректна");
-
             RuleFor(d => d.TotalDiscountedPrice)
                 .Must(BeValidPrice)
                 .WithMessage("Значение должно быть указано в формате #,##");
-
-            //RuleFor(d => d.TotalDiscountedPrice)
-            //    .Must((d, p) =>
-            //    {
-            //        var parsedGross = decimal.TryParse(d.TotalGrossPrice, NumberStyles.Any, new CultureInfo("en-US"), out decimal gross);
-            //        var parsedDiscount = decimal.TryParse(d.TotalDiscount, NumberStyles.Any, new CultureInfo("en-US"), out decimal discount);
-            //        var parsedDiscounted = decimal.TryParse(d.TotalDiscountedPrice, NumberStyles.Any, new CultureInfo("en-US"), out decimal discounted);
-
-            //        if (!parsedGross || !parsedDiscount || !parsedDiscounted)
-            //        {
-            //            return false;
-            //        }
-
-            //        return gross - discount == discounted;
-            //    })
-            //    .WithMessage("Общая сумма с учётом скидки некорректна");
-
-            RuleForEach(d => d.Items)
-                .SetValidator(new DeliveryItemValidator());
 
             RuleForEach(d => d.Attachments)
                 .SetValidator(new AttachmentValidator());
