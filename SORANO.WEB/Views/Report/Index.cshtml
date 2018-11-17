@@ -4,6 +4,18 @@
     ViewBag.Icon = "fa fa-file-text-o";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/lib/datatables.net-bs/css/dataTables.bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+    <style>
+        span.select2-selection.select2-selection--single {
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+        }
+    </style>
+}
+
 @section Breadcrumb {
     <ul class="breadcrumb">
         <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
@@ -11,9 +23,66 @@
     </ul>
 }
 
-
+<form method="post" id="report-form">
+    <div class="row">
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+            <div class="form-group">
+                <label class="control-label">Тип отчёта:</label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon" style="vertical-align: top;">
+                        <i class="fa fa-fw fa-file-text-o"></i>
+                    </span>
+                    <select class="form-control input-sm" id="report-type">
+                        <option>Обороты</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+            <div class="form-group">
+                <label class="control-label">Дата начала периода:</label>
+                <div class="input-group input-group-sm date" id="report-from">
+                    <input class="form-control input-sm" id="report-from-date" type="text" placeholder="Дата начала периода..." />
+                    <span class="input-group-addon">
+                        <span class="fa fa-fw fa-calendar"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+            <div class="form-group">
+                <label class="control-label">Дата конца периода:</label>
+                <div class="input-group input-group-sm date" id="report-to">
+                    <input class="form-control input-sm" id="report-to-date" type="text" placeholder="Дата конца периода..." />
+                    <span class="input-group-addon">
+                        <span class="fa fa-fw fa-calendar"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="form-group">
+                <button type="submit" id="submit-button" class="btn btn-primary btn-sm">
+                    <i class="fa fa-fw fa-check"></i>
+                    Сформировать
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row">
+    <div class="col-lg-12" id="report"></div>
+</div>
 
 @section Scripts {
+    <script src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/lib/datatables.net-responsive-bs/js/responsive.bootstrap.min.js"></script>
+    <script src="~/lib/moment/min/moment-with-locales.min.js"></script>
+    <script src="~/lib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
     <environment names="Development">
         <script src="~/js/pages/report.js"></script>
     </environment>

@@ -60,6 +60,8 @@
     <Compile Include="Dtos\GoodsGroupDto.cs" />
     <Compile Include="Dtos\LocationDto.cs" />
     <Compile Include="Dtos\LocationTypeDto.cs" />
+    <Compile Include="Dtos\LocationValueReportItemDto.cs" />
+    <Compile Include="Dtos\MonthReportItemDto.cs" />
     <Compile Include="Dtos\PaginationSetDto.cs" />
     <Compile Include="Dtos\RecommendationDto.cs" />
     <Compile Include="Dtos\RoleDto.cs" />
@@ -71,6 +73,7 @@
     <Compile Include="Dtos\StorageDto.cs" />
     <Compile Include="Dtos\SummaryDto.cs" />
     <Compile Include="Dtos\SupplierDto.cs" />
+    <Compile Include="Dtos\TurnoverReportDto.cs" />
     <Compile Include="Dtos\UserActivityDto.cs" />
     <Compile Include="Dtos\UserActivityType.cs" />
     <Compile Include="Dtos\UserDto.cs" />
@@ -112,6 +115,7 @@
     <Compile Include="Services\Abstract\IGoodsService.cs" />
     <Compile Include="Services\Abstract\ILocationService.cs" />
     <Compile Include="Services\Abstract\ILocationTypeService.cs" />
+    <Compile Include="Services\Abstract\IReportService.cs" />
     <Compile Include="Services\Abstract\IRoleService.cs" />
     <Compile Include="Services\Abstract\IClientService.cs" />
     <Compile Include="Services\Abstract\IDeliveryService.cs" />
@@ -130,6 +134,7 @@
     <Compile Include="Services\GoodsService.cs" />
     <Compile Include="Services\LocationService.cs" />
     <Compile Include="Services\LocationTypeService.cs" />
+    <Compile Include="Services\ReportService.cs" />
     <Compile Include="Services\RoleService.cs" />
     <Compile Include="Services\ClientService.cs" />
     <Compile Include="Services\SaleService.cs" />
