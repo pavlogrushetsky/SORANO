@@ -5,7 +5,6 @@
     locale: 'ru',
     maxDate: moment(),
     format: 'MM.YYYY',
-    showTodayButton: true,
     showClear: true,
     showClose: true,
     icons: {
@@ -33,7 +32,6 @@
     locale: 'ru',
     maxDate: moment(),
     format: 'MM.YYYY',
-    showTodayButton: true,
     showClear: true,
     showClose: true,
     icons: {

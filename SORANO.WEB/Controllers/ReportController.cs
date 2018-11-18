@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SORANO.BLL.Services.Abstract;
+using SORANO.WEB.Infrastructure.Extensions;
 using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels.Report;
 // ReSharper disable UseObjectOrCollectionInitializer
@@ -36,52 +37,81 @@ namespace SORANO.WEB.Controllers
                 : DateTime.ParseExact(to, "MM.yyyy", CultureInfo.InvariantCulture);
 
             var report = _reportService.GetTurnoverReport(dateFrom, dateTo).Result;
-            var lastDate = report.Items.Last().DateTimeString;
-            var firstDate = report.Items.First().DateTimeString;
 
-            var locationColumns = report.Items
-                .SelectMany(i => i.LocationValues)
-                .Select(l => new ReportColumn
-                {
-                    Value = l.LocationName
-                })
-                .Distinct()
-                .ToList();
+            var name = "Отчёт по оборотам";
 
-            var headerColumns = new List<ReportColumn>();
-            headerColumns.Add(new ReportColumn { Value = "Месяц" });
-            headerColumns.AddRange(locationColumns);
-            headerColumns.Add(new ReportColumn { Value = "Всего" });
+            var deliveriesReport = new Report();
 
-            var bodyRows = new List<ReportRow>();
-            report.Items.ForEach(i =>
+            if (report.Items.Any())
             {
-                var row = new ReportRow
-                {
-                    Columns = new List<ReportColumn>()
-                };
+                var lastDate = report.Items.Last().DateTimeString;
+                var firstDate = report.Items.First().DateTimeString;
 
-                row.Columns.Add(new ReportColumn { Value = i.DateTimeString });
-                row.Columns.AddRange(locationColumns.Select(c => new ReportColumn
-                {
-                    Value = i.LocationValues
-                        .SingleOrDefault(l => l.LocationName.Equals(c.Value))
-                        ?.Value.ToString("0.00", new CultureInfo("ru-RU"))
-                        ?? "0.00"
-                }));
-                row.Columns.Add(new ReportColumn { Value = i.Total.ToString("0.00", new CultureInfo("ru-RU")) });
+                if (lastDate.Equals(firstDate))
+                    name = name + $" за {firstDate}";
+                else
+                    name = name + $" за период: {lastDate} - {firstDate}";
 
-                bodyRows.Add(row);
-            });
+                var locationColumns = report.Items
+                    .SelectMany(i => i.LocationValues)
+                    .DistinctBy(i => i.LocationName)
+                    .Select(l => new ReportColumn
+                    {
+                        Value = l.LocationName
+                    })
+                    .ToList();
+
+                var headerColumns = new List<ReportColumn>();
+                headerColumns.Add(new ReportColumn {Value = "Месяц"});
+                headerColumns.AddRange(locationColumns);
+                headerColumns.Add(new ReportColumn {Value = "Всего"});
+
+                var bodyRows = new List<ReportRow>();
+                report.Items.ForEach(i =>
+                {
+                    var row = new ReportRow
+                    {
+                        Columns = new List<ReportColumn>()
+                    };
+
+                    row.Columns.Add(new ReportColumn {Value = i.DateTimeString});
+                    row.Columns.AddRange(locationColumns.Select(c =>
+                    {
+                        var value = i.LocationValues
+                            .SingleOrDefault(l => l.LocationName.Equals(c.Value))
+                            ?.Value
+                            .ToString("0.00", new CultureInfo("ru-RU"));
+
+                        return new ReportColumn
+                        {
+                            Value = value == null 
+                                ? "0.00 ₴" 
+                                : value + " ₴"
+                        };
+                    }));
+                    row.Columns.Add(new ReportColumn {Value = i.Total.ToString("0.00", new CultureInfo("ru-RU")) + " ₴" });
+
+                    bodyRows.Add(row);
+                });
+
+                deliveriesReport.Header = new ReportHeader {Rows = new List<ReportRow> {new ReportRow {Columns = headerColumns}}};
+                deliveriesReport.Body = new ReportBody {Rows = bodyRows};
+            }
+            else
+            {
+                deliveriesReport.Header = new ReportHeader{Rows = new List<ReportRow>()};
+                deliveriesReport.Body = new ReportBody{Rows = new List<ReportRow>
+                {
+                    new ReportRow{Columns = new List<ReportColumn>{new ReportColumn { Value = "За указанный период данные по поставкам отсутствуют."} }}
+                }};
+            }
+
+            
 
             var turnoverReport = new TurnoverReport
             {
-                Name = $"Отчёт по оборотам за период: {lastDate} - {firstDate}",
-                Deliveries = new Report
-                {
-                    Header = new ReportHeader { Rows = new List<ReportRow> { new ReportRow { Columns = headerColumns }}},
-                    Body = new ReportBody { Rows = bodyRows }
-                },
+                Name = name,
+                Deliveries = deliveriesReport,
                 Sales = new Report
                 {
                     Header = new ReportHeader
