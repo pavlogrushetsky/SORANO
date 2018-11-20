@@ -49,7 +49,7 @@
                                 <tr>
                                     @foreach (var col in row.Columns)
                                     {
-                                        <td>@col.Value</td>
+                                        <td class="@(col.IsMax ? "info" : "")" style="@(col.IsMin ? "background-color: #3498db73;" : "")">@col.Value</td>
                                     }
                                 </tr>
                             }
@@ -81,7 +81,7 @@
                                 <tr>
                                     @foreach (var col in row.Columns)
                                     {
-                                        <td>@col.Value</td>
+                                        <td class="@(col.IsMax ? "info" : "")" style="@(col.IsMin ? "background-color: #3498db73;" : "")">@col.Value</td>
                                     }
                                 </tr>
                             }

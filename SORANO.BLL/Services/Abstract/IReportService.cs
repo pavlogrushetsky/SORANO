@@ -1,5 +1,6 @@
 ﻿using System;
 using SORANO.BLL.Dtos;
+using SORANO.BLL.Dtos.ReportDtos;
 
 namespace SORANO.BLL.Services.Abstract
 {
