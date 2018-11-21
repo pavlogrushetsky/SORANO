@@ -60,7 +60,6 @@
     <Compile Include="Dtos\GoodsGroupDto.cs" />
     <Compile Include="Dtos\LocationDto.cs" />
     <Compile Include="Dtos\LocationTypeDto.cs" />
-    <Compile Include="Dtos\ReportDtos\LocationProfitDto.cs" />
     <Compile Include="Dtos\ReportDtos\LocationDeliveriesDto.cs" />
     <Compile Include="Dtos\ReportDtos\LocationSalesDto.cs" />
     <Compile Include="Dtos\ReportDtos\MonthReportItemDto.cs" />

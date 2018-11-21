@@ -64,7 +64,6 @@
         var submitButton = $('#submit-button');
         submitButton.text('Формирование...');
         submitButton.prop('disabled', true);
-        var form = $(this);
         var data = {
           reportType: $('#report-type').val(),
           from: $('#report-from-date').val(),

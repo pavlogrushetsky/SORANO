@@ -20,6 +20,12 @@
         </a>
     </li>
     <li>
+        <a href="#tab-writeoffs" data-toggle="tab" aria-expanded="False">
+            <i class="fa fa-fw fa-level-down"></i>
+            @Html.DisplayNameFor(m => m.Writeoffs)
+        </a>
+    </li>
+    <li>
         <a href="#tab-profit" data-toggle="tab" aria-expanded="False">
             <i class="fa fa-fw fa-balance-scale"></i>
             @Html.DisplayNameFor(m => m.Profit)
@@ -49,7 +55,7 @@
                                 <tr>
                                     @foreach (var col in row.Columns)
                                     {
-                                        <td class="@(col.IsMax ? "info" : "")" style="@(col.IsMin ? "background-color: #3498db73;" : "")">@col.Value</td>
+                                        <td class="@(col.IsMax && !col.IsMin ? "info" : "")" style="@(col.IsMin && !col.IsMax ? "background-color: #3498db73;" : "")">@col.Value</td>
                                     }
                                 </tr>
                             }
@@ -65,26 +71,58 @@
                 <div class="table-responsive">
                     <table class="table table-condensed table-hover" style="font-size: 14px;">
                         <thead>
-                            @foreach (var row in Model.Sales.Header.Rows)
-                            {
-                                <tr>
-                                    @foreach (var col in row.Columns)
-                                    {
-                                        <th>@col.Value</th>
-                                    }
-                                </tr>
-                            }
+                        @foreach (var row in Model.Sales.Header.Rows)
+                        {
+                            <tr>
+                                @foreach (var col in row.Columns)
+                                {
+                                    <th>@col.Value</th>
+                                }
+                            </tr>
+                        }
                         </thead>
                         <tbody>
-                            @foreach (var row in Model.Sales.Body.Rows)
-                            {
-                                <tr>
-                                    @foreach (var col in row.Columns)
-                                    {
-                                        <td class="@(col.IsMax ? "info" : "")" style="@(col.IsMin ? "background-color: #3498db73;" : "")">@col.Value</td>
-                                    }
-                                </tr>
-                            }
+                        @foreach (var row in Model.Sales.Body.Rows)
+                        {
+                            <tr>
+                                @foreach (var col in row.Columns)
+                                {
+                                    <td class="@(col.IsMax && !col.IsMin ? "info" : "")" style="@(col.IsMin && !col.IsMax ? "background-color: #3498db73;" : "")">@col.Value</td>
+                                }
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="tab-writeoffs">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-condensed table-hover" style="font-size: 14px;">
+                        <thead>
+                        @foreach (var row in Model.Writeoffs.Header.Rows)
+                        {
+                            <tr>
+                                @foreach (var col in row.Columns)
+                                {
+                                    <th>@col.Value</th>
+                                }
+                            </tr>
+                        }
+                        </thead>
+                        <tbody>
+                        @foreach (var row in Model.Writeoffs.Body.Rows)
+                        {
+                            <tr>
+                                @foreach (var col in row.Columns)
+                                {
+                                    <td class="@(col.IsMax && !col.IsMin ? "info" : "")" style="@(col.IsMin && !col.IsMax ? "background-color: #3498db73;" : "")">@col.Value</td>
+                                }
+                            </tr>
+                        }
                         </tbody>
                     </table>
                 </div>
@@ -113,7 +151,7 @@
                                 <tr>
                                     @foreach (var col in row.Columns)
                                     {
-                                        <td>@col.Value</td>
+                                        <td class="@(col.IsNegative ? "danger" : col.IsMax && !col.IsMin ? "info" : "")" style="@(col.IsNegative ? "" : col.IsMin && !col.IsMax ? "background-color: #3498db73;" : "")">@col.Value</td>
                                     }
                                 </tr>
                             }

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SORANO.BLL.Dtos.ReportDtos;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Filters;
 using SORANO.WEB.ViewModels.Report;
@@ -135,168 +136,118 @@ namespace SORANO.WEB.Controllers
                 }};
             }
 
-            var salesReport = new Report();
-
-            if (report.Sales.Any())
+            var turnoverReport = new TurnoverReport
             {
-                var locationColumns = report.Sales
+                Name = name,
+                Deliveries = deliveriesReport,
+                Sales = CreateSalesReport(report.Sales, false, false),
+                Writeoffs = CreateSalesReport(report.Writeoffs, true, false),
+                Profit = CreateSalesReport(report.Profit, false, true)
+            };
+
+            return PartialView("_TurnoverReport", turnoverReport);
+        }
+
+        private Report CreateSalesReport(Dictionary<DateTime, LocationSalesDto> sales, bool isWriteOff, bool isProfit)
+        {
+            var report = new Report();
+
+            if (sales.Any())
+            {
+                var locationColumns = sales
                     .Select(d => d.Value.LocationSales)
                     .SelectMany(d => d.Keys)
                     .Distinct()
                     .OrderBy(l => l)
-                    .Select(l => new ReportColumn { Value = l })
+                    .Select(l => new ReportColumn {Value = l})
                     .ToList();
 
-                var maxMonthValue = report.Sales
+                var maxMonthValue = sales
                     .Select(d => d.Value)
                     .SelectMany(d => d.LocationSales.Values)
-                    .Max()
-                    .ToString(_moneyFormat, _russianCulture);
+                    .Max();
 
-                var minMonthValue = report.Sales
+                var minMonthValue = sales
                     .Select(d => d.Value)
                     .SelectMany(d => d.LocationSales.Values)
-                    .Min()
-                    .ToString(_moneyFormat, _russianCulture);
+                    .Min();
 
-                var maxTotalValue = report.Sales
+                var maxTotalValue = sales
                     .Select(d => d.Value.Total)
-                    .Max()
-                    .ToString(_moneyFormat, _russianCulture);
+                    .Max();
 
-                var minTotalValue = report.Sales
+                var minTotalValue = sales
                     .Select(d => d.Value.Total)
-                    .Min()
-                    .ToString(_moneyFormat, _russianCulture);
+                    .Min();
 
                 var headerColumns = new List<ReportColumn>();
-                headerColumns.Add(new ReportColumn { Value = "Месяц" });
+                headerColumns.Add(new ReportColumn {Value = "Месяц"});
                 headerColumns.AddRange(locationColumns);
-                headerColumns.Add(new ReportColumn { Value = "Всего" });
+                headerColumns.Add(new ReportColumn {Value = "Всего"});
 
                 var bodyRows = new List<ReportRow>();
-                foreach (var sale in report.Sales)
+                foreach (var sale in sales)
                 {
                     var row = new ReportRow
                     {
                         Columns = new List<ReportColumn>()
                     };
 
-                    row.Columns.Add(new ReportColumn { Value = MonthYearString(sale.Key) });
+                    row.Columns.Add(new ReportColumn {Value = MonthYearString(sale.Key)});
                     row.Columns.AddRange(locationColumns.Select(c =>
                     {
                         var value = sale.Value.LocationSales.ContainsKey(c.Value)
-                            ? sale.Value.LocationSales[c.Value].ToString(_moneyFormat, _russianCulture)
-                            : string.Empty;
+                            ? sale.Value.LocationSales[c.Value]
+                            : 0.0M;
+
+                        var valueStr = $"{value.ToString(_moneyFormat, _russianCulture)} {_hryvna}";
 
                         var isMax = value.Equals(maxMonthValue);
                         var isMin = value.Equals(minMonthValue);
 
                         return new ReportColumn
                         {
-                            Value = string.IsNullOrEmpty(value)
-                                ? $"{_moneyFormat} {_hryvna}"
-                                : value + $" {_hryvna}",
+                            Value = valueStr,
                             IsMax = isMax,
-                            IsMin = isMin
+                            IsMin = isMin,
+                            IsNegative = value < 0.0M
                         };
                     }));
 
-                    var total = sale.Value.Total.ToString(_moneyFormat, _russianCulture);
+                    var total = sale.Value.Total;
                     row.Columns.Add(new ReportColumn
                     {
-                        Value = $"{total} {_hryvna}",
+                        Value = $"{total.ToString(_moneyFormat, _russianCulture)} {_hryvna}",
                         IsMax = total.Equals(maxTotalValue),
-                        IsMin = total.Equals(minTotalValue)
+                        IsMin = total.Equals(minTotalValue),
+                        IsNegative = total < 0.0M
                     });
 
                     bodyRows.Add(row);
                 }
 
-                salesReport.Header = new ReportHeader { Rows = new List<ReportRow> { new ReportRow { Columns = headerColumns } } };
-                salesReport.Body = new ReportBody { Rows = bodyRows };
+                report.Header = new ReportHeader {Rows = new List<ReportRow> {new ReportRow {Columns = headerColumns}}};
+                report.Body = new ReportBody {Rows = bodyRows};
             }
             else
             {
-                salesReport.Header = new ReportHeader { Rows = new List<ReportRow>() };
-                salesReport.Body = new ReportBody
+                report.Header = new ReportHeader {Rows = new List<ReportRow>()};
+                report.Body = new ReportBody
                 {
                     Rows = new List<ReportRow>
                     {
-                        new ReportRow{Columns = new List<ReportColumn>{new ReportColumn { Value = "За указанный период данные по продажам отсутствуют."} }}
+                        new ReportRow
+                        {
+                            Columns = new List<ReportColumn>
+                            {
+                                new ReportColumn {Value = $"За указанный период данные по {(isWriteOff ? "списаниям" : isProfit ? "прибыли" : "продажам")} отсутствуют."}
+                            }
+                        }
                     }
                 };
             }
 
-
-
-            var turnoverReport = new TurnoverReport
-            {
-                Name = name,
-                Deliveries = deliveriesReport,
-                Sales = salesReport,
-                Profit = new Report
-                {
-                    Header = new ReportHeader
-                    {
-                        Rows = new List<ReportRow>
-                        {
-                            new ReportRow
-                            {
-                                Columns = new List<ReportColumn>
-                                {
-                                    new ReportColumn {Value = "Месяц"},
-                                    new ReportColumn {Value = "Магазин №1"},
-                                    new ReportColumn {Value = "Магазин №2"},
-                                    new ReportColumn {Value = "Магазин №3"},
-                                    new ReportColumn {Value = "Всего"}
-                                }
-                            }
-                        }
-                    },
-                    Body = new ReportBody
-                    {
-                        Rows = new List<ReportRow>
-                        {
-                            new ReportRow
-                            {
-                                Columns = new List<ReportColumn>
-                                {
-                                    new ReportColumn {Value = "Июль 2018"},
-                                    new ReportColumn {Value = "67"},
-                                    new ReportColumn {Value = "567"},
-                                    new ReportColumn {Value = "12345"},
-                                    new ReportColumn {Value = "65847"}
-                                }
-                            },
-                            new ReportRow
-                            {
-                                Columns = new List<ReportColumn>
-                                {
-                                    new ReportColumn {Value = "Июль 2018"},
-                                    new ReportColumn {Value = "67"},
-                                    new ReportColumn {Value = "567"},
-                                    new ReportColumn {Value = "12345"},
-                                    new ReportColumn {Value = "65847"}
-                                }
-                            },
-                            new ReportRow
-                            {
-                                Columns = new List<ReportColumn>
-                                {
-                                    new ReportColumn {Value = "Июль 2018"},
-                                    new ReportColumn {Value = "67"},
-                                    new ReportColumn {Value = "567"},
-                                    new ReportColumn {Value = "12345"},
-                                    new ReportColumn {Value = "65847"}
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-
-            return PartialView("_TurnoverReport", turnoverReport);
+            return report;
         }
 
         private static string MonthYearString(DateTime dateTime)

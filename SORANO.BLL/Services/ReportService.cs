@@ -54,50 +54,80 @@ namespace SORANO.BLL.Services
                     return new KeyValuePair<DateTime, LocationDeliveriesDto>(monthKey, locationDeliveries);
                 }).ToDictionary(k => k.Key, v => v.Value);
 
-            var sales = _unitOfWork.Get<Sale>()
-                .GetAll(s => s.Date.HasValue && (!from.HasValue ||
-                              s.Date.Value.Year >= from.Value.Year && s.Date.Value.Month >= from.Value.Month) &&
-                             (!to.HasValue ||
-                              from.HasValue && to.Value < from.Value ||
-                              s.Date.Value.Year <= to.Value.Year && s.Date.Value.Month <= to.Value.Month),
-                    s => s.Location)
-                .OrderByDescending(s => s.Date)
-                .ToList()
-                .Where(s => s.Date.HasValue)
-                .GroupBy(s => new { s.Date.Value.Year, s.Date.Value.Month })
-                .Select(s =>
-                {
-                    var monthKey = new DateTime(s.Key.Year, s.Key.Month, 1);
-                    var locationSales = new LocationSalesDto
+            Dictionary<DateTime, LocationSalesDto> GetSales(bool isWriteOff, bool isProfit)
+            {
+                return _unitOfWork.Get<Sale>()
+                    .GetAll(s => s.Date.HasValue && 
+                            s.IsSubmitted && 
+                            (isProfit || s.IsWriteOff == isWriteOff) && 
+                            (!from.HasValue || s.Date.Value.Year >= from.Value.Year && s.Date.Value.Month >= from.Value.Month) && 
+                            (!to.HasValue || from.HasValue && to.Value < from.Value || s.Date.Value.Year <= to.Value.Year && s.Date.Value.Month <= to.Value.Month), 
+                        s => s.Location)
+                    .Select(s => new
                     {
-                        Total = s.AsEnumerable().Sum(x => !x.TotalPrice.HasValue 
-                            ? 0M 
-                            : x.DollarRate.HasValue
-                                ? x.TotalPrice.Value * x.DollarRate.Value
-                                : x.EuroRate.HasValue
-                                    ? x.TotalPrice.Value * x.EuroRate.Value
-                                    : x.TotalPrice.Value),
-                        LocationSales = s.GroupBy(i => i.Location).Select(i =>
+                        Sale = s,
+                        s.Location,
+                        DeliveryPrice = s.Goods.Sum(g => g.DeliveryItem.Delivery.DollarRate.HasValue
+                            ? g.DeliveryItem.UnitPrice * g.DeliveryItem.Delivery.DollarRate.Value
+                            : g.DeliveryItem.Delivery.EuroRate.HasValue
+                                ? g.DeliveryItem.UnitPrice * g.DeliveryItem.Delivery.EuroRate.Value
+                                : g.DeliveryItem.UnitPrice)
+                    })
+                    .OrderByDescending(s => s.Sale.Date)
+                    .ToList()
+                    .Where(s => s.Sale.Date.HasValue)
+                    .GroupBy(s => new {s.Sale.Date.Value.Year, s.Sale.Date.Value.Month})
+                    .Select(s =>
+                    {
+                        var monthKey = new DateTime(s.Key.Year, s.Key.Month, 1);
+                        var locationSales = new LocationSalesDto
                         {
-                            var location = i.Key.Name;
-                            var value = i.AsEnumerable().Sum(x => !x.TotalPrice.HasValue
-                                ? 0M
-                                : x.DollarRate.HasValue
-                                    ? x.TotalPrice.Value * x.DollarRate.Value
-                                    : x.EuroRate.HasValue
-                                        ? x.TotalPrice.Value * x.EuroRate.Value
-                                        : x.TotalPrice.Value);
-                            return new KeyValuePair<string, decimal>(location, value);
-                        }).ToDictionary(k => k.Key, v => v.Value)
-                    };
+                            Total = s.AsEnumerable().Sum(x => Sum(x.Sale, x.DeliveryPrice, isWriteOff, isProfit)),
+                            LocationSales = s.GroupBy(i => i.Location)
+                                .Select(i =>
+                                {
+                                    var location = i.Key.Name;
+                                    var value = i.AsEnumerable().Sum(x => Sum(x.Sale, x.DeliveryPrice, isWriteOff, isProfit));
+                                    return new KeyValuePair<string, decimal>(location, value);
+                                })
+                                .ToDictionary(k => k.Key, v => v.Value)
+                        };
 
-                    return new KeyValuePair<DateTime, LocationSalesDto>(monthKey, locationSales);
-                }).ToDictionary(k => k.Key, v => v.Value);
+                        return new KeyValuePair<DateTime, LocationSalesDto>(monthKey, locationSales);
+                    })
+                    .ToDictionary(k => k.Key, v => v.Value);
+            }
+
+            decimal Sum(Sale sale, decimal deliveryPrice, bool isWriteOff, bool isProfit)
+            {
+                var saleHasPrice = sale.TotalPrice.HasValue;
+                var salePrice = !saleHasPrice ? 0.0M : sale.TotalPrice.Value;
+                var saleHasDollarRate = sale.DollarRate.HasValue;
+                var dollarRate = saleHasDollarRate ? sale.DollarRate.Value : 1.0M;
+                var saleHasEuroRate = sale.EuroRate.HasValue;
+                var euroRate = saleHasEuroRate ? sale.EuroRate.Value : 1.0M;
+
+                return isProfit
+                    ? salePrice - deliveryPrice
+                    : isWriteOff
+                        ? deliveryPrice
+                        : saleHasDollarRate
+                            ? salePrice * dollarRate
+                            : saleHasEuroRate
+                                ? salePrice * euroRate
+                                : salePrice;
+            }
+
+            var sales = GetSales(false, false);
+            var writeoffs = GetSales(true, false);
+            var profit = GetSales(false, true);
 
             var report = new TurnoverReportDto
             {
                 Deliveries = deliveries,
-                Sales = sales
+                Sales = sales,
+                Writeoffs = writeoffs,
+                Profit = profit
             };
 
             return new SuccessResponse<TurnoverReportDto>(report);

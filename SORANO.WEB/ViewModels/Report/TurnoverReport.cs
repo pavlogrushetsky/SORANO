@@ -16,6 +16,9 @@ namespace SORANO.WEB.ViewModels.Report
         [Display(Name = "Продажи")]
         public Report Sales { get; set; }
 
+        [Display(Name = "Списания")]
+        public Report Writeoffs { get; set; }
+
         [Display(Name = "Прибыль")]
         public Report Profit { get; set; }
     }

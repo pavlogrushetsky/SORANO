@@ -7,6 +7,7 @@ namespace SORANO.BLL.Dtos.ReportDtos
     {
         public Dictionary<DateTime, LocationDeliveriesDto> Deliveries { get; set; }
         public Dictionary<DateTime, LocationSalesDto> Sales { get; set; }
-        public Dictionary<DateTime, LocationProfitDto> Profit { get; set; }
+        public Dictionary<DateTime, LocationSalesDto> Writeoffs { get; set; }
+        public Dictionary<DateTime, LocationSalesDto> Profit { get; set; }
     }
 }
