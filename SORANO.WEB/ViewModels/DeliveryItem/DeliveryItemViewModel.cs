@@ -10,6 +10,8 @@ namespace SORANO.WEB.ViewModels.DeliveryItem
 
         public string ArticleName { get; set; }
 
+        public string ArticleCode { get; set; }
+
         [Display(Name = "Количество, шт. *")]
         public int Quantity { get; set; }
 
