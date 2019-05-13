@@ -220,7 +220,8 @@ namespace SORANO.BLL.Services
                              !s.IsDeleted && 
                              (!locationId.HasValue || s.LocationID == locationId.Value) && 
                              s.Date.HasValue && 
-                             s.Date.Value.Month == DateTime.Now.Month, 
+                             s.Date.Value.Month == DateTime.Now.Month &&
+                             s.Date.Value.Year == DateTime.Now.Year, 
                     s => s.Goods)
                 .ToList();
 
@@ -249,7 +250,8 @@ namespace SORANO.BLL.Services
             var deliveries = UnitOfWork.Get<Delivery>()
                 .GetAll(d => !d.IsDeleted && 
                              d.IsSubmitted && 
-                             d.DeliveryDate.Month == DateTime.Now.Month)
+                             d.DeliveryDate.Month == DateTime.Now.Month &&
+                             d.DeliveryDate.Year == DateTime.Now.Year)
                 .ToList();
 
             var deliveriesTotal = deliveries.Sum(d => SumDeliveries(d));
