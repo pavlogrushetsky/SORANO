@@ -1,5 +1,7 @@
 ﻿$(document).ready(function () {
-  var wto;
+    var wto;
+
+    var submitButtonPressed;
 
   $('#report-from').datetimepicker({
     locale: 'ru',
@@ -55,33 +57,137 @@
     }
   });
 
-  $(document).on('submit', '#report-form', function(e) {
-    e.preventDefault();
-    clearTimeout(wto);
+    initGenericSelect({
+        selectElementClass: '#select-location',
+        valueElementId: '#location-id',
+        displayElementId: '#location-name',
+        noResultsText: 'Магазины не найдены',
+        searchingText: 'Поиск магазинов...',
+        errorLoadingText: 'Невозможно загрузить результаты поиска',
+        placeholderText: 'Магазин',
+        url: '/Location/GetLocations'
+    });
 
-    wto = setTimeout(function() {
-      $('#progress-bar').animate({ opacity: 1.0 }, 100, function() {
-        var submitButton = $('#submit-button');
-        submitButton.text('Формирование...');
-        submitButton.prop('disabled', true);
+    $(document).on('change', '#report-type', function (e) {
+        e.preventDefault();
+        var selectedReportType = $('#report-type').val();
+        if (selectedReportType === 'Обороты') {
+            $('#location').hide(100, function () {
+                $('#export-button').hide();
+                $('#date-range').show(100);
+            });
+        } else {
+            $('#date-range').hide(100, function () {
+                $('#export-button').show();
+                $('#location').show(100);
+            });
+        }
+    });
+
+    $(document).on('click', '#submit-button', function (e) {
+        e.preventDefault();
+        submitButtonPressed = $(this).attr('name');
+        $('#report-form').submit();
+    });
+
+    $(document).on('click', '#export-button', function (e) {
+        e.preventDefault();
+        submitButtonPressed = $(this).attr('name');
+        $('#report-form').submit();
+    });
+
+    $(document).on('submit', '#report-form', function(e) {
+        e.preventDefault();
+
         var data = {
-          reportType: $('#report-type').val(),
-          from: $('#report-from-date').val(),
-          to: $('#report-to-date').val()
+            reportType: $('#report-type').val(),
+            from: $('#report-from-date').val(),
+            to: $('#report-to-date').val(),
+            locationId: $('#location-id').val(),
+            locationName: $('#location-name').val()
         };
 
-        $.ajax({
-          url: '/Report/Report/',
-          type: 'POST',
-          data: data,
-          success: function (report) {
-            submitButton.text('Сформировать');
-            submitButton.prop('disabled', false);
-            $('#report').html(report);
-            $('#progress-bar').animate({ opacity: 0.0 }, 100);
-          }
-        });
-      });      
-    }, 1000);   
-  });
+        if (submitButtonPressed === 'submit') {
+            clearTimeout(wto);
+
+            wto = setTimeout(function () {
+                $('#progress-bar').animate({ opacity: 1.0 }, 100, function () {
+                    var submitButton = $('#submit-button');
+                    var submitButtonText = $('#submit-button > span');
+                    submitButtonText.text('Формирование...');
+                    submitButton.prop('disabled', true);                    
+
+                    $.ajax({
+                        url: '/Report/Report/',
+                        type: 'POST',
+                        data: data,
+                        success: function (report) {
+                            submitButtonText.text('Сформировать');
+                            submitButton.prop('disabled', false);
+                            $('#report').html(report);
+                            $('#progress-bar').animate({ opacity: 0.0 }, 100, function () {
+                                if ($(".inventory-datatable").length) {
+                                    initInventoryDataTable();
+                                }
+                            });
+                        }
+                    });
+                });
+            }, 1000);
+        } else {
+            clearTimeout(wto);
+
+            wto = setTimeout(function () {
+                $('#progress-bar').animate({ opacity: 1.0 }, 100, function () {
+                    var exportButton = $('#export-button');
+                    var exportButtonText = $('#export-button > span');
+                    exportButtonText.text('Экспорт...');
+                    exportButton.prop('disabled', true);
+
+                    $.ajax({
+                        url: '/Report/Export/',
+                        type: 'POST',
+                        data: data,
+                        success: function () {
+                            exportButtonText.text('Экспортировать');
+                            exportButton.prop('disabled', false);
+                            $('#progress-bar').animate({ opacity: 0.0 }, 100);
+                        }
+                    });
+                });
+            }, 1000);
+        }      
+      });
 });
+
+function initInventoryDataTable() {
+    var inventoryDataTable = $(".inventory-datatable").DataTable({
+        responsive: true,
+        "autoWidth": false,
+        "scrollX": false,
+        "columnDefs": [
+            { type: "num", "targets": 1 }
+        ],
+        "pagingType": "numbers",
+        "language": {
+            "lengthMenu": "Отобразить _MENU_ позиций на странице",
+            "zeroRecords": "Товары отсутствуют",
+            "info": "Отображение страницы _PAGE_ из _PAGES_",
+            "infoEmpty": "Записи отсутствуют",
+            "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+            "search": "Поиск"
+        },
+        "drawCallback": function () {
+            $('.pagination').addClass('pagination-sm');
+        }
+    });
+
+    inventoryDataTable.columns().eq(0).each(function (colIdx) {
+        $('input', $('.inventory-datatable th')[colIdx]).on('keyup change', function () {
+            inventoryDataTable
+                .column(colIdx)
+                .search(this.value)
+                .draw();
+        });
+    });   
+}

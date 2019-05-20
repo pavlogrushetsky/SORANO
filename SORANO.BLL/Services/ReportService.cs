@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SORANO.BLL.Dtos;
 using SORANO.BLL.Dtos.ReportDtos;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
@@ -16,6 +17,47 @@ namespace SORANO.BLL.Services
         {
             _unitOfWork = unitOfWork;
         }
+
+        public ServiceResponse<InventoryReportDto> GetInventoryReport(int? locationId)
+        {
+            var locationGoods = new Dictionary<string, IEnumerable<LocationGoodsDto>>();
+
+            if (locationId.HasValue && locationId.Value > 0)
+            {
+                var location = _unitOfWork.Get<Location>().Get(locationId.Value);             
+                locationGoods.Add(location.Name, GetLocationGoods(locationId.Value));
+                
+            }
+            else
+            {
+                _unitOfWork
+                    .Get<Location>()
+                    .GetAll(l => !l.IsDeleted)
+                    .ToList()
+                    .ForEach(l => 
+                    {
+                        locationGoods.Add(l.Name, GetLocationGoods(l.ID));
+                    });
+            }
+            
+            return new SuccessResponse<InventoryReportDto>(new InventoryReportDto
+            {
+                LocationGoods = locationGoods
+            });
+        }
+
+        private IEnumerable<LocationGoodsDto> GetLocationGoods(int locationId) => 
+            _unitOfWork
+                .Get<Storage>()
+                .GetAll(s => s.LocationID == locationId && !s.ToDate.HasValue)
+                .Where(g => !g.Goods.IsDeleted && !g.Goods.IsSold)
+                .GroupBy(g => g.Goods.DeliveryItem.Article.Name)
+                .Select(g => new LocationGoodsDto
+                {
+                    ArticleName = g.Key,
+                    Quantity = g.AsEnumerable().Count()
+                })
+                .ToList();
 
         public ServiceResponse<TurnoverReportDto> GetTurnoverReport(DateTime? from, DateTime? to)
         {

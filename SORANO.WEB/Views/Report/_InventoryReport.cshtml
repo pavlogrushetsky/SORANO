@@ -1,0 +1,88 @@
+﻿@model InventoryReport
+
+<p>
+    <b class="text-info">@Model.Name</b> @Html.DisplayNameFor(m => m.Generated): @Model.Generated
+</p>
+@if (Model.LocationReports.Count == 1)
+{
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="table-responsive">
+                <table class="table table-condensed table-hover inventory-datatable" style="font-size: 14px;">
+                    <thead>
+                        @foreach (var row in Model.LocationReports.First().Value.Header.Rows)
+                        {
+                            <tr>
+                                @foreach (var col in row.Columns)
+                                {
+                                    <th>@col.Value</th>
+                                }
+                            </tr>
+                        }
+                    </thead>
+                    <tbody>
+                        @foreach (var row in Model.LocationReports.First().Value.Body.Rows)
+                        {
+                            <tr>
+                                @foreach (var col in row.Columns)
+                                {
+                                    <td>@col.Value</td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <ul class="nav nav-tabs">
+        @for (var i = 0; i < Model.LocationReports.Count; i++)
+        {
+            <li class="@(i == 0 ? "active" : "")">
+                <a href="@("#tab-" + i)" data-toggle="tab" aria-expanded="False">
+                    @Model.LocationReports.ElementAt(i).Key
+                </a>
+            </li>
+        }
+    </ul>
+    <div id="tab-content" class="tab-content">
+        @for (var i = 0; i < Model.LocationReports.Count; i++)
+        {
+            <div class="tab-pane fade @(i == 0 ? "active in" : "")" id="@("tab-" + i)">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-condensed table-hover inventory-datatable" style="font-size: 14px;">
+                                <thead>
+                                    @foreach (var row in Model.LocationReports.ElementAt(i).Value.Header.Rows)
+                                    {
+                                        <tr>
+                                            @foreach (var col in row.Columns)
+                                            {
+                                                <th>@col.Value</th>
+                                            }
+                                        </tr>
+                                    }
+                                </thead>
+                                <tbody>
+                                    @foreach (var row in Model.LocationReports.ElementAt(i).Value.Body.Rows)
+                                    {
+                                        <tr>
+                                            @foreach (var col in row.Columns)
+                                            {
+                                                <td>@col.Value</td>
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

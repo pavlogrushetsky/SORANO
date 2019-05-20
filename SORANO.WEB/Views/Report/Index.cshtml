@@ -26,6 +26,8 @@
 }
 
 <form method="post" id="report-form">
+    <input type="hidden" id="location-id" />
+    <input type="hidden" id="location-name" />
     <div class="row">
         <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
             <div class="form-group">
@@ -36,12 +38,13 @@
                     </span>
                     <select class="form-control input-sm" id="report-type">
                         <option>Обороты</option>
+                        <option>Инвентаризация</option>
                     </select>
                 </div>
             </div>
         </div>        
     </div>
-    <div class="row">
+    <div class="row" id="date-range">
         <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
             <div class="form-group">
                 <label class="control-label">Дата начала периода:</label>
@@ -65,12 +68,27 @@
             </div>
         </div>
     </div>
+    <div class="row" id="location" style="display: none;">
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+            <div class="form-group">
+                <label class="control-label">Место:</label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-map-marker"></i></span>
+                    <select class="form-control input-sm" id="select-location"></select>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-xs-12">
             <div class="form-group">
-                <button type="submit" id="submit-button" class="btn btn-primary btn-sm">
+                <button type="submit" id="submit-button" name="submit" class="btn btn-primary btn-sm">
                     <i class="fa fa-fw fa-check"></i>
-                    Сформировать
+                    <span>Сформировать</span>
+                </button>
+                <button type="submit" id="export-button" name="export" class="btn btn-success btn-sm" style="display: none;">
+                    <i class="fa fa-fw fa-save"></i>  
+                    <span>Экспортировать</span>
                 </button>
             </div>
         </div>

@@ -84,6 +84,9 @@
     <Content Update="Views\Report\Index.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\Report\_InventoryReport.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Report\_TurnoverReport.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

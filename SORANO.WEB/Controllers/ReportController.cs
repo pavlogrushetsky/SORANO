@@ -31,7 +31,99 @@ namespace SORANO.WEB.Controllers
         public IActionResult Index() => View();       
 
         [HttpPost]
-        public IActionResult Report(string reportType, string from, string to)
+        public IActionResult Report(string reportType, string from, string to, int? locationId, string locationName)
+        {
+            switch (reportType.ToLower())
+            {
+                case "обороты":
+                    return PartialView("_TurnoverReport", CreateTurnoverReport(from, to));
+                case "инвентаризация":
+                    return PartialView("_InventoryReport", CreateInventoryReport(locationId, locationName));
+                default:
+                    return BadRequest();
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Export(string reportType, string from, string to, int? locationId, string locationName)
+        {
+            switch (reportType.ToLower())
+            {
+                case "обороты":
+                    return BadRequest();
+                case "инвентаризация":
+                    var report = CreateInventoryReport(locationId, locationName);
+                    return Ok();
+                default:
+                    return BadRequest();
+            }
+        }
+
+        private InventoryReport CreateInventoryReport(int? locationId, string locationName)
+        {
+            var reportDto = _reportService.GetInventoryReport(locationId).Result;
+
+            var name = "Инвентаризация";
+            if (!string.IsNullOrWhiteSpace(locationName))
+                name += $" :: {locationName}";
+
+            var reports = new Dictionary<string, Report>();
+
+            if (reportDto.LocationGoods.Any())
+            {
+                foreach (var location in reportDto.LocationGoods.Keys)
+                {
+                    var headerColumns = new List<ReportColumn>();
+                    headerColumns.Add(new ReportColumn { Value = "Артикул" });
+                    headerColumns.Add(new ReportColumn { Value = "Кол-во, шт." });
+
+                    var bodyRows = new List<ReportRow>();
+                    var goods = reportDto.LocationGoods[location];
+                    foreach (var good in goods)
+                    {
+                        var row = new ReportRow
+                        {
+                            Columns = new List<ReportColumn>()
+                        };
+
+                        row.Columns.Add(new ReportColumn { Value = good.ArticleName });
+                        row.Columns.Add(new ReportColumn { Value = good.Quantity.ToString() });
+
+                        bodyRows.Add(row);
+                    }
+
+                    var report = new Report
+                    {
+                        Header = new ReportHeader { Rows = new List<ReportRow> { new ReportRow { Columns = headerColumns } } },
+                        Body = new ReportBody { Rows = bodyRows }
+                    };
+                    reports.Add(location, report);
+                }
+            }
+            else
+            {
+                var report = new Report
+                {
+                    Header = new ReportHeader { Rows = new List<ReportRow>() },
+                    Body = new ReportBody
+                    {
+                        Rows = new List<ReportRow>
+                        {
+                            new ReportRow{Columns = new List<ReportColumn>{new ReportColumn { Value = "Для указанного места товары отсутствуют."} }}
+                        }
+                    }
+                };
+                reports.Add("no-data", report);
+            }
+
+            return new InventoryReport
+            {
+                Name = name,
+                LocationReports = reports
+            };
+        }
+
+        private TurnoverReport CreateTurnoverReport(string from, string to)
         {
             var dateFrom = ParseDateTime(from);
             var dateTo = ParseDateTime(to);
@@ -49,7 +141,7 @@ namespace SORANO.WEB.Controllers
             var deliveriesReport = new Report();
 
             if (report.Deliveries.Any())
-            {      
+            {
                 var locationColumns = report.Deliveries
                     .Select(d => d.Value.LocationDeliveries)
                     .SelectMany(d => d.Keys)
@@ -81,9 +173,9 @@ namespace SORANO.WEB.Controllers
                     .ToString(_moneyFormat, _russianCulture);
 
                 var headerColumns = new List<ReportColumn>();
-                headerColumns.Add(new ReportColumn {Value = "Месяц"});
+                headerColumns.Add(new ReportColumn { Value = "Месяц" });
                 headerColumns.AddRange(locationColumns);
-                headerColumns.Add(new ReportColumn {Value = "Всего"});
+                headerColumns.Add(new ReportColumn { Value = "Всего" });
 
                 var bodyRows = new List<ReportRow>();
                 foreach (var delivery in report.Deliveries)
@@ -124,19 +216,22 @@ namespace SORANO.WEB.Controllers
                     bodyRows.Add(row);
                 }
 
-                deliveriesReport.Header = new ReportHeader {Rows = new List<ReportRow> {new ReportRow {Columns = headerColumns}}};
-                deliveriesReport.Body = new ReportBody {Rows = bodyRows};
+                deliveriesReport.Header = new ReportHeader { Rows = new List<ReportRow> { new ReportRow { Columns = headerColumns } } };
+                deliveriesReport.Body = new ReportBody { Rows = bodyRows };
             }
             else
             {
-                deliveriesReport.Header = new ReportHeader{Rows = new List<ReportRow>()};
-                deliveriesReport.Body = new ReportBody{Rows = new List<ReportRow>
+                deliveriesReport.Header = new ReportHeader { Rows = new List<ReportRow>() };
+                deliveriesReport.Body = new ReportBody
+                {
+                    Rows = new List<ReportRow>
                 {
                     new ReportRow{Columns = new List<ReportColumn>{new ReportColumn { Value = "За указанный период данные по поставкам отсутствуют."} }}
-                }};
+                }
+                };
             }
 
-            var turnoverReport = new TurnoverReport
+            return new TurnoverReport
             {
                 Name = name,
                 Deliveries = deliveriesReport,
@@ -144,8 +239,6 @@ namespace SORANO.WEB.Controllers
                 Writeoffs = CreateSalesReport(report.Writeoffs, true, false),
                 Profit = CreateSalesReport(report.Profit, false, true)
             };
-
-            return PartialView("_TurnoverReport", turnoverReport);
         }
 
         private Report CreateSalesReport(Dictionary<DateTime, LocationSalesDto> sales, bool isWriteOff, bool isProfit)
