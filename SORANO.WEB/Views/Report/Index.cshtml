@@ -25,7 +25,7 @@
     </ul>
 }
 
-<form method="post" id="report-form">
+<form method="post" id="report-form" enctype="multipart/form-data">
     <input type="hidden" id="location-id" />
     <input type="hidden" id="location-name" />
     <div class="row">
@@ -82,14 +82,20 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="form-group">
-                <button type="submit" id="submit-button" name="submit" class="btn btn-primary btn-sm">
+                <button type="submit" id="submit-button" class="btn btn-primary btn-sm">
                     <i class="fa fa-fw fa-check"></i>
                     <span>Сформировать</span>
                 </button>
-                <button type="submit" id="export-button" name="export" class="btn btn-success btn-sm" style="display: none;">
-                    <i class="fa fa-fw fa-save"></i>  
-                    <span>Экспортировать</span>
-                </button>
+                <a id="export-button"
+                   asp-action="Export"
+                   class="btn btn-sm btn-success"
+                   data-toggle="tooltip"
+                   data-placement="right"
+                   data-original-title="Скачать вложение"
+                   title=""
+                   style="display: none;">
+                    <i class="fa fa-fw fa-download" aria-hidden="true"></i>
+                </a>
             </div>
         </div>
     </div>

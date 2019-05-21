@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using MimeTypes;
 using SORANO.BLL.Dtos.ReportDtos;
 using SORANO.BLL.Services.Abstract;
 using SORANO.WEB.Infrastructure.Filters;
@@ -17,15 +20,20 @@ namespace SORANO.WEB.Controllers
     public class ReportController : BaseController
     {
         private readonly IReportService _reportService;
+        private readonly IHostingEnvironment _environment;
         private const string _dateFormat = "MM.yyyy";
         private readonly CultureInfo _culture = CultureInfo.InvariantCulture;
         private readonly CultureInfo _russianCulture = new CultureInfo("ru-RU");
         private const string _moneyFormat = "0.00";
         private const string _hryvna = "₴";
 
-        public ReportController(IUserService userService, IExceptionService exceptionService, IReportService reportService) : base(userService, exceptionService)
+        public ReportController(IUserService userService, 
+            IExceptionService exceptionService, 
+            IReportService reportService,
+            IHostingEnvironment environment) : base(userService, exceptionService)
         {
             _reportService = reportService;
+            _environment = environment;
         }
 
         public IActionResult Index() => View();       
@@ -43,20 +51,33 @@ namespace SORANO.WEB.Controllers
                     return BadRequest();
             }
         }
-
-        [HttpPost]
-        public IActionResult Export(string reportType, string from, string to, int? locationId, string locationName)
+        
+        public FileResult Export(string locationId, string locationName)
         {
-            switch (reportType.ToLower())
+            var id = string.IsNullOrEmpty(locationId) ? (int?)null : Convert.ToInt32(locationId);
+            var report = CreateInventoryReport(id, locationName);
+            var excelPackage = report.Export();
+            var fileName = $"Инвентаризация_{report.Generated}.xlsx";
+            var tempFileName = $"inventory_{DateTime.Now:ddMMyyyHHmmss}.xlsx";
+            var webRootPath = _environment.WebRootPath;
+            var directory = Path.Combine(webRootPath, "reports");
+            Directory.CreateDirectory(directory);
+            var fullPath = $"{directory}\\{tempFileName}";
+
+            var fileInfo = new FileInfo(fullPath);
+            excelPackage.SaveAs(fileInfo);
+            excelPackage.Dispose();
+
+            //var bytes = System.IO.File.ReadAllBytes(fullPath);
+
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(fullPath, FileMode.Open))
             {
-                case "обороты":
-                    return BadRequest();
-                case "инвентаризация":
-                    var report = CreateInventoryReport(locationId, locationName);
-                    return Ok();
-                default:
-                    return BadRequest();
+                stream.CopyTo(memory);
             }
+            memory.Position = 0;
+
+            return File(memory, MimeTypeMap.GetMimeType(Path.GetExtension(fileName)), fileName);
         }
 
         private InventoryReport CreateInventoryReport(int? locationId, string locationName)

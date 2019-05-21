@@ -1,8 +1,6 @@
 ﻿$(document).ready(function () {
     var wto;
 
-    var submitButtonPressed;
-
   $('#report-from').datetimepicker({
     locale: 'ru',
     maxDate: moment(),
@@ -84,16 +82,10 @@
         }
     });
 
-    $(document).on('click', '#submit-button', function (e) {
-        e.preventDefault();
-        submitButtonPressed = $(this).attr('name');
-        $('#report-form').submit();
-    });
-
     $(document).on('click', '#export-button', function (e) {
-        e.preventDefault();
-        submitButtonPressed = $(this).attr('name');
-        $('#report-form').submit();
+        //e.preventDefault();
+        var hrefAttr = $(this).attr("href");
+        $(this).attr("href", "/Report/Export" + "?locationId=" + $('#location-id').val() + "&locationName=" + $('#location-name').val());
     });
 
     $(document).on('submit', '#report-form', function(e) {
@@ -107,56 +99,32 @@
             locationName: $('#location-name').val()
         };
 
-        if (submitButtonPressed === 'submit') {
-            clearTimeout(wto);
+        clearTimeout(wto);
 
-            wto = setTimeout(function () {
-                $('#progress-bar').animate({ opacity: 1.0 }, 100, function () {
-                    var submitButton = $('#submit-button');
-                    var submitButtonText = $('#submit-button > span');
-                    submitButtonText.text('Формирование...');
-                    submitButton.prop('disabled', true);                    
+        wto = setTimeout(function () {
+            $('#progress-bar').animate({ opacity: 1.0 }, 100, function () {
+                var submitButton = $('#submit-button');
+                var submitButtonText = $('#submit-button > span');
+                submitButtonText.text('Формирование...');
+                submitButton.prop('disabled', true);                    
 
-                    $.ajax({
-                        url: '/Report/Report/',
-                        type: 'POST',
-                        data: data,
-                        success: function (report) {
-                            submitButtonText.text('Сформировать');
-                            submitButton.prop('disabled', false);
-                            $('#report').html(report);
-                            $('#progress-bar').animate({ opacity: 0.0 }, 100, function () {
-                                if ($(".inventory-datatable").length) {
-                                    initInventoryDataTable();
-                                }
-                            });
-                        }
-                    });
+                $.ajax({
+                    url: '/Report/Report/',
+                    type: 'POST',
+                    data: data,
+                    success: function (report) {
+                        submitButtonText.text('Сформировать');
+                        submitButton.prop('disabled', false);
+                        $('#report').html(report);
+                        $('#progress-bar').animate({ opacity: 0.0 }, 100, function () {
+                            if ($(".inventory-datatable").length) {
+                                initInventoryDataTable();
+                            }
+                        });
+                    }
                 });
-            }, 1000);
-        } else {
-            clearTimeout(wto);
-
-            wto = setTimeout(function () {
-                $('#progress-bar').animate({ opacity: 1.0 }, 100, function () {
-                    var exportButton = $('#export-button');
-                    var exportButtonText = $('#export-button > span');
-                    exportButtonText.text('Экспорт...');
-                    exportButton.prop('disabled', true);
-
-                    $.ajax({
-                        url: '/Report/Export/',
-                        type: 'POST',
-                        data: data,
-                        success: function () {
-                            exportButtonText.text('Экспортировать');
-                            exportButton.prop('disabled', false);
-                            $('#progress-bar').animate({ opacity: 0.0 }, 100);
-                        }
-                    });
-                });
-            }, 1000);
-        }      
+            });
+        }, 1000);    
       });
 });
 
