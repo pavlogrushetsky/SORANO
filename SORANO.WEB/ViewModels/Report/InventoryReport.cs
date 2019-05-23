@@ -1,4 +1,5 @@
 ﻿using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -24,7 +25,17 @@ namespace SORANO.WEB.ViewModels.Report
             for (int i = 0; i < inventoryReport.LocationReports.Count; i++)
             {
                 var report = inventoryReport.LocationReports.ElementAt(i);
-                excelPackage.Workbook.Worksheets.Add(report.Key);
+                var worksheet = excelPackage.Workbook.Worksheets.Add(report.Key);
+                var headerRow = report.Value.Header.Rows.Select(r => r.Columns.Select(c => c.Value).ToArray()).ToList();
+                var headerRange = $"A1:{char.ConvertFromUtf32(headerRow[0].Length + 64)}1";
+                worksheet.Cells[headerRange].LoadFromArrays(headerRow);
+                worksheet.Cells[headerRange].Style.Font.Bold = true;
+                worksheet.Cells[headerRange].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                worksheet.Cells[headerRange].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);                
+                var cellsData = report.Value.Body.Rows.Select(r => r.Columns.Select(c => c.Value).ToArray()).ToList();
+                worksheet.Cells[2, 1].LoadFromArrays(cellsData);
+                var totalRange = $"A1:{char.ConvertFromUtf32(headerRow[0].Length + 64)}{report.Value.Body.Rows.Count + 1}";
+                worksheet.Cells[totalRange].AutoFitColumns();
             }
 
             return excelPackage;
