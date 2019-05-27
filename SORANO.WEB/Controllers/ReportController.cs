@@ -96,6 +96,7 @@ namespace SORANO.WEB.Controllers
                 {
                     var headerColumns = new List<ReportColumn>();
                     headerColumns.Add(new ReportColumn { Value = "Артикул" });
+                    headerColumns.Add(new ReportColumn { Value = "Код" });
                     headerColumns.Add(new ReportColumn { Value = "Кол-во, шт." });
 
                     var bodyRows = new List<ReportRow>();
@@ -108,6 +109,7 @@ namespace SORANO.WEB.Controllers
                         };
 
                         row.Columns.Add(new ReportColumn { Value = good.ArticleName });
+                        row.Columns.Add(new ReportColumn { Value = good.ArticleCode });
                         row.Columns.Add(new ReportColumn { Value = good.Quantity.ToString() });
 
                         bodyRows.Add(row);

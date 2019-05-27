@@ -134,7 +134,7 @@ function initInventoryDataTable() {
         "autoWidth": false,
         "scrollX": false,
         "columnDefs": [
-            { type: "num", "targets": 1 }
+            { type: "num", "targets": 2 }
         ],
         "pagingType": "numbers",
         "language": {

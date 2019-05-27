@@ -51,10 +51,11 @@ namespace SORANO.BLL.Services
                 .Get<Storage>()
                 .GetAll(s => s.LocationID == locationId && !s.ToDate.HasValue)
                 .Where(g => !g.Goods.IsDeleted && !g.Goods.IsSold)
-                .GroupBy(g => g.Goods.DeliveryItem.Article.Name)
+                .GroupBy(g => new { g.Goods.DeliveryItem.Article.Name, g.Goods.DeliveryItem.Article.Code })
                 .Select(g => new LocationGoodsDto
                 {
-                    ArticleName = g.Key,
+                    ArticleName = g.Key.Name,
+                    ArticleCode = g.Key.Code,
                     Quantity = g.AsEnumerable().Count()
                 })
                 .ToList();
