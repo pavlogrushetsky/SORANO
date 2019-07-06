@@ -82,9 +82,7 @@
         }
     });
 
-    $(document).on('click', '#export-button', function (e) {
-        //e.preventDefault();
-        var hrefAttr = $(this).attr("href");
+    $(document).on('click', '#export-button', function () {
         $(this).attr("href", "/Report/Export" + "?locationId=" + $('#location-id').val() + "&locationName=" + $('#location-name').val());
     });
 
@@ -131,10 +129,14 @@
 function initInventoryDataTable() {
     var inventoryDataTable = $(".inventory-datatable").DataTable({
         responsive: true,
+        rowGroup: {
+            dataSrc: 2
+        },
+        order: [[2, 'asc']],
         "autoWidth": false,
         "scrollX": false,
         "columnDefs": [
-            { type: "num", "targets": 2 }
+            { type: "num", "targets": 3 }
         ],
         "pagingType": "numbers",
         "language": {

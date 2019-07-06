@@ -610,3 +610,8 @@ li.sale-group-selected > table > tbody > tr {
         display: none;
     }
 }
+
+.dtrg-group.dtrg-start.dtrg-level-0 > td {
+    font-weight: bold;
+    background-color:#dce4ec;
+}

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SORANO.BLL.Dtos;
 using SORANO.BLL.Dtos.ReportDtos;
 using SORANO.BLL.Services.Abstract;
 using SORANO.CORE.StockEntities;
@@ -51,11 +50,19 @@ namespace SORANO.BLL.Services
                 .Get<Storage>()
                 .GetAll(s => s.LocationID == locationId && !s.ToDate.HasValue)
                 .Where(g => !g.Goods.IsDeleted && !g.Goods.IsSold)
-                .GroupBy(g => new { g.Goods.DeliveryItem.Article.Name, g.Goods.DeliveryItem.Article.Code })
+                .GroupBy(g => new
+                {
+                    ArticleName = g.Goods.DeliveryItem.Article.Name,
+                    ArticleCode = g.Goods.DeliveryItem.Article.Code,
+                    ArticleType = g.Goods.DeliveryItem.Article.Type.ParentType == null 
+                        ? g.Goods.DeliveryItem.Article.Type.Name 
+                        : g.Goods.DeliveryItem.Article.Type.ParentType.Name + " :: " + g.Goods.DeliveryItem.Article.Type.Name
+                })
                 .Select(g => new LocationGoodsDto
                 {
-                    ArticleName = g.Key.Name,
-                    ArticleCode = g.Key.Code,
+                    ArticleName = g.Key.ArticleName,
+                    ArticleCode = g.Key.ArticleCode,
+                    ArticleType = g.Key.ArticleType,
                     Quantity = g.AsEnumerable().Count()
                 })
                 .ToList();

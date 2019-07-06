@@ -10,6 +10,7 @@
     "font-awesome": "4.7.0",
     "datatables.net": "1.10.15",
     "datatables.net-bs": "2.1.1",
+    "datatables.net-rowgroup-bs": "1.0.0",
     "datatables.net-responsive": "2.1.1",
     "datatables.net-responsive-bs": "2.1.1",
     "select2": "4.0.3",

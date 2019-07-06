@@ -4,6 +4,7 @@
     {
         public string ArticleName { get; set; }
         public string ArticleCode { get; set; }
+        public string ArticleType { get; set; }
         public int Quantity { get; set; }
     }
 }

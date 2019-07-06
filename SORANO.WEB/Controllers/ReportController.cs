@@ -50,14 +50,13 @@ namespace SORANO.WEB.Controllers
                 default:
                     return BadRequest();
             }
-        }
-        
+        }       
         public FileResult Export(string locationId, string locationName)
         {
             var id = string.IsNullOrEmpty(locationId) ? (int?)null : Convert.ToInt32(locationId);
-            var report = CreateInventoryReport(id, locationName);
-            var excelPackage = report.Export();
-            var fileName = $"Инвентаризация_{report.Generated}.xlsx";
+            var report = _reportService.GetInventoryReport(id).Result;
+            var excelPackage = report.Export("Инвентаризация");
+            var fileName = $"Инвентаризация_{DateTime.Now.ToString("dd.MM.yyyy")}.xlsx";
             var tempFileName = $"inventory_{DateTime.Now:ddMMyyyHHmmss}.xlsx";
             var webRootPath = _environment.WebRootPath;
             var directory = Path.Combine(webRootPath, "reports");
@@ -67,8 +66,6 @@ namespace SORANO.WEB.Controllers
             var fileInfo = new FileInfo(fullPath);
             excelPackage.SaveAs(fileInfo);
             excelPackage.Dispose();
-
-            //var bytes = System.IO.File.ReadAllBytes(fullPath);
 
             var memory = new MemoryStream();
             using (var stream = new FileStream(fullPath, FileMode.Open))
@@ -97,6 +94,7 @@ namespace SORANO.WEB.Controllers
                     var headerColumns = new List<ReportColumn>();
                     headerColumns.Add(new ReportColumn { Value = "Артикул" });
                     headerColumns.Add(new ReportColumn { Value = "Код" });
+                    headerColumns.Add(new ReportColumn { Value = "Тип" });
                     headerColumns.Add(new ReportColumn { Value = "Кол-во, шт." });
 
                     var bodyRows = new List<ReportRow>();
@@ -110,6 +108,7 @@ namespace SORANO.WEB.Controllers
 
                         row.Columns.Add(new ReportColumn { Value = good.ArticleName });
                         row.Columns.Add(new ReportColumn { Value = good.ArticleCode });
+                        row.Columns.Add(new ReportColumn { Value = good.ArticleType });
                         row.Columns.Add(new ReportColumn { Value = good.Quantity.ToString() });
 
                         bodyRows.Add(row);
