@@ -49,7 +49,7 @@ namespace SORANO.BLL.Services
             _unitOfWork
                 .Get<Storage>()
                 .GetAll(s => s.LocationID == locationId && !s.ToDate.HasValue)
-                .Where(g => !g.Goods.IsDeleted && !g.Goods.IsSold)
+                .Where(g => !g.Goods.IsDeleted && !g.Goods.IsSold && g.Goods.SaleID == null)
                 .GroupBy(g => new
                 {
                     ArticleName = g.Goods.DeliveryItem.Article.Name,
