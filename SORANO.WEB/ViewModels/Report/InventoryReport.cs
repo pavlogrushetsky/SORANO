@@ -115,7 +115,7 @@ namespace SORANO.WEB.ViewModels.Report
                 var articles = inventoryReport.LocationGoods
                     .SelectMany(x => x.Value)
                     .Where(x => x.ArticleType.Equals(type))
-                    .GroupBy(x => new { x.ArticleCode, x.ArticleName })
+                    .GroupBy(x => new { x.ArticleId, x.ArticleCode, x.ArticleName })
                     .Select(x => x.Key)
                     .OrderBy(x => x.ArticleName)
                     .ToList();
@@ -124,7 +124,7 @@ namespace SORANO.WEB.ViewModels.Report
                 {
                     var result = inventoryReport.LocationGoods
                         .OrderBy(x => x.Key)
-                        .Select(x => x.Value.FirstOrDefault(v => v.ArticleName.Equals(article.ArticleName))?.Quantity ?? (int?)null)
+                        .Select(x => x.Value.FirstOrDefault(v => v.ArticleId.Equals(article.ArticleId))?.Quantity ?? null)
                         .ToList();
 
                     var cells = new List<string> { article.ArticleCode, article.ArticleName };

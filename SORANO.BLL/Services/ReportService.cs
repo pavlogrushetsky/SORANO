@@ -52,6 +52,7 @@ namespace SORANO.BLL.Services
                 .Where(g => !g.Goods.IsDeleted && !g.Goods.IsSold && g.Goods.SaleID == null)
                 .GroupBy(g => new
                 {
+                    ArticleId = g.Goods.DeliveryItem.ArticleID,
                     ArticleName = g.Goods.DeliveryItem.Article.Name,
                     ArticleCode = g.Goods.DeliveryItem.Article.Code,
                     ArticleType = g.Goods.DeliveryItem.Article.Type.ParentType == null 
@@ -60,11 +61,13 @@ namespace SORANO.BLL.Services
                 })
                 .Select(g => new LocationGoodsDto
                 {
+                    ArticleId = g.Key.ArticleId,
                     ArticleName = g.Key.ArticleName,
                     ArticleCode = g.Key.ArticleCode,
                     ArticleType = g.Key.ArticleType,
                     Quantity = g.AsEnumerable().Count()
                 })
+                .OrderBy(l => l.ArticleName)
                 .ToList();
 
         public ServiceResponse<TurnoverReportDto> GetTurnoverReport(DateTime? from, DateTime? to)
