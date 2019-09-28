@@ -279,26 +279,60 @@ namespace SORANO.WEB.Controllers
 
                 var maxMonthValue = sales
                     .Select(d => d.Value)
-                    .SelectMany(d => d.LocationSales.Values)
+                    .SelectMany(d => d.LocationSales.Values.Select(v => v.Cash + v.Cashless))
+                    .DefaultIfEmpty(decimal.MaxValue)
                     .Max();
 
                 var minMonthValue = sales
                     .Select(d => d.Value)
-                    .SelectMany(d => d.LocationSales.Values)
+                    .SelectMany(d => d.LocationSales.Values.Select(v => v.Cash + v.Cashless))
+                    .DefaultIfEmpty(decimal.MaxValue)
                     .Min();
 
                 var maxTotalValue = sales
                     .Select(d => d.Value.Total)
+                    .DefaultIfEmpty(decimal.MaxValue)
                     .Max();
 
                 var minTotalValue = sales
                     .Select(d => d.Value.Total)
+                    .DefaultIfEmpty(decimal.MaxValue)
+                    .Min();
+
+                var maxCashTotalValue = sales
+                    .Select(d => d.Value.CashTotal)
+                    .Where(v => v > 0M)
+                    .DefaultIfEmpty(decimal.MaxValue)
+                    .Max();
+
+                var minCashTotalValue = sales
+                    .Select(d => d.Value.CashTotal)
+                    .Where(v => v > 0M)
+                    .DefaultIfEmpty(decimal.MaxValue)
+                    .Min();
+
+                var maxCashlessTotalValue = sales
+                    .Select(d => d.Value.CashlessTotal)
+                    .Where(v => v > 0M)
+                    .DefaultIfEmpty(decimal.MaxValue)
+                    .Max();
+
+                var minCashlessTotalValue = sales
+                    .Select(d => d.Value.CashlessTotal)
+                    .Where(v => v > 0M)
+                    .DefaultIfEmpty(decimal.MaxValue)
                     .Min();
 
                 var headerColumns = new List<ReportColumn>();
                 headerColumns.Add(new ReportColumn {Value = "Месяц"});
                 headerColumns.AddRange(locationColumns);
                 headerColumns.Add(new ReportColumn {Value = "Всего"});
+                if (!isProfit && !isWriteOff)
+                    headerColumns.AddRange(new List<ReportColumn>
+                    {
+                        new ReportColumn {Value = "Всего, нал."},
+                        new ReportColumn {Value = "Всего, безнал."},
+                    });
 
                 var bodyRows = new List<ReportRow>();
                 foreach (var sale in sales)
@@ -311,21 +345,30 @@ namespace SORANO.WEB.Controllers
                     row.Columns.Add(new ReportColumn {Value = MonthYearString(sale.Key)});
                     row.Columns.AddRange(locationColumns.Select(c =>
                     {
-                        var value = sale.Value.LocationSales.ContainsKey(c.Value)
-                            ? sale.Value.LocationSales[c.Value]
+                        var cash = sale.Value.LocationSales.ContainsKey(c.Value)
+                            ? sale.Value.LocationSales[c.Value].Cash
                             : 0.0M;
 
-                        var valueStr = $"{value.ToString(_moneyFormat, _russianCulture)} {_hryvna}";
+                        var cashless = sale.Value.LocationSales.ContainsKey(c.Value)
+                            ? sale.Value.LocationSales[c.Value].Cashless
+                            : 0.0M;
 
-                        var isMax = value.Equals(maxMonthValue);
-                        var isMin = value.Equals(minMonthValue);
+                        var cashStr = $"{cash.ToString(_moneyFormat, _russianCulture)} {_hryvna}";
+                        var cashlessStr = $"{cashless.ToString(_moneyFormat, _russianCulture)} {_hryvna}";
+
+                        var saleTotal = cash + cashless;
+
+                        var saleTotalStr = $"{saleTotal.ToString(_moneyFormat, _russianCulture)} {_hryvna}";
+
+                        var isMax = saleTotal.Equals(maxMonthValue);
+                        var isMin = saleTotal.Equals(minMonthValue);
 
                         return new ReportColumn
                         {
-                            Value = valueStr,
+                            Value = isWriteOff || isProfit ? saleTotalStr : $"{cashStr} / {cashlessStr}",
                             IsMax = isMax,
                             IsMin = isMin,
-                            IsNegative = value < 0.0M
+                            IsNegative = saleTotal < 0.0M
                         };
                     }));
 
@@ -337,6 +380,28 @@ namespace SORANO.WEB.Controllers
                         IsMin = total.Equals(minTotalValue),
                         IsNegative = total < 0.0M
                     });
+
+                    if (!isProfit && !isWriteOff)
+                    {
+                        var cashTotal = sale.Value.LocationSales.Sum(s => s.Value.Cash);
+                        var cashlessTotal = sale.Value.LocationSales.Sum(s => s.Value.Cashless);                        
+
+                        row.Columns.AddRange(new List<ReportColumn>
+                        {
+                            new ReportColumn 
+                            { 
+                                Value = $"{cashTotal.ToString(_moneyFormat, _russianCulture)}",
+                                IsMax = cashTotal.Equals(maxCashTotalValue),
+                                IsMin = cashTotal.Equals(minCashTotalValue),
+                            },
+                            new ReportColumn 
+                            {
+                                Value = $"{cashlessTotal.ToString(_moneyFormat, _russianCulture)}",
+                                IsMax = cashlessTotal.Equals(maxCashlessTotalValue),
+                                IsMin = cashlessTotal.Equals(minCashlessTotalValue),
+                            },
+                        });
+                    }
 
                     bodyRows.Add(row);
                 }

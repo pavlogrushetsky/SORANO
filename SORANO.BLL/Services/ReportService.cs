@@ -135,13 +135,13 @@ namespace SORANO.BLL.Services
                         var monthKey = new DateTime(s.Key.Year, s.Key.Month, 1);
                         var locationSales = new LocationSalesDto
                         {
-                            Total = s.AsEnumerable().Sum(x => Sum(x.Sale, x.DeliveryPrice, isWriteOff, isProfit)),
                             LocationSales = s.GroupBy(i => i.Location)
                                 .Select(i =>
                                 {
                                     var location = i.Key.Name;
-                                    var value = i.AsEnumerable().Sum(x => Sum(x.Sale, x.DeliveryPrice, isWriteOff, isProfit));
-                                    return new KeyValuePair<string, decimal>(location, value);
+                                    var cach = i.AsEnumerable().Where(x => !x.Sale.IsCachless).Sum(x => Sum(x.Sale, x.DeliveryPrice, isWriteOff, isProfit));
+                                    var cachless = i.AsEnumerable().Where(x => x.Sale.IsCachless).Sum(x => Sum(x.Sale, x.DeliveryPrice, isWriteOff, isProfit));
+                                    return new KeyValuePair<string, SaleDto>(location, new SaleDto { Cash = cach, Cashless = cachless });
                                 })
                                 .ToDictionary(k => k.Key, v => v.Value)
                         };
