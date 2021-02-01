@@ -16,11 +16,11 @@ namespace SORANO.DAL.Context.Configurations
 
             Property(a => a.Name)
                 .IsRequired()
-                .HasMaxLength(500);
+                .HasMaxLength(1500);
 
             Property(a => a.Description)
                 .IsOptional()
-                .HasMaxLength(1000);
+                .HasMaxLength(3000);
 
             ToTable("ArticleTypes");
         }

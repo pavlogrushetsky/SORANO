@@ -12,15 +12,15 @@ namespace SORANO.DAL.Context.Configurations
 
             Property(a => a.Name)
                 .IsRequired()
-                .HasMaxLength(500);
+                .HasMaxLength(1500);
 
             Property(a => a.Description)
                 .IsOptional()
-                .HasMaxLength(1000);
+                .HasMaxLength(3000);
 
             Property(a => a.Producer)
                 .IsOptional()
-                .HasMaxLength(200);
+                .HasMaxLength(600);
 
             Property(a => a.Code)
                 .IsOptional()
