@@ -165,7 +165,15 @@ namespace SORANO.BLL.Services
                             .FirstOrDefault(),
                     CanBeDeleted = !at.IsDeleted &&
                                    at.Articles.All(a => a.IsDeleted),
-                    IsDeleted = at.IsDeleted
+                    IsDeleted = at.IsDeleted,
+                    Recommendations = at.Recommendations
+                        .Where(r => !r.IsDeleted)
+                        .Select(r => new RecommendationDto
+                        {
+                            ID = r.ID,
+                            Comment = r.Comment,
+                            Value = r.Value
+                        })
                 })
                 .ToList();
 
@@ -191,7 +199,15 @@ namespace SORANO.BLL.Services
                         .FirstOrDefault(),
                     CanBeDeleted = !a.IsDeleted &&
                                    !a.DeliveryItems.Any(),
-                    IsDeleted = a.IsDeleted
+                    IsDeleted = a.IsDeleted,
+                    Recommendations = a.Recommendations
+                        .Where(r => !r.IsDeleted)
+                        .Select(r => new RecommendationDto
+                        {
+                            ID = r.ID,
+                            Comment = r.Comment,
+                            Value = r.Value
+                        })
                 })
                 .ToList();
 

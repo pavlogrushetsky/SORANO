@@ -78,7 +78,8 @@ namespace SORANO.BLL.Extensions
 
             return type.Name.ToLower().Contains(term) || 
                    !string.IsNullOrWhiteSpace(type.Description) && 
-                   type.Description.ToLower().Contains(term);
+                   type.Description.ToLower().Contains(term) ||
+                   type.Recommendations.Any(r => r.Comment.ToLower().Contains(term));
         }
 
         private static bool Filter(this ArticleDto article, string term)
@@ -92,7 +93,8 @@ namespace SORANO.BLL.Extensions
                    !string.IsNullOrWhiteSpace(article.Code) && 
                    article.Code.ToLower().Contains(term) ||
                    !string.IsNullOrWhiteSpace(article.Barcode) && 
-                   article.Barcode.ToLower().Contains(term);
+                   article.Barcode.ToLower().Contains(term) ||
+                   article.Recommendations.Any(r => r.Comment.ToLower().Contains(term));
         }
     }
 }
