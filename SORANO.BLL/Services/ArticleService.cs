@@ -41,7 +41,15 @@ namespace SORANO.BLL.Services
                     Modified = a.ModifiedDate,
                     IsDeleted = a.IsDeleted,
                     CanBeDeleted = !a.IsDeleted &&
-                                   !a.DeliveryItems.Any()
+                                   !a.DeliveryItems.Any(),
+                    Recommendations = a.Recommendations
+                        .Where(r => !r.IsDeleted)
+                        .Select(r => new RecommendationDto
+                        {
+                            ID = r.ID,
+                            Comment = r.Comment,
+                            Value = r.Value
+                        })
                 })
                 .ToList();
 

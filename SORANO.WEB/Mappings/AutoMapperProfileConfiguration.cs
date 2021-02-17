@@ -242,6 +242,10 @@ namespace SORANO.WEB.Mappings
                 .ForMember(
                     dest => dest.ModifiedStandard,
                     source => source.MapFrom(s => s.Modified.ToString("yyyyMMdd"))
+                )
+                .ForMember(
+                    dest => dest.Recommendations,
+                    source => source.MapFrom(s => string.Join(";", s.Recommendations.Select(r => r.Comment)))
                 );
 
             #endregion

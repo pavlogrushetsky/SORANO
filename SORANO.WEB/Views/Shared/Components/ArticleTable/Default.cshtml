@@ -27,6 +27,7 @@
             </th>
             <th><i class="fa fa-fw fa-suitcase"></i>Производитель</th>
             <th><i class="fa fa-fw fa-money"></i>Рек. цена</th>
+            <th></th>
             <th>Действия</th>
         </tr>
     </thead>
@@ -60,6 +61,7 @@
                 </td>
                 <td>@article.Producer</td>
                 <td>@article.RecommendedPrice ₴</td>
+                <td>@article.Recommendations</td>
                 <td nowrap="nowrap">
                     <a asp-controller="Article"
                        asp-action="Details"

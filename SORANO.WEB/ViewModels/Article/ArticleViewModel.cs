@@ -31,5 +31,7 @@
         public string MainPicturePath { get; set; }
 
         public bool HasMainPicture => !string.IsNullOrEmpty(MainPicturePath);
+
+        public string Recommendations { get; set; }
     }
 }

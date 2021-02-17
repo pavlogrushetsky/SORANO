@@ -474,7 +474,8 @@ function initArticlesDataTable() {
         "aaSorting": [],
         "columnDefs": [
             { "orderable": false, "targets": -1 },
-            { type: "currency", "targets": -2 }
+            { type: "currency", "targets": -3 },
+            { "visible": false, "searchable": true, "targets": -2 }
         ],
         "pagingType": "numbers",
         "language": {
