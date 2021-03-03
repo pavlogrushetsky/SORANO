@@ -13,16 +13,16 @@ namespace SORANO.WEB.Validators
                 .WithMessage("Необходимо указать название");
 
             RuleFor(a => a.Name)
-                .MaximumLength(500)
-                .WithMessage("Длина названия не должна превышать 500 символов");
+                .MaximumLength(1500)
+                .WithMessage("Длина названия не должна превышать 1500 символов");
 
             RuleFor(a => a.Name)
                 .MinimumLength(5)
                 .WithMessage("Длина названия должна содержать не менее 5 символов");
 
             RuleFor(a => a.Description)
-                .MaximumLength(1000)
-                .WithMessage("Длина описания не должна превышать 1000 символов");
+                .MaximumLength(3000)
+                .WithMessage("Длина описания не должна превышать 3000 символов");
 
             RuleFor(a => a.Producer)
                 .MaximumLength(200)
