@@ -40,8 +40,8 @@ namespace SORANO.BLL.Services
                     },
                     Modified = a.ModifiedDate,
                     IsDeleted = a.IsDeleted,
-                    CanBeDeleted = !a.IsDeleted &&
-                                   !a.DeliveryItems.Any(),
+                    CanBeDeleted = !a.IsDeleted 
+                                   && a.DeliveryItems.SelectMany(di => di.Goods).All(g => g.IsSold),
                     Recommendations = a.Recommendations
                         .Where(r => !r.IsDeleted)
                         .Select(r => new RecommendationDto
@@ -68,7 +68,8 @@ namespace SORANO.BLL.Services
             var deliveryItems = UnitOfWork.Get<DeliveryItem>()
                 .GetAll(di => di.ArticleID == id,
                     di => di.Delivery,
-                    di => di.Article)
+                    di => di.Article,
+                    di => di.Goods)
                 .ToList();
 
             article.DeliveryItems = deliveryItems;
@@ -147,7 +148,7 @@ namespace SORANO.BLL.Services
             if (existentArticle == null)
                 return new ServiceResponse<int>(ServiceResponseStatus.NotFound);
 
-            if (existentArticle.DeliveryItems.Any())
+            if (existentArticle.DeliveryItems.SelectMany(di => di.Goods).Any(g => !g.IsSold))
                 return new ServiceResponse<int>(ServiceResponseStatus.InvalidOperation);
 
             existentArticle.UpdateDeletedFields(userId);
@@ -167,7 +168,7 @@ namespace SORANO.BLL.Services
             var termNotSpecified = string.IsNullOrEmpty(term);
 
             var articles = UnitOfWork.Get<Article>()
-                .GetAll(a => (withDeleted || !a.IsDeleted) && 
+                .GetAll(a => (withDeleted || !a.IsDeleted && a.DeliveryItems.SelectMany(di => di.Goods).All(g => g.IsSold)) && 
                              (termNotSpecified || 
                              a.Name.ToLower().Contains(term) || 
                              a.Type.Name.ToLower().Contains(term) || 

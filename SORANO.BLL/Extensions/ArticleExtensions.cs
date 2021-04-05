@@ -23,7 +23,7 @@ namespace SORANO.BLL.Extensions
             };
 
             dto.MapDetails(model);
-            dto.CanBeDeleted = (!model.DeliveryItems?.Any() ?? false) && !model.IsDeleted;
+            dto.CanBeDeleted = (model.DeliveryItems?.SelectMany(di => di.Goods).All(g => g.IsSold) ?? false) && !model.IsDeleted;
 
             return dto;
         }
