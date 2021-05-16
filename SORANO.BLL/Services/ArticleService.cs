@@ -168,7 +168,7 @@ namespace SORANO.BLL.Services
             var termNotSpecified = string.IsNullOrEmpty(term);
 
             var articles = UnitOfWork.Get<Article>()
-                .GetAll(a => (withDeleted || !a.IsDeleted && a.DeliveryItems.SelectMany(di => di.Goods).All(g => g.IsSold)) && 
+                .GetAll(a => (withDeleted || !a.IsDeleted) && 
                              (termNotSpecified || 
                              a.Name.ToLower().Contains(term) || 
                              a.Type.Name.ToLower().Contains(term) || 
